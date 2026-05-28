@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc -b tsconfig.build.json",
     "lint": "tsc -b tsconfig.build.json --pretty false --noEmit",
-    "verify:phase-0": "node scripts/verify-phase-0.mjs"
+    "verify:phase-0": "node scripts/verify-phase-0.mjs",
+    "verify:phase-1": "node scripts/verify-phase-1.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.2"

@@ -7,9 +7,24 @@ on:
 
 jobs:
   phase0:
-    name: Phase 0 gate
+    name: Phase 0–1 gate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: zeref
+          POSTGRES_USER: zeref
+          POSTGRES_PASSWORD: zeref
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U zeref -d zeref"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout
@@ -32,4 +47,9 @@ jobs:
 
       - name: Verify Phase 0
         run: npm run verify:phase-0
+
+      - name: Verify Phase 1
+        run: npm run verify:phase-1
+        env:
+          DATABASE_URL: postgres://zeref:zeref@localhost:5432/zeref
 
