@@ -94,11 +94,13 @@
 
 ## ADRs
 
+Index: [docs/governance/adr/README.md](./adr/README.md)
+
 | ADR | Owner | Topic |
 |-----|-------|--------|
-| ADR-001 | Data | Table naming, FK graph, immutability enforcement |
-| ADR-002 | API/Contracts | ID branding (UUID strings vs branded TS types) |
-| ADR-003 | API/Contracts | OpenAPI derivation from Zod (tooling + CI plan) |
+| [ADR-001](./adr/ADR-001-snapshot-data-model.md) | Data | Table naming, FK graph, immutability enforcement |
+| [ADR-002](./adr/ADR-002-id-branding.md) | API/Contracts | ID branding (UUID strings vs branded TS types) |
+| [ADR-003](./adr/ADR-003-openapi-from-zod.md) | API/Contracts | OpenAPI derivation from Zod (tooling + CI plan) |
 
 ## Acceptance criteria
 
