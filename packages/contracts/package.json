@@ -11,6 +11,9 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "test": "node --test test/smoke.test.mjs"
+    "test": "node --test test/**/*.test.mjs"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
   }
 }

@@ -1,0 +1,9 @@
+{
+  "jobType": "collect",
+  "platform": "twitter",
+  "kind": "instagram_post_raw",
+  "sourceRef": "https://instagram.com/p/BAD/",
+  "contentHash": "sha256:bad",
+  "payload": {},
+  "collectedAt": "not-a-datetime"
+}

@@ -1,0 +1,9 @@
+{
+  "jobType": "report",
+  "schemaVersion": "1.0.0",
+  "analysisOutputId": "44444444-4444-4444-8444-444444444444",
+  "artifactKind": "insufficient_data_notice",
+  "insufficientData": {
+    "reason": "analysis_sparse"
+  }
+}

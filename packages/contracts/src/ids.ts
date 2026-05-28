@@ -1,0 +1,17 @@
+import { z } from "zod";
+
+/** Branded UUID IDs (ADR-002). Serialized as plain UUID strings in JSON. */
+export const PlatformAccountIdSchema = z.string().uuid().brand<"PlatformAccountId">();
+export type PlatformAccountId = z.infer<typeof PlatformAccountIdSchema>;
+
+export const SnapshotIdSchema = z.string().uuid().brand<"SnapshotId">();
+export type SnapshotId = z.infer<typeof SnapshotIdSchema>;
+
+export const NormalizedEntityIdSchema = z.string().uuid().brand<"NormalizedEntityId">();
+export type NormalizedEntityId = z.infer<typeof NormalizedEntityIdSchema>;
+
+export const AnalysisOutputIdSchema = z.string().uuid().brand<"AnalysisOutputId">();
+export type AnalysisOutputId = z.infer<typeof AnalysisOutputIdSchema>;
+
+export const ReportArtifactIdSchema = z.string().uuid().brand<"ReportArtifactId">();
+export type ReportArtifactId = z.infer<typeof ReportArtifactIdSchema>;

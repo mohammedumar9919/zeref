@@ -1,0 +1,13 @@
+{
+  "jobType": "collect",
+  "platform": "instagram",
+  "kind": "instagram_post_raw",
+  "platformAccountId": "22222222-2222-4222-8222-222222222222",
+  "sourceRef": "https://instagram.com/p/ABC123/",
+  "contentHash": "sha256:abc123def456",
+  "payload": {
+    "shortcode": "ABC123",
+    "caption": "Night ride through the city."
+  },
+  "collectedAt": "2026-05-27T12:00:00.000Z"
+}
