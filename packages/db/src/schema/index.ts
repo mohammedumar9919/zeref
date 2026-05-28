@@ -1,0 +1,19 @@
+export { platformAccounts } from "./platform-accounts.js";
+export { snapshots } from "./snapshots.js";
+export { normalizedEntities } from "./normalized-entities.js";
+export { analysisOutputs } from "./analysis-outputs.js";
+export { reportArtifacts } from "./report-artifacts.js";
+
+import { platformAccounts } from "./platform-accounts.js";
+import { snapshots } from "./snapshots.js";
+import { normalizedEntities } from "./normalized-entities.js";
+import { analysisOutputs } from "./analysis-outputs.js";
+import { reportArtifacts } from "./report-artifacts.js";
+
+export const schema = {
+  platformAccounts,
+  snapshots,
+  normalizedEntities,
+  analysisOutputs,
+  reportArtifacts,
+};
