@@ -4,8 +4,8 @@
 
 ## Current position
 
-- **Phase:** 1 (implementation)
-- **Last completed:** Phase 0 (planner-approved 2026-05-27)
+- **Phase:** 2 (implementation)
+- **Last completed:** Phase 1 (planner-approved 2026-05-28)
 - **Blocker:** none
 
 ## Planner decisions
