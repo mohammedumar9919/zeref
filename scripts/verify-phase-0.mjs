@@ -30,6 +30,8 @@ if (!Number.isFinite(major) || major < 22) {
   fail(`Node >=22 required, got ${process.versions.node}`);
 }
 
+run("npm", ["run", "build"]);
+
 for (const p of [
   "apps/web",
   "apps/api",
