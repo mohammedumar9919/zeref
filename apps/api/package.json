@@ -1,0 +1,9 @@
+{
+  "name": "@zeref/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "scripts": { "build": "tsc -b" },
+  "dependencies": { "@zeref/contracts": "0.0.0", "@zeref/domain": "0.0.0" }
+}

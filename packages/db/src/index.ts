@@ -1,0 +1,1 @@
+export const DB_SCHEMA_PLACEHOLDER = "phase-0";
