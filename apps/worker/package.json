@@ -14,6 +14,7 @@
     "test": "node --test test/**/*.test.mjs"
   },
   "dependencies": {
+    "@zeref/analytics": "0.0.0",
     "@zeref/contracts": "0.0.0",
     "@zeref/db": "0.0.0",
     "@zeref/instagram": "0.0.0",
