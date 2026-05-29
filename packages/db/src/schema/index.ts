@@ -3,12 +3,20 @@ export { snapshots } from "./snapshots.js";
 export { normalizedEntities } from "./normalized-entities.js";
 export { analysisOutputs } from "./analysis-outputs.js";
 export { reportArtifacts } from "./report-artifacts.js";
+export { metricFacts } from "./metric-facts.js";
+export {
+  embeddingVectors,
+  DEFAULT_EMBEDDING_MODEL,
+  EMBEDDING_DIMENSIONS,
+} from "./embedding-vectors.js";
 
 import { platformAccounts } from "./platform-accounts.js";
 import { snapshots } from "./snapshots.js";
 import { normalizedEntities } from "./normalized-entities.js";
 import { analysisOutputs } from "./analysis-outputs.js";
 import { reportArtifacts } from "./report-artifacts.js";
+import { metricFacts } from "./metric-facts.js";
+import { embeddingVectors } from "./embedding-vectors.js";
 
 export const schema = {
   platformAccounts,
@@ -16,4 +24,6 @@ export const schema = {
   normalizedEntities,
   analysisOutputs,
   reportArtifacts,
+  metricFacts,
+  embeddingVectors,
 };

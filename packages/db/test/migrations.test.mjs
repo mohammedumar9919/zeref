@@ -115,7 +115,7 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
     }
   });
 
-  it("applies Phase 1 migrations cleanly on Postgres 16", async () => {
+  it("applies Phase 1–3 migrations cleanly on Postgres 16", async () => {
     const url = new URL(databaseUrl);
     url.pathname = `/${testDbName}`;
     const testUrl = url.toString();
@@ -130,9 +130,32 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
        WHERE table_schema = 'public'
        AND table_name = ANY($1::text[])
        ORDER BY table_name`,
-      [["analysis_outputs", "normalized_entities", "platform_accounts", "report_artifacts", "snapshots"]],
+      [
+        [
+          "analysis_outputs",
+          "embedding_vectors",
+          "metric_facts",
+          "normalized_entities",
+          "platform_accounts",
+          "report_artifacts",
+          "snapshots",
+        ],
+      ],
     );
-    assert.equal(tables.rowCount, 5);
+    assert.equal(tables.rowCount, 7);
+
+    const ext = await pool.query(
+      `SELECT 1 FROM pg_extension WHERE extname = 'vector'`,
+    );
+    assert.equal(ext.rowCount, 1);
+
+    const embeddingType = await pool.query(
+      `SELECT format_type(a.atttypid, a.atttypmod) AS col_type
+       FROM pg_attribute a
+       JOIN pg_class c ON c.oid = a.attrelid
+       WHERE c.relname = 'embedding_vectors' AND a.attname = 'embedding' AND NOT a.attisdropped`,
+    );
+    assert.equal(embeddingType.rows[0].col_type, "vector(1536)");
 
     await pool.end();
   });
@@ -182,6 +205,78 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
           normalized.rows[0].id,
         ]),
       /append-only/i,
+    );
+
+    await client.end();
+  });
+
+  it("enforces Phase 3 append-only and FK integrity (Q3, C16)", async () => {
+    const url = new URL(databaseUrl);
+    url.pathname = `/${testDbName}`;
+    const client = new pg.Client({ connectionString: url.toString() });
+    await client.connect();
+
+    const account = await client.query(
+      `INSERT INTO platform_accounts (platform, external_id)
+       VALUES ('instagram', 'phase3_account') RETURNING id`,
+    );
+    const accountId = account.rows[0].id;
+
+    const snap = await client.query(
+      `INSERT INTO snapshots (platform_account_id, platform, kind, source_ref, content_hash, payload_json, collected_at)
+       VALUES ($1, 'instagram', 'instagram_post_raw', 'ref-p3', 'hash-p3', '{}'::jsonb, NOW()) RETURNING id`,
+      [accountId],
+    );
+    const snapshotId = snap.rows[0].id;
+
+    const normalized = await client.query(
+      `INSERT INTO normalized_entities (snapshot_id, schema_version, payload_json)
+       VALUES ($1, 'phase3-v1', '{"text":"embed me"}'::jsonb) RETURNING id`,
+      [snapshotId],
+    );
+    const normalizedId = normalized.rows[0].id;
+
+    const facts = await client.query(
+      `INSERT INTO metric_facts (snapshot_id, normalized_entity_id, platform_account_id, metric_version, engagement_score, insufficient_data)
+       VALUES ($1, $2, $3, 'phase3-v1', 0.42, false) RETURNING id`,
+      [snapshotId, normalizedId, accountId],
+    );
+
+    await assert.rejects(
+      () =>
+        client.query(`UPDATE metric_facts SET engagement_score = 0 WHERE id = $1`, [
+          facts.rows[0].id,
+        ]),
+      /append-only/i,
+    );
+
+    const zeros = Array.from({ length: 1536 }, () => 0);
+    const vectorLiteral = `[${zeros.join(",")}]`;
+
+    await client.query(
+      `INSERT INTO embedding_vectors (normalized_entity_id, model, dimensions, embedding, content_hash)
+       VALUES ($1, 'text-embedding-3-small', 1536, $2::vector, 'content-hash-1')`,
+      [normalizedId, vectorLiteral],
+    );
+
+    await assert.rejects(
+      () =>
+        client.query(
+          `INSERT INTO embedding_vectors (normalized_entity_id, model, dimensions, embedding, content_hash)
+           VALUES ($1, 'text-embedding-3-small', 768, $2::vector, 'bad-dim')`,
+          [normalizedId, vectorLiteral],
+        ),
+      /dimensions_chk|vector/i,
+    );
+
+    await assert.rejects(
+      () =>
+        client.query(
+          `INSERT INTO metric_facts (snapshot_id, normalized_entity_id, platform_account_id, metric_version)
+           VALUES ($1, $2, $3, 'phase3-v1')`,
+          [snapshotId, normalizedId, "00000000-0000-0000-0000-000000000099"],
+        ),
+      /foreign key|violates/i,
     );
 
     await client.end();
