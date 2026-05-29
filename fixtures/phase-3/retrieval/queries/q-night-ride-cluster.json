@@ -1,0 +1,5 @@
+{
+  "id": "q-night-ride-cluster",
+  "embedding": [1, 0, 0, 0],
+  "expectedTop3": ["post-a", "post-b", "post-c"]
+}

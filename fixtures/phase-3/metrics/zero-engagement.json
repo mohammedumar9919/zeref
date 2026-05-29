@@ -1,0 +1,22 @@
+{
+  "id": "zero-engagement",
+  "input": {
+    "shortcode": "ZERO01",
+    "sources": ["graph"],
+    "graph": {
+      "id": "18111111111111111",
+      "caption": "New post.",
+      "media_type": "IMAGE",
+      "permalink": "https://www.instagram.com/p/ZERO01/",
+      "timestamp": "2026-05-21T12:00:00+0000",
+      "like_count": 0,
+      "comments_count": 0
+    }
+  },
+  "expected": {
+    "metricVersion": "phase3-v1",
+    "engagementScore": 0,
+    "insufficientData": false,
+    "nicheTags": []
+  }
+}

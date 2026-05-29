@@ -1,0 +1,22 @@
+{
+  "id": "ride-log",
+  "input": {
+    "shortcode": "LOG240",
+    "sources": ["graph"],
+    "graph": {
+      "id": "18333333333333333",
+      "caption": "Ride log — 240 miles this week",
+      "media_type": "IMAGE",
+      "permalink": "https://www.instagram.com/p/LOG240/",
+      "timestamp": "2026-05-18T20:00:00+0000",
+      "like_count": 88,
+      "comments_count": 5
+    }
+  },
+  "expected": {
+    "metricVersion": "phase3-v1",
+    "engagementScore": 50.738916,
+    "insufficientData": false,
+    "nicheTags": ["ride_log"]
+  }
+}

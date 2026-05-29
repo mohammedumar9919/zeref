@@ -1,0 +1,29 @@
+{
+  "id": "edits-reel",
+  "input": {
+    "shortcode": "EDIT99",
+    "sources": ["scrape", "graph"],
+    "graph": {
+      "id": "18222222222222222",
+      "caption": "Sick edit transition reel",
+      "media_type": "VIDEO",
+      "permalink": "https://www.instagram.com/reel/EDIT99/",
+      "timestamp": "2026-05-19T09:15:00+0000",
+      "like_count": 500,
+      "comments_count": 10
+    },
+    "scrape": {
+      "shortcode": "EDIT99",
+      "caption": "Sick edit transition reel",
+      "likes": 480,
+      "comments": 9,
+      "videoUrl": "https://scontent.cdninstagram.com/v/reel.mp4"
+    }
+  },
+  "expected": {
+    "metricVersion": "phase3-v1",
+    "engagementScore": 84.126984,
+    "insufficientData": false,
+    "nicheTags": ["edits"]
+  }
+}

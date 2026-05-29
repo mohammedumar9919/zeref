@@ -1,0 +1,17 @@
+{
+  "id": "insufficient-thin",
+  "input": {
+    "shortcode": "THIN01",
+    "sources": ["scrape"],
+    "scrape": {
+      "shortcode": "THIN01",
+      "caption": "Just a photo."
+    }
+  },
+  "expected": {
+    "metricVersion": "phase3-v1",
+    "engagementScore": null,
+    "insufficientData": true,
+    "nicheTags": []
+  }
+}

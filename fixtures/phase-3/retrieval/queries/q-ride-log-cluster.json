@@ -1,0 +1,5 @@
+{
+  "id": "q-ride-log-cluster",
+  "embedding": [0, 1, 0, 0],
+  "expectedTop3": ["post-d", "post-e", "post-f"]
+}

@@ -1,0 +1,11 @@
+{
+  "items": [
+    { "id": "post-a", "embedding": [1, 0, 0, 0] },
+    { "id": "post-b", "embedding": [0.95, 0.05, 0, 0] },
+    { "id": "post-c", "embedding": [0.8, 0.2, 0, 0] },
+    { "id": "post-d", "embedding": [0, 1, 0, 0] },
+    { "id": "post-e", "embedding": [0, 0.9, 0.1, 0] },
+    { "id": "post-f", "embedding": [0, 0.8, 0.2, 0] },
+    { "id": "post-g", "embedding": [0, 0, 1, 0] }
+  ]
+}
