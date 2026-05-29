@@ -1,0 +1,21 @@
+{
+  "shortcode": "ABC123",
+  "sources": ["scrape", "graph"],
+  "graph": {
+    "id": "18123456789012345",
+    "caption": "Night ride through the city.",
+    "media_type": "IMAGE",
+    "media_url": "https://scontent.cdninstagram.com/v/example.jpg",
+    "permalink": "https://www.instagram.com/p/ABC123/",
+    "timestamp": "2026-05-20T18:30:00+0000",
+    "like_count": 1204,
+    "comments_count": 42
+  },
+  "scrape": {
+    "shortcode": "ABC123",
+    "caption": "Night ride through the city.",
+    "likes": 1204,
+    "comments": 42,
+    "thumbnailUrl": "https://scontent.cdninstagram.com/v/thumb.jpg"
+  }
+}

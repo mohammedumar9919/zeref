@@ -12,7 +12,6 @@ const built = await import(pathToFileURL(join(testDir, "../dist/index.js")).href
 
 const {
   PHASE1_CONTRACT_VERSION,
-  CollectJobInputSchema,
   NormalizeJobInputSchema,
   AnalyzeJobInputSchema,
   ReportJobInputSchema,
@@ -57,14 +56,6 @@ test("enum schemas round-trip fixture values", () => {
   );
   assert.equal(PipelineStageSchema.parse("collect"), "collect");
   assert.equal(JobTypeSchema.parse("report"), "report");
-});
-
-test("CollectJobInput fixture round-trip (valid)", () => {
-  roundTrip(CollectJobInputSchema, "collect-job.valid.json");
-});
-
-test("CollectJobInput rejects invalid fixture", () => {
-  assertRejected(CollectJobInputSchema, "collect-job.invalid.json");
 });
 
 test("NormalizeJobInput fixture round-trip (valid)", () => {

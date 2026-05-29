@@ -1,0 +1,9 @@
+{
+  "jobType": "collect",
+  "platform": "instagram",
+  "kind": "instagram_post_raw",
+  "platformAccountId": "22222222-2222-4222-8222-222222222222",
+  "sources": ["scrape", "graph"],
+  "shortcodes": ["ABC123"],
+  "graphMediaId": "18123456789012345"
+}

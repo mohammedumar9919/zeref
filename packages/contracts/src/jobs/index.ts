@@ -1,6 +1,8 @@
 export {
   CollectJobInputSchema,
+  CollectJobOutputSchema,
   type CollectJobInput,
+  type CollectJobOutput,
 } from "./collect.js";
 export {
   NormalizeJobInputSchema,

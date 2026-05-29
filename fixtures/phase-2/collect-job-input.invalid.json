@@ -1,0 +1,7 @@
+{
+  "jobType": "collect",
+  "platform": "instagram",
+  "kind": "instagram_post_raw",
+  "sources": ["scrape"],
+  "payload": { "raw": true }
+}

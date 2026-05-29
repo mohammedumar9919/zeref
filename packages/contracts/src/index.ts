@@ -1,5 +1,6 @@
 export const PHASE0_CONTRACT_VERSION = "0.1.0";
 export const PHASE1_CONTRACT_VERSION = "1.0.0";
+export const PHASE2_CONTRACT_VERSION = "2.0.0";
 
 export {
   PlatformSchema,
@@ -39,11 +40,28 @@ export {
 
 export {
   CollectJobInputSchema,
+  CollectJobOutputSchema,
   NormalizeJobInputSchema,
   AnalyzeJobInputSchema,
   ReportJobInputSchema,
   type CollectJobInput,
+  type CollectJobOutput,
   type NormalizeJobInput,
   type AnalyzeJobInput,
   type ReportJobInput,
 } from "./jobs/index.js";
+
+export {
+  CollectSourceSchema,
+  GraphIgUserSchema,
+  GraphMediaFieldsSchema,
+  GraphMediaListResponseSchema,
+  ScrapePostFieldsSchema,
+  MergedInstagramPostPayloadSchema,
+  type CollectSource,
+  type GraphIgUser,
+  type GraphMediaFields,
+  type GraphMediaListResponse,
+  type ScrapePostFields,
+  type MergedInstagramPostPayload,
+} from "./instagram/index.js";

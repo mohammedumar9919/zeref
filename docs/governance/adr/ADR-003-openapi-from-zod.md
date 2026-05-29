@@ -4,7 +4,7 @@
 **Date:** 2026-05-28  
 **Owner:** API/Contracts agent  
 **Phase:** 1  
-**Related:** [Phase 1 contract](../phase-1-contract.md) · [ADR index](./README.md) · [ADR-001](./ADR-001-snapshot-data-model.md) · [ADR-002](./ADR-002-id-branding.md) · [verify.md](../verify.md)
+**Related:** [Phase 1 contract](../phase-1-contract.md) · [Phase 2 contract](../phase-2-contract.md) · [ADR index](./README.md) · [ADR-001](./ADR-001-snapshot-data-model.md) · [ADR-002](./ADR-002-id-branding.md) · [ADR-004](./ADR-004-instagram-merge.md) · [verify.md](../verify.md)
 
 ## Context
 
@@ -33,8 +33,11 @@ Phase 1 ships a **generation stub** (`scripts/generate-openapi.mjs`) documenting
 ### Schema registration order (when implemented)
 
 1. Enums: `Platform`, `SnapshotKind`, `PipelineStage`, `JobType`
-2. Job payloads: `CollectJobInput`, `NormalizeJobInput`, `AnalyzeJobInput`, `ReportJobInput`
+2. Job payloads: `CollectJobInput`, `CollectJobOutput`, `NormalizeJobInput`, `AnalyzeJobInput`, `ReportJobInput`
 3. Shared: `InsufficientData`, branded ID string formats (`format: uuid`)
+4. **Phase 2 — Instagram / Graph (see [ADR-004](./ADR-004-instagram-merge.md)):** `GraphIgUser`, `GraphMediaFields`, `GraphMediaListResponse`, `ScrapePostFields`, `MergedInstagramPostPayload`
+
+Golden fixtures for Graph shapes: `fixtures/phase-2/graph/*.json` (contract round-trip tests in `@zeref/contracts`).
 
 ## Consequences
 

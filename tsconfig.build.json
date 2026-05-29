@@ -4,6 +4,7 @@
     { "path": "./packages/contracts" },
     { "path": "./packages/domain" },
     { "path": "./packages/db" },
+    { "path": "./packages/instagram" },
     { "path": "./apps/api" },
     { "path": "./apps/worker" },
     { "path": "./apps/web" }
