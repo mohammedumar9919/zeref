@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": "18000000000000001",
+      "caption": "Graph fixture caption ABC",
+      "media_type": "IMAGE",
+      "media_url": "https://cdn.example.test/graph-abc.jpg",
+      "permalink": "https://www.instagram.com/p/ABC123xyz/",
+      "timestamp": "2024-03-10T12:00:00+0000",
+      "like_count": 5000,
+      "comments_count": 120
+    },
+    {
+      "id": "18000000000000002",
+      "caption": "Graph fixture caption DEF",
+      "media_type": "VIDEO",
+      "media_url": "https://cdn.example.test/graph-def.mp4",
+      "permalink": "https://www.instagram.com/reel/DEF456uvw/",
+      "timestamp": "2024-03-11T08:30:00+0000",
+      "like_count": 12000,
+      "comments_count": 340
+    }
+  ]
+}
