@@ -1,12 +1,43 @@
 # Zeref — Verification commands
 
-This page documents verification commands per phase. CI must fail if these commands fail.
+CI must fail if these commands fail.
 
-**Related:** [Phase 1 contract](./phase-1-contract.md) (C1–C6) · [ADR index](./adr/README.md)
+**Related:** [ADR index](./adr/README.md) · [Phase 1 contract](./phase-1-contract.md) · [Phase 2 contract](./phase-2-contract.md)
+
+## Environment: `DATABASE_URL`
+
+Phase 1 and Phase 2 gates run `@zeref/db` and `@zeref/worker` tests against **Postgres 16**.
+
+| Context | `DATABASE_URL` |
+|---------|----------------|
+| **Local (docker-compose default)** | `postgres://zeref:zeref@localhost:5432/zeref` |
+| **Custom port** | Set `POSTGRES_PORT` in `.env` or compose override, then match host port in URL |
+| **CI (GitHub Actions)** | `postgres://zeref:zeref@localhost:5432/zeref` (service container) |
+| **Skip DB (debug only)** | `SKIP_DB_TESTS=1` — not used in CI |
+
+```powershell
+cd c:\Projects\zeref
+docker compose up -d db
+$env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
+```
+
+## Full Phase 0–2 gate (orchestrator)
+
+```powershell
+cd c:\Projects\zeref
+docker compose up -d db
+$env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
+npm install
+npm run verify:phase-0
+npm run verify:phase-1
+npm run verify:phase-2
+```
+
+**Q3 / live Instagram:** Do **not** set `ZEREF_LIVE_INSTAGRAM` for the default gate or CI. See [ADR-006](./adr/ADR-006-parse-fetch-live.md).
+
+---
 
 ## Phase 0 (foundation scaffold)
-
-Run from the repo root.
 
 ```powershell
 npm install
@@ -15,40 +46,62 @@ npm run lint
 npm run verify:phase-0
 ```
 
-### What each command checks
+- **`verify:phase-0`** — scaffold paths + `@zeref/contracts` smoke (`scripts/verify-phase-0.mjs`)
 
-- **`npm run build`**: Builds the TypeScript project using `tsc -b` (project references).
-- **`npm run lint`**: Phase 0 lint/typecheck gate (currently `tsc -b ... --noEmit`).
-- **`npm run verify:phase-0`**: Asserts required Phase 0 scaffold paths exist and runs `@zeref/contracts` smoke tests.
+---
 
 ## Phase 1 (contracts + snapshot DB skeleton)
 
-**Contract:** [phase-1-contract.md](./phase-1-contract.md) · **ADRs:** [ADR-001](./adr/ADR-001-snapshot-data-model.md), [ADR-002](./adr/ADR-002-id-branding.md), [ADR-003](./adr/ADR-003-openapi-from-zod.md)
+**Contract:** [phase-1-contract.md](./phase-1-contract.md) · **ADRs:** [001](./adr/ADR-001-snapshot-data-model.md), [002](./adr/ADR-002-id-branding.md), [003](./adr/ADR-003-openapi-from-zod.md)
 
-Run from the repo root. Requires **Postgres 16** (see `docker-compose.yml`).
+Requires `DATABASE_URL` (see above).
 
 ```powershell
-docker compose up -d db
-npm install
 npm run verify:phase-0
 npm run verify:phase-1
 ```
 
-Optional: set `DATABASE_URL` if Postgres is not on `localhost:5432`. Skip DB tests only for local debugging: `SKIP_DB_TESTS=1 npm run verify:phase-1` (not used in CI).
+- **`verify:phase-1`** (`scripts/verify-phase-1.mjs`): contract, ADRs, `fixtures/phase-1/`, migrations, no pgvector (C5), `@zeref/db` tests
 
-### What each command checks
+---
 
-- **`npm run verify:phase-1`** (script: `scripts/verify-phase-1.mjs`):
-  - Asserts `docs/governance/phase-1-contract.md`, [ADR-001/002/003](./adr/README.md), and `fixtures/phase-1/*.json` exist
-  - Runs `npm run build`
-  - Asserts `PHASE1_CONTRACT_VERSION` in built `@zeref/contracts`
-  - Runs `@zeref/contracts` tests (fixture round-trips, raw-blob rejection — C4/C6)
-  - Asserts Phase 1 migrations exist and contain **no pgvector** (C5)
-  - Runs `@zeref/db` migration tests (apply migrations to ephemeral DB on Postgres 16)
+## Phase 2 (Instagram collectors → snapshots)
 
-### CI (C3)
+**Contract:** [phase-2-contract.md](./phase-2-contract.md) · **ADRs:** [004](./adr/ADR-004-instagram-merge.md), [005](./adr/ADR-005-worker-collect.md), [006](./adr/ADR-006-parse-fetch-live.md)
 
-On every push and PR, after Phase 0 verify:
+Requires `DATABASE_URL` for worker collect integration tests.
 
-- `npm run verify:phase-1` with `DATABASE_URL` pointing at the workflow Postgres 16 service
+```powershell
+npm run verify:phase-0
+npm run verify:phase-1
+npm run verify:phase-2
+```
 
+### Q3: `ZEREF_LIVE_INSTAGRAM` (live fetch — local only)
+
+| Value | Behavior |
+|-------|----------|
+| **unset** (default, CI) | Parse + merge + Graph **fixtures** only; Playwright fetch skipped |
+| **`1`** | Enables live `fetchPostPage` smoke in `@zeref/instagram` — run separately, not in CI |
+
+```powershell
+# Optional — after default gate passes
+$env:ZEREF_LIVE_INSTAGRAM='1'
+npm -w @zeref/instagram test
+```
+
+`verify-phase-2.mjs` **removes** `ZEREF_LIVE_INSTAGRAM` from the child process env (ADR-006 / Q3).
+
+### What `verify:phase-2` checks
+
+Script: `scripts/verify-phase-2.mjs`
+
+- `phase-2-contract.md`, ADR-004/005/006, `fixtures/phase-2/html/`, `fixtures/phase-2/graph/`
+- `scripts/enqueue-collect.mjs`, `@zeref/instagram`
+- `PHASE2_CONTRACT_VERSION`, `CollectJobOutputSchema` (C7)
+- Worker registry **collect-only** (C9)
+- `@zeref/contracts`, `@zeref/instagram`, `@zeref/worker` tests
+
+### CI (C10)
+
+After `verify:phase-1`, with `DATABASE_URL` on Postgres 16 — **no** `ZEREF_LIVE_INSTAGRAM`.

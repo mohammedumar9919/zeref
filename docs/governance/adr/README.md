@@ -1,36 +1,47 @@
-# Architecture Decision Records (Phase 1)
+# Architecture Decision Records
 
-**Phase contract:** [phase-1-contract.md](../phase-1-contract.md) (C1–C6)  
-**Verification:** [verify.md](../verify.md) — `npm run verify:phase-1`
+**Verification:** [verify.md](../verify.md)
 
-Phase 1 ADRs are **accepted** once domain agents have filled decision bodies. Docs owns this index and cross-links; **Data** owns ADR-001 content; **API/Contracts** owns ADR-002 and ADR-003.
+## Phase 1 (contracts + snapshot DB)
 
-## ADR map
+**Contract:** [phase-1-contract.md](../phase-1-contract.md) (C1–C6)
 
-| ADR | Topic | Owner | Depends on |
-|-----|--------|-------|------------|
-| [ADR-001](./ADR-001-snapshot-data-model.md) | Tables, FK graph, immutability triggers (C1, C2, C5, C6) | Data | Phase 1 contract |
-| [ADR-002](./ADR-002-id-branding.md) | Branded UUID types in `@zeref/contracts` | API/Contracts | ADR-001 (column alignment) |
-| [ADR-003](./ADR-003-openapi-from-zod.md) | OpenAPI 3.1 from Zod; CI derivation plan | API/Contracts | ADR-002 (ID wire format) |
+| ADR | Topic | Owner |
+|-----|--------|-------|
+| [ADR-001](./ADR-001-snapshot-data-model.md) | Tables, FK graph, immutability triggers | Data |
+| [ADR-002](./ADR-002-id-branding.md) | Branded UUID types in `@zeref/contracts` | API/Contracts |
+| [ADR-003](./ADR-003-openapi-from-zod.md) | OpenAPI from Zod; CI derivation plan | API/Contracts |
 
-## Reading order
+**Reading order:** ADR-001 → ADR-002 → ADR-003
 
-1. **ADR-001** — what exists in Postgres and what must never mutate.
-2. **ADR-002** — how IDs appear in TypeScript and JSON.
-3. **ADR-003** — how API docs stay derived from Zod (stub in Phase 1; strict diff in Phase 2+).
+## Phase 2 (Instagram collect)
 
-## Planner conditions (quick ref)
+**Contract:** [phase-2-contract.md](../phase-2-contract.md) (Q1–Q4, C7–C10)  
+**Legacy salvage:** [legacy-ios.md](../../handoff/legacy-ios.md) (merge-by-shortcode)
 
-| ID | ADR / area |
-|----|------------|
-| C1 | ADR-001 — `platform_accounts` |
-| C2 | ADR-001 — `report_artifacts` |
-| C3 | verify.md + CI — `verify:phase-1` |
-| C4 | fixtures + `@zeref/contracts` tests |
-| C5 | ADR-001 — no pgvector |
-| C6 | ADR-001 — snapshot triggers + contract job payloads (ADR-002) |
+| ADR | Topic | Owner |
+|-----|--------|-------|
+| [ADR-004](./ADR-004-instagram-merge.md) | Merge-by-shortcode payload (Q1) | Scrape + API |
+| [ADR-005](./ADR-005-worker-collect.md) | pg-boss collect + C8 dedupe (C9) | Worker |
+| [ADR-006](./ADR-006-parse-fetch-live.md) | parse vs fetch vs live verify (Q3, C10) | QA |
 
-## Related docs
+**Reading order:** ADR-004 → ADR-005 → ADR-006
+
+## Planner quick reference
+
+| ID | ADR / doc |
+|----|-----------|
+| C1–C6 | Phase 1 — ADR-001, ADR-002, verify `phase-1` |
+| Q1 | ADR-004 — one merged row per shortcode |
+| Q2 | ADR-004 — Graph MVP fields |
+| Q3 | ADR-006 — no Playwright in CI |
+| Q4 | ADR-005 — CLI enqueue only |
+| C7 | `@zeref/contracts` — `CollectJobOutput`, `PHASE2_CONTRACT_VERSION` |
+| C8 | ADR-005 — dedupe returns existing `snapshotId` |
+| C9 | ADR-005 — worker registry collect-only |
+| C10 | ADR-006 + verify.md — CI runs `verify:phase-2` |
+
+## Related
 
 - [Phase 0 contract](../phase-0-contract.md)
-- [Legacy handoff](../../handoff/legacy-ios.md) — why immutability and verify gates exist
+- [Legacy handoff](../../handoff/legacy-ios.md)

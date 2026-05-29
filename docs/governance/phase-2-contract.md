@@ -162,11 +162,13 @@ scripts/
 
 ## ADRs
 
+Index: [docs/governance/adr/README.md](./adr/README.md) · Legacy merge notes: [legacy-ios.md](../handoff/legacy-ios.md)
+
 | ADR | Owner | Topic |
 |-----|-------|--------|
-| ADR-004 | Scrape + API | Merge-by-shortcode (Q1) |
-| ADR-005 | Worker | pg-boss collect + C8 dedupe |
-| ADR-006 | QA | parse vs fetch vs live (Q3) |
+| [ADR-004](./adr/ADR-004-instagram-merge.md) | Scrape + API | Merge-by-shortcode (Q1) |
+| [ADR-005](./adr/ADR-005-worker-collect.md) | Worker | pg-boss collect + C8 dedupe |
+| [ADR-006](./adr/ADR-006-parse-fetch-live.md) | QA | parse vs fetch vs live (Q3) |
 
 ---
 
