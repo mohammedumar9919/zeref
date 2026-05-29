@@ -4,7 +4,7 @@
 
 ## Current position
 
-- **Phase:** 4 (implementation in progress)
+- **Phase:** 4 (implementation complete — pending Planner sign-off)
 - **Last completed:** Phase 3 (planner-approved; `6b5e60b`, CI Phase 0–3 green)
 - **Blocker:** none
 
@@ -31,9 +31,9 @@ Contract: [phase-4-contract.md](../docs/governance/phase-4-contract.md)
 ## Phase 4 checklist
 
 - [x] Planner approves contract (Q1–Q3, C17–C23)
-- [ ] Reports / Worker / API / QA / Docs agents complete
-- [ ] `npm run verify:phase-4` green
-- [ ] CI Phase 0–4 green
+- [x] Phase 4 implementation (`b236e0b`)
+- [x] `npm run verify:phase-0` … `verify:phase-4` green locally
+- [ ] CI Phase 0–4 green (watch GitHub Actions)
 - [ ] Planner sign-off Phase 4
 
 ## Do not start
