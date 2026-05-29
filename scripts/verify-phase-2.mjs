@@ -108,11 +108,14 @@ assertExists("apps/worker/dist/index.js", "worker build output");
 const worker = await import(
   pathToFileURL(join(repoRoot, "apps/worker/dist/index.js")).href
 );
-if (!Array.isArray(worker.WORKER_JOB_NAMES) || worker.WORKER_JOB_NAMES.length !== 1) {
-  fail("WORKER_JOB_NAMES must register collect only (C9)");
+// Phase 2 C9: collect must be registered. Phase 3+ may add normalize/embed (C12 enforced in verify:phase-3).
+if (!Array.isArray(worker.WORKER_JOB_NAMES) || !worker.WORKER_JOB_NAMES.includes("collect")) {
+  fail("WORKER_JOB_NAMES must include collect (C9)");
 }
-if (worker.WORKER_JOB_NAMES[0] !== "collect") {
-  fail(`Expected only collect job, got: ${worker.WORKER_JOB_NAMES.join(", ")}`);
+for (const forbidden of ["analyze", "report"]) {
+  if (worker.WORKER_JOB_NAMES.includes(forbidden)) {
+    fail(`WORKER_JOB_NAMES must not include ${forbidden} (Phase 2 scope)`);
+  }
 }
 
 run("npm", ["-w", "@zeref/contracts", "test"]);

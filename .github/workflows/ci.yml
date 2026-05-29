@@ -7,13 +7,13 @@ on:
 
 jobs:
   phase0:
-    name: Phase 0–2 gate
+    name: Phase 0–3 gate
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     services:
       postgres:
-        image: postgres:16
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_DB: zeref
           POSTGRES_USER: zeref
@@ -55,6 +55,11 @@ jobs:
 
       - name: Verify Phase 2
         run: npm run verify:phase-2
+        env:
+          DATABASE_URL: postgres://zeref:zeref@localhost:5432/zeref
+
+      - name: Verify Phase 3
+        run: npm run verify:phase-3
         env:
           DATABASE_URL: postgres://zeref:zeref@localhost:5432/zeref
 
