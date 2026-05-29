@@ -40,6 +40,19 @@
 
 **Reading order:** ADR-007 → ADR-008 → ADR-009 → ADR-010
 
+## Phase 4 (analyze + report)
+
+**Contract:** [phase-4-contract.md](../phase-4-contract.md) (Q1–Q3, C17–C23)
+
+| ADR | Topic | Owner |
+|-----|--------|-------|
+| [ADR-011](./ADR-011-openrouter-mock.md) | OpenRouter model + CI mock (Q1) | Reports |
+| [ADR-012](./ADR-012-analyze-report-chain.md) | Auto-chain + artifact kinds (Q2, Q3) | Worker |
+| [ADR-013](./ADR-013-analyze-report-boundaries.md) | No instagram in analyze/report (C19) | Worker + QA |
+| [ADR-014](./ADR-014-verify-phase-4.md) | verify:phase-4 harness (C20–C22) | QA |
+
+**Reading order:** ADR-011 → ADR-012 → ADR-013 → ADR-014
+
 ## Planner quick reference
 
 | ID | ADR / doc |
@@ -59,6 +72,13 @@
 | C14 | ADR-009 + verify script grep — no `@zeref/instagram` in normalize/embed |
 | C15 | ADR-010 — retrieval@3 ≥ 1.0 on `fixtures/phase-3/retrieval/` |
 | C16 | ADR-007 — `vector(1536)` locked in migration |
+| C17 | `@zeref/contracts` — Phase 4 job I/O, `PHASE4_CONTRACT_VERSION` |
+| C18 | ADR-013 — worker registry five jobs |
+| C19 | ADR-013 + verify:phase-4 — no `@zeref/instagram` in analyze/report |
+| C20 | ADR-014 — elite golden + citation lint |
+| C21 | ADR-014 + verify.md — CI runs `verify:phase-4` |
+| C22 | ADR-014 — verify:phase-3 relaxed registry count |
+| C23 | ADR-012 — elite artifact always written |
 
 ## Related
 

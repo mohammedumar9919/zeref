@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "phase4-elite-v1",
+  "accountRef": {
+    "platformAccountId": "00000000-0000-4000-8000-000000000099"
+  },
+  "period": {
+    "start": "2026-05-18T20:00:00.000Z",
+    "end": "2026-05-28T20:00:00.000Z"
+  },
+  "headline": {
+    "text": "Ride log post shows solid engagement vs account baseline.",
+    "insufficientData": false
+  },
+  "engagement": {
+    "score": 50.738916,
+    "vsCohort": "inline",
+    "citations": [
+      {
+        "metricFactId": "00000000-0000-4000-8000-000000000050",
+        "label": "engagement_score"
+      }
+    ]
+  },
+  "niche": {
+    "pillars": ["ride_log"],
+    "citations": [
+      {
+        "metricFactId": "00000000-0000-4000-8000-000000000050",
+        "label": "niche_tags"
+      }
+    ]
+  },
+  "cohort": {
+    "label": "account_baseline",
+    "sampleSize": 1,
+    "citations": [
+      {
+        "metricFactId": "00000000-0000-4000-8000-000000000050",
+        "label": "cohort_baseline"
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "text": "Keep ride_log cadence; engagement is in line with baseline.",
+      "priority": "medium"
+    }
+  ],
+  "narrative": {
+    "markdown": "Engagement score is **50.74** [mf:00000000-0000-4000-8000-000000000050] vs account baseline.",
+    "citationIndex": [
+      {
+        "id": "c1",
+        "metricFactId": "00000000-0000-4000-8000-000000000050",
+        "value": 50.738916
+      }
+    ]
+  },
+  "insufficientData": false
+}

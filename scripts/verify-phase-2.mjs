@@ -112,11 +112,7 @@ const worker = await import(
 if (!Array.isArray(worker.WORKER_JOB_NAMES) || !worker.WORKER_JOB_NAMES.includes("collect")) {
   fail("WORKER_JOB_NAMES must include collect (C9)");
 }
-for (const forbidden of ["analyze", "report"]) {
-  if (worker.WORKER_JOB_NAMES.includes(forbidden)) {
-    fail(`WORKER_JOB_NAMES must not include ${forbidden} (Phase 2 scope)`);
-  }
-}
+// analyze/report registry enforced in verify:phase-4 (C18); Phase 2 only requires collect (C9).
 
 run("npm", ["-w", "@zeref/contracts", "test"]);
 run("npm", ["-w", "@zeref/instagram", "test"]);

@@ -18,9 +18,13 @@ export {
 } from "./embed.js";
 export {
   AnalyzeJobInputSchema,
+  AnalyzeJobOutputSchema,
   type AnalyzeJobInput,
+  type AnalyzeJobOutput,
 } from "./analyze.js";
 export {
   ReportJobInputSchema,
+  ReportJobOutputSchema,
   type ReportJobInput,
+  type ReportJobOutput,
 } from "./report.js";

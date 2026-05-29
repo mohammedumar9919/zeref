@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   AnalysisOutputIdSchema,
   NormalizedEntityIdSchema,
+  ReportArtifactIdSchema,
   SnapshotIdSchema,
 } from "../ids.js";
 import { InsufficientDataSchema } from "../insufficient-data.js";
@@ -16,7 +17,8 @@ export const ReportJobInputSchema = withRawBlobGuard(
       analysisOutputId: AnalysisOutputIdSchema.optional(),
       normalizedEntityId: NormalizedEntityIdSchema.optional(),
       snapshotId: SnapshotIdSchema.optional(),
-      artifactKind: z.string().min(1),
+      artifactKind: z.string().min(1).optional(),
+      includeJarvisBrief: z.boolean().optional(),
       insufficientData: InsufficientDataSchema.optional(),
     })
     .strict()
@@ -35,3 +37,17 @@ export const ReportJobInputSchema = withRawBlobGuard(
     }),
 );
 export type ReportJobInput = z.infer<typeof ReportJobInputSchema>;
+
+/** Report job result after INSERT (C17 / C23). */
+export const ReportJobOutputSchema = z
+  .object({
+    reportArtifactIds: z
+      .object({
+        elite: ReportArtifactIdSchema,
+        jarvisBrief: ReportArtifactIdSchema.optional(),
+      })
+      .strict(),
+    analysisOutputId: AnalysisOutputIdSchema,
+  })
+  .strict();
+export type ReportJobOutput = z.infer<typeof ReportJobOutputSchema>;

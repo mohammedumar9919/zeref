@@ -6,6 +6,7 @@
     { "path": "../../packages/analytics" },
     { "path": "../../packages/contracts" },
     { "path": "../../packages/db" },
-    { "path": "../../packages/instagram" }
+    { "path": "../../packages/instagram" },
+    { "path": "../../packages/reports" }
   ]
 }

@@ -7,7 +7,7 @@ on:
 
 jobs:
   phase0:
-    name: Phase 0–3 gate
+    name: Phase 0–4 gate
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -62,4 +62,10 @@ jobs:
         run: npm run verify:phase-3
         env:
           DATABASE_URL: postgres://zeref:zeref@localhost:5432/zeref
+
+      - name: Verify Phase 4
+        run: npm run verify:phase-4
+        env:
+          DATABASE_URL: postgres://zeref:zeref@localhost:5432/zeref
+          ZEREF_LLM_MOCK: "1"
 

@@ -44,7 +44,8 @@ const C14_GUARD_PATHS = [
   "apps/worker/src/lib/auto-embed.ts",
 ];
 
-const EXPECTED_WORKER_JOBS = ["collect", "normalize", "embed"];
+/** Phase 3 minimum registry (C12); C22 allows additional jobs after Phase 4. */
+const REQUIRED_PHASE3_JOBS = ["collect", "normalize", "embed"];
 
 function fail(message) {
   console.error(`[verify:phase-3] ${message}`);
@@ -179,19 +180,9 @@ const worker = await import(
 if (!Array.isArray(worker.WORKER_JOB_NAMES)) {
   fail("WORKER_JOB_NAMES must be an array (C12)");
 }
-if (worker.WORKER_JOB_NAMES.length !== EXPECTED_WORKER_JOBS.length) {
-  fail(
-    `WORKER_JOB_NAMES must be ${EXPECTED_WORKER_JOBS.join("+")} only (C12), got: ${worker.WORKER_JOB_NAMES.join(", ")}`,
-  );
-}
-for (const job of EXPECTED_WORKER_JOBS) {
+for (const job of REQUIRED_PHASE3_JOBS) {
   if (!worker.WORKER_JOB_NAMES.includes(job)) {
-    fail(`WORKER_JOB_NAMES missing ${job} (C12)`);
-  }
-}
-for (const job of worker.WORKER_JOB_NAMES) {
-  if (job === "analyze" || job === "report") {
-    fail(`WORKER_JOB_NAMES must not include ${job} (C12)`);
+    fail(`WORKER_JOB_NAMES missing ${job} (C12 / C22)`);
   }
 }
 

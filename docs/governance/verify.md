@@ -2,7 +2,7 @@
 
 CI must fail if these commands fail.
 
-**Related:** [ADR index](./adr/README.md) · [Phase 1](./phase-1-contract.md) · [Phase 2](./phase-2-contract.md) · [Phase 3](./phase-3-contract.md)
+**Related:** [ADR index](./adr/README.md) · [Phase 1](./phase-1-contract.md) · [Phase 2](./phase-2-contract.md) · [Phase 3](./phase-3-contract.md) · [Phase 4](./phase-4-contract.md)
 
 ## Environment: `DATABASE_URL`
 
@@ -21,23 +21,26 @@ docker compose up -d db
 $env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
 ```
 
-## Full Phase 0–3 gate (orchestrator)
+## Full Phase 0–4 gate (orchestrator)
 
 ```powershell
 cd c:\Projects\zeref
 docker compose up -d db
 $env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
+$env:ZEREF_LLM_MOCK='1'
 npm install
 npm run verify:phase-0
 npm run verify:phase-1
 npm run verify:phase-2
 npm run verify:phase-3
+npm run verify:phase-4
 ```
 
 **Do not set for default gate or CI:**
 
 - `ZEREF_LIVE_INSTAGRAM` — live Instagram fetch (Phase 2; see [ADR-006](./adr/ADR-006-parse-fetch-live.md))
 - `OPENAI_API_KEY`, `ZEREF_NOMIC_EMBED_URL`, or non-mock `ZEREF_EMBED_PROVIDER` — live embed (Phase 3; see [ADR-010](./adr/ADR-010-verify-phase-3-harness.md))
+- `OPENROUTER_API_KEY` — live LLM (Phase 4; see [ADR-011](./adr/ADR-011-openrouter-mock.md))
 
 ---
 
@@ -135,7 +138,7 @@ Script: `scripts/verify-phase-3.mjs`
 - `fixtures/phase-3/` job I/O, `metrics/`, `retrieval/`
 - `scripts/enqueue-normalize.mjs`, `scripts/enqueue-embed.mjs`, `@zeref/analytics`
 - **C11:** `PHASE3_CONTRACT_VERSION`, normalize/embed job I/O schemas
-- **C12:** worker registry `collect` + `normalize` + `embed` only
+- **C12 / C22:** worker registry includes `collect` + `normalize` + `embed` (may include analyze/report after Phase 4)
 - **C14:** static guard — no `@zeref/instagram` in normalize/embed modules ([ADR-009](./adr/ADR-009-worker-normalize-boundaries.md))
 - **C16:** migration enables pgvector + `vector(1536)` ([ADR-007](./adr/ADR-007-embedding-provider.md))
 - `@zeref/contracts`, `@zeref/analytics` (retrieval@3 ≥ 1.0), `@zeref/db`, `@zeref/worker` tests
@@ -148,3 +151,47 @@ After `verify:phase-2`:
 - `DATABASE_URL=postgres://zeref:zeref@localhost:5432/zeref`
 - `npm run verify:phase-3`
 - No `ZEREF_LIVE_INSTAGRAM`, no live embed env
+
+---
+
+## Phase 4 (analyze + report)
+
+**Contract:** [phase-4-contract.md](./phase-4-contract.md) (C17–C23) · **ADRs:** [011](./adr/ADR-011-openrouter-mock.md)–[014](./adr/ADR-014-verify-phase-4.md)
+
+Requires `DATABASE_URL` on Postgres 16 with pgvector.
+
+```powershell
+npm run verify:phase-0
+npm run verify:phase-1
+npm run verify:phase-2
+npm run verify:phase-3
+npm run verify:phase-4
+```
+
+### Q1: LLM (no live OpenRouter in CI)
+
+| Env | Default verify / CI |
+|-----|---------------------|
+| `ZEREF_LLM_MOCK` | **`1`** |
+| `OPENROUTER_API_KEY` | **removed** in verify children |
+| `OPENROUTER_MODEL` | optional; default `openai/gpt-4o-mini` |
+
+### What `verify:phase-4` checks
+
+Script: `scripts/verify-phase-4.mjs`
+
+- `phase-4-contract.md`, ADR-011–014
+- `fixtures/phase-4/` job I/O + `elite/` goldens
+- `scripts/enqueue-analyze.mjs`, `scripts/enqueue-report.mjs`, `@zeref/reports`
+- **C17:** `PHASE4_CONTRACT_VERSION`, analyze/report job I/O, `EliteReportSchema`
+- **C18:** worker registry exactly five jobs
+- **C19:** no `@zeref/instagram` in analyze/report/reports guard paths
+- **C20:** elite golden + citation tests
+- **C23:** integration test asserts `elite` artifact row
+
+### CI (C21)
+
+After `verify:phase-3`:
+
+- `ZEREF_LLM_MOCK=1`
+- `npm run verify:phase-4`

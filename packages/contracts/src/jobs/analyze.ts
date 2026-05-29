@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { NormalizedEntityIdSchema, SnapshotIdSchema } from "../ids.js";
+import {
+  AnalysisOutputIdSchema,
+  NormalizedEntityIdSchema,
+  SnapshotIdSchema,
+} from "../ids.js";
 import { InsufficientDataSchema } from "../insufficient-data.js";
 import { withRawBlobGuard } from "../raw-blob-guard.js";
 
@@ -27,3 +31,14 @@ const AnalyzeJobInputBaseSchema = withRawBlobGuard(
 /** Analyze stage — immutable IDs only; optional insufficient_data pathway. */
 export const AnalyzeJobInputSchema = AnalyzeJobInputBaseSchema;
 export type AnalyzeJobInput = z.infer<typeof AnalyzeJobInputSchema>;
+
+/** Analyze job result after INSERT (C17). */
+export const AnalyzeJobOutputSchema = z
+  .object({
+    analysisOutputId: AnalysisOutputIdSchema,
+    normalizedEntityId: NormalizedEntityIdSchema.optional(),
+    snapshotId: SnapshotIdSchema.optional(),
+    insufficientData: z.boolean().optional(),
+  })
+  .strict();
+export type AnalyzeJobOutput = z.infer<typeof AnalyzeJobOutputSchema>;

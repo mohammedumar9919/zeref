@@ -41,9 +41,34 @@ Legacy `mergePostsByShortcode` in `apps/job-runner/src/jarvis.ts` is the referen
 - [x] Frozen HTML fixtures (`fixtures/phase-2/html/`)
 - [x] Graph mock fixtures (`fixtures/phase-2/graph/`)
 - [x] Worker collect INSERT + C8 dedupe (ADR-005)
-- [ ] Normalize/analyze/report read merged snapshot by ID (Phase 3+)
+- [x] Normalize/embed read merged snapshot by ID (Phase 3)
+- [x] Analyze/report read normalized/metric rows by ID (Phase 4)
 
-### Legacy files to read (not copy)
+---
+
+## Elite report shape (Phase 4 salvage)
+
+### What legacy did well
+
+Legacy `jarvis_analyze` / report synthesis produced structured sections (headline, engagement, niche, recommendations) plus narrative prose. Zeref **rewrites** this as `phase4-elite-v1` JSON in `@zeref/reports` with **numeric citations** tied to `metric_facts` (`[mf:uuid]` markers).
+
+| Behavior | Legacy | Zeref (Phase 4) |
+|----------|--------|-----------------|
+| Structured + narrative | Combined in one LLM blob | `elite` JSON deterministic; narrative via OpenRouter (mocked in CI) |
+| Benchmarks | Sometimes invented when thin | `insufficient_data` honest pathways |
+| Citations | Informal | `citationIndex` + verify lint (C20) |
+| Dual outputs | Jarvis brief + long report | `elite` required (C23) + optional `jarvis_brief` row |
+
+**Salvage:** Section taxonomy and ops tone — **not** prompt strings or JSON field names from ios.
+
+### Elite legacy files to read (not copy)
+
+| Path | Why |
+|------|-----|
+| `apps/job-runner/src/jarvis.ts` — analyze/synthesize | Section ideas for elite builder |
+| Report / synthesis routes in legacy API | Citation and insufficient-data UX patterns |
+
+### Merge legacy files to read (not copy)
 
 | Path | Why |
 |------|-----|

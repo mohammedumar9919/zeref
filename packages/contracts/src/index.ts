@@ -2,6 +2,7 @@ export const PHASE0_CONTRACT_VERSION = "0.1.0";
 export const PHASE1_CONTRACT_VERSION = "1.0.0";
 export const PHASE2_CONTRACT_VERSION = "2.0.0";
 export const PHASE3_CONTRACT_VERSION = "3.0.0";
+export const PHASE4_CONTRACT_VERSION = "4.0.0";
 
 export {
   PlatformSchema,
@@ -51,7 +52,9 @@ export {
   EmbedJobInputSchema,
   EmbedJobOutputSchema,
   AnalyzeJobInputSchema,
+  AnalyzeJobOutputSchema,
   ReportJobInputSchema,
+  ReportJobOutputSchema,
   type CollectJobInput,
   type CollectJobOutput,
   type NormalizeJobInput,
@@ -59,8 +62,18 @@ export {
   type EmbedJobInput,
   type EmbedJobOutput,
   type AnalyzeJobInput,
+  type AnalyzeJobOutput,
   type ReportJobInput,
+  type ReportJobOutput,
 } from "./jobs/index.js";
+
+export {
+  EliteReportSchema,
+  EliteCitationSchema,
+  EliteCitationIndexEntrySchema,
+  EliteRecommendationSchema,
+  type EliteReport,
+} from "./phase4/index.js";
 
 export {
   NormalizedPostPayloadSchema,
