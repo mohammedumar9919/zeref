@@ -1,7 +1,7 @@
 # Zeref — Phase 4 Contract (Implementation)
 
 **Phase:** 4  
-**Status:** **APPROVED** (Planner sign-off)  
+**Status:** **APPROVED** (Planner sign-off; tip `dc2adb1`)  
 **Theme:** Analyze + report engine (elite JSON + cited narrative)
 
 **Prerequisites:** Phases 0–3 approved (`verify:phase-3` green; tip `6b5e60b`).

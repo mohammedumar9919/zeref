@@ -1,5 +1,5 @@
 # Zeref — quick state
 
-- **Phase:** 4 (implementation)
-- **Last completed:** Phase 3 (`6b5e60b`)
-- **Contract:** `docs/governance/phase-4-contract.md` (APPROVED)
+- **Phase:** 5 (discuss + contract only)
+- **Last completed:** Phase 4 (`dc2adb1`)
+- **Contract:** `docs/governance/phase-5-contract.md` (DRAFT)

@@ -4,41 +4,47 @@
 
 ## Current position
 
-- **Phase:** 4 (implementation complete — pending Planner sign-off)
-- **Last completed:** Phase 3 (planner-approved; `6b5e60b`, CI Phase 0–3 green)
+- **Phase:** 5 (**discuss + contract only** — no implementation until Planner approves)
+- **Last completed:** Phase 4 (planner-approved; `dc2adb1`, CI Phase 0–4 green)
 - **Blocker:** none
 
 ## Planner decisions
 
-### Phase 3 (complete)
+### Phase 4 (complete)
 
-Q1–Q3, C11–C16 — see [phase-3-contract.md](../docs/governance/phase-3-contract.md).
+Q1–Q3, C17–C23 — see [phase-4-contract.md](../docs/governance/phase-4-contract.md).
 
-### Phase 4 (approved)
+### Phase 5 (pending)
 
-| Item | Decision |
-|------|----------|
-| Q1 | `openai/gpt-4o-mini`; CI `ZEREF_LLM_MOCK=1` |
-| Q2 | One report job → `elite` + optional `jarvis_brief` |
-| Q3 | Auto-chain unless `ZEREF_AUTO_REPORT=0` |
-| C17–C21 | As contract |
-| C22 | Relax verify-phase-3 registry; 5 jobs in verify-phase-4 |
-| C23 | `elite` artifact always required |
-| Data | SKIP |
+- Contract draft: [phase-5-contract.md](../docs/governance/phase-5-contract.md)
+- Theme: Cockpit UI shell (4 panels + globe, RSC-first, BFF `/api/v1`, Playwright in CI)
 
-Contract: [phase-4-contract.md](../docs/governance/phase-4-contract.md)
+## Governance entry points
 
-## Phase 4 checklist
+| Artifact | Path |
+|----------|------|
+| Phase 5 contract (draft) | `docs/governance/phase-5-contract.md` |
+| Design system (Phase 5) | `docs/design/DESIGN_SYSTEM.md` (to be created) |
+| Verify | `docs/governance/verify.md` |
 
-- [x] Planner approves contract (Q1–Q3, C17–C23)
-- [x] Phase 4 implementation (`b236e0b`)
-- [x] `npm run verify:phase-0` … `verify:phase-4` green locally
-- [ ] CI Phase 0–4 green (watch GitHub Actions)
-- [ ] Planner sign-off Phase 4
+## Phase 4 checklist (complete)
+
+- [x] Planner sign-off Phase 4
+- [x] `verify:phase-0` … `verify:phase-4` green + CI
+
+## Phase 5 checklist (discuss only)
+
+- [ ] Planner approves `phase-5-contract.md` (Q1–Q3, C24–C30)
+- [ ] User spawns UI / API / Contracts / QA / Docs chats (orchestrator prompts)
+- [ ] Orchestrator integrates agent reports (no orchestrator domain code)
+- [ ] `npm run verify:phase-5` green
+- [ ] Planner sign-off Phase 5
 
 ## Do not start
 
-- Phase 5+ (Cockpit UI) until Phase 4 signed off
+- Phase 5 **implementation** until Planner approves contract
+- Phase 6+ (Jarvis voice) until Phase 5 signed off
+- **Orchestrator must not write apps/web domain code** — agent chats only
 
 ## Verify (orchestrator)
 
@@ -51,4 +57,6 @@ npm run verify:phase-1
 npm run verify:phase-2
 npm run verify:phase-3
 npm run verify:phase-4
+# Phase 5 (after implementation):
+# npm run verify:phase-5
 ```
