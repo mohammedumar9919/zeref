@@ -2,8 +2,8 @@
 
 **Source of truth:** `.planning/STATE.md`
 
-- **Phase:** 2 (implementation)
-- **Last completed:** Phase 1 (2026-05-28)
+- **Phase:** 3 (implementation)
+- **Last completed:** Phase 2 (planner-approved; `90f60ac`)
 - **Blocker:** none
 
 Full checklist and verify commands: **`.planning/STATE.md`**
