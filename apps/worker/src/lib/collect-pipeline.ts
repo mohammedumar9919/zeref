@@ -63,7 +63,9 @@ async function loadScrapePosts(
     if (isLiveInstagramEnabled()) {
       const url = `https://www.instagram.com/p/${shortcode}/`;
       const { posts: livePosts } = await fetchPostPage({ url });
-      const match = livePosts.find((p) => p.shortcode === shortcode) ?? livePosts[0];
+      const match =
+        livePosts.find((p: ScrapePostFields) => p.shortcode === shortcode) ??
+        livePosts[0];
       if (match) posts.push(match);
       continue;
     }
@@ -81,8 +83,8 @@ async function loadScrapePosts(
     }
     const { posts: parsed } = parsePostHtml(html);
     const match =
-      parsed.find((p) => p.shortcode === shortcode) ??
-      parsed.find((p) => p.shortcode.startsWith(shortcode)) ??
+      parsed.find((p: ScrapePostFields) => p.shortcode === shortcode) ??
+      parsed.find((p: ScrapePostFields) => p.shortcode.startsWith(shortcode)) ??
       parsed[0];
     if (!match) {
       throw new Error(`no scrape post parsed for shortcode ${shortcode}`);
@@ -123,7 +125,7 @@ async function loadGraphMedia(
   const shortcodes = new Set(input.shortcodes ?? []);
   if (shortcodes.size === 0) return media;
 
-  return media.filter((item) => {
+  return media.filter((item: GraphMediaFields) => {
     const code = shortcodeFromPermalink(item.permalink);
     return code != null && [...shortcodes].some((s) => code === s || code.startsWith(s));
   });
@@ -150,8 +152,10 @@ export async function collectMergedPosts(
   const shortcodes = input.shortcodes ?? [];
   if (shortcodes.length === 0) return merged;
 
-  return merged.filter((row) =>
-    shortcodes.some((s) => row.shortcode === s || row.shortcode.startsWith(s)),
+  return merged.filter((row: MergedInstagramPostPayload) =>
+    shortcodes.some(
+      (s: string) => row.shortcode === s || row.shortcode.startsWith(s),
+    ),
   );
 }
 
