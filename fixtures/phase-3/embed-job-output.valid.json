@@ -1,0 +1,7 @@
+{
+  "embeddingVectorId": "66666666-6666-4666-8666-666666666666",
+  "normalizedEntityId": "33333333-3333-4333-8333-333333333333",
+  "model": "text-embedding-3-small",
+  "contentHash": "sha256:embed-abc123",
+  "dimensions": 1536
+}

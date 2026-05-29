@@ -1,0 +1,16 @@
+{
+  "platformAccountId": "22222222-2222-4222-8222-222222222222",
+  "snapshotId": "11111111-1111-4111-8111-111111111111",
+  "normalizedEntityId": "33333333-3333-4333-8333-333333333333",
+  "metricVersion": "phase3-v1",
+  "engagementScore": 0.72,
+  "nicheTags": ["night_ride", "ride_log"],
+  "insufficientData": false,
+  "factsJson": {
+    "shortcode": "ABC123",
+    "sources": ["scrape", "graph"],
+    "engagementReason": "above_cohort_median",
+    "cohortBaseline": 0.45,
+    "relativeEngagement": 1.6
+  }
+}

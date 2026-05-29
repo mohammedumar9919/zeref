@@ -15,3 +15,9 @@ export type AnalysisOutputId = z.infer<typeof AnalysisOutputIdSchema>;
 
 export const ReportArtifactIdSchema = z.string().uuid().brand<"ReportArtifactId">();
 export type ReportArtifactId = z.infer<typeof ReportArtifactIdSchema>;
+
+export const MetricFactIdSchema = z.string().uuid().brand<"MetricFactId">();
+export type MetricFactId = z.infer<typeof MetricFactIdSchema>;
+
+export const EmbeddingVectorIdSchema = z.string().uuid().brand<"EmbeddingVectorId">();
+export type EmbeddingVectorId = z.infer<typeof EmbeddingVectorIdSchema>;

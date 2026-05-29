@@ -1,0 +1,6 @@
+{
+  "jobType": "embed",
+  "normalizedEntityId": "33333333-3333-4333-8333-333333333333",
+  "model": "text-embedding-3-small",
+  "schemaVersion": "phase3-v1"
+}

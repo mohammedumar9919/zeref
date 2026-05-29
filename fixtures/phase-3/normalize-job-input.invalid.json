@@ -1,0 +1,6 @@
+{
+  "jobType": "normalize",
+  "snapshotId": "11111111-1111-4111-8111-111111111111",
+  "schemaVersion": "phase3-v1",
+  "payload_json": { "raw": true }
+}

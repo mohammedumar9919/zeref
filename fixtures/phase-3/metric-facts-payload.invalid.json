@@ -1,0 +1,10 @@
+{
+  "metricVersion": "phase3-v1",
+  "engagementScore": null,
+  "nicheTags": [],
+  "insufficientData": true,
+  "factsJson": {
+    "shortcode": "THIN01",
+    "sources": ["scrape"]
+  }
+}

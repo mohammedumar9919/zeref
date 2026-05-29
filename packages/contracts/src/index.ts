@@ -1,6 +1,7 @@
 export const PHASE0_CONTRACT_VERSION = "0.1.0";
 export const PHASE1_CONTRACT_VERSION = "1.0.0";
 export const PHASE2_CONTRACT_VERSION = "2.0.0";
+export const PHASE3_CONTRACT_VERSION = "3.0.0";
 
 export {
   PlatformSchema,
@@ -19,11 +20,15 @@ export {
   NormalizedEntityIdSchema,
   AnalysisOutputIdSchema,
   ReportArtifactIdSchema,
+  MetricFactIdSchema,
+  EmbeddingVectorIdSchema,
   type PlatformAccountId,
   type SnapshotId,
   type NormalizedEntityId,
   type AnalysisOutputId,
   type ReportArtifactId,
+  type MetricFactId,
+  type EmbeddingVectorId,
 } from "./ids.js";
 
 export {
@@ -42,14 +47,29 @@ export {
   CollectJobInputSchema,
   CollectJobOutputSchema,
   NormalizeJobInputSchema,
+  NormalizeJobOutputSchema,
+  EmbedJobInputSchema,
+  EmbedJobOutputSchema,
   AnalyzeJobInputSchema,
   ReportJobInputSchema,
   type CollectJobInput,
   type CollectJobOutput,
   type NormalizeJobInput,
+  type NormalizeJobOutput,
+  type EmbedJobInput,
+  type EmbedJobOutput,
   type AnalyzeJobInput,
   type ReportJobInput,
 } from "./jobs/index.js";
+
+export {
+  NormalizedPostPayloadSchema,
+  MetricFactsFactsJsonSchema,
+  MetricFactsPayloadSchema,
+  type NormalizedPostPayload,
+  type MetricFactsFactsJson,
+  type MetricFactsPayload,
+} from "./phase3/index.js";
 
 export {
   CollectSourceSchema,

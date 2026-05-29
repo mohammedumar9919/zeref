@@ -14,6 +14,7 @@ export type SnapshotKind = z.infer<typeof SnapshotKindSchema>;
 export const PipelineStageSchema = z.enum([
   "collect",
   "normalize",
+  "embed",
   "analyze",
   "report",
 ]);

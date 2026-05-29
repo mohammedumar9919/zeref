@@ -1,0 +1,10 @@
+{
+  "shortcode": "ABC123",
+  "platformAccountId": "22222222-2222-4222-8222-222222222222",
+  "sources": ["scrape", "graph"],
+  "caption": "Night ride through the city.",
+  "likes": 1204,
+  "comments": 42,
+  "mediaType": "IMAGE",
+  "schemaVersion": "phase3-v1"
+}

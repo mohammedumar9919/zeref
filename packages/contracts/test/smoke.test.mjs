@@ -20,3 +20,8 @@ test("exports PHASE2_CONTRACT_VERSION", () => {
   assert.equal(typeof built.PHASE2_CONTRACT_VERSION, "string");
   assert.match(built.PHASE2_CONTRACT_VERSION, /^2\./);
 });
+
+test("exports PHASE3_CONTRACT_VERSION", () => {
+  assert.equal(typeof built.PHASE3_CONTRACT_VERSION, "string");
+  assert.match(built.PHASE3_CONTRACT_VERSION, /^3\./);
+});
