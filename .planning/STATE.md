@@ -1,4 +1,4 @@
-﻿# Zeref — STATE
+# Zeref — STATE
 
 **Updated:** 2026-05-29
 
