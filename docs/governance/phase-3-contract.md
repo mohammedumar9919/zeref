@@ -160,12 +160,14 @@ collect → normalize → embed → analyze → report
 
 ## ADRs
 
+Index: [docs/governance/adr/README.md](./adr/README.md)
+
 | ADR | Topic |
 |-----|--------|
-| ADR-007 | Provider, dimensions (C16), CI mock (Q1) |
-| ADR-008 | Schema + normalize→embed auto-chain (Q2) |
-| ADR-009 | Normalize boundaries, no re-scrape (C14) |
-| ADR-010 | verify harness, retrieval@3 (C15) |
+| [ADR-007](./adr/ADR-007-embedding-provider.md) | Provider, dimensions (C16), CI mock (Q1) |
+| [ADR-008](./adr/ADR-008-normalize-embed-chain.md) | Schema + normalize→embed auto-chain (Q2) |
+| [ADR-009](./adr/ADR-009-worker-normalize-boundaries.md) | Normalize boundaries, no re-scrape (C14) |
+| [ADR-010](./adr/ADR-010-verify-phase-3-harness.md) | verify harness, retrieval@3 (C15) |
 
 ---
 

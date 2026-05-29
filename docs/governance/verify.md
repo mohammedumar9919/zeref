@@ -2,17 +2,17 @@
 
 CI must fail if these commands fail.
 
-**Related:** [ADR index](./adr/README.md) · [Phase 1 contract](./phase-1-contract.md) · [Phase 2 contract](./phase-2-contract.md)
+**Related:** [ADR index](./adr/README.md) · [Phase 1](./phase-1-contract.md) · [Phase 2](./phase-2-contract.md) · [Phase 3](./phase-3-contract.md)
 
 ## Environment: `DATABASE_URL`
 
-Phase 1 and Phase 2 gates run `@zeref/db` and `@zeref/worker` tests against **Postgres 16**.
+Phase 1–3 gates run `@zeref/db` and `@zeref/worker` tests against **Postgres 16**. Phase 3+ requires **pgvector** (`docker-compose.yml` uses `pgvector/pgvector:pg16`; CI uses the same image).
 
 | Context | `DATABASE_URL` |
 |---------|----------------|
 | **Local (docker-compose default)** | `postgres://zeref:zeref@localhost:5432/zeref` |
-| **Custom port** | Set `POSTGRES_PORT` in `.env` or compose override, then match host port in URL |
-| **CI (GitHub Actions)** | `postgres://zeref:zeref@localhost:5432/zeref` (service container) |
+| **Custom port** | Set `POSTGRES_PORT` in `.env`, then match host port in URL |
+| **CI (GitHub Actions)** | `postgres://zeref:zeref@localhost:5432/zeref` |
 | **Skip DB (debug only)** | `SKIP_DB_TESTS=1` — not used in CI |
 
 ```powershell
@@ -21,7 +21,7 @@ docker compose up -d db
 $env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
 ```
 
-## Full Phase 0–2 gate (orchestrator)
+## Full Phase 0–3 gate (orchestrator)
 
 ```powershell
 cd c:\Projects\zeref
@@ -31,9 +31,13 @@ npm install
 npm run verify:phase-0
 npm run verify:phase-1
 npm run verify:phase-2
+npm run verify:phase-3
 ```
 
-**Q3 / live Instagram:** Do **not** set `ZEREF_LIVE_INSTAGRAM` for the default gate or CI. See [ADR-006](./adr/ADR-006-parse-fetch-live.md).
+**Do not set for default gate or CI:**
+
+- `ZEREF_LIVE_INSTAGRAM` — live Instagram fetch (Phase 2; see [ADR-006](./adr/ADR-006-parse-fetch-live.md))
+- `OPENAI_API_KEY`, `ZEREF_NOMIC_EMBED_URL`, or non-mock `ZEREF_EMBED_PROVIDER` — live embed (Phase 3; see [ADR-010](./adr/ADR-010-verify-phase-3-harness.md))
 
 ---
 
@@ -54,20 +58,20 @@ npm run verify:phase-0
 
 **Contract:** [phase-1-contract.md](./phase-1-contract.md) · **ADRs:** [001](./adr/ADR-001-snapshot-data-model.md), [002](./adr/ADR-002-id-branding.md), [003](./adr/ADR-003-openapi-from-zod.md)
 
-Requires `DATABASE_URL` (see above).
+Requires `DATABASE_URL`.
 
 ```powershell
 npm run verify:phase-0
 npm run verify:phase-1
 ```
 
-- **`verify:phase-1`** (`scripts/verify-phase-1.mjs`): contract, ADRs, `fixtures/phase-1/`, migrations, no pgvector (C5), `@zeref/db` tests
+- **`verify:phase-1`** — contract, ADRs, `fixtures/phase-1/`, migrations, no pgvector (C5), `@zeref/db` tests
 
 ---
 
 ## Phase 2 (Instagram collectors → snapshots)
 
-**Contract:** [phase-2-contract.md](./phase-2-contract.md) · **ADRs:** [004](./adr/ADR-004-instagram-merge.md), [005](./adr/ADR-005-worker-collect.md), [006](./adr/ADR-006-parse-fetch-live.md)
+**Contract:** [phase-2-contract.md](./phase-2-contract.md) · **ADRs:** [004](./adr/ADR-004-instagram-merge.md)–[006](./adr/ADR-006-parse-fetch-live.md)
 
 Requires `DATABASE_URL` for worker collect integration tests.
 
@@ -77,31 +81,70 @@ npm run verify:phase-1
 npm run verify:phase-2
 ```
 
-### Q3: `ZEREF_LIVE_INSTAGRAM` (live fetch — local only)
+### Q3: `ZEREF_LIVE_INSTAGRAM` (local only)
 
 | Value | Behavior |
 |-------|----------|
-| **unset** (default, CI) | Parse + merge + Graph **fixtures** only; Playwright fetch skipped |
-| **`1`** | Enables live `fetchPostPage` smoke in `@zeref/instagram` — run separately, not in CI |
+| **unset** (default, CI) | Parse + merge + Graph fixtures only |
+| **`1`** | Live Playwright fetch smoke — run separately, not in CI |
 
-```powershell
-# Optional — after default gate passes
-$env:ZEREF_LIVE_INSTAGRAM='1'
-npm -w @zeref/instagram test
-```
-
-`verify-phase-2.mjs` **removes** `ZEREF_LIVE_INSTAGRAM` from the child process env (ADR-006 / Q3).
-
-### What `verify:phase-2` checks
-
-Script: `scripts/verify-phase-2.mjs`
-
-- `phase-2-contract.md`, ADR-004/005/006, `fixtures/phase-2/html/`, `fixtures/phase-2/graph/`
-- `scripts/enqueue-collect.mjs`, `@zeref/instagram`
-- `PHASE2_CONTRACT_VERSION`, `CollectJobOutputSchema` (C7)
-- Worker registry **collect-only** (C9)
-- `@zeref/contracts`, `@zeref/instagram`, `@zeref/worker` tests
+`verify-phase-2.mjs` removes `ZEREF_LIVE_INSTAGRAM` from child env.
 
 ### CI (C10)
 
-After `verify:phase-1`, with `DATABASE_URL` on Postgres 16 — **no** `ZEREF_LIVE_INSTAGRAM`.
+After `verify:phase-1` — no `ZEREF_LIVE_INSTAGRAM`.
+
+---
+
+## Phase 3 (normalize + embed + pgvector)
+
+**Contract:** [phase-3-contract.md](./phase-3-contract.md) (C11–C16) · **ADRs:** [007](./adr/ADR-007-embedding-provider.md)–[010](./adr/ADR-010-verify-phase-3-harness.md)
+
+Requires `DATABASE_URL` on Postgres 16 **with pgvector**.
+
+```powershell
+npm run verify:phase-0
+npm run verify:phase-1
+npm run verify:phase-2
+npm run verify:phase-3
+```
+
+### Q1: embed provider (no live embed in CI)
+
+| Env | Default verify / CI | Local dev (optional) |
+|-----|---------------------|----------------------|
+| `ZEREF_EMBED_PROVIDER` | forced to **`mock`** | `openai` or `nomic` |
+| `OPENAI_API_KEY` | **removed** | set for OpenAI embed |
+| `ZEREF_NOMIC_EMBED_URL` | **removed** | set for nomic sidecar |
+
+`verify-phase-3.mjs` strips live embed env and forces mock (ADR-010 / Q1). Deterministic mock vectors satisfy retrieval@3 goldens (C15).
+
+Optional local live embed (not part of verify):
+
+```powershell
+$env:ZEREF_EMBED_PROVIDER='openai'
+$env:OPENAI_API_KEY='...'
+npm -w @zeref/worker test
+```
+
+### What `verify:phase-3` checks
+
+Script: `scripts/verify-phase-3.mjs`
+
+- `phase-3-contract.md`, ADR-007/008/009/010
+- `fixtures/phase-3/` job I/O, `metrics/`, `retrieval/`
+- `scripts/enqueue-normalize.mjs`, `scripts/enqueue-embed.mjs`, `@zeref/analytics`
+- **C11:** `PHASE3_CONTRACT_VERSION`, normalize/embed job I/O schemas
+- **C12:** worker registry `collect` + `normalize` + `embed` only
+- **C14:** static guard — no `@zeref/instagram` in normalize/embed modules ([ADR-009](./adr/ADR-009-worker-normalize-boundaries.md))
+- **C16:** migration enables pgvector + `vector(1536)` ([ADR-007](./adr/ADR-007-embedding-provider.md))
+- `@zeref/contracts`, `@zeref/analytics` (retrieval@3 ≥ 1.0), `@zeref/db`, `@zeref/worker` tests
+
+### CI (C13)
+
+After `verify:phase-2`:
+
+- Postgres service: `pgvector/pgvector:pg16`
+- `DATABASE_URL=postgres://zeref:zeref@localhost:5432/zeref`
+- `npm run verify:phase-3`
+- No `ZEREF_LIVE_INSTAGRAM`, no live embed env

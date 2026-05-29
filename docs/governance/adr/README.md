@@ -27,6 +27,19 @@
 
 **Reading order:** ADR-004 → ADR-005 → ADR-006
 
+## Phase 3 (normalize + embed + pgvector)
+
+**Contract:** [phase-3-contract.md](../phase-3-contract.md) (Q1–Q3, C11–C16)
+
+| ADR | Topic | Owner |
+|-----|--------|-------|
+| [ADR-007](./ADR-007-embedding-provider.md) | Provider, dimensions (C16), CI mock (Q1) | Data |
+| [ADR-008](./ADR-008-normalize-embed-chain.md) | Schema + normalize→embed auto-chain (Q2, Q3) | Data |
+| [ADR-009](./ADR-009-worker-normalize-boundaries.md) | Normalize/embed boundaries, no re-scrape (C14) | Worker |
+| [ADR-010](./ADR-010-verify-phase-3-harness.md) | verify harness, retrieval@3 (C15), CI mock embed (C13) | QA |
+
+**Reading order:** ADR-007 → ADR-008 → ADR-009 → ADR-010
+
 ## Planner quick reference
 
 | ID | ADR / doc |
@@ -40,6 +53,12 @@
 | C8 | ADR-005 — dedupe returns existing `snapshotId` |
 | C9 | ADR-005 — worker registry collect-only |
 | C10 | ADR-006 + verify.md — CI runs `verify:phase-2` |
+| C11 | `@zeref/contracts` — Phase 3 job I/O, `PHASE3_CONTRACT_VERSION` |
+| C12 | ADR-009 — worker registry collect+normalize+embed |
+| C13 | ADR-010 + verify.md — CI runs `verify:phase-3` |
+| C14 | ADR-009 + verify script grep — no `@zeref/instagram` in normalize/embed |
+| C15 | ADR-010 — retrieval@3 ≥ 1.0 on `fixtures/phase-3/retrieval/` |
+| C16 | ADR-007 — `vector(1536)` locked in migration |
 
 ## Related
 
