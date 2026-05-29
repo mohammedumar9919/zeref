@@ -3,7 +3,25 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "scripts": { "build": "tsc -b" },
-  "dependencies": { "@zeref/domain": "0.0.0" }
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "test": "node --test test/**/*.test.mjs"
+  },
+  "dependencies": {
+    "@zeref/contracts": "0.0.0",
+    "@zeref/db": "0.0.0",
+    "@zeref/instagram": "0.0.0",
+    "drizzle-orm": "^0.39.0",
+    "pg": "^8.13.1",
+    "pg-boss": "^10.1.5"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.10"
+  }
 }
