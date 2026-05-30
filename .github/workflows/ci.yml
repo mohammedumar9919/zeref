@@ -7,9 +7,9 @@ on:
 
 jobs:
   phase0:
-    name: Phase 0–4 gate
+    name: Phase 0–5 gate
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     services:
       postgres:
@@ -68,4 +68,13 @@ jobs:
         env:
           DATABASE_URL: postgres://zeref:zeref@localhost:5432/zeref
           ZEREF_LLM_MOCK: "1"
+
+      - name: Install Playwright Chromium
+        run: npm -w @zeref/web run test:e2e:install
+
+      - name: Verify Phase 5
+        run: npm run verify:phase-5
+        env:
+          ZEREF_LLM_MOCK: "1"
+          ZEREF_BFF_FIXTURE: "1"
 

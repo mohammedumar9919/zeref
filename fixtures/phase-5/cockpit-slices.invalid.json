@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "phase5-cockpit-v0",
+  "panels": {
+    "studio": { "items": [], "insufficientData": false },
+    "calendar": { "items": [], "insufficientData": false },
+    "reports": { "items": [], "insufficientData": false },
+    "research": { "items": [], "insufficientData": false }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "phase5-cockpit-v1",
+  "panels": {
+    "studio": {
+      "items": [
+        {
+          "entityId": "550e8400-e29b-41d4-a716-446655440001",
+          "title": "LOG240 ride log",
+          "snapshotId": "550e8400-e29b-41d4-a716-446655440002",
+          "updatedAt": "2026-05-29T12:00:00.000Z"
+        }
+      ],
+      "insufficientData": false
+    },
+    "calendar": {
+      "items": [],
+      "insufficientData": false
+    },
+    "reports": {
+      "items": [
+        {
+          "artifactId": "550e8400-e29b-41d4-a716-446655440000",
+          "kind": "elite",
+          "headline": "Ride log post shows solid engagement vs account baseline.",
+          "createdAt": "2026-05-29T12:00:00.000Z"
+        }
+      ],
+      "insufficientData": false
+    },
+    "research": {
+      "items": [],
+      "insufficientData": true
+    }
+  }
+}

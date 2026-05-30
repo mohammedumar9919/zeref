@@ -16,7 +16,8 @@
     "verify:phase-1": "node scripts/verify-phase-1.mjs",
     "verify:phase-2": "node scripts/verify-phase-2.mjs",
     "verify:phase-3": "node scripts/verify-phase-3.mjs",
-    "verify:phase-4": "node scripts/verify-phase-4.mjs"
+    "verify:phase-4": "node scripts/verify-phase-4.mjs",
+    "verify:phase-5": "node scripts/verify-phase-5.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.2"
