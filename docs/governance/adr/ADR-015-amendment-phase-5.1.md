@@ -1,6 +1,6 @@
 # ADR-015 Amendment — Phase 5.1 Luke JARVIS HUD globe
 
-**Status:** **DRAFT** (requires Planner approval with [phase-5.1-contract.md](../phase-5.1-contract.md))  
+**Status:** **APPROVED** (Planner 2026-05-30; [phase-5.1-contract.md](../phase-5.1-contract.md))  
 **Amends:** [ADR-015-globe-performance.md](./ADR-015-globe-performance.md)  
 **Date:** 2026-05-30  
 **Owner:** UI  

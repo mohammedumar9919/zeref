@@ -18,7 +18,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Agent stack (GSD, council, uipro, Superpowers) | **DONE** |
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
-| Phase 5.1 Luke JARVIS HUD visual | **DISCUSS + CONTRACT** — draft: [governance/phase-5.1-contract.md](./governance/phase-5.1-contract.md) |
+| Phase 5.1 Luke JARVIS HUD visual | **APPROVED** — implement via 3 agent chats (BFF → UI, QA parallel) |
 | Phase 6 Jarvis voice | **BLOCKED** until 5.1 signed off |
 
 **Immediate goal:** Phase **5.1** Luke JARVIS HUD contract + implement. Skills: [SKILL_INVOCATION.md](./SKILL_INVOCATION.md).

@@ -1,6 +1,6 @@
 # ADR-019: Telemetry SSE stub (Phase 5.1)
 
-**Status:** **DRAFT** (requires Planner approval)  
+**Status:** **APPROVED** (Planner 2026-05-30)  
 **Date:** 2026-05-30  
 **Owner:** BFF/Events  
 **Related:** [Phase 5.1 contract](../phase-5.1-contract.md) (Q2, C39) · [ADR-016](./ADR-016-bff-cockpit-slices.md) · [GAP_BACKLOG ZR-026](../../GAP_BACKLOG.md)
