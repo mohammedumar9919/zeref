@@ -8,8 +8,7 @@
     { "path": "./packages/db" },
     { "path": "./packages/instagram" },
     { "path": "./apps/api" },
-    { "path": "./apps/worker" },
-    { "path": "./apps/web" }
+    { "path": "./apps/worker" }
   ]
 }
 

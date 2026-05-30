@@ -3,6 +3,7 @@ export const PHASE1_CONTRACT_VERSION = "1.0.0";
 export const PHASE2_CONTRACT_VERSION = "2.0.0";
 export const PHASE3_CONTRACT_VERSION = "3.0.0";
 export const PHASE4_CONTRACT_VERSION = "4.0.0";
+export const PHASE5_CONTRACT_VERSION = "5.0.0";
 
 export {
   PlatformSchema,
@@ -74,6 +75,23 @@ export {
   EliteRecommendationSchema,
   type EliteReport,
 } from "./phase4/index.js";
+
+export {
+  CockpitSlicesSchema,
+  CockpitStudioItemSchema,
+  CockpitCalendarItemSchema,
+  CockpitReportItemSchema,
+  CockpitResearchItemSchema,
+  CockpitStudioPanelSchema,
+  CockpitCalendarPanelSchema,
+  CockpitReportsPanelSchema,
+  CockpitResearchPanelSchema,
+  type CockpitSlices,
+  type CockpitStudioItem,
+  type CockpitCalendarItem,
+  type CockpitReportItem,
+  type CockpitResearchItem,
+} from "./phase5/index.js";
 
 export {
   NormalizedPostPayloadSchema,

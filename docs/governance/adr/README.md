@@ -53,6 +53,19 @@
 
 **Reading order:** ADR-011 → ADR-012 → ADR-013 → ADR-014
 
+## Phase 5 (cockpit UI shell)
+
+**Contract:** [phase-5-contract.md](../phase-5-contract.md) (Q1–Q3, C24–C30)
+
+| ADR | Topic | Owner |
+|-----|--------|-------|
+| [ADR-015](./ADR-015-globe-performance.md) | Globe perf budget, client island (Q1) | UI |
+| [ADR-016](./ADR-016-bff-cockpit-slices.md) | BFF placement, slices + artifact routes (Q2) | API |
+| [ADR-017](./ADR-017-cockpit-routes-layout.md) | Routes, responsive panel grid (Q3) | UI |
+| [ADR-018](./ADR-018-verify-phase-5.md) | Playwright cockpit-layout harness (C28) | QA |
+
+**Reading order:** ADR-015 → ADR-016 → ADR-017 → ADR-018
+
 ## Planner quick reference
 
 | ID | ADR / doc |

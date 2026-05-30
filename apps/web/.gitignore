@@ -1,0 +1,5 @@
+# .gitignore — Next.js web app
+.next/
+out/
+playwright-report/
+test-results/
