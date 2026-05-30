@@ -1,0 +1,19 @@
+---
+description: Boot orchestrator — read CURRENT_STATE and failures-checklist first
+alwaysApply: true
+---
+
+# Orchestrator boot (Zeref)
+
+Before planning or delegating:
+
+1. `docs/CURRENT_STATE.md`
+2. `docs/failures-checklist.md`
+3. `AGENTS.md`
+4. Relevant `docs/governance/phase-*-contract.md`
+
+GSD owns `.planning/` artifacts; **CURRENT_STATE.md** is runtime execution truth.
+
+Use Superpowers skills (`using-superpowers`, `test-driven-development`, `verification-before-completion`) when implementing.
+
+Frontend: invoke **ui-ux-pro-max** — Jarvis HUD (cyan mono, glass, honest metrics), not generic AI purple gradients.

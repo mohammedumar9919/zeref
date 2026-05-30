@@ -1,0 +1,33 @@
+council:
+  name: Zeref Engineering Board
+  agents:
+    - id: lead_chairman
+      role: Lead orchestrator
+      expertise: [phase_gates, merges, docs, task_cards, planner_signoff]
+    - id: agent_contracts
+      role: Contracts and schemas
+      expertise: [zod, openapi, fixtures, phase_contracts]
+    - id: agent_data
+      role: Database and migrations
+      expertise: [drizzle, postgres, pgvector, snapshots]
+    - id: agent_worker
+      role: Pipeline worker
+      expertise: [pg_boss, collect, normalize, embed, analyze, report]
+    - id: agent_bff
+      role: BFF API routes
+      expertise: [next_route_handlers, cockpit_slices, reports_api]
+    - id: agent_ui
+      role: Cockpit web UX
+      expertise: [react, rsc, threejs_globe, playwright, jarvis_hud]
+    - id: agent_qa
+      role: Verify and CI
+      expertise: [verify_phase_scripts, github_actions, e2e]
+  rules:
+    council_required_for:
+      - packages/contracts/**
+      - packages/db/**
+      - apps/worker/**
+      - apps/web/app/api/**
+      - docs/governance/phase-*-contract.md
+      - docs/api-contracts.md
+      - docs/governance/adr/**

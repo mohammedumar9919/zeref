@@ -6,7 +6,18 @@ import {
 
 import { EMPTY_COCKPIT_SLICES } from "./cockpit-slices-empty";
 
-/** Empty cockpit slices for build-time / offline fallback. */
+/** Thrown when cockpit BFF fetch or parse fails (ZR-004 — no silent empty). */
+export class CockpitBffError extends Error {
+  readonly status?: number;
+
+  constructor(message: string, status?: number) {
+    super(message);
+    this.name = "CockpitBffError";
+    this.status = status;
+  }
+}
+
+/** Empty cockpit slices for build-time static generation only. */
 export { EMPTY_COCKPIT_SLICES };
 
 function bffBaseUrl(): string {
@@ -22,24 +33,35 @@ function bffBaseUrl(): string {
 
 /**
  * RSC server fetch for cockpit panel summaries (C27).
- * Validates against CockpitSlicesSchema; falls back when BFF is unavailable.
+ * Validates against CockpitSlicesSchema; throws CockpitBffError on failure.
  */
 export async function getCockpitSlices(): Promise<CockpitSlices> {
   const url = `${bffBaseUrl()}/api/v1/cockpit/slices`;
 
+  let res: Response;
   try {
-    const res = await fetch(url, {
+    res = await fetch(url, {
       next: { revalidate: 30, tags: ["cockpit-slices"] },
     });
+  } catch {
+    throw new CockpitBffError("Cockpit BFF unavailable — is the web server running?");
+  }
 
-    if (!res.ok) {
-      return EMPTY_COCKPIT_SLICES;
-    }
+  if (!res.ok) {
+    throw new CockpitBffError(`Cockpit BFF failed: HTTP ${res.status}`, res.status);
+  }
 
-    const json: unknown = await res.json();
+  let json: unknown;
+  try {
+    json = await res.json();
+  } catch {
+    throw new CockpitBffError("Cockpit BFF returned invalid JSON");
+  }
+
+  try {
     return CockpitSlicesSchema.parse(json);
   } catch {
-    return EMPTY_COCKPIT_SLICES;
+    throw new CockpitBffError("Cockpit BFF response failed schema validation");
   }
 }
 

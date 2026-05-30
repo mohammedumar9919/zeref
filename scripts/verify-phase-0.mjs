@@ -41,8 +41,14 @@ for (const p of [
   "packages/db",
   "packages/domain",
   "docs/governance/phase-0-contract.md",
+  "docs/governance/phase-5.0.1-contract.md",
+  "scripts/worker.mjs",
+  "scripts/run-pipeline.mjs",
+  "scripts/phase_gate.ps1",
   ".env.example",
   "docker-compose.yml",
+  "AGENTS.md",
+  "docs/CURRENT_STATE.md",
 ]) {
   assertExists(p);
 }

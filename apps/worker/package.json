@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "tsc -b",
+    "start": "node ../../scripts/worker.mjs",
     "test": "node --test test/**/*.test.mjs"
   },
   "dependencies": {

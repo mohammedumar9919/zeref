@@ -13,7 +13,6 @@ import {
 import { normalizedEntities, reportArtifacts } from "@zeref/db";
 import { and, desc, eq } from "drizzle-orm";
 
-import { EMPTY_COCKPIT_SLICES } from "./cockpit-slices-empty";
 import { getDb, isFixtureMode, resetDbPoolForTests } from "./db";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -83,7 +82,7 @@ function toIsoString(value: Date | string): string {
 async function loadCockpitSlicesFromDb(): Promise<CockpitSlices> {
   const db = getDb();
   if (!db) {
-    return EMPTY_COCKPIT_SLICES;
+    throw new Error("DATABASE_URL is not configured for cockpit BFF");
   }
 
   const studioRows = await db

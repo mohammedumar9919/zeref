@@ -1,0 +1,13 @@
+---
+description: Council Stage 2 required for risky Zeref paths
+alwaysApply: true
+---
+
+# Council governance (Zeref)
+
+Read `docs/COUNCIL_ORCHESTRATION.md` before merging worker, schema, contract, or BFF changes.
+
+- Stage 2 review required for: `packages/contracts`, `packages/db`, `apps/worker`, `apps/web/app/api`, phase contracts, ADRs, `docs/api-contracts.md`
+- Verify: `run-verify-gate` skill / `scripts/phase_gate.ps1` — all phases through current ship target must pass
+- Max 2–3 workers; one file one owner per `AGENTS.md`
+- Invoke skills: `council-propose-slice`, `council-review-slice`, `council-merge-slice`
