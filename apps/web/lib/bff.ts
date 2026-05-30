@@ -4,16 +4,10 @@ import {
   type CockpitSlices,
 } from "@zeref/contracts";
 
+import { EMPTY_COCKPIT_SLICES } from "./cockpit-slices-empty";
+
 /** Empty cockpit slices for build-time / offline fallback. */
-export const EMPTY_COCKPIT_SLICES: CockpitSlices = {
-  schemaVersion: "phase5-cockpit-v1",
-  panels: {
-    studio: { items: [], insufficientData: false },
-    calendar: { items: [], insufficientData: false },
-    reports: { items: [], insufficientData: false },
-    research: { items: [], insufficientData: true },
-  },
-};
+export { EMPTY_COCKPIT_SLICES };
 
 function bffBaseUrl(): string {
   const explicit = process.env.ZEREF_BFF_URL;

@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "node --import tsx --test test/**/*.test.mjs",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium"
   },
@@ -15,8 +16,11 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@zeref/contracts": "0.0.0",
+    "@zeref/db": "0.0.0",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.39.0",
     "next": "^15.1.6",
+    "pg": "^8.13.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.6.0",
@@ -25,12 +29,14 @@
   "devDependencies": {
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.10.5",
+    "@types/pg": "^8.11.10",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "@types/three": "^0.184.1",
     "autoprefixer": "^10.5.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.2"
   }
 }
