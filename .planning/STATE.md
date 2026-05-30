@@ -6,7 +6,7 @@
 
 - **Phase:** 5 (implementation complete — pending Planner sign-off)
 - **Last completed:** Phase 4 (planner-approved; `dc2adb1`)
-- **Phase 5 tip:** `272a71c`
+- **Phase 5 tip:** `568a5fc`
 - **Blocker:** none
 
 ## Planner decisions
@@ -33,6 +33,9 @@ Contract: [phase-5-contract.md](../docs/governance/phase-5-contract.md)
 | `9e75113` | UI (+ contracts in tree) | phase5(ui): Next.js 15 cockpit shell |
 | `bf09fd5` | API | phase5(api): cockpit BFF routes |
 | `272a71c` | Docs | phase5(docs): ADR-015–018, verify, STATE |
+| `8269b08` | QA | phase5(qa): verify-phase-5 + CI Phase 0–5 gate |
+| `568a5fc` | QA | skip BFF DB tests in fixture CI verify |
+| `c932b4a` | Orchestrator | integration STATE |
 
 ## Phase 5 checklist
 
@@ -42,7 +45,7 @@ Contract: [phase-5-contract.md](../docs/governance/phase-5-contract.md)
 - [x] QA — `verify:phase-5`, CI Phase 0–5 gate
 - [x] Docs — ADR-015–018, legacy cockpit, verify.md
 - [x] Orchestrator verify `phase-0` … `phase-5` green locally
-- [ ] CI Phase 0–5 green (post-push)
+- [ ] CI Phase 0–5 green (fix: SKIP_DB_TESTS in verify:phase-5)
 - [ ] Planner sign-off Phase 5
 
 ## Do not start
