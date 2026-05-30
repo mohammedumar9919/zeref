@@ -18,7 +18,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Agent stack (GSD, council, uipro, Superpowers) | **DONE** |
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
-| Phase 5.1 Luke JARVIS HUD visual | **NEXT** — ref: [design/reference/lukebuildsai-jarvis-hud.jpeg](./design/reference/lukebuildsai-jarvis-hud.jpeg) |
+| Phase 5.1 Luke JARVIS HUD visual | **DISCUSS + CONTRACT** — draft: [governance/phase-5.1-contract.md](./governance/phase-5.1-contract.md) |
 | Phase 6 Jarvis voice | **BLOCKED** until 5.1 signed off |
 
 **Immediate goal:** Phase **5.1** Luke JARVIS HUD contract + implement. Skills: [SKILL_INVOCATION.md](./SKILL_INVOCATION.md).
@@ -49,7 +49,7 @@ collect → normalize → embed → analyze → report
 |-------------|--------|
 | `/cockpit` layout (Studio, Calendar \| Globe \| Reports, Research) | **DONE** |
 | BFF `GET /api/v1/cockpit/slices` | **DONE** (fixture mode in CI) |
-| Wireframe icosahedron globe | **DONE** — **wrong tier** vs Luke ref |
+| Wireframe icosahedron globe | **DONE** — superseded by 5.1 point-cloud (ADR-015 amendment draft) |
 | Playwright 6/6 in CI | **DONE** |
 | RSC `getCockpitSlices()` | **DONE** — **silent empty on error** (fix in 5.0.1) |
 | Voice / telemetry / AUDIO I/O | **DEFER** 5.1 shell / Phase 6 |
@@ -96,8 +96,8 @@ $env:ZEREF_BFF_FIXTURE='1'
 | 2 | Planner | Approve Phase 5.0.1 ops contract |
 | 3 | Agent Worker + QA | Worker daemon, `dev:stack`, `run-pipeline.mjs` |
 | 4 | Agent UI + BFF | Fix silent empty BFF; optional live DB verify job |
-| 5 | Planner | Phase 5.1 Luke HUD contract (amend ADR-015) |
-| 6 | Agents UI/BFF/Worker | Implement 5.1 with separate chats |
+| 5 | Planner | Approve [phase-5.1-contract.md](./governance/phase-5.1-contract.md) + ADR-015 amendment |
+| 6 | Agents UI / BFF-Events / Docs-QA | Implement 5.1 — **separate chats** after approval |
 | 7 | Planner | Phase 6 voice discuss |
 
 ---

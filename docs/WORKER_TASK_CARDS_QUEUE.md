@@ -1,86 +1,46 @@
 # Worker task cards queue — Zeref
 
-Lead copies cards into **new** worker chats. Update status here after each slice.
+Lead copies cards into **new** worker chats. Update status after each slice.
 
 ---
 
-## READY — Phase 5.1 Luke HUD (Discuss + Contract next)
+## READY — Phase 5.1 (after Planner approves contract)
 
-### Card: Agent UI — Jarvis HUD shell
+### Card P5.1-A — Agent UI (Luke HUD + globe)
 
-```markdown
-You are **Agent UI** for Zeref — **cockpit UI only**.
+**Gate 1:** Planner approves `phase-5.1-contract.md` + ADR-015 amendment.
 
-## Read first
-1. docs/design/reference/lukebuildsai-jarvis-hud.jpeg
-2. docs/design/DESIGN_SYSTEM.md
-3. docs/governance/adr/ADR-015-globe-performance.md (needs amendment first)
-4. Invoke ui-ux-pro-max skill — Jarvis HUD aesthetic
+**Allowed:** `apps/web/components/**`, `apps/web/app/cockpit/**`, `apps/web/app/globals.css`, `apps/web/e2e/**`  
+**Forbidden:** `apps/web/app/api/**`, `apps/worker/**`, `packages/contracts/**` (unless Planner assigns Contracts to UI)
 
-## You own ONLY
-- `apps/web/components/**`
-- `apps/web/app/cockpit/**`
-- `apps/web/app/globals.css` (if needed)
-
-## FORBIDDEN
-- `apps/worker/**`
-- BFF routes
-
-## Deliverables
-1. Fusion layout: Luke HUD chrome wraps Studio/Calendar/Reports/Research panels
-2. Point-cloud globe + rings (per amended ADR-015)
-3. Telemetry + AUDIO I/O placeholders (SIMULATED until SSE)
-4. Playwright updates
-
-## Acceptance
-1. `npm run verify:phase-5` or verify:phase-5.1 when exists
-2. Screenshot vs reference JPEG
-
-## Return to lead
-- Screenshot + perf notes + ADR compliance
-```
+**Acceptance:** `npm run verify:phase-5.1` (when exists) or scoped Playwright; screenshot vs reference JPEG.
 
 ---
 
-## COMPLETED — Phase 5 (reference)
+### Card P5.1-B — Agent BFF/Events (SSE stub shell)
 
-Multi-agent commits @ `568a5fc` — UI, BFF, Docs, QA agents. See `.planning/STATE.md`.
+**Allowed:** `apps/web/app/api/v1/events/**`, `packages/contracts/src/**` (TelemetryEventSchema only), `apps/web/lib/**` (events helpers)  
+**Forbidden:** `apps/worker/**`, globe components
+
+**Acceptance:** SSE route returns stream; events include `simulated: true`; contract tests if schema added.
+
+---
+
+### Card P5.1-C — Agent Docs/QA (verify:phase-5.1 + CI)
+
+**Allowed:** `scripts/verify-phase-5.1.mjs`, `.github/workflows/ci.yml`, `docs/governance/**`, `docs/CURRENT_STATE.md`, `package.json` (verify script only)  
+**Forbidden:** `apps/web/components/**` (UI agent)
+
+**Acceptance:** `verify:phase-0` … `verify:phase-5.1` green; CI Phase 0–5.1 gate.
+
+---
+
+## COMPLETED — Phase 5.0.x / Phase 5
+
+See `docs/CURRENT_STATE.md` and git log @ `568a5fc`.
 
 ---
 
 ## Template (blank)
 
-```markdown
-You are **Agent <NAME>** for Zeref — **<SCOPE> only**.
-
-## Read first
-1. docs/CURRENT_STATE.md
-2. docs/GAP_BACKLOG.md
-3. docs/api-contracts.md
-4. docs/AGENTS.md
-5. docs/SKILL_INVOCATION.md
-
-## Skills — invoke before acting
-1. using-superpowers
-2. [task-specific from SKILL_INVOCATION.md]
-3. test-driven-development (if writing code)
-4. verification-before-completion + run-verify-gate (before done)
-
-## You own ONLY
-- `path/**`
-
-## FORBIDDEN
-- `other/**`
-
-## Deliverables
-1. ...
-
-## Acceptance
-1. `.\scripts\phase_gate.ps1 -Phase <n>`
-
-## Return to lead
-- Files changed
-- Risks for Stage 2
-
-**Do NOT** edit `.cursor/plans/*.plan.md`
-```
+See [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md).

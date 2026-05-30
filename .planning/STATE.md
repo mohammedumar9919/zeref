@@ -2,34 +2,32 @@
 
 **Updated:** 2026-05-30
 
-> **Agents:** prefer [docs/CURRENT_STATE.md](../docs/CURRENT_STATE.md) for runtime truth. This file tracks commits and checklists.
+> Runtime truth: [docs/CURRENT_STATE.md](../docs/CURRENT_STATE.md)
 
 ## Current position
 
-- **Phase:** 5 implementation complete — Planner sign-off pending; **5.0.1 / 5.1 next**
-- **Phase 5 tip:** `568a5fc`
-- **Agent stack:** GSD + uipro installed 2026-05-30; docs committed
+- **Phase:** 5.1 (**discuss + contract only** — no implementation until Planner approves)
+- **Last completed:** Phase 5 implementation (`568a5fc`, CI green)
+- **Blocker:** Planner sign-off on 5.1 contract
 
-## Portable agent stack
+## Phase 5.1 (pending)
 
-- [x] GSD Redux v1.1.0
-- [x] UI UX Pro Max at `.cursor/skills/ui-ux-pro-max/`
-- [x] Council skills (propose/review/merge/run-verify-gate)
-- [x] docs/CURRENT_STATE, GAP_BACKLOG, failures-checklist, council docs
-- [ ] Superpowers — user `/add-plugin superpowers`
-- [ ] config/council/zeref-board.yaml + .cursor/rules — pending agent mode commit
+- Contract draft: [phase-5.1-contract.md](../docs/governance/phase-5.1-contract.md)
+- ADR-015 amendment: [ADR-015-amendment-phase-5.1.md](../docs/governance/adr/ADR-015-amendment-phase-5.1.md)
+- Theme: Luke JARVIS HUD — point-cloud globe, full-bleed hero, HUD chrome, SIMULATED telemetry/audio
 
-## Verify
+## Do not start
+
+- Phase 5.1 **implementation** in apps/packages until Planner approves + agent chats complete
+- Phase 6 voice until 5.1 signed off
+- Lead must **not** write domain code (multi-agent HARD RULE)
+
+## Verify (after implementation)
 
 ```powershell
 cd c:\Projects\zeref
 $env:ZEREF_BFF_FIXTURE='1'
 $env:ZEREF_LLM_MOCK='1'
-$env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
 npm run verify:phase-0
-# ... through verify:phase-5
+# ... through verify:phase-5.1 (when exists)
 ```
-
-## Do not start
-
-- Phase 6 until Phase 5.1 signed off
