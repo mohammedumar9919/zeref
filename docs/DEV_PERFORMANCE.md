@@ -59,6 +59,28 @@ After 5.0.2: RSC calls `loadCockpitSlices()` directly; HTTP route remains for Pl
 
 ---
 
+## Playwright port 3099 (`EADDRINUSE`)
+
+**Symptoms:**
+
+- `http://127.0.0.1:3099/cockpit is already used` during `verify:phase-5` or `verify:phase-5.1`
+- Often after a prior verify run left `next start` running, or dev server on wrong port
+
+**Recovery:**
+
+```powershell
+# Find and kill process on 3099 (Windows)
+Get-NetTCPConnection -LocalPort 3099 -ErrorAction SilentlyContinue |
+  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+```
+
+**Prevention:**
+
+- `verify:phase-5.1` does **not** start a second Playwright server — C48 runs inside the `verify:phase-5` chain
+- For manual re-runs while a server is already up: `$env:ZEREF_PLAYWRIGHT_REUSE='1'`
+
+---
+
 ## Related
 
 - [failures-checklist.md](./failures-checklist.md) — stale `.next` rule

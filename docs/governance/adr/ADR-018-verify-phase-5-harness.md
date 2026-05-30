@@ -100,7 +100,7 @@ npm run verify:phase-5
 
 `npm run verify:phase-5.1` → `scripts/verify-phase-5.1.mjs`
 
-Orchestrates **`verify:phase-0` … `verify:phase-5`**, then Phase 5.1 static checks and Playwright **C48** assertions.
+Orchestrates **`verify:phase-0` … `verify:phase-5`** (C48 Playwright runs inside **`verify:phase-5`** `test:e2e` — no second `webServer` boot on port 3099), then Phase 5.1 static checks.
 
 ### C48 Playwright (deferred until UI lands)
 

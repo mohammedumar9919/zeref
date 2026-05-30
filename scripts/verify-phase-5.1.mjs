@@ -107,44 +107,21 @@ function runPriorPhases() {
   }
 }
 
-function runPhase51Playwright() {
+/** C48 Playwright runs inside verify:phase-5 (full test:e2e). Avoid a second webServer boot on 3099. */
+function assertC48PlaywrightViaPhase5Chain() {
   const uiReady = process.env.ZEREF_PHASE51_UI === "1";
-  const env = ciSafeEnv({ ZEREF_PHASE51_UI: uiReady ? "1" : "0" });
-
-  run("npm", ["-w", "@zeref/web", "run", "test:e2e:install"], env);
-
-  const res = spawnSync(
-    "npm",
-    ["-w", "@zeref/web", "run", "test:e2e", "--", "e2e/cockpit-hud-5.1.spec.ts"],
-    {
-      cwd: repoRoot,
-      stdio: "inherit",
-      shell: process.platform === "win32",
-      env,
-    },
-  );
-
-  if (res.status === 0) {
-    if (!uiReady) {
-      warn(
-        "C48 Playwright deferred: ZEREF_PHASE51_UI unset — 5.1 HUD tests skipped until UI agent P5.1-A lands.",
-      );
-      warn(
-        "Expected testids when enabled: hud-header, hud-footer, telemetry-simulated, audio-io-simulated, data-globe-mode=point-cloud.",
-      );
-    }
-    return;
-  }
-
-  if (!uiReady) {
-    warn(
-      "C48 Playwright exited non-zero while ZEREF_PHASE51_UI unset — treating as deferred (pre-UI scaffold).",
+  if (uiReady) {
+    console.log(
+      "[verify:phase-5.1] C48 Playwright enforced via verify:phase-5 chain (cockpit-hud-5.1.spec.ts + cockpit-layout C48).",
     );
-    warn("Re-run with ZEREF_PHASE51_UI=1 after UI lands to enforce hard failures.");
     return;
   }
-
-  fail("C48 Playwright cockpit-hud-5.1.spec.ts failed (ZEREF_PHASE51_UI=1)");
+  warn(
+    "C48 Playwright deferred: ZEREF_PHASE51_UI unset — HUD tests skipped in verify:phase-5 chain.",
+  );
+  warn(
+    "Expected testids when enabled: hud-header, hud-footer, telemetry-simulated, audio-io-simulated, data-globe-mode=point-cloud.",
+  );
 }
 
 const [major] = process.versions.node.split(".").map(Number);
@@ -167,7 +144,7 @@ assertC48SpecCoversTestids();
 assertNoVoiceOrInstagramInWeb();
 
 runPriorPhases();
-runPhase51Playwright();
+assertC48PlaywrightViaPhase5Chain();
 
 if (!process.exitCode) {
   console.log("[verify:phase-5.1] OK");
