@@ -46,3 +46,47 @@ test.describe("cockpit layout", () => {
     await expect(page.getByTestId("panel-studio")).toHaveClass(/ring-hud-cyan/);
   });
 });
+
+test.describe("cockpit HUD phase 5.1 (C48)", () => {
+  test("hud header and footer chrome", async ({ page }) => {
+    await page.goto("/cockpit");
+    await expect(page.getByTestId("hud-header")).toBeVisible();
+    await expect(page.getByTestId("hud-footer")).toBeVisible();
+  });
+
+  test("telemetry strip shows simulated badge", async ({ page }) => {
+    await page.goto("/cockpit");
+    await expect(page.getByTestId("telemetry-simulated")).toBeVisible({
+      timeout: 10_000,
+    });
+  });
+
+  test("audio I/O placeholder shows simulated badge", async ({ page }) => {
+    await page.goto("/cockpit");
+    await expect(page.getByTestId("audio-io-simulated")).toBeVisible();
+  });
+
+  test("globe island is full-bleed hero without hud-panel chrome", async ({
+    page,
+  }) => {
+    await page.goto("/cockpit");
+    const island = page.getByTestId("globe-island");
+    await expect(island).toBeVisible();
+    await expect(island).toHaveClass(/globe-hero/);
+    await expect(island).not.toHaveClass(/hud-panel/);
+
+    const box = await island.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(320);
+  });
+
+  test("globe canvas uses point-cloud mode", async ({ page }) => {
+    await page.goto("/cockpit");
+    const canvas = page.getByTestId("globe-canvas");
+    await expect(canvas).toBeVisible({ timeout: 15_000 });
+    await expect(canvas).toHaveAttribute("data-globe-mode", "point-cloud");
+    await expect(page.getByTestId("globe-island")).toHaveAttribute(
+      "data-globe-mode",
+      "point-cloud",
+    );
+  });
+});

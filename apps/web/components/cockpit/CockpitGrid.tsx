@@ -24,12 +24,12 @@ export function CockpitGrid({
     <div
       data-testid="cockpit-grid"
       className={cn(
-        "cockpit-grid mx-auto grid max-w-[1600px] gap-4 px-4 py-6 md:px-6",
-        "grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(280px,420px)_minmax(0,1fr)]",
-        "lg:grid-rows-[auto_auto]",
+        "cockpit-grid mx-auto grid max-w-[1600px] gap-4 px-4 py-4 md:px-6 md:py-6",
+        "grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(320px,1.1fr)_minmax(0,1fr)]",
+        "lg:grid-rows-[minmax(45vh,1fr)_auto]",
       )}
     >
-      <div className="flex flex-col gap-4 lg:col-start-1 lg:row-span-2">
+      <div className="glass-column flex flex-col gap-4 lg:col-start-1 lg:row-span-2 lg:row-start-1">
         <StudioPanel
           items={studio.items}
           insufficientData={studio.insufficientData}
@@ -42,11 +42,11 @@ export function CockpitGrid({
         />
       </div>
 
-      <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+      <div className="order-first lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1">
         <GlobeIsland />
       </div>
 
-      <div className="flex flex-col gap-4 lg:col-start-3 lg:row-span-2">
+      <div className="glass-column flex flex-col gap-4 lg:col-start-3 lg:row-span-2 lg:row-start-1">
         <ReportsPanel
           items={reports.items}
           insufficientData={reports.insufficientData}

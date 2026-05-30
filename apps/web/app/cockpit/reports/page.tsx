@@ -1,4 +1,4 @@
-import { CockpitGrid } from "@/components/cockpit/CockpitGrid";
+import { CockpitShell } from "@/components/cockpit/CockpitShell";
 import { getCockpitSlices } from "@/lib/bff";
 
 type ReportsPageProps = {
@@ -12,13 +12,17 @@ export default async function ReportsDeepLinkPage({
   const { artifact } = await searchParams;
 
   return (
-    <div data-testid="cockpit-reports-page">
+    <>
       {artifact ? (
         <p className="px-4 py-2 font-mono text-[10px] text-hud-muted md:px-6">
           Artifact detail loads via GET /api/v1/reports/artifacts/{artifact}
         </p>
       ) : null}
-      <CockpitGrid slices={slices} focus="reports" />
-    </div>
+      <CockpitShell
+        slices={slices}
+        focus="reports"
+        pageTestId="cockpit-reports-page"
+      />
+    </>
   );
 }

@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 
+import { GLOBE_MODE } from "./GlobeCanvas";
+
 const GlobeCanvas = dynamic(
   () => import("./GlobeCanvas").then((m) => ({ default: m.GlobeCanvas })),
   {
@@ -10,7 +12,7 @@ const GlobeCanvas = dynamic(
       <div
         aria-hidden
         data-testid="globe-loading"
-        className="flex h-full min-h-[280px] w-full items-center justify-center"
+        className="flex h-full min-h-[45vh] w-full items-center justify-center"
       >
         <div className="h-32 w-32 animate-pulse rounded-full border border-hud-cyan/20 bg-hud-cyan/5" />
       </div>
@@ -22,11 +24,10 @@ export function GlobeIsland(): React.ReactElement {
   return (
     <div
       data-testid="globe-island"
-      className="hud-panel relative min-h-[280px] overflow-hidden p-0 lg:min-h-[420px]"
+      data-globe-mode={GLOBE_MODE}
+      className="globe-hero relative min-h-[45vh] w-full overflow-hidden lg:min-h-[55vh]"
     >
-      <p className="pointer-events-none absolute left-4 top-4 z-10 font-mono text-[10px] uppercase tracking-widest text-hud-cyan/70">
-        Command globe
-      </p>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.08),transparent_65%)]" />
       <div className="absolute inset-0">
         <GlobeCanvas />
       </div>
