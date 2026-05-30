@@ -4,6 +4,7 @@ export const PHASE2_CONTRACT_VERSION = "2.0.0";
 export const PHASE3_CONTRACT_VERSION = "3.0.0";
 export const PHASE4_CONTRACT_VERSION = "4.0.0";
 export const PHASE5_CONTRACT_VERSION = "5.0.0";
+export const PHASE5_1_CONTRACT_VERSION = "5.1.0";
 
 export {
   PlatformSchema,
@@ -86,11 +87,13 @@ export {
   CockpitCalendarPanelSchema,
   CockpitReportsPanelSchema,
   CockpitResearchPanelSchema,
+  TelemetryEventSchema,
   type CockpitSlices,
   type CockpitStudioItem,
   type CockpitCalendarItem,
   type CockpitReportItem,
   type CockpitResearchItem,
+  type TelemetryEvent,
 } from "./phase5/index.js";
 
 export {

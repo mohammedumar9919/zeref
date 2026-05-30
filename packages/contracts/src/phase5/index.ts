@@ -14,3 +14,8 @@ export {
   type CockpitReportItem,
   type CockpitResearchItem,
 } from "./cockpit.js";
+
+export {
+  TelemetryEventSchema,
+  type TelemetryEvent,
+} from "./telemetry.js";
