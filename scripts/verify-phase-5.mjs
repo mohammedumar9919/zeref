@@ -43,6 +43,7 @@ function ciSafeEnv() {
   env.ZEREF_LLM_MOCK = "1";
   env.ZEREF_EMBED_PROVIDER = "mock";
   env.ZEREF_BFF_FIXTURE = "1";
+  env.SKIP_DB_TESTS = "1";
   env.CI = "true";
   const port = env.PLAYWRIGHT_PORT ?? "3099";
   env.PLAYWRIGHT_PORT = port;

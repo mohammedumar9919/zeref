@@ -61,7 +61,10 @@ describe("cockpit BFF (fixture mode)", () => {
   });
 });
 
-describe("cockpit BFF (database)", { skip: process.env.SKIP_DB_TESTS === "1" }, () => {
+describe(
+  "cockpit BFF (database)",
+  { skip: process.env.SKIP_DB_TESTS === "1" || process.env.ZEREF_BFF_FIXTURE === "1" },
+  () => {
   /** @type {pg.Pool} */
   let pool;
   let testDbName;
