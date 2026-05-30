@@ -25,7 +25,10 @@
 | ZR-003 | `run-pipeline.mjs` one-command full pipeline | **DONE** | `npm run pipeline:run` |
 | ZR-004 | BFF error surfaced in UI (not silent empty) | **DONE** | `CockpitBffError` + `cockpit/error.tsx` |
 | ZR-005 | CI BFF test against real Postgres | **OPEN** | Phase 5 uses `ZEREF_BFF_FIXTURE=1` only |
-| ZR-006 | Portable agent stack fully committed | **PARTIAL** | git commit pending |
+| ZR-006 | Portable agent stack fully committed | **DONE** | @ `ff3ebea` |
+| ZR-007 | Dev perf doc + verify-during-recompile warning | **DONE** | `docs/DEV_PERFORMANCE.md` |
+| ZR-008 | dev:clean kills port 3000 on Windows | **DONE** | `scripts/dev-clean.mjs` |
+| ZR-009 | BFF RSC direct `loadCockpitSlices` | **DONE** | Phase 5.0.2 / ADR-016 amend |
 
 ---
 

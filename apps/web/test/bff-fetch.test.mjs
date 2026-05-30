@@ -4,41 +4,40 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const webRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const bff = await import(pathToFileURL(join(webRoot, "lib/bff.ts")).href);
 
-describe("getCockpitSlices (RSC fetch)", () => {
-  /** @type {typeof fetch} */
-  let originalFetch;
+describe("getCockpitSlices (RSC direct load)", () => {
+  /** @type {typeof import('../lib/bff.ts')} */
+  let bff;
 
-  before(() => {
-    originalFetch = globalThis.fetch;
+  before(async () => {
+    bff = await import(pathToFileURL(join(webRoot, "lib/bff.ts")).href);
   });
 
   after(() => {
-    globalThis.fetch = originalFetch;
+    delete process.env.ZEREF_BFF_FIXTURE;
+    delete process.env.DATABASE_URL;
   });
 
-  it("throws CockpitBffError on HTTP error instead of silent empty", async () => {
-    globalThis.fetch = async () =>
-      new Response(JSON.stringify({ error: "failed" }), { status: 500 });
+  it("throws CockpitBffError when DB unavailable and not in fixture mode", async () => {
+    delete process.env.ZEREF_BFF_FIXTURE;
+    delete process.env.DATABASE_URL;
 
     await assert.rejects(
       () => bff.getCockpitSlices(),
       (err) => {
         assert.equal(err.name, "CockpitBffError");
-        assert.match(err.message, /HTTP 500/);
+        assert.match(err.message, /DATABASE_URL/);
         return true;
       },
     );
   });
 
-  it("throws CockpitBffError on invalid JSON body", async () => {
-    globalThis.fetch = async () =>
-      new Response("not-json", { status: 200, headers: { "content-type": "text/plain" } });
+  it("returns validated slices from loadCockpitSlices in fixture mode", async () => {
+    process.env.ZEREF_BFF_FIXTURE = "1";
 
-    await assert.rejects(
-      () => bff.getCockpitSlices(),
-      (err) => err.name === "CockpitBffError",
-    );
+    const slices = await bff.getCockpitSlices();
+    assert.equal(slices.schemaVersion, "phase5-cockpit-v1");
+    assert.ok(slices.panels.studio);
+    assert.ok(Array.isArray(slices.panels.reports.items));
   });
 });

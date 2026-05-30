@@ -58,6 +58,13 @@ You are **Agent <NAME>** for Zeref — **<SCOPE> only**.
 2. docs/GAP_BACKLOG.md
 3. docs/api-contracts.md
 4. docs/AGENTS.md
+5. docs/SKILL_INVOCATION.md
+
+## Skills — invoke before acting
+1. using-superpowers
+2. [task-specific from SKILL_INVOCATION.md]
+3. test-driven-development (if writing code)
+4. verification-before-completion + run-verify-gate (before done)
 
 ## You own ONLY
 - `path/**`

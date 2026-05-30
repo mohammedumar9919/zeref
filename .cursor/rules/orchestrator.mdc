@@ -14,6 +14,8 @@ Before planning or delegating:
 
 GSD owns `.planning/` artifacts; **CURRENT_STATE.md** is runtime execution truth.
 
-Use Superpowers skills (`using-superpowers`, `test-driven-development`, `verification-before-completion`) when implementing.
+Use Superpowers skills per [docs/SKILL_INVOCATION.md](../docs/SKILL_INVOCATION.md) — at minimum `using-superpowers` at session start, `test-driven-development` for code, `verification-before-completion` before done.
 
 Frontend: invoke **ui-ux-pro-max** — Jarvis HUD (cyan mono, glass, honest metrics), not generic AI purple gradients.
+
+Perf/debug: **systematic-debugging** + [DEV_PERFORMANCE.md](../docs/DEV_PERFORMANCE.md).

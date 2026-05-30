@@ -17,10 +17,11 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5 Planner sign-off | **APPROVED** (scaffold) |
 | Agent stack (GSD, council, uipro, Superpowers) | **DONE** |
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
+| Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
 | Phase 5.1 Luke JARVIS HUD visual | **NEXT** — ref: [design/reference/lukebuildsai-jarvis-hud.jpeg](./design/reference/lukebuildsai-jarvis-hud.jpeg) |
 | Phase 6 Jarvis voice | **BLOCKED** until 5.1 signed off |
 
-**Immediate goal:** Phase **5.1** Luke JARVIS HUD contract + implement. See [GAP_BACKLOG.md](./GAP_BACKLOG.md).
+**Immediate goal:** Phase **5.1** Luke JARVIS HUD contract + implement. Skills: [SKILL_INVOCATION.md](./SKILL_INVOCATION.md).
 
 ---
 

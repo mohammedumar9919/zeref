@@ -1,7 +1,8 @@
 # Zeref — Agent tooling index
 
 **Updated:** 2026-05-30  
-**Full bootstrap guide:** [PORTABLE_AGENT_STACK_SETUP.md](./PORTABLE_AGENT_STACK_SETUP.md)
+**Full bootstrap guide:** [PORTABLE_AGENT_STACK_SETUP.md](./PORTABLE_AGENT_STACK_SETUP.md)  
+**Skill matrix (mandatory):** [SKILL_INVOCATION.md](./SKILL_INVOCATION.md)
 
 ---
 
@@ -38,10 +39,15 @@ node .cursor/get-shit-done/bin/gsd-tools.cjs init map-codebase
 |-------|------|
 | `using-superpowers` | Start of session |
 | `writing-plans` | Multi-step work before code |
+| `executing-plans` | Run written plan in fresh session |
+| `brainstorming` | Creative / UI design before implementation |
 | `test-driven-development` | Features and bugfixes |
-| `systematic-debugging` | Failures |
+| `systematic-debugging` | Failures / perf / unexpected behavior |
 | `verification-before-completion` | Before claiming done |
 | `subagent-driven-development` | Parallel independent tasks |
+| `requesting-code-review` / `receiving-code-review` | Merge readiness |
+| `using-git-worktrees` | Isolated feature work |
+| `finishing-a-development-branch` | Merge / PR / cleanup |
 
 ---
 

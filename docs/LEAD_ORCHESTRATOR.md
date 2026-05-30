@@ -7,12 +7,13 @@ You are the **Lead orchestrator** in a separate Cursor chat from the **Planner**
 ## Boot sequence (every session)
 
 1. [docs/CURRENT_STATE.md](./CURRENT_STATE.md)
-2. [docs/failures-checklist.md](./failures-checklist.md)
-3. [AGENTS.md](../AGENTS.md)
-4. [docs/orchestrator.md](./orchestrator.md)
-5. Relevant phase contract in `docs/governance/`
+2. [docs/SKILL_INVOCATION.md](./SKILL_INVOCATION.md) — **mandatory skill matrix**
+3. [docs/failures-checklist.md](./failures-checklist.md)
+4. [AGENTS.md](../AGENTS.md)
+5. [docs/orchestrator.md](./orchestrator.md)
+6. Relevant phase contract in `docs/governance/`
 
-**Optional:** invoke Superpowers `using-superpowers` at session start.
+**Required:** Superpowers `using-superpowers` at session start; see skill matrix for task-specific invocations.
 
 ---
 
@@ -42,10 +43,9 @@ Planner Discuss → Contract → Planner APPROVE
 
 ## Current focus (2026-05-30)
 
-1. Finish committing portable agent stack
-2. **Phase 5.0.1 ops** — worker daemon, dev:stack, run-pipeline, BFF error UX
-3. **Phase 5.1** — Luke JARVIS HUD ([reference JPEG](./design/reference/lukebuildsai-jarvis-hud.jpeg))
-4. Phase 6 voice (after 5.1)
+1. **Phase 5.1** — Luke JARVIS HUD Discuss + Contract (skills: `brainstorming`, `ui-ux-pro-max`, `gsd-discuss-phase`, `council-propose-slice`)
+2. Phase 5.0.2 **DONE** — dev perf docs, dev:clean port kill, BFF direct load
+3. Phase 6 voice after 5.1 sign-off
 
 ---
 

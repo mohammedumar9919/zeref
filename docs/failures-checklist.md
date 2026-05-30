@@ -36,7 +36,9 @@ Synthesized from legacy **instagram-ops-studio** audit and Phase 0–5 governanc
 ## Ops and dev hygiene
 
 - **No enqueue without worker daemon** — jobs sit in pg-boss until consumer runs (ZR-001)
-- **No stale `.next` crashes** — use `dev:clean` when implemented; Windows port hygiene from legacy-ios
+- **No stale `.next` crashes** — use `npm run dev:clean` (removes `.next` + frees port 3000 on Windows)
+- **Corrupted `.next` during recompile** — symptoms: `ENOENT prerender-manifest.json`, `Cannot find module './383.js'`, 500s for 30–80s; recovery: `dev:clean` + restart dev server; see [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md)
+- **Do not hammer verify/Playwright during `next dev` recompile** — causes cache race
 - **DATABASE_URL port must match docker-compose** — default `5432`; document custom `POSTGRES_PORT`
 
 ---

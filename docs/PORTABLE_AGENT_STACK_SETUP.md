@@ -108,7 +108,8 @@ $env:ZEREF_BFF_FIXTURE='1'
 ```markdown
 ## Wave 0 — Tooling
 - [x] GSD Redux installed
-- [ ] Superpowers: `/add-plugin superpowers` → restart Cursor
+- [x] Superpowers: `/add-plugin superpowers` → restart Cursor
+- [x] `docs/SKILL_INVOCATION.md` skill matrix
 - [x] uipro init in apps/web + root copy
 - [x] Council skills + board + rules
 - [x] docs/CURRENT_STATE.md, GAP_BACKLOG.md, AGENTS.md, failures-checklist.md

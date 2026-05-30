@@ -9,7 +9,9 @@
 
 Phase 5 cockpit panels need **summary DTOs** for RSC pages and a **detail endpoint** for elite report JSON. The master plan allows BFF routes in either `apps/web` (Next Route Handlers) or a separate `apps/api` service.
 
-`apps/web` already ships RSC helpers (`getCockpitSlices()`) that fetch `/api/v1/cockpit/slices`. `apps/api` is a Phase 0 stub with no HTTP server.
+`apps/web` ships RSC helpers (`getCockpitSlices()`) and HTTP routes under `/api/v1/`. `apps/api` is a Phase 0 stub with no HTTP server.
+
+**Amended 2026-05-30 (Phase 5.0.2):** RSC pages call `loadCockpitSlices()` directly via `getCockpitSlices()` — no HTTP loopback to `/api/v1/cockpit/slices`. The route remains for Playwright, curl, and external clients.
 
 ## Decision
 
@@ -22,6 +24,7 @@ Phase 5 cockpit panels need **summary DTOs** for RSC pages and a **detail endpoi
 5. **Implementation modules**
    - `apps/web/lib/db.ts` — pooled `DATABASE_URL` client
    - `apps/web/lib/cockpit-bff.ts` — query + fixture logic (unit/integration tested)
+   - `apps/web/lib/bff.ts` — RSC wrapper `getCockpitSlices()` → direct `loadCockpitSlices()` call
    - Route files remain thin wrappers.
 
 ### Fixture mode (CI Playwright without Postgres)
@@ -46,7 +49,11 @@ The seed script inserts a minimal pipeline row chain ending in an elite `report_
 
 ### Empty / offline behavior
 
-When `DATABASE_URL` is unset and `ZEREF_BFF_FIXTURE` is not `1`, `/api/v1/cockpit/slices` returns the same empty panel shape as `EMPTY_COCKPIT_SLICES` in `apps/web/lib/bff.ts`. Artifact detail returns **404**.
+When `DATABASE_URL` is unset and `ZEREF_BFF_FIXTURE` is not `1`:
+
+- **RSC pages:** `getCockpitSlices()` throws `CockpitBffError`; `app/cockpit/error.tsx` renders error UI (ZR-004).
+- **HTTP route:** `/api/v1/cockpit/slices` returns **500** JSON `{ error: "failed to load cockpit slices" }`.
+- **Artifact detail:** returns **404**.
 
 ## Consequences
 
