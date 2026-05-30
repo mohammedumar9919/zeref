@@ -18,7 +18,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Agent stack (GSD, council, uipro, Superpowers) | **DONE** |
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
-| Phase 5.1 Luke JARVIS HUD visual | **APPROVED** — implement via 3 agent chats (BFF → UI, QA parallel) |
+| Phase 5.1 Luke JARVIS HUD visual | **IMPLEMENTATION DONE** — Planner visual sign-off pending |
 | Phase 6 Jarvis voice | **BLOCKED** until 5.1 signed off |
 
 **Immediate goal:** Phase **5.1** Luke JARVIS HUD contract + implement. Skills: [SKILL_INVOCATION.md](./SKILL_INVOCATION.md).
@@ -49,10 +49,11 @@ collect → normalize → embed → analyze → report
 |-------------|--------|
 | `/cockpit` layout (Studio, Calendar \| Globe \| Reports, Research) | **DONE** |
 | BFF `GET /api/v1/cockpit/slices` | **DONE** (fixture mode in CI) |
-| Wireframe icosahedron globe | **DONE** — superseded by 5.1 point-cloud (ADR-015 amendment draft) |
-| Playwright 6/6 in CI | **DONE** |
-| RSC `getCockpitSlices()` | **DONE** — **silent empty on error** (fix in 5.0.1) |
-| Voice / telemetry / AUDIO I/O | **DEFER** 5.1 shell / Phase 6 |
+| Wireframe icosahedron globe | **SUPERSEDED** — point-cloud + rings @ `838e34d` (ADR-015 amendment) |
+| Luke HUD shell + SIMULATED telemetry/AUDIO | **DONE** @ `838e34d` |
+| Playwright 16/16 (layout + C48) | **DONE** with `ZEREF_PHASE51_UI=1` |
+| SSE stub `GET /api/v1/events/stream` | **DONE** (P5.1-B) |
+| Voice / live pipeline SSE | **DEFER** Phase 6 |
 
 ---
 
@@ -62,14 +63,22 @@ collect → normalize → embed → analyze → report
 |------|-------|-----|
 | `verify:phase-0` … `verify:phase-4` | OK with `DATABASE_URL` | OK |
 | `verify:phase-5` | OK with `ZEREF_BFF_FIXTURE=1` | OK — **no live DB BFF test** |
+| `verify:phase-5.1` | OK with `ZEREF_BFF_FIXTURE=1` + `ZEREF_PHASE51_UI=1` | OK — C48 enforced |
+
+### QA — Phase 5.1 verify (P5.1-C)
+
+| Deliverable | Status |
+|-------------|--------|
+| `scripts/verify-phase-5.1.mjs` | **DONE** — chains `verify:phase-0` … `verify:phase-5` + C48 |
+| `apps/web/e2e/cockpit-hud-5.1.spec.ts` | **DONE** — C48 testids |
+| CI **Phase 0–5.1 gate** | **DONE** — `ZEREF_PHASE51_UI=1` on 5.1 step |
 
 ```powershell
 cd c:\Projects\zeref
-docker compose up -d db
-$env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
 $env:ZEREF_LLM_MOCK='1'
 $env:ZEREF_BFF_FIXTURE='1'
-.\scripts\phase_gate.ps1 -Phase 5   # when script committed
+$env:ZEREF_PHASE51_UI='1'
+npm run verify:phase-5.1
 ```
 
 ---
@@ -92,13 +101,9 @@ $env:ZEREF_BFF_FIXTURE='1'
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | Lead | Commit agent stack docs + `.cursor` + reference JPEG |
-| 2 | Planner | Approve Phase 5.0.1 ops contract |
-| 3 | Agent Worker + QA | Worker daemon, `dev:stack`, `run-pipeline.mjs` |
-| 4 | Agent UI + BFF | Fix silent empty BFF; optional live DB verify job |
-| 5 | Planner | Approve [phase-5.1-contract.md](./governance/phase-5.1-contract.md) + ADR-015 amendment |
-| 6 | Agents UI / BFF-Events / Docs-QA | Implement 5.1 — **separate chats** after approval |
-| 7 | Planner | Phase 6 voice discuss |
+| 1 | User + Lead | Push; confirm CI Phase 0–5.1 green |
+| 2 | Planner | Visual sign-off vs `lukebuildsai-jarvis-hud.jpeg` + screenshot `docs/design/reference/screenshots/zeref-cockpit-5.1-a.png` |
+| 3 | Planner | Phase 6 voice discuss |
 
 ---
 

@@ -88,3 +88,57 @@ cd c:\Projects\zeref
 $env:ZEREF_BFF_FIXTURE='1'
 npm run verify:phase-5
 ```
+
+---
+
+## Phase 5.1 extension (`verify:phase-5.1`, C49)
+
+**Status:** Accepted (2026-05-30)  
+**Contract:** [phase-5.1-contract.md](../phase-5.1-contract.md) (C43–C50) · [ADR-015 amendment](./ADR-015-amendment-phase-5.1.md) · [ADR-019](./ADR-019-telemetry-sse-stub.md)
+
+### Entry point
+
+`npm run verify:phase-5.1` → `scripts/verify-phase-5.1.mjs`
+
+Orchestrates **`verify:phase-0` … `verify:phase-5`**, then Phase 5.1 static checks and Playwright **C48** assertions.
+
+### C48 Playwright (deferred until UI lands)
+
+Spec: `apps/web/e2e/cockpit-hud-5.1.spec.ts`
+
+| Assertion | `data-testid` / attribute |
+|-----------|---------------------------|
+| HUD header | `hud-header` |
+| HUD footer | `hud-footer` |
+| Simulated telemetry badge | `telemetry-simulated` |
+| Simulated AUDIO I/O badge | `audio-io-simulated` |
+| Point-cloud globe mode | `globe-canvas` `data-globe-mode="point-cloud"` |
+
+**Pre-UI scaffold:** tests **skip** unless `ZEREF_PHASE51_UI=1`. `verify:phase-5.1` exits 0 with a deferral note when the flag is unset (expected until UI agent **P5.1-A** lands).
+
+**Post-UI:** set `ZEREF_PHASE51_UI=1` locally and in CI to enforce hard failures.
+
+Preserved from Phase 5: `cockpit-grid`, `panel-*`, `globe-island`, `globe-canvas` (see `cockpit-layout.spec.ts`).
+
+### CI workflow
+
+- Job renamed **Phase 0–5.1 gate**
+- Step: `verify:phase-5.1` after `verify:phase-5` (same `ZEREF_BFF_FIXTURE=1` / `ZEREF_LLM_MOCK=1` env)
+- Enable `ZEREF_PHASE51_UI=1` on the 5.1 step once HUD UI merges
+
+### Static checks (5.1-owned)
+
+| Check | Requirement |
+|-------|-------------|
+| Governance | `phase-5.1-contract.md`, ADR-015 amendment, ADR-019 |
+| **C48** | E2E spec references all new testids |
+| **C50** | Same voice/instagram import guard as C30 |
+
+### Phase 5.1 verify command
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+npm run verify:phase-5.1
+# After UI lands: $env:ZEREF_PHASE51_UI='1'; npm run verify:phase-5.1
+```

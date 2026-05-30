@@ -67,6 +67,18 @@
 
 **Reading order:** ADR-015 → ADR-016 → ADR-017 → ADR-018
 
+## Phase 5.1 (Luke JARVIS HUD fusion)
+
+**Contract:** [phase-5.1-contract.md](../phase-5.1-contract.md) (C43–C50)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-015 amendment](./ADR-015-amendment-phase-5.1.md) | Point-cloud globe + full-bleed hero (C44–C45) | **APPROVED** | UI |
+| [ADR-019](./ADR-019-telemetry-sse-stub.md) | SSE telemetry stub + SIMULATED badge (C47) | **APPROVED** | BFF/Events |
+| [ADR-018](./ADR-018-verify-phase-5-harness.md) | Extended by `verify:phase-5.1` (C48–C49) | Accepted | QA |
+
+**Reading order:** ADR-015 amendment → ADR-019 → ADR-018 (5.1 extension)
+
 ## Planner quick reference
 
 | ID | ADR / doc |
@@ -100,6 +112,9 @@
 | C28 | ADR-018 + verify.md — Playwright in CI |
 | C29 | ADR-016 — report artifact detail by ID (read-only) |
 | C30 | ADR-015/018 — no voice/STT/TTS in Phase 5 web |
+| C43–C48 | Phase 5.1 — ADR-015 amendment, ADR-019, `verify:phase-5.1` Playwright C48 |
+| C49 | ADR-018 extension + verify.md — CI runs `verify:phase-5.1` after `verify:phase-5` |
+| C50 | C30 carry-forward — no voice in Phase 5.1 web |
 
 ## Related
 
