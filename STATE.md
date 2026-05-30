@@ -1,9 +1,6 @@
-# Zeref — STATE (mirror)
+# Zeref — quick state
 
-**Source of truth:** `.planning/STATE.md`
-
-- **Phase:** 5 (implementation in progress; contract DRAFT)
+- **Phase:** 5 (implementation complete — pending Planner sign-off)
 - **Last completed:** Phase 4 (`dc2adb1`)
-- **Blocker:** none
-
-Full checklist and verify commands: **`.planning/STATE.md`**
+- **Tip:** `272a71c`
+- **Contract:** `docs/governance/phase-5-contract.md` (DRAFT → sign-off pending)

@@ -1,10 +1,11 @@
 # Zeref — Phase 5 Contract (Discuss + Contract)
 
 **Phase:** 5  
-**Status:** **DRAFT** (requires Planner approval)  
+**Status:** **IMPLEMENTATION COMPLETE** (Planner sign-off pending)  
 **Theme:** Cockpit UI shell (4 panels + center globe, RSC-first, BFF)
 
-**Prerequisites:** Phases 0–4 approved (`verify:phase-4` green; tip `dc2adb1`).
+**Prerequisites:** Phases 0–4 approved (`verify:phase-4` green; tip `dc2adb1`).  
+**Implementation tip:** `272a71c` (`9e75113` UI, `bf09fd5` API, `272a71c` Docs/QA harness docs).
 
 ---
 
