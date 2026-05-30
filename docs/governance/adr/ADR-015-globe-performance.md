@@ -1,8 +1,9 @@
 # ADR-015: Globe performance budget (client island)
 
 **Status:** Accepted (Phase 5)  
+**Date:** 2026-05-29  
 **Owner:** UI  
-**Related:** [Phase 5 contract](../phase-5-contract.md) Q1, C26, C30
+**Related:** [Phase 5 contract](../phase-5-contract.md) (Q1, C26, C30) · [ADR index](./README.md) · [ADR-017](./ADR-017-cockpit-routes-layout.md) · [ADR-018](./ADR-018-verify-phase-5-harness.md) · [Legacy cockpit salvage](../../handoff/legacy-ios.md) · [verify.md](../verify.md)
 
 ## Context
 
@@ -33,3 +34,18 @@ The cockpit center column hosts a **thick globe** visual — the command-core an
 | Server-rendered static SVG globe | Loses wireframe depth; wireframe spec in wireframe |
 | Full-screen fixed canvas (legacy Jarvis) | Phase 5 wireframe embeds globe **inside** center column |
 | High-detail sphere + postprocessing | Exceeds perf budget for minimal Phase 5 value |
+
+## Legacy reference (read-only)
+
+Legacy `JarvisCanvas.tsx` used a full-viewport orb with GPU-heavy effects (Bloom removed in perf pass). Zeref embeds a **bounded center-column** wireframe globe with a strict triangle budget. See [legacy-ios.md](../../handoff/legacy-ios.md) § Cockpit salvage.
+
+## Verification
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+npm run build
+npm run verify:phase-5
+```
+
+Playwright asserts globe canvas presence (C26); no FPS gate in CI (ADR-018).

@@ -1,8 +1,9 @@
 # ADR-016: BFF placement — cockpit slices + report artifacts
 
 **Status:** Accepted (Phase 5)  
+**Date:** 2026-05-29  
 **Owner:** API  
-**Related:** [Phase 5 contract](../phase-5-contract.md) Q2, C27, C29
+**Related:** [Phase 5 contract](../phase-5-contract.md) (Q2, C27, C29) · [ADR index](./README.md) · [ADR-017](./ADR-017-cockpit-routes-layout.md) · [ADR-018](./ADR-018-verify-phase-5-harness.md) · [Legacy cockpit salvage](../../handoff/legacy-ios.md) · [verify.md](../verify.md)
 
 ## Context
 
@@ -37,7 +38,7 @@ Override the artifact UUID in tests with `ZEREF_PLAYWRIGHT_ARTIFACT_ID` (optiona
 ### Seeded Postgres (local / integration)
 
 ```powershell
-$env:DATABASE_URL='postgres://zeref:zeref@localhost:35432/zeref'
+$env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
 node scripts/seed-cockpit-playwright.mjs
 ```
 
@@ -68,7 +69,9 @@ cd c:\Projects\zeref
 $env:ZEREF_BFF_FIXTURE='1'
 npm -w @zeref/web test
 
-$env:DATABASE_URL='postgres://zeref:zeref@localhost:35432/zeref'
+$env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
 npm -w @zeref/web test
 npm run build
 ```
+
+Included in `npm run verify:phase-5` (ADR-018).

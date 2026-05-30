@@ -160,14 +160,16 @@ apps/web/
 
 ---
 
-## ADRs (Phase 5)
+## ADRs
+
+Index: [docs/governance/adr/README.md](./adr/README.md) · Legacy cockpit: [legacy-ios.md](../handoff/legacy-ios.md)
 
 | ADR | Owner | Topic |
 |-----|-------|--------|
-| ADR-015 | UI | Globe perf budget, client island (Q1) |
-| ADR-016 | API | BFF placement, slices + artifact routes (Q2) |
-| ADR-017 | UI | Routes, responsive panel grid (Q3) |
-| ADR-018 | QA | Playwright cockpit-layout harness (C28) |
+| [ADR-015](./adr/ADR-015-globe-performance.md) | UI | Globe perf budget, client island (Q1) |
+| [ADR-016](./adr/ADR-016-bff-cockpit-slices.md) | API | BFF placement, slices + artifact routes (Q2) |
+| [ADR-017](./adr/ADR-017-cockpit-routes-layout.md) | UI | Routes, responsive panel grid (Q3) |
+| [ADR-018](./adr/ADR-018-verify-phase-5-harness.md) | QA | Playwright cockpit-layout harness (C28) |
 
 ---
 

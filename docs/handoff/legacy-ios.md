@@ -79,6 +79,59 @@ Legacy `jarvis_analyze` / report synthesis produced structured sections (headlin
 
 ---
 
+## Cockpit salvage (Phase 5)
+
+Legacy shipped a **demo-grade Jarvis cockpit** (`DashboardCockpit.tsx`, orb, asymmetric panels, voice PTT). Zeref Phase 5 rewrites the **layout shell** with RSC-first data and CI-enforced Playwright — **no code copy**.
+
+### What legacy did well
+
+| Behavior | Legacy | Zeref (Phase 5) |
+|----------|--------|-----------------|
+| Primary command screen | `/dashboard` one-screen cockpit | `/cockpit` default; `/` redirects (ADR-017) |
+| Minimal top nav | 3 links (Home, Dashboard, Settings) | **2 links:** Cockpit \| Settings (C25) |
+| Asymmetric panels | Studio, Reports, Top content, Competitors | Studio + Calendar \| Globe \| Reports + Research (C26) |
+| Center orb / globe | Three.js on dashboard only | Client island in center column; ≤50k tris (ADR-015) |
+| BFF-only browser API | `/api/control` route handler | `/api/v1/cockpit/slices` in `apps/web` (ADR-016) |
+| Elite report in UI | Reports panel + deep link | Summary DTO in slices; detail by artifact ID (C29) |
+| Honest empty states | `insufficient_data` when scrape thin | `insufficientData` on panel DTOs (Q2) |
+
+**Salvage:** Layout IA, BFF discipline, panel density, globe-as-anchor — not legacy component code or 7-link nav sprawl.
+
+### What legacy did wrong (do not repeat)
+
+| Pitfall | Legacy symptom | Zeref rule |
+|---------|----------------|------------|
+| **Client refetch storm** | `DashboardCockpit` `fetch` slices on mount (`cache: "no-store"`) | RSC `getCockpitSlices()` once per request (C27) |
+| **No CockpitDataProvider** | Every nav remount refetched | Server fetch + tagged cache policy (ADR-017) |
+| **Playwright optional** | `cockpit-layout.spec.ts` skipped without env | **Required in CI** (C28 / ADR-018) |
+| **Double BFF proxy** | Next rewrite + route handler | Single Route Handler path (ADR-016) |
+| **Voice on dashboard only** | Partial global voice | **No voice at all** in Phase 5 (C30); Phase 6+ |
+| **Globe GPU bloat** | Bloom, always-on animation | Idle rotation only; lazy chunk (ADR-015) |
+| **Full elite JSON in slices** | Heavy cockpit hydration | Summary DTO only; detail route (Q2) |
+| **Field name typos** | `competitorBenchmarks` emptied panel | `@zeref/contracts` `CockpitSlicesSchema` (C24) |
+
+### Rewrite checklist (Phase 5)
+
+- [ ] Planner approves `phase-5-contract.md` (Q1–Q3, C24–C30)
+- [ ] RSC cockpit pages + BFF routes (UI / API agents)
+- [ ] `CockpitSlicesSchema` + fixtures (Contracts)
+- [ ] Playwright `cockpit-layout` in CI (QA / ADR-018)
+- [ ] `npm run verify:phase-5` green — **required before marking done**
+- [ ] Jarvis voice wiring — Phase 6 only (C30)
+
+### Legacy cockpit files to read (not copy)
+
+| Path | Why |
+|------|-----|
+| `apps/approval-web/src/components/cockpit/DashboardCockpit.tsx` | Panel grid + slices fetch anti-pattern |
+| `apps/approval-web/src/components/shell/JarvisNav.tsx` | Nav minimalism reference |
+| `apps/approval-web/src/components/jarvis/JarvisCanvas.tsx` | Globe perf lessons |
+| `apps/approval-web/src/app/api/control/[...path]/route.ts` | BFF-only pattern |
+| `docs/handoff/07-product-goals-and-end-features.md` §8–§9 | Acceptance criteria |
+| `tests/e2e/cockpit-layout.spec.ts` (legacy) | Layout test ideas — rewrite for Zeref routes |
+
+---
+
 ## Broader legacy lessons (all phases)
 
 ### Wins worth keeping
@@ -99,6 +152,9 @@ Legacy `jarvis_analyze` / report synthesis produced structured sections (headlin
 
 ## Related Zeref docs
 
+- [ADR-015: Globe performance](../governance/adr/ADR-015-globe-performance.md)
+- [ADR-016: BFF cockpit slices](../governance/adr/ADR-016-bff-cockpit-slices.md)
+- [ADR-017: Cockpit routes](../governance/adr/ADR-017-cockpit-routes-layout.md)
+- [Phase 5 contract](../governance/phase-5-contract.md)
 - [ADR-004: Instagram merge](../governance/adr/ADR-004-instagram-merge.md)
 - [Phase 2 contract](../governance/phase-2-contract.md)
-- [ADR-001: Snapshot data model](../governance/adr/ADR-001-snapshot-data-model.md)

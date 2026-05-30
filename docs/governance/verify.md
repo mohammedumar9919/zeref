@@ -2,7 +2,7 @@
 
 CI must fail if these commands fail.
 
-**Related:** [ADR index](./adr/README.md) · [Phase 1](./phase-1-contract.md) · [Phase 2](./phase-2-contract.md) · [Phase 3](./phase-3-contract.md) · [Phase 4](./phase-4-contract.md)
+**Related:** [ADR index](./adr/README.md) · [Phase 1](./phase-1-contract.md) · [Phase 2](./phase-2-contract.md) · [Phase 3](./phase-3-contract.md) · [Phase 4](./phase-4-contract.md) · [Phase 5](./phase-5-contract.md)
 
 ## Environment: `DATABASE_URL`
 
@@ -21,19 +21,21 @@ docker compose up -d db
 $env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
 ```
 
-## Full Phase 0–4 gate (orchestrator)
+## Full Phase 0–5 gate (orchestrator)
 
 ```powershell
 cd c:\Projects\zeref
 docker compose up -d db
 $env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
 $env:ZEREF_LLM_MOCK='1'
+$env:ZEREF_BFF_FIXTURE='1'
 npm install
 npm run verify:phase-0
 npm run verify:phase-1
 npm run verify:phase-2
 npm run verify:phase-3
 npm run verify:phase-4
+npm run verify:phase-5
 ```
 
 **Do not set for default gate or CI:**
@@ -41,6 +43,8 @@ npm run verify:phase-4
 - `ZEREF_LIVE_INSTAGRAM` — live Instagram fetch (Phase 2; see [ADR-006](./adr/ADR-006-parse-fetch-live.md))
 - `OPENAI_API_KEY`, `ZEREF_NOMIC_EMBED_URL`, or non-mock `ZEREF_EMBED_PROVIDER` — live embed (Phase 3; see [ADR-010](./adr/ADR-010-verify-phase-3-harness.md))
 - `OPENROUTER_API_KEY` — live LLM (Phase 4; see [ADR-011](./adr/ADR-011-openrouter-mock.md))
+
+**Phase 5 Playwright:** set `ZEREF_BFF_FIXTURE=1` for layout smoke without Postgres (see [ADR-018](./adr/ADR-018-verify-phase-5-harness.md)).
 
 ---
 
@@ -195,3 +199,54 @@ After `verify:phase-3`:
 
 - `ZEREF_LLM_MOCK=1`
 - `npm run verify:phase-4`
+
+---
+
+## Phase 5 (Cockpit UI shell + Playwright)
+
+**Contract:** [phase-5-contract.md](./phase-5-contract.md) (C24–C30) · **ADRs:** [015](./adr/ADR-015-globe-performance.md)–[018](./adr/ADR-018-verify-phase-5-harness.md)
+
+Playwright layout smoke uses **fixture BFF** by default (no `DATABASE_URL` required).
+
+```powershell
+$env:ZEREF_BFF_FIXTURE='1'
+npm run verify:phase-5
+```
+
+Optional DB-backed BFF dev:
+
+```powershell
+$env:DATABASE_URL='postgres://zeref:zeref@localhost:5432/zeref'
+node scripts/seed-cockpit-playwright.mjs
+npm -w @zeref/web test
+```
+
+### Q2: `ZEREF_BFF_FIXTURE` (no Postgres for layout smoke)
+
+| Value | Behavior |
+|-------|----------|
+| **`1`** (default verify / CI) | BFF serves `fixtures/phase-5/cockpit-slices.fixture.json`; Playwright runs without DB |
+| unset + no `DATABASE_URL` | Empty panel summaries from BFF (see ADR-016) |
+
+**No live embed, LLM, or Instagram** in Phase 5 verify — prior phase env stripping still applies.
+
+### What `verify:phase-5` checks
+
+Script: `scripts/verify-phase-5.mjs`
+
+- `phase-5-contract.md`, ADR-015–018, `docs/design/DESIGN_SYSTEM.md`
+- `fixtures/phase-5/` including `cockpit-slices.fixture.json`
+- **C24:** `PHASE5_CONTRACT_VERSION`, `CockpitSlicesSchema`
+- **C27:** cockpit RSC pages call `getCockpitSlices()` from `@/lib/bff`
+- **C30:** no voice/whisper/jarvis/`@zeref/instagram` imports in `apps/web`
+- `npm run build` (includes Next production build)
+- `@zeref/contracts` + `@zeref/web` unit tests
+- **C28:** Playwright `cockpit-layout` — nav, 4 panels, globe canvas (Chromium)
+
+### CI (C28)
+
+After `verify:phase-4`:
+
+- Install Playwright Chromium
+- `ZEREF_BFF_FIXTURE=1`, `ZEREF_LLM_MOCK=1`
+- `npm run verify:phase-5` (includes Playwright)

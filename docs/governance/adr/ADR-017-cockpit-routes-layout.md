@@ -1,8 +1,9 @@
 # ADR-017: Cockpit routes and responsive layout
 
 **Status:** Accepted (Phase 5)  
+**Date:** 2026-05-29  
 **Owner:** UI  
-**Related:** [Phase 5 contract](../phase-5-contract.md) Q3, C25–C26
+**Related:** [Phase 5 contract](../phase-5-contract.md) (Q3, C25–C26) · [ADR index](./README.md) · [ADR-015](./ADR-015-globe-performance.md) · [ADR-016](./ADR-016-bff-cockpit-slices.md) · [ADR-018](./ADR-018-verify-phase-5-harness.md) · [Legacy cockpit salvage](../../handoff/legacy-ios.md) · [verify.md](../verify.md)
 
 ## Context
 
@@ -63,3 +64,13 @@ Phase 5 ships the cockpit **shell**: four panels, center globe, minimal navigati
 | Separate full-page layouts per panel | Breaks wireframe “all panels visible” default |
 | Sub-nav for panels | Violates C25 minimal nav |
 | Client-side SWR for slices | Conflicts with RSC-first master plan §1 |
+
+## Verification
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+npm -w @zeref/web run test:e2e
+```
+
+Layout regions and nav assertions run in `npm run verify:phase-5` (ADR-018).

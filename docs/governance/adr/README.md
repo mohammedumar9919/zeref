@@ -55,14 +55,15 @@
 
 ## Phase 5 (cockpit UI shell)
 
-**Contract:** [phase-5-contract.md](../phase-5-contract.md) (Q1–Q3, C24–C30)
+**Contract:** [phase-5-contract.md](../phase-5-contract.md) (Q1–Q3, C24–C30)  
+**Legacy salvage:** [legacy-ios.md](../../handoff/legacy-ios.md) (cockpit layout + BFF)
 
 | ADR | Topic | Owner |
 |-----|--------|-------|
 | [ADR-015](./ADR-015-globe-performance.md) | Globe perf budget, client island (Q1) | UI |
 | [ADR-016](./ADR-016-bff-cockpit-slices.md) | BFF placement, slices + artifact routes (Q2) | API |
 | [ADR-017](./ADR-017-cockpit-routes-layout.md) | Routes, responsive panel grid (Q3) | UI |
-| [ADR-018](./ADR-018-verify-phase-5.md) | Playwright cockpit-layout harness (C28) | QA |
+| [ADR-018](./ADR-018-verify-phase-5-harness.md) | Playwright cockpit-layout harness (C28) | QA |
 
 **Reading order:** ADR-015 → ADR-016 → ADR-017 → ADR-018
 
@@ -92,6 +93,13 @@
 | C21 | ADR-014 + verify.md — CI runs `verify:phase-4` |
 | C22 | ADR-014 — verify:phase-3 relaxed registry count |
 | C23 | ADR-012 — elite artifact always written |
+| C24 | `@zeref/contracts` — `CockpitSlicesSchema`, `PHASE5_CONTRACT_VERSION` |
+| C25 | ADR-017 — top nav Cockpit \| Settings only |
+| C26 | ADR-015/017 — 4 panels + center globe layout |
+| C27 | ADR-016/017 — RSC `getCockpitSlices()`, BFF in `apps/web` |
+| C28 | ADR-018 + verify.md — Playwright in CI |
+| C29 | ADR-016 — report artifact detail by ID (read-only) |
+| C30 | ADR-015/018 — no voice/STT/TTS in Phase 5 web |
 
 ## Related
 
