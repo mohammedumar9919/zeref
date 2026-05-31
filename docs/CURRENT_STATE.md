@@ -19,9 +19,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
 | Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
-| Phase 6 Jarvis voice | **IN PROGRESS** — Wave 2 done; **P6-D UI** spawn |
+| Phase 6 Jarvis voice | **IMPLEMENTATION DONE** @ `183acf9` — Planner sign-off pending |
 
-**Immediate goal:** Spawn **P6-D** UI (PTT, live AUDIO I/O, globe voice states).
+**Immediate goal:** Run full Phase 6 gate, push CI, Planner sign-off. Live dev: OpenRouter in `apps/web/.env.local` (unset `ZEREF_LLM_MOCK` for real LLM).
 
 ---
 
@@ -64,7 +64,7 @@ collect → normalize → embed → analyze → report
 | `verify:phase-0` … `verify:phase-4` | OK with `DATABASE_URL` | OK |
 | `verify:phase-5` | OK with `ZEREF_BFF_FIXTURE=1` | OK — **no live DB BFF test** |
 | `verify:phase-5.1` | OK with `ZEREF_BFF_FIXTURE=1` + `ZEREF_PHASE51_UI=1` | OK — C48 enforced |
-| `verify:phase-6` | OK — chains 0–5.1; C59 **skipped** until P6-D | OK — scaffold; enable `ZEREF_PHASE6_VOICE=1` after UI |
+| `verify:phase-6` | OK with mocks + `ZEREF_PHASE6_VOICE=1` | OK — C59 enforced after CI update |
 
 ### QA — Phase 5.1 verify (P5.1-C)
 
@@ -106,14 +106,16 @@ npm run verify:phase-5.1
 | P6-B Kernel | **DONE** @ `d1a1063` |
 | P6-C BFF/Voice | **DONE** @ `4171e14` |
 | P6-E Docs/QA | **DONE** @ `2cbe98b` |
-| P6-D UI | **READY** — spawn |
+| P6-D UI | **DONE** @ `183acf9` |
 
 ```powershell
 cd c:\Projects\zeref
 $env:ZEREF_WHISPER_MOCK='1'; $env:ZEREF_TTS_MOCK='1'; $env:ZEREF_LLM_MOCK='1'
-npm run verify:phase-6   # C59 soft until UI
-# After UI: $env:ZEREF_PHASE6_VOICE='1'; npm run verify:phase-6
+$env:ZEREF_BFF_FIXTURE='1'; $env:ZEREF_PHASE51_UI='1'; $env:ZEREF_PHASE6_VOICE='1'
+npm run verify:phase-6
 ```
+
+**Live Jarvis (your OpenRouter key):** edit `apps/web/.env.local` — set `OPENROUTER_API_KEY`, comment out `ZEREF_LLM_MOCK=1`, restart `npm run dev -w @zeref/web`, hold PTT on cockpit.
 
 ---
 
@@ -121,8 +123,9 @@ npm run verify:phase-6   # C59 soft until UI
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Spawn **P6-D** UI |
-| 2 | User + Lead | Enable `ZEREF_PHASE6_VOICE=1` in CI; `verify:phase-6` → push |
+| 1 | User | `npm run verify:phase-6` (full flags) + `git push` |
+| 2 | User | Live test PTT at http://localhost:3000/cockpit (OpenRouter key set) |
+| 3 | Planner | Sign-off vs `lukebuildsai-jarvis-hud.jpeg` + `zeref-cockpit-6-d.png` |
 
 ---
 

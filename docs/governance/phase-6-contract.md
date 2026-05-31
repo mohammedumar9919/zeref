@@ -1,7 +1,7 @@
 # Zeref — Phase 6 Contract (Implementation)
 
 **Phase:** 6  
-**Status:** **APPROVED WITH CONDITIONS** (Planner sign-off 2026-05-30; contract @ `c40407b` + amendments)  
+**Status:** **IMPLEMENTATION COMPLETE** (pending Planner sign-off)  
 **Theme:** Jarvis voice — Whisper STT sidecar, jarvis-kernel, ElevenLabs British TTS, PTT, two-phase speak, globe voice states, live AUDIO I/O
 
 **Prerequisites:** Phase 5.1 **APPROVED** (`verify:phase-5.1` green @ `abb9dec`; CI Phase 0–5.1).

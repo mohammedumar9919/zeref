@@ -93,5 +93,5 @@ jobs:
           ZEREF_WHISPER_MOCK: "1"
           ZEREF_BFF_FIXTURE: "1"
           ZEREF_PHASE51_UI: "1"
-          # ZEREF_PHASE6_VOICE: enable after P6-D UI lands
+          ZEREF_PHASE6_VOICE: "1"
 
