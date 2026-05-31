@@ -142,3 +142,65 @@ $env:ZEREF_BFF_FIXTURE='1'
 npm run verify:phase-5.1
 # After UI lands: $env:ZEREF_PHASE51_UI='1'; npm run verify:phase-5.1
 ```
+
+---
+
+## Phase 6 extension (`verify:phase-6`, C59)
+
+**Status:** Accepted (2026-05-30)  
+**Contract:** [phase-6-contract.md](../phase-6-contract.md) (C51–C60) · ADR-020–024
+
+### Entry point
+
+`npm run verify:phase-6` → `scripts/verify-phase-6.mjs`
+
+Orchestrates **`verify:phase-5.1`** (phases 0–5 inside), Phase 6 static checks, package tests, and Playwright **C59** voice assertions.
+
+### CI child environment (Phase 6 step)
+
+| Variable | Value |
+|----------|--------|
+| `ZEREF_WHISPER_MOCK` | **`1`** |
+| `ZEREF_TTS_MOCK` | **`1`** |
+| `ZEREF_LLM_MOCK` | **`1`** |
+| `ZEREF_BFF_FIXTURE` | **`1`** |
+| `ZEREF_PHASE51_UI` | **`1`** |
+| `ZEREF_PHASE6_VOICE` | **`1`** (enforce C59 Playwright after UI lands) |
+
+### C59 Playwright
+
+Spec: `apps/web/e2e/cockpit-voice-6.spec.ts`
+
+| Assertion | Selector |
+|-----------|----------|
+| PTT control | `data-testid="ptt-button"` |
+| Live AUDIO I/O | `data-testid="audio-io-live"` (simulated hidden) |
+| Globe voice state | `globe-island` `data-globe-voice-state` |
+
+**Pre-UI scaffold:** tests **skip** unless `ZEREF_PHASE6_VOICE=1`. `verify:phase-6` exits 0 with deferral note when unset.
+
+### C59 import guard (extends C30)
+
+| Path | `@zeref/jarvis-kernel` |
+|------|------------------------|
+| `apps/web/app/api/**` | **Allowed** (server route handlers) |
+| `apps/web/lib/voice/**` | **Allowed** (BFF voice helpers) |
+| `apps/web/components/**` | **Forbidden** (especially `"use client"`) |
+| `@zeref/instagram` | **Forbidden** everywhere |
+
+### CI workflow
+
+- Job renamed **Phase 0–6 gate**
+- Step: `verify:phase-6` after `verify:phase-5.1`
+
+### Phase 6 verify command
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_WHISPER_MOCK='1'
+$env:ZEREF_TTS_MOCK='1'
+$env:ZEREF_LLM_MOCK='1'
+npm run verify:phase-6
+# After UI lands: $env:ZEREF_PHASE6_VOICE='1'; npm run verify:phase-6
+```

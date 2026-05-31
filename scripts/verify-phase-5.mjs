@@ -22,8 +22,37 @@ const COCKPIT_RSC_PAGES = [
 ];
 
 /** Import statements only — comments may mention voice/instagram (C30). */
-const C30_FORBIDDEN_IMPORT =
-  /(?:from\s+["'](?:@zeref\/instagram|@zeref\/jarvis[^"']*|[^"']*\/whisper[^"']*)["']|import\s*\(\s*["'][^"']*(?:@zeref\/instagram|whisper|jarvis)[^"']*["'])/i;
+const C30_INSTAGRAM_IMPORT =
+  /(?:from\s+["']@zeref\/instagram["']|import\s*\(\s*["'][^"']*@zeref\/instagram[^"']*["'])/i;
+
+const C30_WHISPER_IMPORT =
+  /(?:from\s+["'][^"']*\/whisper[^"']*["']|import\s*\(\s*["'][^"']*whisper[^"']*["'])/i;
+
+const C30_JARVIS_IMPORT =
+  /(?:from\s+["']@zeref\/jarvis[^"']*["']|import\s*\(\s*["'][^"']*@zeref\/jarvis[^"']*["'])/i;
+
+function toRel(abs) {
+  const root = repoRoot.replace(/\\/g, "/").replace(/\/$/, "");
+  const normalized = abs.replace(/\\/g, "/");
+  if (normalized.toLowerCase().startsWith(root.toLowerCase() + "/")) {
+    return normalized.slice(root.length + 1);
+  }
+  return normalized;
+}
+
+function isServerVoicePath(relPath) {
+  const normalized = relPath.replace(/\\/g, "/").toLowerCase();
+  return (
+    normalized.includes("/apps/web/app/api/") ||
+    normalized.includes("/apps/web/lib/voice/") ||
+    normalized.startsWith("apps/web/app/api/") ||
+    normalized.startsWith("apps/web/lib/voice/")
+  );
+}
+
+function isClientComponent(source) {
+  return /^\s*["']use client["'];?\s*$/m.test(source);
+}
 
 function fail(message) {
   console.error(`[verify:phase-5] ${message}`);
@@ -78,23 +107,27 @@ function collectWebSources(dir, acc = []) {
 }
 
 function assertNoVoiceOrInstagramInWeb() {
-  const rel = (abs) => abs.replace(/\\/g, "/").replace(`${repoRoot.replace(/\\/g, "/")}/`, "");
-  for (const abs of collectWebSources(join(webRoot, "app"))) {
-    const source = readFileSync(abs, "utf8");
-    if (C30_FORBIDDEN_IMPORT.test(source)) {
-      fail(`C30: ${rel(abs)} must not import voice/whisper/jarvis/instagram modules`);
-    }
-  }
-  for (const abs of collectWebSources(join(webRoot, "components"))) {
-    const source = readFileSync(abs, "utf8");
-    if (C30_FORBIDDEN_IMPORT.test(source)) {
-      fail(`C30: ${rel(abs)} must not import voice/whisper/jarvis/instagram modules`);
-    }
-  }
-  for (const abs of collectWebSources(join(webRoot, "lib"))) {
-    const source = readFileSync(abs, "utf8");
-    if (C30_FORBIDDEN_IMPORT.test(source)) {
-      fail(`C30: ${rel(abs)} must not import voice/whisper/jarvis/instagram modules`);
+  for (const sub of ["app", "components", "lib"]) {
+    for (const abs of collectWebSources(join(webRoot, sub))) {
+      const rel = toRel(abs);
+      const source = readFileSync(abs, "utf8");
+
+      if (C30_INSTAGRAM_IMPORT.test(source)) {
+        fail(`C30: ${rel} must not import @zeref/instagram`);
+      }
+
+      if (C30_WHISPER_IMPORT.test(source) && !isServerVoicePath(rel)) {
+        fail(`C30: ${rel} must not import whisper modules outside app/api/** or lib/voice/**`);
+      }
+
+      if (C30_JARVIS_IMPORT.test(source)) {
+        if (!isServerVoicePath(rel)) {
+          fail(`C30: ${rel} must not import @zeref/jarvis-kernel outside app/api/** or lib/voice/**`);
+        }
+        if (isClientComponent(source)) {
+          fail(`C30: ${rel} is a client component and must not import @zeref/jarvis-kernel`);
+        }
+      }
     }
   }
 }

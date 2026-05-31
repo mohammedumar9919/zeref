@@ -79,6 +79,23 @@
 
 **Reading order:** ADR-015 amendment → ADR-019 → ADR-018 (5.1 extension)
 
+## Phase 6 (Jarvis voice)
+
+**Contract:** [phase-6-contract.md](../phase-6-contract.md) (Q1–Q5, C51–C60)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-020](./ADR-020-whisper-stt-sidecar.md) | faster-whisper sidecar (Q1, C51) | **APPROVED** | Whisper |
+| [ADR-021](./ADR-021-jarvis-kernel-two-phase-speak.md) | kernel + two-phase speak (Q3–Q4, C52) | **APPROVED** | Kernel |
+| [ADR-022](./ADR-022-elevenlabs-tts-mock.md) | ElevenLabs + `ZEREF_TTS_MOCK` (Q2, C53) | **APPROVED** | Kernel |
+| [ADR-023](./ADR-023-globe-voice-states.md) | globe voice states (C57) | **APPROVED** | UI |
+| [ADR-024](./ADR-024-live-sse-voice-events.md) | live SSE + VoiceAudioEvent (Q5, Amendment A) | **APPROVED** | BFF |
+| [ADR-018](./ADR-018-verify-phase-5-harness.md) | Extended by `verify:phase-6` (C59) | Accepted | QA |
+
+**Reading order:** ADR-020 → ADR-021 → ADR-022 → ADR-023 → ADR-024 → ADR-018 (6 extension)
+
+**Status:** **APPROVED** (Planner 2026-05-30) — `verify:phase-6` scaffold (P6-E); UI voice Playwright (P6-D) pending.
+
 ## Planner quick reference
 
 | ID | ADR / doc |
@@ -115,20 +132,9 @@
 | C43–C48 | Phase 5.1 — ADR-015 amendment, ADR-019, `verify:phase-5.1` Playwright C48 |
 | C49 | ADR-018 extension + verify.md — CI runs `verify:phase-5.1` after `verify:phase-5` |
 | C50 | C30 carry-forward — no voice in Phase 5.1 web |
-
-## Phase 6 (voice)
-
-**Contract:** [phase-6-contract.md](../phase-6-contract.md) (Q1–Q5, C51–C60)
-
-| ADR | Topic | Owner |
-|-----|--------|-------|
-| [ADR-020](./ADR-020-whisper-stt-sidecar.md) | faster-whisper sidecar (Q1) | Whisper |
-| [ADR-021](./ADR-021-jarvis-kernel-two-phase-speak.md) | kernel + two-phase speak (Q3–Q4) | Kernel |
-| [ADR-022](./ADR-022-elevenlabs-tts-mock.md) | ElevenLabs + ZEREF_TTS_MOCK (Q2) | Kernel |
-| [ADR-023](./ADR-023-globe-voice-states.md) | globe voice states (C57) | UI |
-| [ADR-024](./ADR-024-live-sse-voice-events.md) | live SSE + VoiceAudioEvent (Amendment A) | BFF |
-
-**Status:** **APPROVED** (Planner 2026-05-30) — implementation spawn authorized.
+| C51–C58 | Phase 6 — ADR-020–024, BFF voice routes, Playwright C59 testids |
+| C59 | ADR-018 extension + verify.md — `verify:phase-6` chains 0–5.1; server-only jarvis-kernel guard |
+| C60 | ADR-020–024 — no browser API keys; honest SSE |
 
 ## Related
 
