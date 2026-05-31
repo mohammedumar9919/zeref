@@ -1,0 +1,19 @@
+{
+  "name": "@zeref/jarvis-kernel",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "test": "node --test test/**/*.test.mjs"
+  },
+  "dependencies": {
+    "@zeref/contracts": "0.0.0"
+  }
+}

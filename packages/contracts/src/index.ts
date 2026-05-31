@@ -5,6 +5,7 @@ export const PHASE3_CONTRACT_VERSION = "3.0.0";
 export const PHASE4_CONTRACT_VERSION = "4.0.0";
 export const PHASE5_CONTRACT_VERSION = "5.0.0";
 export const PHASE5_1_CONTRACT_VERSION = "5.1.0";
+export const PHASE6_CONTRACT_VERSION = "6.0.0";
 
 export {
   PlatformSchema,
@@ -95,6 +96,35 @@ export {
   type CockpitResearchItem,
   type TelemetryEvent,
 } from "./phase5/index.js";
+
+export {
+  JarvisToolNameSchema,
+  JarvisToolCallSchema,
+  JarvisGlobeStateSchema,
+  JarvisTurnInputSchema,
+  JarvisTurnAckOutputSchema,
+  JarvisTurnResultOutputSchema,
+  JarvisTurnOutputSchema,
+  VoiceTranscriptRoleSchema,
+  VoiceAudioPhaseSchema,
+  VoiceStateEventSchema,
+  VoiceTranscriptEventSchema,
+  VoiceAudioEventSchema,
+  PipelineEventSchema,
+  type JarvisToolName,
+  type JarvisToolCall,
+  type JarvisGlobeState,
+  type JarvisTurnInput,
+  type JarvisTurnAckOutput,
+  type JarvisTurnResultOutput,
+  type JarvisTurnOutput,
+  type VoiceTranscriptRole,
+  type VoiceAudioPhase,
+  type VoiceStateEvent,
+  type VoiceTranscriptEvent,
+  type VoiceAudioEvent,
+  type PipelineEvent,
+} from "./phase6/index.js";
 
 export {
   NormalizedPostPayloadSchema,

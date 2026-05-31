@@ -1,0 +1,31 @@
+{
+  "ackText": "One moment, checking reports.",
+  "resultText": "Your latest elite report headline is Night ride engagement up twelve percent.",
+  "toolCalls": [
+    {
+      "name": "get_latest_report_headline",
+      "args": {},
+      "result": {
+        "headline": "Night ride engagement up twelve percent",
+        "available": true
+      },
+      "durationMs": 4
+    }
+  ],
+  "globeState": "speaking",
+  "events": [
+    {
+      "type": "voice.transcript",
+      "turnId": "550e8400-e29b-41d4-a716-446655440001",
+      "role": "ack",
+      "text": "One moment, checking reports.",
+      "ts": "2026-05-30T12:00:00.100Z"
+    },
+    {
+      "type": "voice.state",
+      "turnId": "550e8400-e29b-41d4-a716-446655440001",
+      "state": "speaking",
+      "ts": "2026-05-30T12:00:01.000Z"
+    }
+  ]
+}

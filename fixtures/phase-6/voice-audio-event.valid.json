@@ -1,0 +1,8 @@
+{
+  "type": "voice.audio",
+  "turnId": "550e8400-e29b-41d4-a716-446655440001",
+  "phase": "ack",
+  "audioBase64": "UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=",
+  "mimeType": "audio/wav",
+  "ts": "2026-05-30T12:00:00.200Z"
+}
