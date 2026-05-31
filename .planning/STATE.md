@@ -4,21 +4,15 @@
 
 ## Current position
 
-- **Phase:** 6 **APPROVED WITH CONDITIONS** — spawn agents (no Lead domain code)
-- **Contract:** [phase-6-contract.md](../docs/governance/phase-6-contract.md) (C51–C60, Amendments A–D)
-- **Planner:** `phase_6_planner_approval_4b07fc8c`
+- **Phase:** 6 Wave 2 — spawn **P6-C + P6-E** (parallel)
+- **Wave 1 merged:** P6-A `7cd1f2b`, P6-B `d1a1063`
 
-## Phase 5.1
+## Next
 
-- **APPROVED** @ `abb9dec` (verify + CI green)
-
-## Implementation order
-
-1. P6-A Whisper + P6-B Kernel (parallel)
-2. P6-C BFF/Voice + P6-E Docs/QA (parallel)
-3. P6-D UI
-4. User verify:phase-6 → Planner sign-off
+1. User spawn P6-C BFF/Voice + P6-E Docs/QA
+2. After reports: P6-D UI
+3. verify:phase-6 → CI Phase 0–6
 
 ## Do not start
 
-- Lead implementing apps/packages/scripts without agent reports
+- Lead BFF/UI without agent reports

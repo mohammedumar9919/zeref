@@ -19,9 +19,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
 | Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
-| Phase 6 Jarvis voice | **APPROVED** — spawn P6-A…E per [phase-6-contract.md](./governance/phase-6-contract.md) |
+| Phase 6 Jarvis voice | **IN PROGRESS** — C51/C52 done @ `7cd1f2b`/`d1a1063`; Wave 2 spawn |
 
-**Immediate goal:** Spawn Phase **6** agents (P6-A + P6-B first). Lead integrates reports only.
+**Immediate goal:** Spawn Phase **6 Wave 2** — **P6-C** BFF/Voice + **P6-E** Docs/QA (parallel).
 
 ---
 
@@ -53,7 +53,7 @@ collect → normalize → embed → analyze → report
 | Luke HUD shell + SIMULATED telemetry/AUDIO | **DONE** @ `838e34d` |
 | Playwright 16/16 (layout + C48) | **DONE** with `ZEREF_PHASE51_UI=1` |
 | SSE stub `GET /api/v1/events/stream` | **DONE** (P5.1-B) |
-| Voice / live pipeline SSE | **IN PROGRESS** — Phase 6 approved; PTT + jarvis-kernel |
+| Voice / live pipeline SSE | **IN PROGRESS** — whisper + kernel done; BFF Wave 2 |
 
 ---
 
@@ -97,14 +97,25 @@ npm run verify:phase-5.1
 
 ---
 
+### Phase 6 progress
+
+| Slice | Status |
+|-------|--------|
+| P6-A Whisper (`apps/whisper`) | **DONE** @ `7cd1f2b` |
+| P6-B Kernel (`@zeref/jarvis-kernel`) | **DONE** @ `d1a1063` |
+| P6-C BFF/Voice | **READY** — spawn |
+| P6-E Docs/QA | **READY** — spawn parallel |
+| P6-D UI | Blocked until C+E |
+
+---
+
 ## What's NEXT
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Spawn **P6-A** Whisper + **P6-B** Kernel (parallel) |
-| 2 | User | After reports: **P6-C** BFF + **P6-E** QA (parallel) |
-| 3 | User | After C+E: **P6-D** UI |
-| 4 | User + Lead | `verify:phase-6` → push → CI Phase 0–6 |
+| 1 | User | Spawn **P6-C** BFF/Voice + **P6-E** Docs/QA (parallel) |
+| 2 | User | After reports: **P6-D** UI |
+| 3 | User + Lead | `verify:phase-6` → push → CI Phase 0–6 |
 
 ---
 

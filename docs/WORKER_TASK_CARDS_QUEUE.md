@@ -4,10 +4,10 @@ Lead copies cards into **new** worker chats. Update status after each slice.
 
 ---
 
-## READY — Phase 6 (Planner APPROVED — spawn P6-A + P6-B first)
+## READY — Phase 6 Wave 2 (P6-A + P6-B merged — spawn P6-C + P6-E)
 
-**Prerequisite:** Phase 5.1 **APPROVED** @ `abb9dec`.  
-**Order:** P6-A + P6-B parallel → P6-C + P6-E parallel → P6-D UI
+**Merged:** P6-A @ `7cd1f2b`, P6-B @ `d1a1063`  
+**Order:** P6-C + P6-E parallel → P6-D UI
 
 ---
 
@@ -126,21 +126,30 @@ Skills — invoke before acting:
 3. council-review-slice
 
 Read first:
-- docs/governance/phase-6-contract.md (C54, C60)
+- docs/governance/phase-6-contract.md (C54, C60, Amendment A)
 - docs/governance/adr/ADR-024-live-sse-voice-events.md
 - docs/governance/adr/ADR-019-telemetry-sse-stub.md
 - apps/web/app/api/v1/events/stream/route.ts (extend, do not duplicate URL)
+- packages/jarvis-kernel/src/process-turn.ts (processTurn / processTurnSync)
+- docs/WHISPER_SIDECAR.md
 
 Repo: c:\Projects\zeref
+
+P6-B integration (binding):
+- Add "@zeref/jarvis-kernel": "0.0.0" to apps/web/package.json (BFF routes only)
+- Live: processTurn() → emit handle.ack + TTS ack on SSE immediately; await handle.complete in background
+- CI mock (all flags): processTurnSync() → 200 JSON with both audio blobs
+- defaultTtsAdapter(text, { phase: 'ack' | 'result' })
+- Implement apps/web/lib/voice/voice-event-bus.ts (globalThis singleton pub/sub) so /voice/turn emits to open SSE clients
 
 Deliverables
 1. POST /api/v1/voice/turn — Amendment A:
    - Live/dev: 202 { turnId, transcript } after STT; ack+result via SSE (voice.audio, voice.transcript, voice.state)
-   - CI mock: 200 sync JSON with both audio blobs when all mock flags set
-2. GET /api/v1/voice/health — sidecar + mock flags status
-3. Extend GET /api/v1/events/stream — voice.* events with turnId correlation
-4. apps/web/lib/voice/** — proxy helpers, mock switches, in-process SSE emit
-5. Route handler tests with ZEREF_WHISPER_MOCK=1 + ZEREF_TTS_MOCK=1
+   - CI mock: 200 sync JSON with both audio blobs when ZEREF_WHISPER_MOCK=1 + ZEREF_TTS_MOCK=1 + ZEREF_LLM_MOCK=1
+2. GET /api/v1/voice/health — sidecar reachability + mock flags
+3. Extend GET /api/v1/events/stream — subscribe to voice-event-bus + keep telemetry heartbeat
+4. apps/web/lib/voice/** — whisper-client (127.0.0.1:8765 or WHISPER_MOCK), mock switches
+5. Route handler tests with all mock flags
 
 Allowed
 - apps/web/app/api/v1/voice/**
@@ -261,6 +270,15 @@ Acceptance
 
 Report back: files changed, verify output, screenshot path, globe state demo notes.
 ```
+
+---
+
+## COMPLETED — Phase 6 Wave 1
+
+| Slice | Commit |
+|-------|--------|
+| P6-A Whisper | `7cd1f2b` |
+| P6-B Kernel | `d1a1063` |
 
 ---
 
