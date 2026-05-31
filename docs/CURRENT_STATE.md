@@ -53,7 +53,7 @@ collect → normalize → embed → analyze → report
 | Luke HUD shell + SIMULATED telemetry/AUDIO | **DONE** @ `838e34d` |
 | Playwright 16/16 (layout + C48) | **DONE** with `ZEREF_PHASE51_UI=1` |
 | SSE stub `GET /api/v1/events/stream` | **DONE** (P5.1-B) |
-| Voice / live pipeline SSE | **IN PROGRESS** — whisper + kernel done; BFF Wave 2 |
+| Voice / PTT / live AUDIO I/O | **DONE** @ `183acf9` |
 
 ---
 
