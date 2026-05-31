@@ -1,6 +1,6 @@
 # ADR-021: jarvis-kernel + two-phase speak (Phase 6)
 
-**Status:** **DRAFT** (requires Planner approval)  
+**Status:** **APPROVED** (Planner 2026-05-30)  
 **Date:** 2026-05-30  
 **Owner:** Kernel agent  
 **Related:** Q3–Q4 · C52 · C56 · [GAP ZR-021, ZR-023](../../GAP_BACKLOG.md)
@@ -31,10 +31,15 @@ processTurn(input: JarvisTurnInput): Promise<JarvisTurnOutput>
 | `globeState` | Suggested `thinking` → `speaking` transitions |
 
 3. **Two-phase speak (binding UX):**
-   - **Phase A (ack):** emit `ackText` immediately after transcript validated (template or fast intent classify).
-   - **Phase B (result):** run tools + optional OpenRouter (server-side, `ZEREF_LLM_MOCK` in CI); emit `resultText`.
+   - **Phase A (ack):** return `ackText` immediately after transcript validated — **must not await** full tool/LLM path.
+   - **Phase B (result):** run tools + optional OpenRouter (server-side, `ZEREF_LLM_MOCK` in CI); return `resultText`.
 
-4. **Tools v1 (read-only):** `get_cockpit_summary`, `get_latest_report_headline`, `get_pipeline_status` — no enqueue/scrape.
+   BFF may call kernel in two invocations or one API with phased callbacks — kernel **must** expose fast ack path.
+
+4. **Tools v1 (read-only — Amendment B):**
+   - `get_cockpit_summary`
+   - `get_latest_report_headline`
+   - `get_pipeline_status` — fixture/DB read; return honest `"unavailable"` if worker daemon absent (no fake success)
 
 5. Schemas in **`@zeref/contracts`** (`phase6/`): `JarvisTurnInputSchema`, `JarvisTurnOutputSchema`, `PHASE6_CONTRACT_VERSION`.
 

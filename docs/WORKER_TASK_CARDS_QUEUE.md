@@ -4,9 +4,9 @@ Lead copies cards into **new** worker chats. Update status after each slice.
 
 ---
 
-## READY — Phase 6 (Discuss + Contract DRAFT — spawn after Planner approval)
+## READY — Phase 6 (Planner APPROVED — spawn P6-A + P6-B first)
 
-**Prerequisite:** Phase 5.1 Planner sign-off recommended.  
+**Prerequisite:** Phase 5.1 **APPROVED** @ `abb9dec`.  
 **Order:** P6-A + P6-B parallel → P6-C + P6-E parallel → P6-D UI
 
 ---
@@ -83,11 +83,12 @@ Read first:
 Repo: c:\Projects\zeref
 
 Deliverables
-1. packages/jarvis-kernel — processTurn(), read-only tool registry
+1. packages/jarvis-kernel — processTurn() with fast Phase A ack (must NOT await full tool/LLM)
 2. Two-phase speak: ackText (fast) + resultText (after tools/LLM)
-3. ElevenLabs TTS adapter + OpenAI fallback + ZEREF_TTS_MOCK=1 fixture audio
-4. packages/contracts/src/phase6/ — JarvisTurnInput/Output, VoiceEvent schemas, PHASE6_CONTRACT_VERSION
-5. Unit tests — mock LLM + mock TTS paths
+3. Tool registry (Amendment B): get_cockpit_summary, get_latest_report_headline, get_pipeline_status
+4. ElevenLabs TTS adapter + OpenAI fallback + ZEREF_TTS_MOCK=1 fixture audio
+5. packages/contracts/src/phase6/ — JarvisTurn*, Voice* schemas incl VoiceAudioEventSchema, PHASE6_CONTRACT_VERSION
+6. Unit tests — mock LLM + mock TTS; ack returns before slow path
 
 Allowed
 - packages/jarvis-kernel/**
@@ -133,10 +134,12 @@ Read first:
 Repo: c:\Projects\zeref
 
 Deliverables
-1. POST /api/v1/voice/turn — audio → whisper (or WHISPER_MOCK) → kernel → TTS (or TTS_MOCK)
+1. POST /api/v1/voice/turn — Amendment A:
+   - Live/dev: 202 { turnId, transcript } after STT; ack+result via SSE (voice.audio, voice.transcript, voice.state)
+   - CI mock: 200 sync JSON with both audio blobs when all mock flags set
 2. GET /api/v1/voice/health — sidecar + mock flags status
-3. Extend GET /api/v1/events/stream — voice.state, voice.transcript events
-4. apps/web/lib/voice/** — proxy helpers, mock switches
+3. Extend GET /api/v1/events/stream — voice.* events with turnId correlation
+4. apps/web/lib/voice/** — proxy helpers, mock switches, in-process SSE emit
 5. Route handler tests with ZEREF_WHISPER_MOCK=1 + ZEREF_TTS_MOCK=1
 
 Allowed
@@ -184,6 +187,7 @@ Deliverables
 2. package.json — verify:phase-6 script
 3. .github/workflows/ci.yml — Phase 0–6 gate; env: ZEREF_TTS_MOCK=1, ZEREF_WHISPER_MOCK=1, ZEREF_PHASE6_VOICE=1
 4. apps/web/e2e/cockpit-voice-6.spec.ts — PTT + globe voice state (skip until ZEREF_PHASE6_VOICE=1)
+   Document testid table for P6-D: ptt-button, audio-io-live, data-globe-voice-state, turnId optional
 5. docs/governance/adr/README.md — Phase 6 ADR index
 6. Update C30 guard in verify scripts: allow server-side jarvis-kernel; still forbid browser imports
 
@@ -232,9 +236,9 @@ Repo: c:\Projects\zeref
 
 Deliverables
 1. PttButton — data-testid=ptt-button, hold-to-talk, MediaRecorder → POST /api/v1/voice/turn
-2. VoiceController hook — globe state + audio playback (ack then result)
+2. VoiceController — subscribe to SSE voice.audio (ack before result); playback order per Amendment A
 3. Live AudioIO — mic level + output meter, data-testid=audio-io-live; hide audio-io-simulated when live
-4. GlobeIsland/GlobeCanvas — data-globe-voice-state idle|listening|thinking|speaking (ADR-023)
+4. GlobeIsland/GlobeCanvas — data-globe-voice-state; thinking = opacity pulse only (ADR-023 Amendment C)
 5. TelemetryStrip — remove SIMULATED when SSE live events received
 6. Optional: conversation transcript panel under globe (ack + result lines)
 7. apps/web/e2e/cockpit-voice-6.spec.ts + cockpit-layout updates per QA spec

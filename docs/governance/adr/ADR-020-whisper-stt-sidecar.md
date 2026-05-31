@@ -1,6 +1,6 @@
 # ADR-020: Whisper STT sidecar (Phase 6)
 
-**Status:** **DRAFT** (requires Planner approval with [phase-6-contract.md](../phase-6-contract.md))  
+**Status:** **APPROVED** (Planner 2026-05-30)  
 **Date:** 2026-05-30  
 **Owner:** Whisper agent  
 **Related:** Q1 · C51 · [GAP ZR-020](../../GAP_BACKLOG.md)

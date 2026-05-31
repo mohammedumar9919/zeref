@@ -18,10 +18,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Agent stack (GSD, council, uipro, Superpowers) | **DONE** |
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
-| Phase 5.1 Luke JARVIS HUD visual | **IMPLEMENTATION DONE** — Planner visual sign-off pending |
-| Phase 6 Jarvis voice | **DISCUSS + CONTRACT** — draft: [governance/phase-6-contract.md](./governance/phase-6-contract.md) |
+| Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
+| Phase 6 Jarvis voice | **APPROVED** — spawn P6-A…E per [phase-6-contract.md](./governance/phase-6-contract.md) |
 
-**Immediate goal:** Planner approves Phase **6** voice contract (Q1–Q5, C51–C60). Do **not** spawn agents until approved.
+**Immediate goal:** Spawn Phase **6** agents (P6-A + P6-B first). Lead integrates reports only.
 
 ---
 
@@ -53,7 +53,7 @@ collect → normalize → embed → analyze → report
 | Luke HUD shell + SIMULATED telemetry/AUDIO | **DONE** @ `838e34d` |
 | Playwright 16/16 (layout + C48) | **DONE** with `ZEREF_PHASE51_UI=1` |
 | SSE stub `GET /api/v1/events/stream` | **DONE** (P5.1-B) |
-| Voice / live pipeline SSE | **DEFER** Phase 6 |
+| Voice / live pipeline SSE | **IN PROGRESS** — Phase 6 approved; PTT + jarvis-kernel |
 
 ---
 
@@ -101,15 +101,16 @@ npm run verify:phase-5.1
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | Planner | Phase 5.1 visual sign-off vs reference JPEG |
-| 2 | Planner | Approve [phase-6-contract.md](./governance/phase-6-contract.md) + ADR-020–024 |
-| 3 | User | Spawn P6-A…E agent chats after approval |
+| 1 | User | Spawn **P6-A** Whisper + **P6-B** Kernel (parallel) |
+| 2 | User | After reports: **P6-C** BFF + **P6-E** QA (parallel) |
+| 3 | User | After C+E: **P6-D** UI |
+| 4 | User + Lead | `verify:phase-6` → push → CI Phase 0–6 |
 
 ---
 
 ## Do not start
 
-- Phase 6 **implementation** until Planner approves contract (discuss OK)
+- Phase 6 **Lead domain code** without agent reports
 - Full-screen particle globe without ADR-015 amendment
 - Fake scrolling telemetry (legacy ios theater pattern)
 

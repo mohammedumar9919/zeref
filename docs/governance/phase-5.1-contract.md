@@ -1,7 +1,7 @@
 # Zeref — Phase 5.1 Contract (Implementation)
 
 **Phase:** 5.1  
-**Status:** **IMPLEMENTATION COMPLETE** (pending Planner visual sign-off)  
+**Status:** **APPROVED** (Planner visual sign-off 2026-05-30)  
 **Theme:** Luke JARVIS HUD fusion — point-cloud globe, full-bleed hero, HUD chrome, glass columns
 
 **Prerequisites:** Phase 5 approved (`verify:phase-5` green; tip `568a5fc`). Phase 5.0.1 / 5.0.2 complete.

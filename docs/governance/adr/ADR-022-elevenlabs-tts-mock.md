@@ -1,6 +1,6 @@
 # ADR-022: ElevenLabs TTS + CI mock (Phase 6)
 
-**Status:** **DRAFT** (requires Planner approval)  
+**Status:** **APPROVED** (Planner 2026-05-30)  
 **Date:** 2026-05-30  
 **Owner:** Kernel agent  
 **Related:** Q2 · C53 · [GAP ZR-022, ZR-025](../../GAP_BACKLOG.md)

@@ -1,10 +1,10 @@
-# Zeref — Phase 6 Contract (Discuss + Contract)
+# Zeref — Phase 6 Contract (Implementation)
 
 **Phase:** 6  
-**Status:** **DRAFT** (requires Planner approval)  
+**Status:** **APPROVED WITH CONDITIONS** (Planner sign-off 2026-05-30; contract @ `c40407b` + amendments)  
 **Theme:** Jarvis voice — Whisper STT sidecar, jarvis-kernel, ElevenLabs British TTS, PTT, two-phase speak, globe voice states, live AUDIO I/O
 
-**Prerequisites:** Phase 5.1 implementation approved (`verify:phase-5.1` green; Luke HUD + SSE stub). Planner visual sign-off on 5.1 recommended before implementation spawn.
+**Prerequisites:** Phase 5.1 **APPROVED** (`verify:phase-5.1` green @ `abb9dec`; CI Phase 0–5.1).
 
 **Visual reference (carry-forward):** [docs/design/reference/lukebuildsai-jarvis-hud.jpeg](../design/reference/lukebuildsai-jarvis-hud.jpeg)
 
@@ -12,107 +12,93 @@
 
 ---
 
-## Open questions for Planner (with orchestrator recommendations)
+## Planner decisions (binding)
 
-| # | Question | Recommendation |
-|---|----------|----------------|
-| **Q1** | STT transport: sidecar HTTP vs WebSocket vs in-process | **`apps/whisper` Python sidecar** — `faster-whisper`; **`POST /v1/transcribe`** (multipart audio); **`GET /health`**; default `http://127.0.0.1:8765`. BFF proxies from Next — **no browser → whisper direct**. Optional `ZEREF_WHISPER_MOCK=1` for CI (fixture transcript). **ADR-020**. |
-| **Q2** | TTS provider + voice persona | **ElevenLabs primary** — British Jarvis voice ID in env (`ELEVENLABS_VOICE_ID`); **OpenAI TTS fallback** only when ElevenLabs unavailable (document in ADR). **`ZEREF_TTS_MOCK=1`** returns fixture WAV/MP3 in CI — no live API keys. **ADR-022**. |
-| **Q3** | Voice UX: Realtime API vs two-phase HTTP | **Reject Realtime API in Phase 6** (C30 carry-forward). **Two-phase speak:** (1) **ack** TTS within ~800ms of PTT release (`"Understood."` / intent-specific stub); (2) **result** TTS after kernel + tools complete. **ADR-021**. |
-| **Q4** | Kernel scope: which tools in v1? | **Read-only cockpit tools only** — e.g. `get_latest_report_summary`, `get_panel_counts`, `get_pipeline_status` (fixture/DB read). **No** worker enqueue, collect, or Instagram scrape from voice in 6. OpenRouter **server-side only** via existing mock path in CI. **ADR-021**. |
-| **Q5** | SSE: replace stub or dual-mode? | **Dual-mode stream** — keep `TelemetryEventSchema`; add `VoiceEventSchema` + `PipelineEventSchema` with `simulated: false` when live. Remove **SIMULATED** badge when stream is live. Worker bridge optional (BFF-only emission OK for 6). **ADR-024** extends ADR-019. |
+| # | Decision |
+|---|----------|
+| **Q1** | **APPROVED** — `apps/whisper` faster-whisper; `GET /health`, `POST /v1/transcribe`; `127.0.0.1:8765`; BFF proxy only; `ZEREF_WHISPER_MOCK=1` in CI. [ADR-020](./adr/ADR-020-whisper-stt-sidecar.md) |
+| **Q2** | **APPROVED** — ElevenLabs British primary; OpenAI TTS fallback server-side; `ZEREF_TTS_MOCK=1` in CI. [ADR-022](./adr/ADR-022-elevenlabs-tts-mock.md) |
+| **Q3** | **APPROVED** — Two-phase speak (ack → result); **no Realtime API**. **Amendment A:** live/dev delivery via **202 + SSE**; CI mock may use sync JSON. [ADR-021](./adr/ADR-021-jarvis-kernel-two-phase-speak.md) |
+| **Q4** | **APPROVED** — Read-only tools only; **no worker enqueue**. Tools: `get_cockpit_summary`, `get_latest_report_headline`, `get_pipeline_status` (honest unavailable if worker absent). [ADR-021](./adr/ADR-021-jarvis-kernel-two-phase-speak.md) |
+| **Q5** | **APPROVED** — Extend `GET /api/v1/events/stream`; `voice.*` + optional `pipeline`; honest `simulated`; no second URL. [ADR-024](./adr/ADR-024-live-sse-voice-events.md) |
 
-### Proposed conditions (C51–C60)
+### Conditions (C51–C60)
 
 | ID | Condition |
 |----|-----------|
-| **C51** | **`apps/whisper`** sidecar scaffolded — faster-whisper, `/v1/transcribe`, `/health`, README + dev start script; no GPU required for CI mock path. |
-| **C52** | **`packages/jarvis-kernel`** — `processTurn()`, tool registry, **`PHASE6_CONTRACT_VERSION`** + Zod schemas exported from `@zeref/contracts` (phase6). |
-| **C53** | **ElevenLabs British TTS primary**; **`ZEREF_TTS_MOCK=1`** for CI; no ElevenLabs/OpenAI keys in default CI workflow. |
-| **C54** | **BFF voice routes** under `apps/web/app/api/v1/voice/**` — browser sends audio only to BFF; BFF calls whisper + kernel + TTS. **No API keys in client bundle.** |
-| **C55** | **PTT UI** — hold-to-talk control (`data-testid="ptt-button"`); releases trigger turn; accessible label + optional `Space` hold (documented). |
-| **C56** | **Two-phase speak** — ack audio plays before or while kernel runs; result audio after; both observable in UI transcript dock (placeholder shell from 5.1 optional). |
-| **C57** | **Globe voice states** — `idle` \| `listening` \| `thinking` \| `speaking` on `globe-island` as `data-globe-voice-state`; visual delta per **ADR-023** (no ADR-015 perf regression). |
-| **C58** | **Live AUDIO I/O** — replace static SIMULATED meters with mic input level (PTT) + output level (TTS playback); `data-testid="audio-io-live"` when live; hide `audio-io-simulated` when live. |
-| **C59** | **`npm run verify:phase-6`** — chains `verify:phase-0` … `verify:phase-5.1`; mock STT/TTS; Playwright PTT + globe state smoke; C30 import guard updated to **allow** `@zeref/jarvis-kernel` only via BFF/server paths (not direct browser import of kernel). |
-| **C60** | **No OpenRouter / Realtime / keys in browser**; no fake live telemetry — SSE events honest about `simulated` flag until worker bridge lands. |
+| **C51** | **`apps/whisper`** sidecar — faster-whisper, `/v1/transcribe`, `/health`, README; CI uses mock path. |
+| **C52** | **`packages/jarvis-kernel`** + `packages/contracts/src/phase6/` + `PHASE6_CONTRACT_VERSION`. |
+| **C53** | ElevenLabs British TTS primary; **`ZEREF_TTS_MOCK=1`** in CI. |
+| **C54** | BFF `apps/web/app/api/v1/voice/**` — browser never calls whisper/TTS/LLM directly. |
+| **C55** | PTT `data-testid="ptt-button"` + accessible hold-to-talk. |
+| **C56** | Two-phase UX — ack then result in transcript + audio order (**Amendment A** delivery). |
+| **C57** | Globe `data-globe-voice-state` on `globe-island` (**Amendment C** — no bloom). |
+| **C58** | Live AUDIO I/O `data-testid="audio-io-live"`; hide `audio-io-simulated` when live. |
+| **C59** | **`npm run verify:phase-6`** chains 0–5.1 + phase-6; C30 guard allows server-only kernel. |
+| **C60** | No browser keys; no fake-live telemetry. |
 
-**Contracts agent:** **PARTIAL** — phase6 voice schemas + `PHASE6_CONTRACT_VERSION` (Kernel agent + BFF).
+**CI env (binding):** `ZEREF_WHISPER_MOCK=1`, `ZEREF_TTS_MOCK=1`, `ZEREF_LLM_MOCK=1`, `ZEREF_BFF_FIXTURE=1`, `ZEREF_PHASE51_UI=1`, `ZEREF_PHASE6_VOICE=1`
 
-**Data / Worker agents:** **SKIP** — no new pg-boss job types in Phase 6 unless Planner amends Q4.
+---
+
+## Amendment A — Two-phase delivery (Q3 / C56)
+
+**Live/dev:** `POST /api/v1/voice/turn` returns **202** `{ turnId, transcript }` after STT. Ack + result **audio, transcripts, and globe states** arrive on **SSE** (`voice.audio`, `voice.transcript`, `voice.state`). All voice events include **`turnId`** for correlation.
+
+**CI mock:** When `ZEREF_WHISPER_MOCK=1` + `ZEREF_TTS_MOCK=1` + `ZEREF_LLM_MOCK=1`, BFF **may** return **200** synchronous JSON with both audio blobs (zero-latency acceptable).
+
+---
+
+## Architecture (binding)
+
+```mermaid
+sequenceDiagram
+  participant UI as PTT_UI
+  participant BFF as voice_turn
+  participant SSE as events_stream
+  participant K as jarvis_kernel
+
+  UI->>BFF: POST /voice/turn (audio)
+  BFF->>BFF: STT (or WHISPER_MOCK)
+  BFF->>K: processTurn phase A
+  K-->>BFF: ackText
+  BFF->>SSE: voice.transcript role=ack
+  BFF->>SSE: voice.audio phase=ack
+  BFF-->>UI: 202 turnId + transcript
+  BFF->>K: processTurn phase B
+  K-->>BFF: resultText + toolCalls
+  BFF->>SSE: voice.transcript role=assistant
+  BFF->>SSE: voice.audio phase=result
+  BFF->>SSE: voice.state speaking
+```
+
+**Owners:** P6-C BFF + SSE; P6-D `VoiceController` subscribes for playback order.
+
+---
+
+## BFF routes (locked)
+
+| Route | Behavior |
+|-------|----------|
+| `GET /api/v1/events/stream` | Extend — `voice.state`, `voice.transcript`, `voice.audio`, optional `pipeline` |
+| `POST /api/v1/voice/turn` | Multipart audio → **202** `{ turnId, transcript }` (live) or **200** sync mock JSON (CI) |
+| `GET /api/v1/voice/health` | Whisper sidecar + mock flags status |
 
 ---
 
 ## Goals
 
-1. **Push-to-talk Jarvis** — operator holds PTT, speaks, receives British TTS ack + result.
-2. **Sidecar STT** — local/dev faster-whisper; CI mock path without sidecar binary.
-3. **jarvis-kernel** — server-side turn processing + read-only cockpit tools.
-4. **Globe + AUDIO I/O** — voice states drive hero visuals and footer meters.
-5. **Live SSE** — voice + pipeline events on existing `/api/v1/events/stream` (extend ADR-019).
-6. **Verify** — `verify:phase-6` in CI (**Phase 0–6 gate**).
-7. **Multi-agent delivery** — Whisper, Kernel, BFF, UI, Docs/QA in **separate chats** after Planner approval.
+1. PTT Jarvis with British TTS two-phase speak.
+2. Whisper sidecar + jarvis-kernel + honest live SSE.
+3. Globe voice states + live AUDIO I/O.
+4. `verify:phase-6` in CI (Phase 0–6 gate).
+5. Multi-agent — separate chats; Lead integrates reports only.
 
 ---
 
-## Non-goals (out of scope)
+## Non-goals
 
-| Area | Notes |
-|------|--------|
-| OpenAI Realtime / full duplex | Phase 6+ |
-| Wake word / always-listening | Phase 6+ |
-| `packages/zeref-memory` 4-tier brain | Phase 7 (ZR-030) |
-| Voice-triggered worker enqueue | Phase 6+ unless Q4 amended |
-| Browser OpenRouter / direct LLM | Forbidden |
-| Replacing four-panel cockpit | ADR-017 preserved |
-| GPU-whisper in CI | Mock only |
-
----
-
-## Architecture (target)
-
-```mermaid
-sequenceDiagram
-  participant UI as Cockpit PTT UI
-  participant BFF as Next BFF /api/v1/voice
-  participant W as apps/whisper
-  participant K as jarvis-kernel
-  participant T as ElevenLabs TTS
-
-  UI->>BFF: POST /voice/turn (audio blob)
-  BFF->>W: POST /v1/transcribe
-  W-->>BFF: transcript
-  BFF->>K: processTurn(transcript)
-  K-->>BFF: ackText + resultText + events
-  BFF->>T: TTS ack (or ZEREF_TTS_MOCK)
-  BFF-->>UI: ack audio + globeState thinking
-  BFF->>T: TTS result
-  BFF-->>UI: result audio + globeState speaking
-  BFF-->>UI: SSE voice.* events
-```
-
----
-
-## Layout / UX (delta from 5.1)
-
-| Region | Phase 5.1 | Phase 6 |
-|--------|-----------|---------|
-| HUD header | Telemetry strip + SIMULATED | Telemetry live when SSE `simulated: false` |
-| HUD footer | AUDIO I/O SIMULATED | Live mic/output meters + PTT |
-| Globe hero | point-cloud idle rotation | State-driven motion (ADR-023) |
-| Conversation | optional static shell | transcript lines for ack + result |
-
-**Preserve C48 testids** unless superseded (`audio-io-simulated` hidden when live).
-
----
-
-## BFF routes (proposed)
-
-| Route | Behavior |
-|-------|----------|
-| `GET /api/v1/events/stream` | **Extend** — add `event: voice` + `event: pipeline` (see ADR-024) |
-| `POST /api/v1/voice/turn` | Multipart audio → `{ transcript, ackAudio, resultAudio, phases, globeState }` |
-| `GET /api/v1/voice/health` | Whisper sidecar + TTS mock status for Settings/debug |
+Realtime API, wake word, `zeref-memory`, voice worker enqueue, browser OpenRouter, GPU whisper in CI.
 
 ---
 
@@ -120,47 +106,29 @@ sequenceDiagram
 
 | Check | Requirement |
 |-------|-------------|
-| Contract + ADRs | phase-6-contract, ADR-020–024 |
-| C51–C53 | whisper + kernel + TTS mock unit tests |
-| C54–C58 | Playwright: PTT visible, globe voice state transitions (mock turn) |
-| C59 | phases 0–5.1 still pass |
-| C60 | No forbidden browser imports; mock flags only in CI |
-
-**CI env (proposed):** `ZEREF_TTS_MOCK=1`, `ZEREF_WHISPER_MOCK=1`, `ZEREF_LLM_MOCK=1`, `ZEREF_BFF_FIXTURE=1`, `ZEREF_PHASE51_UI=1`, `ZEREF_PHASE6_VOICE=1` (Playwright enforce).
+| Contract + ADRs | phase-6, ADR-020–024 APPROVED |
+| C51–C60 | mock STT/TTS + Playwright with `ZEREF_PHASE6_VOICE=1` |
+| Chain | phases 0–5.1 still pass |
 
 ---
 
-## ADRs (Phase 6 — draft)
+## ADRs
 
-| ADR | Owner | Topic |
-|-----|-------|--------|
-| [ADR-020](./adr/ADR-020-whisper-stt-sidecar.md) | Whisper | faster-whisper sidecar (Q1) |
-| [ADR-021](./adr/ADR-021-jarvis-kernel-two-phase-speak.md) | Kernel | kernel + two-phase speak + tools (Q3–Q4) |
-| [ADR-022](./adr/ADR-022-elevenlabs-tts-mock.md) | Kernel | ElevenLabs + `ZEREF_TTS_MOCK` (Q2) |
-| [ADR-023](./adr/ADR-023-globe-voice-states.md) | UI | globe idle/listening/thinking/speaking (C57) |
-| [ADR-024](./adr/ADR-024-live-sse-voice-events.md) | BFF | extend SSE stub → live voice events (Q5) |
-| [ADR-018](./adr/ADR-018-verify-phase-5-harness.md) | QA | extend for `verify:phase-6` |
-
----
-
-## Acceptance criteria
-
-- Planner approves Q1–Q5 and C51–C60.
-- Multi-agent process: Lead did **not** implement domain code in discuss pass.
-- `verify:phase-6` green locally + CI with mock STT/TTS.
-- No theater: live badges only when stream/turn is real; mocks labeled in Settings.
+| ADR | Status |
+|-----|--------|
+| [ADR-020](./adr/ADR-020-whisper-stt-sidecar.md) | **APPROVED** |
+| [ADR-021](./adr/ADR-021-jarvis-kernel-two-phase-speak.md) | **APPROVED** |
+| [ADR-022](./adr/ADR-022-elevenlabs-tts-mock.md) | **APPROVED** |
+| [ADR-023](./adr/ADR-023-globe-voice-states.md) | **APPROVED** |
+| [ADR-024](./adr/ADR-024-live-sse-voice-events.md) | **APPROVED** |
 
 ---
 
-## Agent ownership (after approval — separate chats)
+## Implementation order (Planner)
 
-| Order | Agent | Deliverables |
-|-------|-------|----------------|
-| 1 (parallel) | **Whisper** | `apps/whisper`, transcribe API, health, dev docs |
-| 1 (parallel) | **Kernel** | `packages/jarvis-kernel`, TTS adapter, two-phase speak, contracts schemas |
-| 2 (parallel) | **BFF/Voice** | `/api/v1/voice/*`, SSE extension, server wiring |
-| 2 (parallel) | **Docs/QA** | `verify-phase-6.mjs`, CI Phase 0–6 gate |
-| 3 | **UI** | PTT, live AUDIO I/O, globe states, Playwright, DESIGN_SYSTEM |
-| — | **Lead** | Integrate reports; run verify; **STOP** until reports pasted |
+1. **P6-A** Whisper + **P6-B** Kernel (parallel)
+2. **P6-C** BFF/Voice + **P6-E** Docs/QA (parallel)
+3. **P6-D** UI
+4. User: `verify:phase-6` → CI → Planner sign-off
 
 **HARD RULE:** Lead does not implement domain code without agent reports.

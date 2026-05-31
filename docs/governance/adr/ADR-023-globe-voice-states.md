@@ -1,6 +1,6 @@
 # ADR-023: Globe voice states (Phase 6)
 
-**Status:** **DRAFT** (requires Planner approval)  
+**Status:** **APPROVED** (Planner 2026-05-30; Amendment C)  
 **Date:** 2026-05-30  
 **Owner:** UI agent  
 **Related:** C57 · [ADR-015 amendment](./ADR-015-amendment-phase-5.1.md) · [GAP ZR-024](../../GAP_BACKLOG.md)
@@ -24,10 +24,10 @@ Phase 5.1 globe: point-cloud + rings, idle rotation only. Luke HUD reference imp
 |-------|----------|
 | `idle` | Phase 5.1 defaults (slow rotation) |
 | `listening` | Brighter point opacity; ring pulse (PTT held) |
-| `thinking` | Faster ring rotation; subtle cyan bloom |
+| `thinking` | Faster ring rotation; **opacity/scale pulse** on point-cloud + rings (shader-safe — **no post-processing bloom** per ADR-015) |
 | `speaking` | Output-level-driven point scale (from AUDIO I/O analyser) |
 
-3. **Perf budget unchanged:** ≤12k points, ≤8k ring tris; no new geometry types in 6.
+3. **Perf budget unchanged:** ≤12k points, ≤8k ring tris; no new geometry types; **no new post-processing passes** in Phase 6.
 4. State driven by **client voice controller** — props from PTT/TTS hooks, not direct mic access inside R3F loop.
 
 ---
