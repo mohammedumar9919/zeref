@@ -116,6 +116,20 @@
 | C49 | ADR-018 extension + verify.md — CI runs `verify:phase-5.1` after `verify:phase-5` |
 | C50 | C30 carry-forward — no voice in Phase 5.1 web |
 
+## Phase 6 (voice — draft)
+
+**Contract:** [phase-6-contract.md](../phase-6-contract.md) (Q1–Q5, C51–C60)
+
+| ADR | Topic | Owner |
+|-----|--------|-------|
+| [ADR-020](./ADR-020-whisper-stt-sidecar.md) | faster-whisper sidecar (Q1) | Whisper |
+| [ADR-021](./ADR-021-jarvis-kernel-two-phase-speak.md) | kernel + two-phase speak (Q3–Q4) | Kernel |
+| [ADR-022](./ADR-022-elevenlabs-tts-mock.md) | ElevenLabs + ZEREF_TTS_MOCK (Q2) | Kernel |
+| [ADR-023](./ADR-023-globe-voice-states.md) | globe voice states (C57) | UI |
+| [ADR-024](./ADR-024-live-sse-voice-events.md) | live SSE voice events (Q5) | BFF |
+
+**Status:** DRAFT — pending Planner approval.
+
 ## Related
 
 - [Phase 0 contract](../phase-0-contract.md)

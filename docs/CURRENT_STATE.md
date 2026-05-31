@@ -19,9 +19,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
 | Phase 5.1 Luke JARVIS HUD visual | **IMPLEMENTATION DONE** — Planner visual sign-off pending |
-| Phase 6 Jarvis voice | **BLOCKED** until 5.1 signed off |
+| Phase 6 Jarvis voice | **DISCUSS + CONTRACT** — draft: [governance/phase-6-contract.md](./governance/phase-6-contract.md) |
 
-**Immediate goal:** Phase **5.1** Luke JARVIS HUD contract + implement. Skills: [SKILL_INVOCATION.md](./SKILL_INVOCATION.md).
+**Immediate goal:** Planner approves Phase **6** voice contract (Q1–Q5, C51–C60). Do **not** spawn agents until approved.
 
 ---
 
@@ -101,15 +101,15 @@ npm run verify:phase-5.1
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User + Lead | Push; confirm CI Phase 0–5.1 green |
-| 2 | Planner | Visual sign-off vs `lukebuildsai-jarvis-hud.jpeg` + screenshot `docs/design/reference/screenshots/zeref-cockpit-5.1-a.png` |
-| 3 | Planner | Phase 6 voice discuss |
+| 1 | Planner | Phase 5.1 visual sign-off vs reference JPEG |
+| 2 | Planner | Approve [phase-6-contract.md](./governance/phase-6-contract.md) + ADR-020–024 |
+| 3 | User | Spawn P6-A…E agent chats after approval |
 
 ---
 
 ## Do not start
 
-- Phase 6 voice until Phase 5.1 Planner sign-off
+- Phase 6 **implementation** until Planner approves contract (discuss OK)
 - Full-screen particle globe without ADR-015 amendment
 - Fake scrolling telemetry (legacy ios theater pattern)
 

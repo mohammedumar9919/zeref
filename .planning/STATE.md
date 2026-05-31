@@ -4,25 +4,21 @@
 
 ## Current position
 
-- **Phase:** 5.1 implementation **COMPLETE** — pending Planner visual sign-off
-- **Contract:** [phase-5.1-contract.md](../docs/governance/phase-5.1-contract.md) (C43–C50)
-- **Tips:** UI `838e34d`; BFF + QA commits pending Lead merge
+- **Phase:** 6 **DISCUSS + CONTRACT** (DRAFT — Planner approval required)
+- **Contract:** [phase-6-contract.md](../docs/governance/phase-6-contract.md) (C51–C60, Q1–Q5)
+- **Prerequisite:** Phase 5.1 implementation complete; Planner 5.1 visual sign-off recommended
 
-## Agent slices
+## Phase 5.1 status
 
-| Slice | Status |
-|-------|--------|
-| P5.1-B BFF/Events | Report received — SSE + schema |
-| P5.1-C Docs/QA | Report received — verify:phase-5.1 + CI |
-| P5.1-A UI | **DONE** @ `838e34d` |
+- Implementation complete @ `abb9dec` (verify green locally)
+- Awaiting Planner JPEG sign-off
 
-## Next
+## Phase 6 discuss deliverables (this commit)
 
-1. Lead commit B+C + enable `ZEREF_PHASE51_UI=1` in CI
-2. User: `npm run verify:phase-5.1` with `ZEREF_PHASE51_UI=1`
-3. Push + CI green
-4. Planner JPEG sign-off vs `lukebuildsai-jarvis-hud.jpeg`
+- phase-6-contract.md + ADR-020–024 drafts
+- WORKER_TASK_CARDS P6-A through P6-E prompts
 
 ## Do not start
 
-- Phase 6 until Planner signs off 5.1
+- Lead implementing apps/packages/scripts without agent reports
+- Phase 6 implementation until Planner approves contract
