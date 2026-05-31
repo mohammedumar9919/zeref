@@ -4,10 +4,10 @@ Lead copies cards into **new** worker chats. Update status after each slice.
 
 ---
 
-## READY — Phase 6 Wave 2 (P6-A + P6-B merged — spawn P6-C + P6-E)
+## READY — Phase 6 Wave 3 (P6-C + P6-E merged — spawn P6-D UI)
 
-**Merged:** P6-A @ `7cd1f2b`, P6-B @ `d1a1063`  
-**Order:** P6-C + P6-E parallel → P6-D UI
+**Merged:** P6-C @ `4171e14`, P6-E @ `2cbe98b`  
+**Order:** P6-D UI only → then enable `ZEREF_PHASE6_VOICE=1` in CI
 
 ---
 
@@ -270,6 +270,15 @@ Acceptance
 
 Report back: files changed, verify output, screenshot path, globe state demo notes.
 ```
+
+---
+
+## COMPLETED — Phase 6 Wave 2
+
+| Slice | Scope |
+|-------|--------|
+| P6-C BFF/Voice | `/api/v1/voice/*`, SSE bus, `@zeref/jarvis-kernel` wiring |
+| P6-E Docs/QA | `verify:phase-6`, CI Phase 0–6, `cockpit-voice-6.spec.ts` |
 
 ---
 

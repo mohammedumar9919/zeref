@@ -19,9 +19,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
 | Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
-| Phase 6 Jarvis voice | **IN PROGRESS** — C51/C52 done @ `7cd1f2b`/`d1a1063`; Wave 2 spawn |
+| Phase 6 Jarvis voice | **IN PROGRESS** — Wave 2 done; **P6-D UI** spawn |
 
-**Immediate goal:** Spawn Phase **6 Wave 2** — **P6-C** BFF/Voice + **P6-E** Docs/QA (parallel).
+**Immediate goal:** Spawn **P6-D** UI (PTT, live AUDIO I/O, globe voice states).
 
 ---
 
@@ -64,6 +64,7 @@ collect → normalize → embed → analyze → report
 | `verify:phase-0` … `verify:phase-4` | OK with `DATABASE_URL` | OK |
 | `verify:phase-5` | OK with `ZEREF_BFF_FIXTURE=1` | OK — **no live DB BFF test** |
 | `verify:phase-5.1` | OK with `ZEREF_BFF_FIXTURE=1` + `ZEREF_PHASE51_UI=1` | OK — C48 enforced |
+| `verify:phase-6` | OK — chains 0–5.1; C59 **skipped** until P6-D | OK — scaffold; enable `ZEREF_PHASE6_VOICE=1` after UI |
 
 ### QA — Phase 5.1 verify (P5.1-C)
 
@@ -101,11 +102,18 @@ npm run verify:phase-5.1
 
 | Slice | Status |
 |-------|--------|
-| P6-A Whisper (`apps/whisper`) | **DONE** @ `7cd1f2b` |
-| P6-B Kernel (`@zeref/jarvis-kernel`) | **DONE** @ `d1a1063` |
-| P6-C BFF/Voice | **READY** — spawn |
-| P6-E Docs/QA | **READY** — spawn parallel |
-| P6-D UI | Blocked until C+E |
+| P6-A Whisper | **DONE** @ `7cd1f2b` |
+| P6-B Kernel | **DONE** @ `d1a1063` |
+| P6-C BFF/Voice | **DONE** @ `4171e14` |
+| P6-E Docs/QA | **DONE** @ `2cbe98b` |
+| P6-D UI | **READY** — spawn |
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_WHISPER_MOCK='1'; $env:ZEREF_TTS_MOCK='1'; $env:ZEREF_LLM_MOCK='1'
+npm run verify:phase-6   # C59 soft until UI
+# After UI: $env:ZEREF_PHASE6_VOICE='1'; npm run verify:phase-6
+```
 
 ---
 
@@ -113,9 +121,8 @@ npm run verify:phase-5.1
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Spawn **P6-C** BFF/Voice + **P6-E** Docs/QA (parallel) |
-| 2 | User | After reports: **P6-D** UI |
-| 3 | User + Lead | `verify:phase-6` → push → CI Phase 0–6 |
+| 1 | User | Spawn **P6-D** UI |
+| 2 | User + Lead | Enable `ZEREF_PHASE6_VOICE=1` in CI; `verify:phase-6` → push |
 
 ---
 
