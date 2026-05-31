@@ -1,6 +1,6 @@
 import type { CockpitSlices } from "@zeref/contracts";
 
-import { HudShell } from "@/components/hud/HudShell";
+import { VoiceHudShell } from "@/components/hud/VoiceHudShell";
 
 import { CockpitGrid, type CockpitFocus } from "./CockpitGrid";
 
@@ -17,9 +17,9 @@ export function CockpitShell({
 }: CockpitShellProps): React.ReactElement {
   return (
     <div data-testid={pageTestId}>
-      <HudShell>
+      <VoiceHudShell>
         <CockpitGrid slices={slices} focus={focus} />
-      </HudShell>
+      </VoiceHudShell>
     </div>
   );
 }

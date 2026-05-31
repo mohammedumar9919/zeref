@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 
+import { useVoice } from "@/components/voice/VoiceProvider";
+
 import { GLOBE_MODE } from "./GlobeCanvas";
 
 const GlobeCanvas = dynamic(
@@ -21,15 +23,18 @@ const GlobeCanvas = dynamic(
 );
 
 export function GlobeIsland(): React.ReactElement {
+  const { voiceState, outputLevel } = useVoice();
+
   return (
     <div
       data-testid="globe-island"
       data-globe-mode={GLOBE_MODE}
-      className="globe-hero relative min-h-[45vh] w-full overflow-hidden lg:min-h-[55vh]"
+      data-globe-voice-state={voiceState}
+      className={`globe-hero globe-voice-${voiceState} relative min-h-[45vh] w-full overflow-hidden lg:min-h-[55vh]`}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.08),transparent_65%)]" />
       <div className="absolute inset-0">
-        <GlobeCanvas />
+        <GlobeCanvas voiceState={voiceState} outputLevel={outputLevel} />
       </div>
     </div>
   );

@@ -79,6 +79,18 @@
   .hud-footer {
     box-shadow: inset 0 1px 0 rgba(34, 211, 238, 0.06);
   }
+
+  .globe-voice-listening {
+    filter: brightness(1.08);
+  }
+
+  .globe-voice-thinking {
+    filter: brightness(1.05);
+  }
+
+  .globe-voice-speaking {
+    filter: brightness(1.1);
+  }
 }
 
 @media (max-width: 1023px) {

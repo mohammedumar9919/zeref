@@ -2,7 +2,9 @@
 
 import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import type { Group, Points } from "three";
+import type { Group, Points, PointsMaterial } from "three";
+
+import type { VoiceGlobeState } from "@/lib/voice/parse-voice-events";
 
 /** ADR-015 amendment: ≤12k points budget. */
 export const GLOBE_POINT_COUNT = 8192;
@@ -28,16 +30,43 @@ function fibonacciSpherePositions(count: number, radius: number): Float32Array {
   return positions;
 }
 
-function PointCloudEarth(): React.ReactElement {
+type GlobeSceneProps = {
+  voiceState: VoiceGlobeState;
+  outputLevel: number;
+};
+
+function PointCloudEarth({
+  voiceState,
+  outputLevel,
+}: GlobeSceneProps): React.ReactElement {
   const pointsRef = useRef<Points>(null);
   const positions = useMemo(
     () => fibonacciSpherePositions(GLOBE_POINT_COUNT, 1.28),
     [],
   );
 
-  useFrame((_, delta) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y += delta * 0.08;
+  useFrame(({ clock }, delta) => {
+    if (!pointsRef.current) return;
+
+    const material = pointsRef.current.material as PointsMaterial;
+    const t = clock.elapsedTime;
+
+    pointsRef.current.rotation.y += delta * (voiceState === "thinking" ? 0.16 : 0.08);
+
+    if (voiceState === "listening") {
+      material.opacity = 0.95 + Math.sin(t * 4) * 0.05;
+      pointsRef.current.scale.setScalar(1 + Math.sin(t * 3) * 0.02);
+    } else if (voiceState === "thinking") {
+      const pulse = 1 + Math.sin(t * 5) * 0.04;
+      material.opacity = 0.75 + Math.sin(t * 5) * 0.15;
+      pointsRef.current.scale.setScalar(pulse);
+    } else if (voiceState === "speaking") {
+      const scale = 1 + outputLevel * 0.18;
+      material.opacity = 0.85 + outputLevel * 0.15;
+      pointsRef.current.scale.setScalar(scale);
+    } else {
+      material.opacity = 0.88;
+      pointsRef.current.scale.setScalar(1);
     }
   });
 
@@ -58,14 +87,31 @@ function PointCloudEarth(): React.ReactElement {
   );
 }
 
-function CompassRings(): React.ReactElement {
+function CompassRings({ voiceState, outputLevel }: GlobeSceneProps): React.ReactElement {
   const groupRef = useRef<Group>(null);
 
-  useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.z -= delta * 0.03;
-      groupRef.current.rotation.x += delta * 0.015;
-    }
+  useFrame(({ clock }, delta) => {
+    if (!groupRef.current) return;
+    const t = clock.elapsedTime;
+    const speed =
+      voiceState === "thinking"
+        ? 0.06
+        : voiceState === "listening"
+          ? 0.045
+          : 0.03;
+
+    groupRef.current.rotation.z -= delta * speed;
+    groupRef.current.rotation.x += delta * speed * 0.5;
+
+    const pulse =
+      voiceState === "listening"
+        ? 1 + Math.sin(t * 4) * 0.03
+        : voiceState === "thinking"
+          ? 1 + Math.sin(t * 5) * 0.05
+          : voiceState === "speaking"
+            ? 1 + outputLevel * 0.04
+            : 1;
+    groupRef.current.scale.setScalar(pulse);
   });
 
   const ringSpecs = [
@@ -86,19 +132,28 @@ function CompassRings(): React.ReactElement {
   );
 }
 
-export function GlobeCanvas(): React.ReactElement {
+type GlobeCanvasProps = {
+  voiceState?: VoiceGlobeState;
+  outputLevel?: number;
+};
+
+export function GlobeCanvas({
+  voiceState = "idle",
+  outputLevel = 0,
+}: GlobeCanvasProps): React.ReactElement {
   return (
     <Canvas
       data-testid="globe-canvas"
       data-globe-mode={GLOBE_MODE}
+      data-globe-voice-state={voiceState}
       gl={{ antialias: true, alpha: true }}
       camera={{ position: [0, 0, 4.6], fov: 40 }}
       dpr={[1, 2]}
     >
       <ambientLight intensity={0.4} />
       <pointLight position={[3, 4, 5]} intensity={0.85} color="#22d3ee" />
-      <PointCloudEarth />
-      <CompassRings />
+      <PointCloudEarth voiceState={voiceState} outputLevel={outputLevel} />
+      <CompassRings voiceState={voiceState} outputLevel={outputLevel} />
     </Canvas>
   );
 }

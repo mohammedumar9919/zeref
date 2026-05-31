@@ -29,9 +29,12 @@ test.describe("cockpit HUD phase 5.1 (C48)", () => {
     await expect(page.getByTestId("telemetry-simulated")).toBeVisible();
   });
 
-  test("audio I/O placeholder shows simulated badge", async ({ page }) => {
+  test("live AUDIO I/O replaces simulated placeholder (Phase 6 C58)", async ({
+    page,
+  }) => {
     await page.goto("/cockpit");
-    await expect(page.getByTestId("audio-io-simulated")).toBeVisible();
+    await expect(page.getByTestId("audio-io-live")).toBeVisible();
+    await expect(page.getByTestId("audio-io-simulated")).toHaveCount(0);
   });
 
   test("globe canvas uses point-cloud mode", async ({ page }) => {
