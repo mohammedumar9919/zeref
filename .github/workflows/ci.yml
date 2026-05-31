@@ -94,4 +94,5 @@ jobs:
           ZEREF_BFF_FIXTURE: "1"
           ZEREF_PHASE51_UI: "1"
           ZEREF_PHASE6_VOICE: "1"
+          ZEREF_PLAYWRIGHT_REUSE: "1"
 

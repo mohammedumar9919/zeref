@@ -165,7 +165,11 @@ function runPhase6PackageTests() {
 
 function runPhase6VoicePlaywright() {
   const voiceReady = process.env.ZEREF_PHASE6_VOICE === "1";
-  const env = ciSafeEnv({ ZEREF_PHASE6_VOICE: voiceReady ? "1" : "0" });
+  const env = ciSafeEnv({
+    ZEREF_PHASE6_VOICE: voiceReady ? "1" : "0",
+    // Reuse webServer from verify:phase-5 chain if still on PLAYWRIGHT_PORT (avoids EADDRINUSE).
+    ZEREF_PLAYWRIGHT_REUSE: "1",
+  });
 
   run("npm", ["-w", "@zeref/web", "run", "test:e2e:install"], env);
 
