@@ -3,13 +3,15 @@ import {
   formatSseEvent,
   TELEMETRY_HEARTBEAT_INTERVAL_MS,
 } from "@/lib/events";
+import { getVoiceEventBus } from "@/lib/voice/voice-event-bus";
 
 export const dynamic = "force-dynamic";
 
-/** GET /api/v1/events/stream — SSE stub with simulated telemetry (ADR-019). */
+/** GET /api/v1/events/stream — telemetry stub + live voice events (ADR-019 / ADR-024). */
 export async function GET(): Promise<Response> {
   const encoder = new TextEncoder();
   let heartbeatTimer: ReturnType<typeof setInterval> | undefined;
+  let unsubscribeVoice: (() => void) | undefined;
 
   const stream = new ReadableStream({
     start(controller) {
@@ -19,6 +21,10 @@ export async function GET(): Promise<Response> {
         ),
       );
 
+      unsubscribeVoice = getVoiceEventBus().subscribe((eventType, data) => {
+        controller.enqueue(encoder.encode(formatSseEvent(eventType, data)));
+      });
+
       heartbeatTimer = setInterval(() => {
         controller.enqueue(encoder.encode(formatSseEvent("heartbeat")));
       }, TELEMETRY_HEARTBEAT_INTERVAL_MS);
@@ -27,6 +33,7 @@ export async function GET(): Promise<Response> {
       if (heartbeatTimer !== undefined) {
         clearInterval(heartbeatTimer);
       }
+      unsubscribeVoice?.();
     },
   });
 
