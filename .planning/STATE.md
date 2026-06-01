@@ -11,9 +11,9 @@
 
 ## Next
 
-1. Lead: Phase 7 Discuss + Contract — `packages/zeref-memory` (ZR-030–032)
-2. Lead (optional parallel): Phase 6.1 Discuss + Contract — Luke visual polish
-3. Planner: approve Phase 7 contract → spawn workers
+1. User: spawn P7-A (memory package + phase7 contracts + db migrations)
+2. Lead: integrate P7-A → spawn P7-B + P7-C + P7-E scaffold
+3. Optional: Phase 6.1 contract draft (non-blocking)
 
 ## Do not start
 

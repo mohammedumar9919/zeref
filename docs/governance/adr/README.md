@@ -94,7 +94,21 @@
 
 **Reading order:** ADR-020 → ADR-021 → ADR-022 → ADR-023 → ADR-024 → ADR-018 (6 extension)
 
-**Status:** **APPROVED** (Planner 2026-05-30) — `verify:phase-6` scaffold (P6-E); UI voice Playwright (P6-D) pending.
+**Status:** **APPROVED** (Planner 2026-05-31)
+
+## Phase 7 (zeref-memory + event→orb)
+
+**Contract:** [phase-7-contract.md](../phase-7-contract.md) (Q1–Q5, C61–C70, Amendments A–D)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-025](./ADR-025-memory-postgres-schema.md) | Postgres 4-tier memory schema (Q1, C63) | **APPROVED** | Data |
+| [ADR-026](./ADR-026-kernel-memory-tools.md) | Kernel memory tools, slow-path only (Q2, C65) | **APPROVED** | Kernel |
+| [ADR-027](./ADR-027-sse-brain-events-outbox.md) | SSE brain events + worker outbox (Q3, Q5, C66–C69) | **APPROVED** | BFF + Worker |
+
+**Reading order:** ADR-025 → ADR-026 → ADR-027
+
+**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-05-31) — spawn P7-A after Lead commits contract.
 
 ## Planner quick reference
 

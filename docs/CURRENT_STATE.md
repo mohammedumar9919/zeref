@@ -22,10 +22,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 6 Jarvis voice | **APPROVED** @ `183acf9` + hotfixes; screenshot @ `3020d1e` (2026-05-31) |
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
-| Phase 7 zeref-memory | **UNBLOCKED** — Discuss + Contract next |
+| Phase 7 zeref-memory | **CONTRACT APPROVED** — spawn P7-A (Wave 1) |
 | Phase 6.1 Luke visual polish | **DEFER** — separate Discuss + Contract (non-blocking) |
 
-**Immediate goal:** Lead Phase 7 Discuss + Contract (`packages/zeref-memory`). Optional parallel: Phase 6.1 visual polish contract.
+**Immediate goal:** Spawn P7-A worker (`packages/zeref-memory` + phase7 contracts + db migrations). Optional parallel: Phase 6.1 visual polish contract.
 
 ---
 
@@ -129,10 +129,10 @@ npm run verify:phase-6
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | Lead | Phase 7 Discuss + Contract — `packages/zeref-memory` (4-tier brain, ZR-030–032) |
-| 2 | Lead | Optional parallel: Phase 6.1 Discuss + Contract — Luke visual polish (grid ratio, borderless panels, hero atmosphere) |
-| 3 | Planner | Approve Phase 7 contract before worker spawn |
-| 4 | User | Push governance sign-off commit when Lead lands doc updates |
+| 1 | User | Spawn **P7-A** worker chat (card in WORKER_TASK_CARDS_QUEUE.md) |
+| 2 | Lead | Integrate P7-A report → spawn P7-B + P7-C + P7-E scaffold |
+| 3 | Lead | Optional: Phase 6.1 Discuss + Contract (Luke visual polish) |
+| 4 | User | `git push` after Lead commits governance docs |
 
 ---
 

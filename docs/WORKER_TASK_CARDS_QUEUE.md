@@ -20,13 +20,118 @@ Implementation @ `183acf9`; CI @ `d9c589f`; hotfixes `9c5869f` / `358d757`; scre
 
 ---
 
-## READY — Phase 7 Discuss + Contract (Lead only — no workers until Planner approves)
+## READY — Phase 7 Wave 1 (spawn P7-A only)
 
-**Theme:** `packages/zeref-memory` — 4-tier brain (ZR-030–032). Luke jarvis-orb pattern.
+**Contract:** `docs/governance/phase-7-contract.md` **APPROVED WITH CONDITIONS** (Planner 2026-05-31)  
+**ADRs:** ADR-025, ADR-026, ADR-027  
+**Theme:** `packages/zeref-memory` — 4-tier brain (ZR-030–032)
 
-**Parallel optional:** Phase 6.1 Luke visual polish (grid ratio, borderless panels, hero atmosphere).
+**Order:** P7-A → (P7-B + P7-C + P7-E scaffold) → P7-D → P7-E finalize e2e
 
-Lead: draft `docs/governance/phase-7-contract.md` + council propose-slice → STOP.
+---
+
+### Card P7-A — Agent Memory + Schema (Wave 1 — spawn NOW)
+
+```text
+You are the Zeref Memory + Schema agent for Phase 7 slice P7-A.
+
+HARD RULE
+- Implement ONLY: packages/zeref-memory/**, packages/contracts/src/phase7/**, packages/db migrations for memory tables, fixtures/phase-7/**, package.json workspace entries.
+- Do NOT edit apps/web/**, packages/jarvis-kernel/**, scripts/worker.mjs, or BFF routes.
+- When done, STOP and post a report. Do not claim Planner sign-off.
+
+Skills — invoke before acting:
+1. using-superpowers
+2. test-driven-development
+3. council-review-slice (schema changes)
+4. verification-before-completion
+
+Read first (mandatory):
+1. docs/SKILL_INVOCATION.md
+2. docs/CURRENT_STATE.md
+3. docs/failures-checklist.md
+4. docs/governance/phase-7-contract.md (Q1, C61–C64, Amendment B outbox table name)
+5. docs/governance/adr/ADR-025-memory-postgres-schema.md
+6. packages/db (existing migration pattern)
+7. packages/contracts/src/phase6/ (pattern for phase7 schemas)
+
+Repo: c:\Projects\zeref
+
+Deliverables
+1. packages/zeref-memory/ — package scaffold with:
+   - saveMemory, searchMemory, verifyMemory
+   - entity CRUD: createEntity, updateEntity, queryEntities, relateEntities
+   - autoTierClassifier(text, context) → episodic|semantic|project|procedural
+   - temporalScore(createdAt) — 30-day half-life
+   - ruleBasedContradictionCheck on save (same entity_id + conflicting value → contradicted)
+   - Postgres adapter + ZEREF_MEMORY_MOCK=1 in-memory/fixture adapter
+2. packages/contracts/src/phase7/ — MemoryEntrySchema, MemorySearchResultSchema, MemoryEntitySchema, MemoryBrainEventSchema, CockpitSseOutboxSchema, PHASE7_CONTRACT_VERSION = "7.0.0"
+3. packages/db migrations — memory_entries, memory_entities, memory_relations, memory_observations, cockpit_sse_outbox (for ADR-027; schema only — worker INSERT is P7-C scope)
+4. fixtures/phase-7/ — sample memories + search results for mock mode
+5. Unit tests — npm test -w @zeref/zeref-memory with ZEREF_MEMORY_MOCK=1
+
+Allowed paths
+- packages/zeref-memory/**
+- packages/contracts/src/phase7/**
+- packages/contracts/test/** (phase-7 tests)
+- packages/db/** (memory + outbox migrations)
+- fixtures/phase-7/**
+- package.json / package-lock.json (workspace dep entries only)
+
+Forbidden
+- apps/web/**
+- packages/jarvis-kernel/**
+- scripts/**
+
+Acceptance
+- npm run build -w @zeref/contracts
+- npm test -w @zeref/zeref-memory
+- npm test -w @zeref/contracts (new phase-7 tests)
+- Migration SQL applies (document manual: npm run db:migrate or project equivalent)
+
+Report back: commit hash, API surface, migration file names, test output, env vars, blockers.
+```
+
+### Card P7-B — Agent Kernel (Wave 2 — after P7-A report)
+
+```text
+You are the Zeref Kernel agent for Phase 7 slice P7-B.
+HARD RULE: packages/jarvis-kernel memory tools ONLY. Read P7-A API first.
+Deliverables: memory_search, memory_save tools; Amendment C keyword routing; slow-path only.
+Acceptance: npm test -w @zeref/jarvis-kernel with ZEREF_MEMORY_MOCK=1.
+STOP with report.
+```
+
+### Card P7-C — Agent BFF + Outbox (Wave 2 — after P7-A report)
+
+```text
+You are the Zeref BFF agent for Phase 7 slice P7-C.
+HARD RULE: BFF + worker outbox INSERT hook ONLY. No UI components.
+Deliverables: getCockpitEventBus (Amendment A); memory.* SSE; cockpit_sse_outbox drain; worker job-complete INSERT.
+Read ADR-027. Optional GET /api/v1/memory/search?q= read-only.
+Acceptance: npm test -w @zeref/web.
+STOP with report.
+```
+
+### Card P7-D — Agent UI Brain States (Wave 3 — after P7-B + P7-C)
+
+```text
+You are the Zeref UI agent for Phase 7 slice P7-D.
+HARD RULE: globe + TelemetryStrip + e2e ONLY.
+Deliverables: data-globe-brain-state; SSE memory.* subscription; jarvis-orb reaction mapping (no bloom).
+Acceptance: manual + e2e with ZEREF_PHASE7_BRAIN=1 when P7-E ready.
+STOP with report + screenshot.
+```
+
+### Card P7-E — Agent Docs/QA (Wave 2 scaffold → Wave 4 finalize)
+
+```text
+You are the Zeref Docs/QA agent for Phase 7 slice P7-E.
+HARD RULE: scripts/verify-phase-7.mjs, CI, e2e, governance docs ONLY.
+Wave 2: verify shell + CI step (Playwright may skip). Wave 4: cockpit-brain-7.spec.ts enforced.
+Acceptance: npm run verify:phase-7 with ZEREF_MEMORY_MOCK=1 + ZEREF_PHASE7_BRAIN=1.
+STOP with report.
+```
 
 ---
 
