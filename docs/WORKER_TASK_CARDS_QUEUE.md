@@ -20,17 +20,22 @@ Implementation @ `183acf9`; CI @ `d9c589f`; hotfixes `9c5869f` / `358d757`; scre
 
 ---
 
-## READY — Phase 7 Wave 1 (spawn P7-A only)
+## COMPLETED — Phase 7 Wave 1 (P7-A)
 
-**Contract:** `docs/governance/phase-7-contract.md` **APPROVED WITH CONDITIONS** (Planner 2026-05-31)  
-**ADRs:** ADR-025, ADR-026, ADR-027  
-**Theme:** `packages/zeref-memory` — 4-tier brain (ZR-030–032)
-
-**Order:** P7-A → (P7-B + P7-C + P7-E scaffold) → P7-D → P7-E finalize e2e
+| Slice | Scope | Commit |
+|-------|--------|--------|
+| P7-A | `@zeref/zeref-memory`, phase7 contracts, db migrations, fixtures | `93ef982` |
 
 ---
 
-### Card P7-A — Agent Memory + Schema (Wave 1 — spawn NOW)
+## READY — Phase 7 Wave 2 (spawn P7-B + P7-C + P7-E in parallel)
+
+**Depends on:** P7-A merged  
+**Order:** P7-B + P7-C + P7-E (max 3 chats) → then P7-D
+
+---
+
+### Card P7-A — Agent Memory + Schema (COMPLETED)
 
 ```text
 You are the Zeref Memory + Schema agent for Phase 7 slice P7-A.

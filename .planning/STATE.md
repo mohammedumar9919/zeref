@@ -11,8 +11,9 @@
 
 ## Next
 
-1. User: spawn P7-A (memory package + phase7 contracts + db migrations)
-2. Lead: integrate P7-A → spawn P7-B + P7-C + P7-E scaffold
+1. User: spawn P7-B + P7-C + P7-E (Wave 2, parallel)
+2. User: `npm run migrate -w @zeref/db` (dev Postgres)
+3. Lead: integrate Wave 2 → spawn P7-D
 3. Optional: Phase 6.1 contract draft (non-blocking)
 
 ## Do not start
