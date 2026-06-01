@@ -41,11 +41,11 @@ Planner Discuss → Contract → Planner APPROVE
 
 ---
 
-## Current focus (2026-05-30)
+## Current focus (2026-05-31)
 
-1. **Phase 5.1** — Luke JARVIS HUD Discuss + Contract (skills: `brainstorming`, `ui-ux-pro-max`, `gsd-discuss-phase`, `council-propose-slice`)
-2. Phase 5.0.2 **DONE** — dev perf docs, dev:clean port kill, BFF direct load
-3. Phase 6 voice after 5.1 sign-off
+1. **Phase 7** — `packages/zeref-memory` Discuss + Contract (skills: `gsd-discuss-phase`, `council-propose-slice`)
+2. **Phase 6.1** (optional parallel) — Luke visual polish contract
+3. Phase 6 **APPROVED** — do not re-open voice implementation without contract amendment
 
 ---
 

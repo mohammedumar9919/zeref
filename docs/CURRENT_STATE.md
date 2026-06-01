@@ -19,11 +19,13 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
 | Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
-| Phase 6 Jarvis voice | **IMPLEMENTATION DONE** @ `183acf9` — Planner sign-off pending |
+| Phase 6 Jarvis voice | **APPROVED** @ `183acf9` + hotfixes; screenshot @ `3020d1e` (2026-05-31) |
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
+| Phase 7 zeref-memory | **UNBLOCKED** — Discuss + Contract next |
+| Phase 6.1 Luke visual polish | **DEFER** — separate Discuss + Contract (non-blocking) |
 
-**Immediate goal:** Re-UAT PTT audio at `/cockpit` (mock mode), save `zeref-cockpit-6-d.png`, Planner functional sign-off. Phase 6.1 visual polish is separate (non-blocking Phase 7).
+**Immediate goal:** Lead Phase 7 Discuss + Contract (`packages/zeref-memory`). Optional parallel: Phase 6.1 visual polish contract.
 
 ---
 
@@ -127,16 +129,17 @@ npm run verify:phase-6
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Re-UAT PTT at http://localhost:3000/cockpit — full mocks in `.env.local`; expect **440 Hz beep** on ack/result |
-| 2 | User | Save screenshot → `docs/design/reference/screenshots/zeref-cockpit-6-d.png` |
-| 3 | Planner | Functional sign-off vs Luke JPEG + screenshot; Phase 6.1 visual contract (separate) |
-| 4 | Follow-up | ~~P6-HOTFIX-B~~ **DONE** — voice-routes fixture aligned |
+| 1 | Lead | Phase 7 Discuss + Contract — `packages/zeref-memory` (4-tier brain, ZR-030–032) |
+| 2 | Lead | Optional parallel: Phase 6.1 Discuss + Contract — Luke visual polish (grid ratio, borderless panels, hero atmosphere) |
+| 3 | Planner | Approve Phase 7 contract before worker spawn |
+| 4 | User | Push governance sign-off commit when Lead lands doc updates |
 
 ---
 
 ## Do not start
 
-- Phase 6 **Lead domain code** without agent reports
+- Phase 7 **implementation** until Planner approves contract
+- Phase 6 **Lead domain code** without agent reports (phase closed)
 - Full-screen particle globe without ADR-015 amendment
 - Fake scrolling telemetry (legacy ios theater pattern)
 

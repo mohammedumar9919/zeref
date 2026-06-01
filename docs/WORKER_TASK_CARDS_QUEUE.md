@@ -4,6 +4,32 @@ Lead copies cards into **new** worker chats. Update status after each slice.
 
 ---
 
+## COMPLETED — Phase 6 (APPROVED 2026-05-31)
+
+Implementation @ `183acf9`; CI @ `d9c589f`; hotfixes `9c5869f` / `358d757`; screenshot @ `3020d1e`.
+
+| Slice | Commit |
+|-------|--------|
+| P6-A Whisper | `7cd1f2b` |
+| P6-B Kernel | `d1a1063` |
+| P6-C BFF/Voice | `4171e14` |
+| P6-E Docs/QA | `2cbe98b` |
+| P6-D UI | `183acf9` |
+| P6-HOTFIX-A | `9c5869f` |
+| P6-HOTFIX-B | `358d757` |
+
+---
+
+## READY — Phase 7 Discuss + Contract (Lead only — no workers until Planner approves)
+
+**Theme:** `packages/zeref-memory` — 4-tier brain (ZR-030–032). Luke jarvis-orb pattern.
+
+**Parallel optional:** Phase 6.1 Luke visual polish (grid ratio, borderless panels, hero atmosphere).
+
+Lead: draft `docs/governance/phase-7-contract.md` + council propose-slice → STOP.
+
+---
+
 ## COMPLETED — P6-HOTFIX-A (audible TTS mock)
 
 | Slice | Scope |
