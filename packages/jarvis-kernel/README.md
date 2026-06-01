@@ -13,7 +13,7 @@ Server-side Jarvis voice orchestration for Phase 6 (ADR-021, ADR-022).
 
 | Variable | Purpose |
 |----------|---------|
-| `ZEREF_TTS_MOCK=1` | Use `fixtures/phase-6/tts-mock.wav` (CI) |
+| `ZEREF_TTS_MOCK=1` | Use `fixtures/phase-6/tts-mock.wav` (CI; audible 440 Hz tone for UAT playback) |
 | `ZEREF_LLM_MOCK=1` | Deterministic LLM text without OpenRouter |
 | `ZEREF_WORKER_AVAILABLE=1` | `get_pipeline_status` returns live idle status |
 | `ELEVENLABS_API_KEY` | Primary TTS (server-only) |

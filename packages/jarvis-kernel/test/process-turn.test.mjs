@@ -8,9 +8,12 @@ const pkgRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = join(pkgRoot, "../..");
 const fixturesDir = join(repoRoot, "fixtures/phase-6");
 
+/** CI/UAT mock WAV: 440 Hz tone, mono 16-bit PCM @ 8 kHz, 0.25 s (non-silent). */
 function createMinimalWav() {
   const sampleRate = 8000;
   const durationSec = 0.25;
+  const frequencyHz = 440;
+  const peakAmplitude = 0.3;
   const numSamples = Math.floor(sampleRate * durationSec);
   const dataSize = numSamples * 2;
   const buffer = Buffer.alloc(44 + dataSize);
@@ -27,7 +30,26 @@ function createMinimalWav() {
   buffer.writeUInt16LE(16, 34);
   buffer.write("data", 36);
   buffer.writeUInt32LE(dataSize, 40);
+  for (let i = 0; i < numSamples; i++) {
+    const sample = Math.round(
+      peakAmplitude *
+        32767 *
+        Math.sin((2 * Math.PI * frequencyHz * i) / sampleRate),
+    );
+    buffer.writeInt16LE(sample, 44 + i * 2);
+  }
   return buffer;
+}
+
+function wavPcmRms(wavBuffer) {
+  const dataOffset = 44;
+  const sampleCount = (wavBuffer.length - dataOffset) / 2;
+  let sumSq = 0;
+  for (let i = 0; i < sampleCount; i++) {
+    const sample = wavBuffer.readInt16LE(dataOffset + i * 2);
+    sumSq += sample * sample;
+  }
+  return Math.sqrt(sumSq / sampleCount);
 }
 
 before(() => {
@@ -119,5 +141,9 @@ describe("@zeref/jarvis-kernel TTS", () => {
     assert.equal(result.mimeType, "audio/wav");
     assert.ok(result.audio.length > 44);
     assert.ok(result.durationMs >= 250);
+    assert.ok(
+      wavPcmRms(result.audio) > 100,
+      "mock TTS fixture must be audible (non-zero PCM RMS)",
+    );
   });
 });

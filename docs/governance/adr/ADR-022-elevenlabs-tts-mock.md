@@ -17,7 +17,7 @@ Jarvis persona requires **British** TTS. ElevenLabs is primary per project stack
 
 1. **Primary:** ElevenLabs text-to-speech — voice ID from `ELEVENLABS_VOICE_ID` (British Jarvis preset documented in README, not committed).
 2. **Fallback:** OpenAI TTS (`OPENAI_API_KEY`) only when ElevenLabs fails — log warning; same interface in kernel.
-3. **`ZEREF_TTS_MOCK=1`:** synthesize returns **`fixtures/phase-6/tts-mock.wav`** (or generated silent buffer) — deterministic duration from text length.
+3. **`ZEREF_TTS_MOCK=1`:** synthesize returns **`fixtures/phase-6/tts-mock.wav`** (audible 440 Hz PCM tone for UAT; deterministic duration from text length).
 4. API keys **server-only** — `apps/web` Route Handlers or kernel; never `NEXT_PUBLIC_*`.
 5. Output format: **audio/mpeg** or **audio/wav** — BFF returns URL or base64 to client; document choice in kernel README.
 

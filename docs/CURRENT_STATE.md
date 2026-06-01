@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-05-31  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -20,8 +20,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
 | Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
 | Phase 6 Jarvis voice | **IMPLEMENTATION DONE** @ `183acf9` — Planner sign-off pending |
+| P6-HOTFIX-A audible TTS mock | **DONE** (pending commit) — `fixtures/phase-6/tts-mock.wav` 440 Hz tone for UAT |
 
-**Immediate goal:** Run full Phase 6 gate, push CI, Planner sign-off. Live dev: OpenRouter in `apps/web/.env.local` (unset `ZEREF_LLM_MOCK` for real LLM).
+**Immediate goal:** Re-UAT PTT audio at `/cockpit` (mock mode), save `zeref-cockpit-6-d.png`, Planner functional sign-off. Phase 6.1 visual polish is separate (non-blocking Phase 7).
 
 ---
 
@@ -107,6 +108,7 @@ npm run verify:phase-5.1
 | P6-C BFF/Voice | **DONE** @ `4171e14` |
 | P6-E Docs/QA | **DONE** @ `2cbe98b` |
 | P6-D UI | **DONE** @ `183acf9` |
+| P6-HOTFIX-A | **DONE** — audible `tts-mock.wav` + kernel RMS test |
 
 ```powershell
 cd c:\Projects\zeref
@@ -123,9 +125,10 @@ npm run verify:phase-6
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | `npm run verify:phase-6` (full flags) + `git push` |
-| 2 | User | Live test PTT at http://localhost:3000/cockpit (OpenRouter key set) |
-| 3 | Planner | Sign-off vs `lukebuildsai-jarvis-hud.jpeg` + `zeref-cockpit-6-d.png` |
+| 1 | User | Re-UAT PTT at http://localhost:3000/cockpit — full mocks in `.env.local`; expect **440 Hz beep** on ack/result (if silent after web tests: `git checkout -- fixtures/phase-6/tts-mock.wav`) |
+| 2 | User | Save screenshot → `docs/design/reference/screenshots/zeref-cockpit-6-d.png` |
+| 3 | Planner | Functional sign-off vs Luke JPEG + screenshot; Phase 6.1 visual contract (separate) |
+| 4 | Follow-up | P6-HOTFIX-B — align `apps/web/test/voice-routes.test.mjs` silent `createMinimalWav()` with kernel audible helper |
 
 ---
 

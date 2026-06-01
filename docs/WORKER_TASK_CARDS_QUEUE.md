@@ -4,6 +4,16 @@ Lead copies cards into **new** worker chats. Update status after each slice.
 
 ---
 
+## COMPLETED — P6-HOTFIX-A (audible TTS mock)
+
+| Slice | Scope |
+|-------|--------|
+| P6-HOTFIX-A | `fixtures/phase-6/tts-mock.wav` 440 Hz tone; kernel RMS test; ADR-022/README note |
+
+**Follow-up (READY):** P6-HOTFIX-B — align `apps/web/test/voice-routes.test.mjs` `createMinimalWav()` with kernel audible helper (web tests overwrite fixture to silence).
+
+---
+
 ## READY — Phase 6 Wave 3 (P6-C + P6-E merged — spawn P6-D UI)
 
 **Merged:** P6-C @ `4171e14`, P6-E @ `2cbe98b`  
