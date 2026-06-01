@@ -10,7 +10,11 @@ Lead copies cards into **new** worker chats. Update status after each slice.
 |-------|--------|
 | P6-HOTFIX-A | `fixtures/phase-6/tts-mock.wav` 440 Hz tone; kernel RMS test; ADR-022/README note |
 
-**Follow-up (READY):** P6-HOTFIX-B — align `apps/web/test/voice-routes.test.mjs` `createMinimalWav()` with kernel audible helper (web tests overwrite fixture to silence).
+## COMPLETED — P6-HOTFIX-B (voice-routes fixture)
+
+| Slice | Scope |
+|-------|--------|
+| P6-HOTFIX-B | `apps/web/test/voice-routes.test.mjs` audible `createMinimalWav()` + sync-mock RMS assertions |
 
 ---
 

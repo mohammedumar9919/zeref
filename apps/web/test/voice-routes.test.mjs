@@ -9,9 +9,12 @@ const webRoot = join(testDir, "..");
 const repoRoot = join(webRoot, "../..");
 const fixturesDir = join(repoRoot, "fixtures/phase-6");
 
+/** CI/UAT mock WAV: 440 Hz tone, mono 16-bit PCM @ 8 kHz, 0.25 s (non-silent). */
 function createMinimalWav() {
   const sampleRate = 8000;
   const durationSec = 0.25;
+  const frequencyHz = 440;
+  const peakAmplitude = 0.3;
   const numSamples = Math.floor(sampleRate * durationSec);
   const dataSize = numSamples * 2;
   const buffer = Buffer.alloc(44 + dataSize);
@@ -28,7 +31,26 @@ function createMinimalWav() {
   buffer.writeUInt16LE(16, 34);
   buffer.write("data", 36);
   buffer.writeUInt32LE(dataSize, 40);
+  for (let i = 0; i < numSamples; i++) {
+    const sample = Math.round(
+      peakAmplitude *
+        32767 *
+        Math.sin((2 * Math.PI * frequencyHz * i) / sampleRate),
+    );
+    buffer.writeInt16LE(sample, 44 + i * 2);
+  }
   return buffer;
+}
+
+function wavPcmRms(wavBuffer) {
+  const dataOffset = 44;
+  const sampleCount = (wavBuffer.length - dataOffset) / 2;
+  let sumSq = 0;
+  for (let i = 0; i < sampleCount; i++) {
+    const sample = wavBuffer.readInt16LE(dataOffset + i * 2);
+    sumSq += sample * sample;
+  }
+  return Math.sqrt(sumSq / sampleCount);
 }
 
 function setCiVoiceMockEnv() {
@@ -168,6 +190,17 @@ describe("handleVoiceTurn", () => {
     assert.ok(body.ackAudio?.audioBase64?.length > 0);
     assert.ok(body.resultAudio?.audioBase64?.length > 0);
     assert.equal(body.ackAudio.mimeType, "audio/wav");
+
+    const ackWav = Buffer.from(body.ackAudio.audioBase64, "base64");
+    const resultWav = Buffer.from(body.resultAudio.audioBase64, "base64");
+    assert.ok(
+      wavPcmRms(ackWav) > 100,
+      "mock TTS ack audio must be audible (non-zero PCM RMS)",
+    );
+    assert.ok(
+      wavPcmRms(resultWav) > 100,
+      "mock TTS result audio must be audible (non-zero PCM RMS)",
+    );
   });
 
   it("returns 202 and emits ack events on SSE bus in live mode", async () => {
