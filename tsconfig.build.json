@@ -3,6 +3,7 @@
   "references": [
     { "path": "./packages/contracts" },
     { "path": "./packages/jarvis-kernel" },
+    { "path": "./packages/zeref-memory" },
     { "path": "./packages/analytics" },
     { "path": "./packages/reports" },
     { "path": "./packages/domain" },

@@ -6,6 +6,7 @@ export const PHASE4_CONTRACT_VERSION = "4.0.0";
 export const PHASE5_CONTRACT_VERSION = "5.0.0";
 export const PHASE5_1_CONTRACT_VERSION = "5.1.0";
 export const PHASE6_CONTRACT_VERSION = "6.0.0";
+export const PHASE7_CONTRACT_VERSION = "7.0.0";
 
 export {
   PlatformSchema,
@@ -125,6 +126,37 @@ export {
   type VoiceAudioEvent,
   type PipelineEvent,
 } from "./phase6/index.js";
+
+export {
+  MemoryTierSchema,
+  MemoryObservationSchema,
+  MemorySourceSchema,
+  MemoryEntrySchema,
+  MemorySearchResultItemSchema,
+  MemorySearchResultSchema,
+  MemoryEntitySchema,
+  MemoryRelationSchema,
+  MemorySavedEventSchema,
+  MemorySearchEventSchema,
+  MemoryContradictionEventSchema,
+  MemoryEntityChangedEventSchema,
+  MemoryBrainEventSchema,
+  CockpitSseOutboxSchema,
+  type MemoryTier,
+  type MemoryObservation,
+  type MemorySource,
+  type MemoryEntry,
+  type MemorySearchResultItem,
+  type MemorySearchResult,
+  type MemoryEntity,
+  type MemoryRelation,
+  type MemorySavedEvent,
+  type MemorySearchEvent,
+  type MemoryContradictionEvent,
+  type MemoryEntityChangedEvent,
+  type MemoryBrainEvent,
+  type CockpitSseOutbox,
+} from "./phase7/index.js";
 
 export {
   NormalizedPostPayloadSchema,

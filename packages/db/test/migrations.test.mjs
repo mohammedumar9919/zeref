@@ -115,7 +115,7 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
     }
   });
 
-  it("applies Phase 1–3 migrations cleanly on Postgres 16", async () => {
+  it("applies Phase 1–7 migrations cleanly on Postgres 16", async () => {
     const url = new URL(databaseUrl);
     url.pathname = `/${testDbName}`;
     const testUrl = url.toString();
@@ -133,7 +133,12 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
       [
         [
           "analysis_outputs",
+          "cockpit_sse_outbox",
           "embedding_vectors",
+          "memory_entities",
+          "memory_entries",
+          "memory_observations",
+          "memory_relations",
           "metric_facts",
           "normalized_entities",
           "platform_accounts",
@@ -142,7 +147,7 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
         ],
       ],
     );
-    assert.equal(tables.rowCount, 7);
+    assert.equal(tables.rowCount, 12);
 
     const ext = await pool.query(
       `SELECT 1 FROM pg_extension WHERE extname = 'vector'`,

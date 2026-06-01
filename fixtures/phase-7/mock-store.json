@@ -1,0 +1,72 @@
+{
+  "entries": [
+    {
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "tier": "episodic",
+      "content": "User asked about the latest report headline during voice turn.",
+      "source": "voice",
+      "entityId": null,
+      "valueKey": null,
+      "value": null,
+      "temporalScore": 0.95,
+      "observation": "verified",
+      "metadata": {},
+      "createdAt": "2026-05-31T12:00:00.000Z",
+      "updatedAt": "2026-05-31T12:00:00.000Z"
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000010",
+      "tier": "semantic",
+      "content": "User prefers elite report format.",
+      "source": "voice",
+      "entityId": "b2000000-0000-4000-8000-000000000002",
+      "valueKey": "format",
+      "value": "elite",
+      "temporalScore": 0.88,
+      "observation": "verified",
+      "metadata": {},
+      "createdAt": "2026-05-30T08:00:00.000Z",
+      "updatedAt": "2026-05-30T08:00:00.000Z"
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000011",
+      "tier": "project",
+      "content": "Snapshot abc123 linked to report headline analysis.",
+      "source": "worker",
+      "entityId": null,
+      "valueKey": null,
+      "value": null,
+      "temporalScore": 0.72,
+      "observation": "verified",
+      "metadata": { "snapshotId": "00000000-0000-0000-0000-000000000099" },
+      "createdAt": "2026-05-29T10:00:00.000Z",
+      "updatedAt": "2026-05-29T10:00:00.000Z"
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000012",
+      "tier": "procedural",
+      "content": "Run verify:phase-6 before deploying voice changes.",
+      "source": "system",
+      "entityId": null,
+      "valueKey": null,
+      "value": null,
+      "temporalScore": 0.65,
+      "observation": "verified",
+      "metadata": {},
+      "createdAt": "2026-05-28T14:00:00.000Z",
+      "updatedAt": "2026-05-28T14:00:00.000Z"
+    }
+  ],
+  "entities": [
+    {
+      "id": "b2000000-0000-4000-8000-000000000002",
+      "type": "preference",
+      "name": "report_format",
+      "stateJson": { "format": "elite" },
+      "transitionHistory": [],
+      "createdAt": "2026-05-30T08:00:00.000Z",
+      "updatedAt": "2026-05-30T08:00:00.000Z"
+    }
+  ],
+  "relations": []
+}
