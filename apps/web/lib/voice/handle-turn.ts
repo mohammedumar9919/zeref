@@ -20,7 +20,8 @@ import type {
   VoiceTurnAudioBlob,
   VoiceTurnSyncResponse,
 } from "./types";
-import { getVoiceEventBus } from "./voice-event-bus";
+import { emitMemoryBrainEventsFromToolCalls } from "../memory/emit-brain-events.js";
+import { getCockpitEventBus } from "../cockpit/cockpit-event-bus.js";
 
 const pendingTurns = new Set<Promise<void>>();
 
@@ -31,7 +32,7 @@ function nowIso(): string {
 function emitVoiceEvent(
   event: VoiceTranscriptEvent | VoiceStateEvent | VoiceAudioEvent,
 ): void {
-  getVoiceEventBus().emit(event.type, event);
+  getCockpitEventBus().emit(event.type, event);
 }
 
 function emitUserTranscript(turnId: string, transcript: string): void {
@@ -95,6 +96,7 @@ async function completeTurnInBackground(
   try {
     const result = await handle.complete;
     emitKernelEvents(result.events);
+    emitMemoryBrainEventsFromToolCalls(result.toolCalls);
     await synthesizeAndEmitAudio(turnId, "result", result.resultText);
   } catch (error) {
     console.error("[voice/turn] background complete failed:", error);
@@ -120,6 +122,8 @@ async function handleVoiceTurnSync(
     synthesizeAudioBlob(output.ackText, "ack"),
     synthesizeAudioBlob(output.resultText, "result"),
   ]);
+
+  emitMemoryBrainEventsFromToolCalls(output.toolCalls);
 
   const body: VoiceTurnSyncResponse = {
     mode: "sync-mock",

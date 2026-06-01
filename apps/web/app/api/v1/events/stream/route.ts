@@ -3,15 +3,22 @@ import {
   formatSseEvent,
   TELEMETRY_HEARTBEAT_INTERVAL_MS,
 } from "@/lib/events";
-import { getVoiceEventBus } from "@/lib/voice/voice-event-bus";
+import { getCockpitEventBus } from "@/lib/cockpit/cockpit-event-bus";
+import {
+  COCKPIT_OUTBOX_POLL_MS,
+  drainCockpitOutboxOnce,
+} from "@/lib/cockpit/outbox-drain";
+import { emitSimulatedPipelineIfWorkerAbsent } from "@/lib/cockpit/simulated-pipeline";
+import { getDb } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-/** GET /api/v1/events/stream — telemetry stub + live voice events (ADR-019 / ADR-024). */
+/** GET /api/v1/events/stream — telemetry + unified cockpit SSE (ADR-019 / ADR-024 / ADR-027). */
 export async function GET(): Promise<Response> {
   const encoder = new TextEncoder();
   let heartbeatTimer: ReturnType<typeof setInterval> | undefined;
-  let unsubscribeVoice: (() => void) | undefined;
+  let outboxTimer: ReturnType<typeof setInterval> | undefined;
+  let unsubscribeCockpit: (() => void) | undefined;
 
   const stream = new ReadableStream({
     start(controller) {
@@ -21,9 +28,18 @@ export async function GET(): Promise<Response> {
         ),
       );
 
-      unsubscribeVoice = getVoiceEventBus().subscribe((eventType, data) => {
+      unsubscribeCockpit = getCockpitEventBus().subscribe((eventType, data) => {
         controller.enqueue(encoder.encode(formatSseEvent(eventType, data)));
       });
+
+      emitSimulatedPipelineIfWorkerAbsent();
+
+      if (getDb()) {
+        void drainCockpitOutboxOnce();
+        outboxTimer = setInterval(() => {
+          void drainCockpitOutboxOnce();
+        }, COCKPIT_OUTBOX_POLL_MS);
+      }
 
       heartbeatTimer = setInterval(() => {
         controller.enqueue(encoder.encode(formatSseEvent("heartbeat")));
@@ -33,7 +49,10 @@ export async function GET(): Promise<Response> {
       if (heartbeatTimer !== undefined) {
         clearInterval(heartbeatTimer);
       }
-      unsubscribeVoice?.();
+      if (outboxTimer !== undefined) {
+        clearInterval(outboxTimer);
+      }
+      unsubscribeCockpit?.();
     },
   });
 

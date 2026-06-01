@@ -277,7 +277,7 @@ describe("events stream voice subscription", () => {
     voiceBus.resetVoiceEventBusForTests();
   });
 
-  it("forwards voice-event-bus payloads as SSE frames", async () => {
+  it("forwards cockpit bus voice payloads as SSE frames", async () => {
     voiceBus.resetVoiceEventBusForTests();
 
     const response = await eventsRoute.GET();
@@ -306,5 +306,52 @@ describe("events stream voice subscription", () => {
     await reader.cancel();
     assert.match(buffer, /event: voice\.state/);
     assert.match(buffer, /thinking/);
+  });
+});
+
+describe("voice turn memory SSE (P7-C)", () => {
+  after(() => {
+    clearVoiceEnv();
+    delete process.env.ZEREF_MEMORY_MOCK;
+    voiceBus.resetVoiceEventBusForTests();
+  });
+
+  it("emits memory.saved on cockpit bus after live turn with remember transcript", async () => {
+    setLiveVoiceMockEnv();
+    process.env.ZEREF_MEMORY_MOCK = "1";
+    voiceBus.resetVoiceEventBusForTests();
+
+    const kernel = await import(
+      pathToFileURL(
+        join(repoRoot, "packages/jarvis-kernel/dist/index.js"),
+      ).href,
+    );
+    const emitBrain = await import(
+      pathToFileURL(join(webRoot, "lib/memory/emit-brain-events.ts")).href,
+    );
+
+    const received = [];
+    voiceBus.getVoiceEventBus().subscribe((eventType, data) => {
+      received.push({ eventType, data });
+    });
+
+    const turnId = "550e8400-e29b-41d4-a716-446655440099";
+    const handle = kernel.processTurn(
+      {
+        turnId,
+        transcript: "Remember that the vault password is sunset",
+        ts: "2026-05-31T12:00:00.000Z",
+      },
+      kernel.createDefaultDeps(),
+    );
+    const result = await handle.complete;
+    emitBrain.emitMemoryBrainEventsFromToolCalls(result.toolCalls);
+
+    assert.ok(
+      received.some((e) => e.eventType === "memory.saved"),
+      "expected memory.saved on cockpit bus",
+    );
+    const saved = received.find((e) => e.eventType === "memory.saved");
+    assert.equal(saved.data.simulated, true);
   });
 });
