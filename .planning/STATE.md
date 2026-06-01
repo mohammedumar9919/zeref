@@ -6,7 +6,7 @@
 
 - **Phase:** 6 **implementation complete** @ `183acf9` — Planner sign-off pending
 - **Tips:** P6-A `7cd1f2b`, P6-B `d1a1063`, P6-C `4171e14`, P6-E `2cbe98b`, P6-D `183acf9`
-- **Hotfix:** P6-HOTFIX-A audible TTS mock (440 Hz `tts-mock.wav`) — integrated, commit pending
+- **Hotfix:** P6-HOTFIX-A @ `9c5869f` — audible TTS mock (440 Hz `tts-mock.wav`)
 
 ## Next
 
