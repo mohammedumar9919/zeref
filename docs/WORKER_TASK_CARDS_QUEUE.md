@@ -14,7 +14,7 @@ Lead copies cards into **new** worker chats. Update status after each slice.
 
 | Slice | Scope |
 |-------|--------|
-| P6-HOTFIX-B | `apps/web/test/voice-routes.test.mjs` audible `createMinimalWav()` + sync-mock RMS assertions |
+| P6-HOTFIX-B | `apps/web/test/voice-routes.test.mjs` audible `createMinimalWav()` + sync-mock RMS assertions @ `358d757` |
 
 ---
 

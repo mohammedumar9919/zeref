@@ -21,7 +21,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
 | Phase 6 Jarvis voice | **IMPLEMENTATION DONE** @ `183acf9` — Planner sign-off pending |
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
-| P6-HOTFIX-B voice-routes fixture | **DONE** (pending commit) — web tests no longer overwrite fixture to silence |
+| P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 
 **Immediate goal:** Re-UAT PTT audio at `/cockpit` (mock mode), save `zeref-cockpit-6-d.png`, Planner functional sign-off. Phase 6.1 visual polish is separate (non-blocking Phase 7).
 
@@ -110,7 +110,7 @@ npm run verify:phase-5.1
 | P6-E Docs/QA | **DONE** @ `2cbe98b` |
 | P6-D UI | **DONE** @ `183acf9` |
 | P6-HOTFIX-A | **DONE** @ `9c5869f` — audible `tts-mock.wav` + kernel RMS test |
-| P6-HOTFIX-B | **DONE** (pending commit) — voice-routes audible fixture + RMS assertions |
+| P6-HOTFIX-B | **DONE** @ `358d757` — voice-routes audible fixture + RMS assertions |
 
 ```powershell
 cd c:\Projects\zeref
