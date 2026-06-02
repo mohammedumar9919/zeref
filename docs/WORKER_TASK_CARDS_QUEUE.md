@@ -28,10 +28,14 @@ Implementation @ `183acf9`; CI @ `d9c589f`; hotfixes `9c5869f` / `358d757`; scre
 
 ---
 
-## READY — Phase 7 Wave 2 (spawn P7-B + P7-C + P7-E in parallel)
+## COMPLETED — Phase 7 Wave 2–4 (in progress)
 
-**Depends on:** P7-A merged  
-**Order:** P7-B + P7-C + P7-E (max 3 chats) → then P7-D
+| Slice | Scope | Commit |
+|-------|--------|--------|
+| P7-C | unified cockpit SSE bus, memory events, worker outbox | `547103b` |
+| P7-D | UI brain states + TelemetryStrip | **MERGED** (SHA not present in this checkout) |
+| P7-HOTFIX-C | Phase 7 hotfix | **MERGED** (SHA not present in this checkout) |
+| P7-E | verify + CI + governance docs (Wave 4 finalize) | **THIS COMMIT** |
 
 ---
 

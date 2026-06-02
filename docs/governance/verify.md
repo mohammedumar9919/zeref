@@ -250,3 +250,50 @@ After `verify:phase-4`:
 - Install Playwright Chromium
 - `ZEREF_BFF_FIXTURE=1`, `ZEREF_LLM_MOCK=1`
 - `npm run verify:phase-5` (includes Playwright)
+
+---
+
+## Phase 7 (zeref-memory + event→orb)
+
+**Contract:** [phase-7-contract.md](./phase-7-contract.md) (C61–C70, Amendments A–D) · **ADRs:** [025](./adr/ADR-025-memory-postgres-schema.md)–[027](./adr/ADR-027-sse-brain-events-outbox.md)
+
+Chains Phase 0–6, then Phase 7 unit checks and **hard-enforced** Playwright brain spec (Wave 4).
+
+```powershell
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_WHISPER_MOCK='1'
+$env:ZEREF_TTS_MOCK='1'
+$env:ZEREF_LLM_MOCK='1'
+$env:ZEREF_MEMORY_MOCK='1'
+$env:ZEREF_PHASE7_BRAIN='1'
+npm run verify:phase-7
+```
+
+### Env flags
+
+| Env | Default verify / CI |
+|-----|---------------------|
+| `ZEREF_MEMORY_MOCK` | **`1`** (C64) |
+| `ZEREF_PHASE7_BRAIN` | **`1`** — enforce `cockpit-brain-7.spec.ts` |
+| `ZEREF_PHASE6_VOICE` | **`1`** in CI |
+
+**No browser memory write** — `@zeref/zeref-memory` only in server paths (`app/api/**`, `lib/memory/**`, `lib/cockpit/**`).
+
+### What `verify:phase-7` checks
+
+Script: `scripts/verify-phase-7.mjs`
+
+- `phase-7-contract.md`, ADR-025–027
+- `fixtures/phase-7/` memory + outbox goldens
+- **C62:** `PHASE7_CONTRACT_VERSION` = `7.0.0`, brain event + outbox schemas
+- **C70:** extends C30/C59 import guard — server-only `@zeref/zeref-memory`
+- `@zeref/zeref-memory`, `@zeref/contracts`, `@zeref/jarvis-kernel`, `@zeref/web` tests (`memory-routes.test.mjs`)
+- **C67:** Playwright `cockpit-brain-7` — `data-globe-brain-state`, `memory.saved` SSE (documented; **skip** until `ZEREF_PHASE7_BRAIN=1`)
+
+### CI (C70)
+
+After `verify:phase-6`:
+
+- `ZEREF_MEMORY_MOCK=1` (required)
+- `ZEREF_PHASE7_BRAIN=1` (required) — `cockpit-brain-7` enforced
+- `npm run verify:phase-7`

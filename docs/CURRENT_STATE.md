@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-05-31  
+**Last updated:** 2026-06-02  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -22,10 +22,14 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 6 Jarvis voice | **APPROVED** @ `183acf9` + hotfixes; screenshot @ `3020d1e` (2026-05-31) |
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
-| Phase 7 zeref-memory | **P7-A DONE** @ `93ef982` — spawn Wave 2 (P7-B/C/E) |
+| Phase 7 zeref-memory | **P7-A DONE** @ `93ef982` |
+| Phase 7 cockpit SSE bus/outbox | **P7-C DONE** @ `547103b` |
+| Phase 7 UI brain states | **P7-D MERGED** (commit SHA not present in this checkout) |
+| Phase 7 verify + CI enforce brain e2e | **P7-E FINALIZING** (Wave 4; this change) |
+| Phase 7 hotfix | **P7-HOTFIX-C MERGED** (commit SHA not present in this checkout) |
 | Phase 6.1 Luke visual polish | **DEFER** — separate Discuss + Contract (non-blocking) |
 
-**Immediate goal:** Spawn P7-B + P7-C + P7-E (Wave 2 parallel). User: `npm run migrate -w @zeref/db` on dev Postgres.
+**Immediate goal:** Run `npm run verify:phase-7` with `ZEREF_MEMORY_MOCK=1` + `ZEREF_PHASE7_BRAIN=1`, then push Phase 7 enforcement changes.
 
 ---
 
