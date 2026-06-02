@@ -2,6 +2,10 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { JarvisToolRegistry, ToolContext } from "../types.js";
+import { memorySave } from "./memory-save.js";
+import { memorySearch } from "./memory-search.js";
+
+export { memorySave, memorySearch };
 
 const pkgRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const repoRoot = join(pkgRoot, "../..");
@@ -62,6 +66,8 @@ export function createDefaultToolRegistry(): JarvisToolRegistry {
     get_cockpit_summary: getCockpitSummary,
     get_latest_report_headline: getLatestReportHeadline,
     get_pipeline_status: getPipelineStatus,
+    memory_save: memorySave,
+    memory_search: memorySearch,
   };
 }
 
@@ -74,6 +80,19 @@ export function selectToolsForTranscript(transcript: string): Array<{
     name: keyof JarvisToolRegistry;
     args: Record<string, unknown>;
   }> = [];
+
+  // Phase 7 (C65 / ADR-026): memory tools are slow-path only; selection here only
+  // influences what runSlowPath executes, not the ack path.
+  if (
+    /(remember|recall|what did i say|previously|last (time|week)|earlier)/i.test(
+      lower,
+    )
+  ) {
+    selected.push({ name: "memory_search", args: {} });
+  }
+  if (/(remember this|remember that|save this|note this|keep in mind)/i.test(lower)) {
+    selected.push({ name: "memory_save", args: {} });
+  }
 
   if (/(cockpit|dashboard|studio|panels?)/i.test(lower)) {
     selected.push({ name: "get_cockpit_summary", args: {} });

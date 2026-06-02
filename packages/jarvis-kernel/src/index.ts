@@ -28,6 +28,8 @@ export {
   getCockpitSummary,
   getLatestReportHeadline,
   getPipelineStatus,
+  memorySave,
+  memorySearch,
 } from "./tools/registry.js";
 
 export { buildAckText } from "./ack.js";
@@ -37,6 +39,8 @@ export type {
   ProcessTurnHandle,
   ToolContext,
   JarvisToolRegistry,
+  JarvisKernelToolCall,
+  JarvisKernelToolName,
   LlmAdapter,
   TtsAdapter,
   SpeechSynthesisResult,
