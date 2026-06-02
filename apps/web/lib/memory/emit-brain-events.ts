@@ -4,7 +4,7 @@ import {
   type MemoryBrainEvent,
 } from "@zeref/contracts";
 
-import { getCockpitEventBus } from "../cockpit/cockpit-event-bus.js";
+import { getCockpitEventBus } from "../cockpit/cockpit-event-bus";
 
 type ToolCallLike = {
   name: string;

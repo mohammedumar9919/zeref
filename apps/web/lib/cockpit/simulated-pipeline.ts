@@ -1,6 +1,6 @@
 import type { PipelineEvent } from "@zeref/contracts";
 
-import { getCockpitEventBus } from "./cockpit-event-bus.js";
+import { getCockpitEventBus } from "./cockpit-event-bus";
 
 export function isWorkerAvailable(): boolean {
   return process.env.ZEREF_WORKER_AVAILABLE === "1";

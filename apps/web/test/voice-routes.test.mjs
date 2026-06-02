@@ -313,7 +313,31 @@ describe("voice turn memory SSE (P7-C)", () => {
   after(() => {
     clearVoiceEnv();
     delete process.env.ZEREF_MEMORY_MOCK;
+    delete process.env.ZEREF_PHASE7_BRAIN;
     voiceBus.resetVoiceEventBusForTests();
+  });
+
+  it("emits memory.saved on cockpit bus in CI sync-mock mode when phase7 brain + memory mock enabled", async () => {
+    setCiVoiceMockEnv();
+    process.env.ZEREF_MEMORY_MOCK = "1";
+    process.env.ZEREF_PHASE7_BRAIN = "1";
+    voiceBus.resetVoiceEventBusForTests();
+
+    const received = [];
+    voiceBus.getVoiceEventBus().subscribe((eventType, data) => {
+      received.push({ eventType, data });
+    });
+
+    const audio = new Blob([createMinimalWav()], { type: "audio/wav" });
+    const response = await handleTurn.handleVoiceTurn(audio);
+    assert.equal(response.status, 200);
+
+    assert.ok(
+      received.some((e) => e.eventType === "memory.saved"),
+      "expected memory.saved on cockpit bus (sync-mock)",
+    );
+    const saved = received.find((e) => e.eventType === "memory.saved");
+    assert.equal(saved.data.simulated, true);
   });
 
   it("emits memory.saved on cockpit bus after live turn with remember transcript", async () => {

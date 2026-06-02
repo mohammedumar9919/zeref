@@ -1,4 +1,9 @@
-import type { JarvisToolCall } from "@zeref/contracts";
+type VoiceTurnToolCall = {
+  name: string;
+  args: Record<string, unknown>;
+  result?: unknown;
+  durationMs?: number;
+};
 
 export type VoiceTurnAcceptedResponse = {
   turnId: string;
@@ -18,7 +23,7 @@ export type VoiceTurnSyncResponse = {
   ackText: string;
   resultText: string;
   globeState: "speaking";
-  toolCalls: JarvisToolCall[];
+  toolCalls: VoiceTurnToolCall[];
   ackAudio: VoiceTurnAudioBlob;
   resultAudio: VoiceTurnAudioBlob;
 };

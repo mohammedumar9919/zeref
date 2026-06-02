@@ -3,8 +3,8 @@ import { cockpitSseOutbox } from "@zeref/db";
 import { and, asc, eq, isNull } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { getDb } from "../db.js";
-import { getCockpitEventBus } from "./cockpit-event-bus.js";
+import { getDb } from "../db";
+import { getCockpitEventBus } from "./cockpit-event-bus";
 
 export const COCKPIT_OUTBOX_POLL_MS = 500;
 
