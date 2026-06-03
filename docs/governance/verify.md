@@ -265,6 +265,7 @@ $env:ZEREF_WHISPER_MOCK='1'
 $env:ZEREF_TTS_MOCK='1'
 $env:ZEREF_LLM_MOCK='1'
 $env:ZEREF_MEMORY_MOCK='1'
+$env:ZEREF_PHASE6_VOICE='1'
 $env:ZEREF_PHASE7_BRAIN='1'
 npm run verify:phase-7
 ```
@@ -288,11 +289,11 @@ Script: `scripts/verify-phase-7.mjs`
 - **C62:** `PHASE7_CONTRACT_VERSION` = `7.0.0`, brain event + outbox schemas
 - **C70:** extends C30/C59 import guard — server-only `@zeref/zeref-memory`
 - `@zeref/zeref-memory`, `@zeref/contracts`, `@zeref/jarvis-kernel`, `@zeref/web` tests (`memory-routes.test.mjs`)
-- **C67:** Playwright `cockpit-brain-7` — `data-globe-brain-state`, `memory.saved` SSE (documented; **skip** until `ZEREF_PHASE7_BRAIN=1`)
+- **C67:** Playwright `cockpit-brain-7` — `data-globe-brain-state`, `memory.saved` SSE (hard-fail unless `ZEREF_PHASE7_BRAIN=1`)
 
 ### CI (C70)
 
-After `verify:phase-6`:
+After `verify:phase-6` (Phase 6 mock flags: `ZEREF_WHISPER_MOCK`, `ZEREF_TTS_MOCK`, `ZEREF_BFF_FIXTURE`, `ZEREF_PHASE6_VOICE`, `ZEREF_PHASE51_UI`, `ZEREF_PLAYWRIGHT_REUSE`):
 
 - `ZEREF_MEMORY_MOCK=1` (required)
 - `ZEREF_PHASE7_BRAIN=1` (required) — `cockpit-brain-7` enforced
