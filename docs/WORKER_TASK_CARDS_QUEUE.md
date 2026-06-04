@@ -20,22 +20,18 @@ Implementation @ `183acf9`; CI @ `d9c589f`; hotfixes `9c5869f` / `358d757`; scre
 
 ---
 
-## COMPLETED — Phase 7 Wave 1 (P7-A)
+## COMPLETED — Phase 7 (implementation @ `0e7f8d5` — Planner sign-off pending)
 
-| Slice | Scope | Commit |
-|-------|--------|--------|
-| P7-A | `@zeref/zeref-memory`, phase7 contracts, db migrations, fixtures | `93ef982` |
+| Slice | Commit |
+|-------|--------|
+| P7-A Memory + schema | `93ef982` |
+| P7-C BFF + outbox | `547103b` |
+| P7-B Kernel memory tools | `afffaef` |
+| P7-C hotfix (build + SSE test) | `5084a9d` |
+| P7-E verify + CI gate | `0461bc1` |
+| P7-D UI brain states | `0e7f8d5` |
 
----
-
-## COMPLETED — Phase 7 Wave 2–4 (in progress)
-
-| Slice | Scope | Commit |
-|-------|--------|--------|
-| P7-C | unified cockpit SSE bus, memory events, worker outbox | `547103b` |
-| P7-D | UI brain states + TelemetryStrip | **MERGED** (SHA not present in this checkout) |
-| P7-HOTFIX-C | Phase 7 hotfix | **MERGED** (SHA not present in this checkout) |
-| P7-E | verify + CI + governance docs (Wave 4 finalize) | **THIS COMMIT** |
+Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5`
 
 ---
 
