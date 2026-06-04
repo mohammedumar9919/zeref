@@ -1,4 +1,4 @@
-import type { CockpitSlices } from "@zeref/contracts";
+import type { CockpitSlicesV8 } from "@zeref/contracts";
 
 import { CalendarPanel } from "@/components/cockpit/CalendarPanel";
 import { ReportsPanel } from "@/components/cockpit/ReportsPanel";
@@ -10,7 +10,7 @@ import { cn } from "@/lib/cn";
 export type CockpitFocus = "studio" | "calendar" | "reports" | "research" | null;
 
 type CockpitGridProps = {
-  slices: CockpitSlices;
+  slices: CockpitSlicesV8;
   focus?: CockpitFocus;
 };
 

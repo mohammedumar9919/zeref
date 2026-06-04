@@ -1,11 +1,11 @@
-import type { CockpitSlices } from "@zeref/contracts";
+import type { CockpitSlicesV8 } from "@zeref/contracts";
 
 import { VoiceHudShell } from "@/components/hud/VoiceHudShell";
 
 import { CockpitGrid, type CockpitFocus } from "./CockpitGrid";
 
 type CockpitShellProps = {
-  slices: CockpitSlices;
+  slices: CockpitSlicesV8;
   focus?: CockpitFocus;
   pageTestId?: string;
 };
