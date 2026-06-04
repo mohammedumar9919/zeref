@@ -35,15 +35,16 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 
 ---
 
-## READY — Phase 8 (P8-A + P8-B + P8-E Wave 2 DONE — spawn P8-C + P8-D)
+## READY — Phase 8 (Wave 3 DONE — verify + sign-off)
 
 | Wave | Slices | Gate |
 |------|--------|------|
 | 1 | ~~**P8-A**~~ | **DONE** @ `12a0e65` |
 | 2 | ~~**P8-B**~~ | **DONE** @ `10240c3` |
-| 2 | ~~**P8-E**~~ scaffold | **DONE** _(commit pending)_ |
-| 3 | **P8-C** + **P8-D** | **SPAWN NOW** (parallel) |
-| 4 | **P8-E** finalize | After P8-C + P8-D |
+| 2 | ~~**P8-E**~~ scaffold | **DONE** @ `7678cee` |
+| 3 | ~~**P8-C**~~ | **DONE** @ `c159de9` |
+| 3 | ~~**P8-D**~~ | **DONE** @ `76eaf64` |
+| 4 | ~~**P8-E**~~ finalize | Wave 4 e2e @ `47f61ec` — user runs `verify:phase-8` |
 
 **Follow-up (non-blocking):** `GET /api/v1/calendar/events/:id` (C73) — defer or P8-B hotfix.
 
