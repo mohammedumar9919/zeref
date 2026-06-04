@@ -23,7 +23,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
-| Phase 8 Studio + Calendar | **P8-A DONE** — spawn P8-B + P8-E scaffold |
+| Phase 8 Studio + Calendar | **P8-A** `12a0e65` · **P8-B** `10240c3` · **P8-E** scaffold — spawn **P8-C + P8-D** |
 | Phase 6.1 Luke visual polish | **DEFER** — separate Discuss + Contract (non-blocking) |
 
 **Immediate goal:** User spawns **P8-B** (BFF) + **P8-E** (QA scaffold) in parallel worker chats.
@@ -151,16 +151,15 @@ Screenshot: `docs/design/reference/screenshots/zeref-cockpit-7-brain.png` @ `0e7
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Spawn **P8-B** BFF + **P8-E** QA scaffold (parallel; cards in `WORKER_TASK_CARDS_QUEUE.md`) |
-| 2 | User | Optional: `docker compose up -d db` + `npm test -w @zeref/db` (P8-A migration verify) |
-| 3 | Lead | Integrate P8-B + P8-E reports → spawn P8-C + P8-D |
-| 4 | Lead | Optional: Phase 6.1 Discuss + Contract (Luke visual polish) |
+| 1 | User | Spawn **P8-C** Studio UI + **P8-D** Calendar UI (parallel; cards below) |
+| 2 | User | Run `npm run verify:phase-8` in PowerShell when Wave 4 ready |
+| 3 | Lead | Integrate P8-C/D → P8-E Wave 4 finalize |
 
 ---
 
 ## Do not start
 
-- Phase 8 **UI** (P8-C/P8-D) until **P8-B** report integrated
+- Phase 8 **UI** until **P8-B** integrated (closed @ `10240c3`)
 - Phase 8 **BFF** without P8-A schemas (closed after P8-A commit)
 - Phase 6 **Lead domain code** without agent reports (phase closed)
 - Full-screen particle globe without ADR-015 amendment

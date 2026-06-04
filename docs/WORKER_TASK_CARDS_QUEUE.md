@@ -35,16 +35,17 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 
 ---
 
-## READY — Phase 8 (P8-A DONE — spawn P8-B + P8-E scaffold)
+## READY — Phase 8 (P8-A + P8-B + P8-E Wave 2 DONE — spawn P8-C + P8-D)
 
 | Wave | Slices | Gate |
 |------|--------|------|
-| 1 | ~~**P8-A**~~ | **DONE** — contracts + migrations + fixtures |
-| 2 | **P8-B** + **P8-E** scaffold | **SPAWN NOW** (parallel) |
-| 3 | **P8-C** + **P8-D** parallel | After P8-B report |
+| 1 | ~~**P8-A**~~ | **DONE** @ `12a0e65` |
+| 2 | ~~**P8-B**~~ | **DONE** @ `10240c3` |
+| 2 | ~~**P8-E**~~ scaffold | **DONE** _(commit pending)_ |
+| 3 | **P8-C** + **P8-D** | **SPAWN NOW** (parallel) |
 | 4 | **P8-E** finalize | After P8-C + P8-D |
 
-**Amendment F (binding):** UI job enqueue allowlist = `normalize` | `embed` | `analyze` | `report` — **`collect` excluded** (CLI only).
+**Follow-up (non-blocking):** `GET /api/v1/calendar/events/:id` (C73) — defer or P8-B hotfix.
 
 ---
 
@@ -58,55 +59,25 @@ Commit: `12a0e65`
 
 ---
 
-### Card P8-B — Agent BFF (Wave 2 — after P8-A report)
+### Card P8-B — Agent BFF (COMPLETED @ `10240c3`)
 
 ```text
-You are the Zeref BFF agent for Phase 8 slice P8-B.
-
-HARD RULE
-- BFF routes + apps/web/lib/jobs/enqueue-job.ts ONLY. No UI components.
-- STOP with report when done.
-
-Skills — invoke before acting:
-1. using-superpowers
-2. test-driven-development
-3. council-review-slice
-
-Read first:
-- docs/governance/phase-8-contract.md (C73–C74, C79, Amendments F, H, I, J)
-- docs/governance/adr/ADR-028/029/030
-- apps/web/lib/cockpit-bff.ts (extend loadCockpitSlices → phase8-cockpit-v1)
-- scripts/enqueue-normalize.mjs (pg-boss retry pattern for Amendment I)
-
-Repo: c:\Projects\zeref
-
-Deliverables
-1. GET /api/v1/studio/entities/:id — normalized summary + draft overlay
-2. PUT /api/v1/studio/drafts/:entityId — upsert draft (no snapshot write)
-3. GET/POST/PATCH /api/v1/calendar/events — CRUD
-4. POST /api/v1/jobs/enqueue — allowlist only (Amendment F); shared enqueue-job.ts (Amendment I)
-5. Honest 202 { jobId, queued, workerConsuming: false } when worker absent (Amendment J)
-6. loadCockpitSlices() returns phase8-cockpit-v1; calendar from DB; studio draft flags
-7. Route tests with ZEREF_BFF_FIXTURE=1 + ZEREF_JOB_ENQUEUE_MOCK=1
-
-Allowed
-- apps/web/app/api/v1/studio/**
-- apps/web/app/api/v1/calendar/**
-- apps/web/app/api/v1/jobs/**
-- apps/web/lib/cockpit-bff.ts, apps/web/lib/jobs/**
-- apps/web/test/**
-
-Forbidden
-- apps/web/components/**
-- packages/db migrations (P8-A)
-
-Acceptance: npm test -w @zeref/web
-Report back: routes, curl samples, test output, commit hash.
+(Done — studio/calendar/enqueue routes, enqueue-job.ts, phase8-cockpit-v1 slices, phase-8-routes tests 10/10)
 ```
 
 ---
 
-### Card P8-C — Agent UI Studio (Wave 3 — after P8-B report)
+### Card P8-E — Agent Docs/QA (Wave 2 scaffold — COMPLETED)
+
+Commit: _(see P8-E integration commit)_
+
+```text
+(Done — verify:phase-8 script, CI Phase 0–8 gate, e2e scaffolds skipped until Wave 4)
+```
+
+---
+
+### Card P8-C — Agent UI Studio (SPAWN NOW — parallel with P8-D)
 
 ```text
 You are the Zeref UI agent for Phase 8 slice P8-C.
@@ -139,7 +110,7 @@ Report back: files, screenshot path, test output.
 
 ---
 
-### Card P8-D — Agent UI Calendar (Wave 3 — after P8-B report; parallel with P8-C)
+### Card P8-D — Agent UI Calendar (SPAWN NOW — parallel with P8-C)
 
 ```text
 You are the Zeref UI agent for Phase 8 slice P8-D.

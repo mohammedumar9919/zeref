@@ -204,3 +204,55 @@ $env:ZEREF_LLM_MOCK='1'
 npm run verify:phase-6
 # After UI lands: $env:ZEREF_PHASE6_VOICE='1'; npm run verify:phase-6
 ```
+
+---
+
+## Phase 8 extension (`verify:phase-8`, C80)
+
+**Status:** Accepted (2026-06-03)  
+**Contract:** [phase-8-contract.md](../phase-8-contract.md) (C71–C80) · ADR-028–030
+
+### Entry point
+
+`npm run verify:phase-8` → `scripts/verify-phase-8.mjs`
+
+Orchestrates **`verify:phase-0` … `verify:phase-7`**, then Phase 8 static checks, package tests, and Playwright **C75/C76** product assertions.
+
+### CI child environment (Phase 8 step)
+
+| Variable | Value |
+|----------|--------|
+| `ZEREF_JOB_ENQUEUE_MOCK` | **`1`** (required) |
+| `ZEREF_PHASE8_PRODUCT` | **`1`** (wired; Wave 4 enforces e2e) |
+| `ZEREF_BFF_FIXTURE` | **`1`** |
+| Phase 7 flags | `ZEREF_MEMORY_MOCK`, `ZEREF_PHASE7_BRAIN`, voice/HUD mocks |
+
+### C75/C76 Playwright
+
+| Spec | Assertion | `data-testid` |
+|------|-----------|---------------|
+| `cockpit-studio-8.spec.ts` | Studio editor on entity deep-link | `studio-editor` |
+| `cockpit-studio-8.spec.ts` | Layout shell carry-forward | `panel-studio` |
+| `cockpit-calendar-8.spec.ts` | Calendar scheduler route | `calendar-scheduler` |
+| `cockpit-calendar-8.spec.ts` | Layout shell carry-forward | `panel-calendar` |
+
+**Wave 2 scaffold:** tests **skip** until Wave 4 (P8-C/P8-D UI). `verify:phase-8` exits 0 with deferral notes when specs are skipped.
+
+**Wave 4:** enable UI + flip Wave 4 ready flags in specs; `ZEREF_PHASE8_PRODUCT=1` hard-fails on missing testids.
+
+### CI workflow
+
+- Job renamed **Phase 0–8 gate**
+- Step: `verify:phase-8` after `verify:phase-7`
+
+### Phase 8 verify command
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_JOB_ENQUEUE_MOCK='1'
+$env:ZEREF_MEMORY_MOCK='1'
+$env:ZEREF_PHASE7_BRAIN='1'
+$env:ZEREF_PHASE8_PRODUCT='1'
+npm run verify:phase-8
+```

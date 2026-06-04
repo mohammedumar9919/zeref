@@ -298,3 +298,54 @@ After `verify:phase-6` (Phase 6 mock flags: `ZEREF_WHISPER_MOCK`, `ZEREF_TTS_MOC
 - `ZEREF_MEMORY_MOCK=1` (required)
 - `ZEREF_PHASE7_BRAIN=1` (required) — `cockpit-brain-7` enforced
 - `npm run verify:phase-7`
+
+---
+
+## Phase 8 (studio editor + calendar scheduler)
+
+**Contract:** [phase-8-contract.md](./phase-8-contract.md) (C71–C80, Amendments F–J) · **ADRs:** [028](./adr/ADR-028-studio-drafts-editor.md)–[030](./adr/ADR-030-bff-job-enqueue.md)
+
+Chains Phase 0–7, then Phase 8 contract/fixture/BFF checks. **Wave 2:** Playwright studio/calendar specs **skip until Wave 4** (P8-C/P8-D UI).
+
+```powershell
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_WHISPER_MOCK='1'
+$env:ZEREF_TTS_MOCK='1'
+$env:ZEREF_LLM_MOCK='1'
+$env:ZEREF_MEMORY_MOCK='1'
+$env:ZEREF_JOB_ENQUEUE_MOCK='1'
+$env:ZEREF_PHASE6_VOICE='1'
+$env:ZEREF_PHASE7_BRAIN='1'
+$env:ZEREF_PHASE8_PRODUCT='1'
+npm run verify:phase-8
+```
+
+### Env flags
+
+| Env | Default verify / CI | Wave 4 enforcement |
+|-----|---------------------|-------------------|
+| `ZEREF_JOB_ENQUEUE_MOCK` | **`1`** (C80) | required |
+| `ZEREF_PHASE8_PRODUCT` | **`1`** in CI | hard-fail studio/calendar e2e after P8-C + P8-D |
+| `ZEREF_BFF_FIXTURE` | **`1`** | fixture BFF; no Postgres for Playwright path |
+| Phase 7 flags | same as `verify:phase-7` | inherited in chain |
+
+**Wave 4 (after P8-C + P8-D):** set `wave4StudioUiReady` / `wave4CalendarUiReady` to `true` in e2e specs (or remove Wave 4 skip) so `ZEREF_PHASE8_PRODUCT=1` enforces `studio-editor` and `calendar-scheduler`.
+
+### What `verify:phase-8` checks
+
+Script: `scripts/verify-phase-8.mjs`
+
+- `phase-8-contract.md`, ADR-028–030
+- `fixtures/phase-8/` including `cockpit-slices.valid.json` (`phase8-cockpit-v1`)
+- **C71:** `PHASE8_CONTRACT_VERSION` = `8.0.0`, calendar/studio/enqueue + `CockpitSlicesSchemaV8`
+- **C73–C74:** BFF routes + `phase-8-routes.test.mjs`
+- **C78:** extends C70 import guard (no snapshot mutation paths via instagram)
+- **C75/C76:** Playwright scaffolds `cockpit-studio-8`, `cockpit-calendar-8` (skipped until Wave 4)
+- `@zeref/contracts`, `@zeref/web` tests
+
+### CI (C80)
+
+After `verify:phase-7`:
+
+- `ZEREF_PHASE8_PRODUCT=1`, `ZEREF_JOB_ENQUEUE_MOCK=1`, `ZEREF_BFF_FIXTURE=1` (+ Phase 6–7 mock flags)
+- `npm run verify:phase-8`

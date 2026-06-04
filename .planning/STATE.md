@@ -4,19 +4,23 @@
 
 ## Current position
 
-- **Phase:** 8 in progress — **P8-A DONE** (pending commit hash)
-- **Phase 7:** **APPROVED** @ `0e7f8d5` (functional sign-off 2026-06-03)
-- **Phase 8 governance:** @ `8644c21`
-- **P8-A:** @ `12a0e65` — phase8 contracts + migration 0003 + fixtures; contracts 78/78 pass
-- **Follow-up:** `npm test -w @zeref/db` with Postgres (port conflict reported in P8-A)
+- **Phase:** 8 in progress — Wave 2 **DONE**
+- **P8-A:** `12a0e65` — contracts + migrations (db tests 4/4 green)
+- **P8-B:** `10240c3` — BFF studio/calendar/enqueue; web tests 40/40
+- **P8-E:** Wave 2 scaffold (verify:phase-8 + CI 0–8 gate) — commit pending integration
+- **Phase 7:** **APPROVED** @ `0e7f8d5`
 
 ## Next
 
-1. User: spawn **P8-B** + **P8-E** scaffold (parallel)
-2. User: optional DB migration test with docker Postgres
-3. Lead: integrate Wave 2 → spawn P8-C + P8-D
+1. User: spawn **P8-C** + **P8-D** (parallel)
+2. P8-C/D: align `CockpitSlices` → `CockpitSlicesV8` in components
+3. Wave 4: flip e2e ready flags; user runs `npm run verify:phase-8`
+
+## Follow-up (non-blocking)
+
+- `GET /api/v1/calendar/events/:id` (C73) — not in P8-B card; optional hotfix
+- Dev Postgres: `POSTGRES_PORT=5434`, `DATABASE_URL=postgres://zeref:zeref@localhost:5434/zeref`
 
 ## Do not start
 
-- P8-C / P8-D until P8-B report
-- Phase 6.1 UI until Phase 6.1 contract approved
+- P8-E Wave 4 finalize until P8-C + P8-D land
