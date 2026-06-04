@@ -36,7 +36,7 @@ describe("getCockpitSlices (RSC direct load)", () => {
     process.env.ZEREF_BFF_FIXTURE = "1";
 
     const slices = await bff.getCockpitSlices();
-    assert.equal(slices.schemaVersion, "phase5-cockpit-v1");
+    assert.equal(slices.schemaVersion, "phase8-cockpit-v1");
     assert.ok(slices.panels.studio);
     assert.ok(Array.isArray(slices.panels.reports.items));
   });

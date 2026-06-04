@@ -3,20 +3,25 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  CockpitSlicesSchema,
+  CockpitSlicesSchemaV8,
   EliteReportSchema,
   NormalizedPostPayloadSchema,
   ReportArtifactIdSchema,
-  type CockpitSlices,
+  type CockpitSlicesV8,
   type EliteReport,
 } from "@zeref/contracts";
-import { normalizedEntities, reportArtifacts } from "@zeref/db";
+import {
+  calendarEvents,
+  normalizedEntities,
+  reportArtifacts,
+  studioDrafts,
+} from "@zeref/db";
 import { and, desc, eq } from "drizzle-orm";
 
 import { getDb, isFixtureMode, resetDbPoolForTests } from "./db";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
-const fixturePath = join(repoRoot, "fixtures/phase-5/cockpit-slices.fixture.json");
+const fixturePath = join(repoRoot, "fixtures/phase-8/cockpit-slices.valid.json");
 const eliteFixturePath = join(
   repoRoot,
   "fixtures/phase-4/elite/ride-log-elite.golden.json",
@@ -29,9 +34,17 @@ export type BffResult<T> =
   | { status: 404; body: { error: string } }
   | { status: 500; body: { error: string } };
 
-function loadFixtureSlices(): CockpitSlices {
+function loadFixtureSlices(): CockpitSlicesV8 {
   const raw = JSON.parse(readFileSync(fixturePath, "utf8")) as unknown;
-  return CockpitSlicesSchema.parse(raw);
+  return CockpitSlicesSchemaV8.parse(raw);
+}
+
+function draftPreview(caption: string): string | undefined {
+  const trimmed = caption.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  return trimmed.length > 60 ? `${trimmed.slice(0, 57)}...` : trimmed;
 }
 
 function loadFixtureEliteReport(): EliteReport {
@@ -79,7 +92,7 @@ function toIsoString(value: Date | string): string {
   return value instanceof Date ? value.toISOString() : value;
 }
 
-async function loadCockpitSlicesFromDb(): Promise<CockpitSlices> {
+async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8> {
   const db = getDb();
   if (!db) {
     throw new Error("DATABASE_URL is not configured for cockpit BFF");
@@ -96,6 +109,32 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlices> {
     .orderBy(desc(normalizedEntities.createdAt))
     .limit(10);
 
+  const draftRows = await db
+    .select({
+      entityId: studioDrafts.entityId,
+      caption: studioDrafts.caption,
+      updatedAt: studioDrafts.updatedAt,
+    })
+    .from(studioDrafts);
+
+  const draftsByEntity = new Map(
+    draftRows.map((row) => [
+      row.entityId,
+      { caption: row.caption, updatedAt: toIsoString(row.updatedAt) },
+    ]),
+  );
+
+  const calendarRows = await db
+    .select({
+      id: calendarEvents.id,
+      title: calendarEvents.title,
+      scheduledAt: calendarEvents.scheduledAt,
+      status: calendarEvents.status,
+    })
+    .from(calendarEvents)
+    .orderBy(desc(calendarEvents.scheduledAt))
+    .limit(20);
+
   const reportRows = await db
     .select({
       id: reportArtifacts.id,
@@ -107,21 +146,33 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlices> {
     .orderBy(desc(reportArtifacts.createdAt))
     .limit(20);
 
-  return CockpitSlicesSchema.parse({
-    schemaVersion: "phase5-cockpit-v1",
+  return CockpitSlicesSchemaV8.parse({
+    schemaVersion: "phase8-cockpit-v1",
     panels: {
       studio: {
-        items: studioRows.map((row) => ({
-          entityId: row.id,
-          title: studioTitle(row.payloadJson),
-          snapshotId: row.snapshotId,
-          updatedAt: toIsoString(row.createdAt),
-        })),
+        items: studioRows.map((row) => {
+          const draft = draftsByEntity.get(row.id);
+          const preview = draft ? draftPreview(draft.caption) : undefined;
+          return {
+            entityId: row.id,
+            title: studioTitle(row.payloadJson),
+            snapshotId: row.snapshotId,
+            updatedAt: draft?.updatedAt ?? toIsoString(row.createdAt),
+            hasDraft: Boolean(draft),
+            draftPreview: preview,
+            status: draft ? ("draft" as const) : undefined,
+          };
+        }),
         insufficientData: studioRows.length === 0,
       },
       calendar: {
-        items: [],
-        insufficientData: false,
+        items: calendarRows.map((row) => ({
+          id: row.id,
+          title: row.title,
+          scheduledAt: toIsoString(row.scheduledAt),
+          status: row.status,
+        })),
+        insufficientData: calendarRows.length === 0,
       },
       reports: {
         items: reportRows.map((row) => ({
@@ -140,8 +191,8 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlices> {
   });
 }
 
-/** Read-only cockpit summary DTO (C27 / ADR-016). */
-export async function loadCockpitSlices(): Promise<CockpitSlices> {
+/** Read-only cockpit summary DTO (C27 / ADR-016, phase8-cockpit-v1). */
+export async function loadCockpitSlices(): Promise<CockpitSlicesV8> {
   if (isFixtureMode()) {
     return loadFixtureSlices();
   }
