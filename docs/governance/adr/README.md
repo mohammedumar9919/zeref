@@ -108,7 +108,21 @@
 
 **Reading order:** ADR-025 → ADR-026 → ADR-027
 
-**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-05-31) — spawn P7-A after Lead commits contract.
+**Status:** **APPROVED** (Planner 2026-06-03) — implementation @ `0e7f8d5`, verify green, screenshot `zeref-cockpit-7-brain.png`.
+
+## Phase 8 (Studio + Calendar UX)
+
+**Contract:** [phase-8-contract.md](../phase-8-contract.md) (Q1–Q5, C71–C80, Amendments F–J)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-028](./ADR-028-studio-drafts-editor.md) | Studio drafts + editor (Q2, C75, C78) | **APPROVED** | Data + BFF |
+| [ADR-029](./ADR-029-calendar-events-schema.md) | Calendar events Postgres schema (Q1, C72) | **APPROVED** | Data |
+| [ADR-030](./ADR-030-bff-job-enqueue.md) | BFF job enqueue allowlist; amends ADR-016 (Q3, C74) | **APPROVED** | BFF |
+
+**Reading order:** ADR-028 → ADR-029 → ADR-030
+
+**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03) — spawn P8-A after governance commit.
 
 ## Planner quick reference
 

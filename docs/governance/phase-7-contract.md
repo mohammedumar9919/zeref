@@ -1,8 +1,19 @@
 # Zeref — Phase 7 Contract (Implementation)
 
 **Phase:** 7  
-**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-05-31)  
+**Status:** **APPROVED** — functional sign-off 2026-06-03 (planning: APPROVED WITH CONDITIONS 2026-05-31)  
 **Theme:** `packages/zeref-memory` — 4-tier brain + event→orb (Luke jarvis-orb pattern)
+
+### Implementation sign-off (2026-06-03)
+
+| Gate | Evidence |
+|------|----------|
+| C61–C70 | @ `0e7f8d5` (P7-D UI), verify harness @ `0461bc1` (P7-E) |
+| `verify:phase-7` | **GREEN** (local, 2026-06-03) |
+| Screenshot | `docs/design/reference/screenshots/zeref-cockpit-7-brain.png` @ `0e7f8d5` |
+| Tier-2 visual | Brain/SSE/globe states pass vs Luke reference; full HUD pixel parity deferred to Phase 6.1 (optional) |
+
+**Scope:** Jarvis-orb brain layer — 4-tier memory, kernel tools, unified SSE, worker outbox, globe brain states. Does not require Luke full HUD clone.
 
 **Prerequisites:** Phase 6 **APPROVED** (`183acf9`, CI @ `d9c589f`, hotfixes `9c5869f`/`358d757`, screenshot @ `3020d1e`, governance @ `a3ebbde`).
 
@@ -179,6 +190,6 @@ sequenceDiagram
 2. **P7-B** Kernel + **P7-C** BFF + **P7-E** scaffold (parallel)  
 3. **P7-D** UI  
 4. **P7-E** finalize e2e  
-5. User: `verify:phase-7` → CI → Planner sign-off
+5. ~~User: `verify:phase-7` → CI → Planner sign-off~~ **DONE** (2026-06-03)
 
 **HARD RULE:** Lead does not implement domain code without agent reports.

@@ -22,10 +22,11 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 6 Jarvis voice | **APPROVED** @ `183acf9` + hotfixes; screenshot @ `3020d1e` (2026-05-31) |
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
-| Phase 7 zeref-memory | **IMPLEMENTATION DONE** @ `0e7f8d5` — Planner sign-off pending |
+| Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
+| Phase 8 Studio + Calendar | **CONTRACT APPROVED WITH CONDITIONS** — spawn P8-A |
 | Phase 6.1 Luke visual polish | **DEFER** — separate Discuss + Contract (non-blocking) |
 
-**Immediate goal:** User runs full `npm run verify:phase-7` (~60 min), push, Planner Phase 7 sign-off vs `zeref-cockpit-7-brain.png`.
+**Immediate goal:** User spawns **P8-A** (Contracts + Data) in new worker chat.
 
 ---
 
@@ -132,6 +133,7 @@ npm run verify:phase-6
 | P7-C BFF + outbox | **DONE** @ `547103b` + hotfix @ `5084a9d` |
 | P7-D UI brain states | **DONE** @ `0e7f8d5` |
 | P7-E verify + CI | **DONE** @ `0461bc1` |
+| Full `verify:phase-7` (local) | **GREEN** (2026-06-03) |
 
 ```powershell
 cd c:\Projects\zeref
@@ -149,16 +151,16 @@ Screenshot: `docs/design/reference/screenshots/zeref-cockpit-7-brain.png` @ `0e7
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Full `npm run verify:phase-7` (all mock flags + `ZEREF_PHASE7_BRAIN=1`) — expect ~60 min |
-| 2 | User | `git push` after verify green |
-| 3 | Planner | Phase 7 sign-off vs `zeref-cockpit-7-brain.png` + contract C61–C70 |
+| 1 | User | Spawn **P8-A** Contracts+Data worker chat (card in `WORKER_TASK_CARDS_QUEUE.md`) |
+| 2 | User | Optional `git push` after governance commit |
+| 3 | Lead | Integrate P8-A report → spawn P8-B + P8-E scaffold |
 | 4 | Lead | Optional: Phase 6.1 Discuss + Contract (Luke visual polish) |
 
 ---
 
 ## Do not start
 
-- Phase 7 **implementation** (closed @ `0e7f8d5`) — Planner sign-off pending
+- Phase 8 **implementation** (BFF/UI) until **P8-A** report integrated
 - Phase 6 **Lead domain code** without agent reports (phase closed)
 - Full-screen particle globe without ADR-015 amendment
 - Fake scrolling telemetry (legacy ios theater pattern)
@@ -169,7 +171,7 @@ Screenshot: `docs/design/reference/screenshots/zeref-cockpit-7-brain.png` @ `0e7
 
 | Doc | Path |
 |-----|------|
-| Phase contracts | `docs/governance/phase-{0-5}-contract.md` |
+| Phase contracts | `docs/governance/phase-{0-8}-contract.md` |
 | Verify | `docs/governance/verify.md` |
 | Legacy lessons | `docs/handoff/legacy-ios.md` |
 | Gap backlog | `docs/GAP_BACKLOG.md` |

@@ -20,7 +20,7 @@ Implementation @ `183acf9`; CI @ `d9c589f`; hotfixes `9c5869f` / `358d757`; scre
 
 ---
 
-## COMPLETED — Phase 7 (implementation @ `0e7f8d5` — Planner sign-off pending)
+## COMPLETED — Phase 7 (APPROVED 2026-06-03)
 
 | Slice | Commit |
 |-------|--------|
@@ -31,7 +31,236 @@ Implementation @ `183acf9`; CI @ `d9c589f`; hotfixes `9c5869f` / `358d757`; scre
 | P7-E verify + CI gate | `0461bc1` |
 | P7-D UI brain states | `0e7f8d5` |
 
-Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5`
+Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 2026-06-03
+
+---
+
+## READY — Phase 8 (contract APPROVED WITH CONDITIONS — spawn P8-A first)
+
+| Wave | Slices | Gate |
+|------|--------|------|
+| 1 | **P8-A** solo | Contracts + migrations + fixtures |
+| 2 | **P8-B** + **P8-E** scaffold | After P8-A report |
+| 3 | **P8-C** + **P8-D** parallel | After P8-B report |
+| 4 | **P8-E** finalize | After P8-C + P8-D |
+
+**Amendment F (binding):** UI job enqueue allowlist = `normalize` | `embed` | `analyze` | `report` — **`collect` excluded** (CLI only).
+
+---
+
+### Card P8-A — Agent Contracts + Data (spawn NOW)
+
+```text
+You are the Zeref Contracts + Data agent for Phase 8 slice P8-A.
+
+HARD RULE
+- Implement ONLY: packages/contracts/src/phase8/**, packages/db migrations (calendar_events, studio_drafts), fixtures/phase-8/**, package.json workspace entries if needed.
+- Do NOT edit apps/web/**, BFF routes, UI components, scripts/worker.mjs, or enqueue scripts.
+- When done, STOP and post a report. Do not claim Planner sign-off.
+
+Skills — invoke before acting:
+1. using-superpowers
+2. test-driven-development
+3. council-review-slice (schema changes)
+4. verification-before-completion
+
+Read first (mandatory):
+1. docs/SKILL_INVOCATION.md
+2. docs/CURRENT_STATE.md
+3. docs/failures-checklist.md
+4. docs/governance/phase-8-contract.md (Q1–Q5, C71–C72, Amendments F + G)
+5. docs/governance/adr/ADR-028-studio-drafts-editor.md
+6. docs/governance/adr/ADR-029-calendar-events-schema.md
+7. docs/governance/adr/ADR-030-bff-job-enqueue.md (JobEnqueueRequestSchema only — no BFF impl)
+8. packages/contracts/src/phase5/cockpit.ts (baseline for Amendment G additive fields)
+9. packages/db (existing Drizzle migration pattern from Phase 7)
+
+Repo: c:\Projects\zeref
+
+Deliverables
+1. packages/contracts/src/phase8/
+   - CalendarEventSchema, StudioDraftSchema, JobEnqueueRequestSchema
+   - CockpitSlicesSchemaV8 with schemaVersion z.literal("phase8-cockpit-v1")
+   - Additive optional fields on studio/calendar items: status, scheduledAt, draftPreview, hasDraft
+   - PHASE8_CONTRACT_VERSION = "8.0.0"
+   - Export from packages/contracts index
+2. packages/db migrations
+   - calendar_events (id, title, scheduledAt, jobType?, payload JSON, status enum, timestamps)
+   - studio_drafts (entityId FK, caption, notes, tags JSON, updatedAt)
+   - No snapshot table mutations (C78 / ADR-001)
+3. fixtures/phase-8/
+   - cockpit-slices.valid.json (phase8-cockpit-v1)
+   - sample calendar events + studio drafts for ZEREF_BFF_FIXTURE=1
+4. Contract unit tests — npm test -w @zeref/contracts (phase-8 schemas + fixture parse)
+
+Allowed paths
+- packages/contracts/src/phase8/**
+- packages/contracts/test/** (phase-8 tests)
+- packages/contracts/src/index.ts (exports only)
+- packages/db/** (migrations + schema)
+- fixtures/phase-8/**
+- package.json / package-lock.json (workspace entries only)
+
+Forbidden
+- apps/web/**
+- scripts/**
+- packages/jarvis-kernel/**
+- packages/zeref-memory/**
+
+Acceptance
+- npm run build -w @zeref/contracts
+- npm test -w @zeref/contracts (new phase-8 tests)
+- Migration SQL applies (document: npm run db:migrate or project equivalent)
+- JobEnqueueRequestSchema allowlist: normalize | embed | analyze | report ONLY (reject collect at schema or refine layer — document which)
+- Fixture cockpit-slices.valid.json validates against CockpitSlicesSchemaV8
+
+Report back: commit hash, migration file names, schema exports, test output, fixture paths, env vars, blockers.
+```
+
+---
+
+### Card P8-B — Agent BFF (Wave 2 — after P8-A report)
+
+```text
+You are the Zeref BFF agent for Phase 8 slice P8-B.
+
+HARD RULE
+- BFF routes + apps/web/lib/jobs/enqueue-job.ts ONLY. No UI components.
+- STOP with report when done.
+
+Skills — invoke before acting:
+1. using-superpowers
+2. test-driven-development
+3. council-review-slice
+
+Read first:
+- docs/governance/phase-8-contract.md (C73–C74, C79, Amendments F, H, I, J)
+- docs/governance/adr/ADR-028/029/030
+- apps/web/lib/cockpit-bff.ts (extend loadCockpitSlices → phase8-cockpit-v1)
+- scripts/enqueue-normalize.mjs (pg-boss retry pattern for Amendment I)
+
+Repo: c:\Projects\zeref
+
+Deliverables
+1. GET /api/v1/studio/entities/:id — normalized summary + draft overlay
+2. PUT /api/v1/studio/drafts/:entityId — upsert draft (no snapshot write)
+3. GET/POST/PATCH /api/v1/calendar/events — CRUD
+4. POST /api/v1/jobs/enqueue — allowlist only (Amendment F); shared enqueue-job.ts (Amendment I)
+5. Honest 202 { jobId, queued, workerConsuming: false } when worker absent (Amendment J)
+6. loadCockpitSlices() returns phase8-cockpit-v1; calendar from DB; studio draft flags
+7. Route tests with ZEREF_BFF_FIXTURE=1 + ZEREF_JOB_ENQUEUE_MOCK=1
+
+Allowed
+- apps/web/app/api/v1/studio/**
+- apps/web/app/api/v1/calendar/**
+- apps/web/app/api/v1/jobs/**
+- apps/web/lib/cockpit-bff.ts, apps/web/lib/jobs/**
+- apps/web/test/**
+
+Forbidden
+- apps/web/components/**
+- packages/db migrations (P8-A)
+
+Acceptance: npm test -w @zeref/web
+Report back: routes, curl samples, test output, commit hash.
+```
+
+---
+
+### Card P8-C — Agent UI Studio (Wave 3 — after P8-B report)
+
+```text
+You are the Zeref UI agent for Phase 8 slice P8-C.
+
+HARD RULE
+- Studio editor UI + e2e ONLY. Wire to BFF from P8-B.
+- STOP with report + screenshot.
+
+Skills: using-superpowers, brainstorming, ui-ux-pro-max, test-driven-development, verification-before-completion
+
+Read first:
+- docs/design/DESIGN_SYSTEM.md
+- docs/governance/phase-8-contract.md (C75, C77, C78)
+- apps/web/components/cockpit/StudioPanel.tsx
+- apps/web/app/cockpit/studio/page.tsx
+
+Deliverables
+1. /cockpit/studio/[entityId] — editor page, data-testid="studio-editor"
+2. StudioPanel links to entity editor
+3. Draft save via PUT /api/v1/studio/drafts/:entityId
+4. RSC-first — no client refetch storm (C77)
+5. apps/web/e2e/cockpit-studio-8.spec.ts (skip until ZEREF_PHASE8_PRODUCT=1 if P8-E not ready)
+
+Allowed: apps/web/components/**, apps/web/app/cockpit/studio/**, apps/web/e2e/**
+Forbidden: apps/web/app/api/**, packages/db/**
+
+Acceptance: manual editor flow + e2e when P8-E enables flag
+Report back: files, screenshot path, test output.
+```
+
+---
+
+### Card P8-D — Agent UI Calendar (Wave 3 — after P8-B report; parallel with P8-C)
+
+```text
+You are the Zeref UI agent for Phase 8 slice P8-D.
+
+HARD RULE
+- Calendar scheduler UI + e2e ONLY. Wire to BFF from P8-B.
+- STOP with report + screenshot.
+
+Skills: using-superpowers, brainstorming, ui-ux-pro-max, test-driven-development, verification-before-completion
+
+Read first:
+- docs/design/DESIGN_SYSTEM.md
+- docs/governance/phase-8-contract.md (C76, C77, Q5)
+- apps/web/components/cockpit/CalendarPanel.tsx
+- apps/web/app/cockpit/calendar/page.tsx
+
+Deliverables
+1. Full calendar scheduler view — data-testid="calendar-scheduler"
+2. Create/edit events via BFF calendar routes
+3. Manual enqueue trigger when scheduledAt <= now (Q5 MVP — no cron daemon)
+4. Honest scheduler-absent badge when applicable
+5. apps/web/e2e/cockpit-calendar-8.spec.ts
+
+Allowed: apps/web/components/**, apps/web/app/cockpit/calendar/**, apps/web/e2e/**
+Forbidden: apps/web/app/api/**, packages/db/**
+
+Acceptance: manual scheduler flow + e2e when P8-E enables flag
+Report back: files, screenshot path, test output.
+```
+
+---
+
+### Card P8-E — Agent Docs/QA (Wave 2 scaffold → Wave 4 finalize)
+
+```text
+You are the Zeref Docs/QA agent for Phase 8 slice P8-E.
+
+HARD RULE
+- scripts/verify-phase-8.mjs, CI, e2e, governance docs ONLY. No apps/web/components/**.
+- STOP with report when done.
+
+Skills: using-superpowers, run-verify-gate, verification-before-completion
+
+Read first:
+- docs/governance/phase-8-contract.md (C80)
+- scripts/verify-phase-7.mjs (pattern)
+- docs/governance/adr/ADR-018-verify-phase-5-harness.md
+
+Wave 2: verify shell + CI step (Playwright may skip).
+Wave 4: cockpit-studio-8.spec.ts + cockpit-calendar-8.spec.ts enforced.
+
+Deliverables
+1. scripts/verify-phase-8.mjs — chain verify:phase-0 … verify:phase-7 + phase-8 checks
+2. package.json verify:phase-8 script
+3. CI env: ZEREF_PHASE8_PRODUCT=1, ZEREF_JOB_ENQUEUE_MOCK=1, ZEREF_BFF_FIXTURE=1
+4. e2e specs scaffolded; enforced after P8-C + P8-D
+
+Acceptance: npm run verify:phase-8 (document deferrals in Wave 2)
+Report back: CI diff, verify output, commit hash.
+```
 
 ---
 
