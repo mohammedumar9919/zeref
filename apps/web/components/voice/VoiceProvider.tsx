@@ -13,6 +13,12 @@ import {
 
 import type { VoiceTranscriptRole } from "@zeref/contracts";
 
+import {
+  BRAIN_STATE_IDLE_MS,
+  brainStateFromMemoryEvent,
+  type BrainGlobeState,
+} from "@/components/brain/brain-state";
+import { parseMemoryBrainEvent } from "@/components/brain/parse-brain-events";
 import { decodeAudioBase64, playAudioBlob } from "@/lib/voice/audio-playback";
 import {
   parsePipelineEvent,
@@ -32,6 +38,7 @@ export type TranscriptLine = {
 
 type VoiceContextValue = {
   voiceState: VoiceGlobeState;
+  brainState: BrainGlobeState;
   micLevel: number;
   outputLevel: number;
   transcripts: TranscriptLine[];
@@ -56,6 +63,7 @@ type VoiceProviderProps = {
 
 export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElement {
   const [voiceState, setVoiceState] = useState<VoiceGlobeState>("idle");
+  const [brainState, setBrainState] = useState<BrainGlobeState>("idle");
   const [micLevel, setMicLevel] = useState(0);
   const [outputLevel, setOutputLevel] = useState(0);
   const [transcripts, setTranscripts] = useState<TranscriptLine[]>([]);
@@ -64,6 +72,36 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
   const playbackQueueRef = useRef<Promise<void>>(Promise.resolve());
   const activeTurnRef = useRef<string | null>(null);
   const receivedPhasesRef = useRef<Set<string>>(new Set());
+  const brainIdleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const applyBrainState = useCallback((next: BrainGlobeState) => {
+    setBrainState(next);
+    if (brainIdleTimerRef.current) {
+      clearTimeout(brainIdleTimerRef.current);
+      brainIdleTimerRef.current = null;
+    }
+    if (next !== "idle") {
+      brainIdleTimerRef.current = setTimeout(() => {
+        setBrainState("idle");
+        brainIdleTimerRef.current = null;
+      }, BRAIN_STATE_IDLE_MS);
+    }
+  }, []);
+
+  const handleMemoryBrainEvent = useCallback(
+    (data: unknown) => {
+      try {
+        const parsed = parseMemoryBrainEvent(data);
+        applyBrainState(brainStateFromMemoryEvent(parsed));
+        if (parsed.simulated === false) {
+          setTelemetryLive(true);
+        }
+      } catch {
+        /* ignore malformed */
+      }
+    },
+    [applyBrainState],
+  );
 
   const appendTranscript = useCallback(
     (line: Omit<TranscriptLine, "id">) => {
@@ -116,10 +154,26 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
     [enqueuePlayback],
   );
 
+  const applyBrainEventsFromToolCalls = useCallback(
+    (toolCalls: VoiceTurnSyncResponse["toolCalls"]) => {
+      for (const call of toolCalls) {
+        const result = call.result;
+        if (!result || typeof result !== "object") continue;
+        const brainEvent = (result as { brainEvent?: unknown }).brainEvent;
+        if (brainEvent) {
+          handleMemoryBrainEvent(brainEvent);
+        }
+      }
+    },
+    [handleMemoryBrainEvent],
+  );
+
   const handleSyncMockTurn = useCallback(
     (body: VoiceTurnSyncResponse) => {
       activeTurnRef.current = body.turnId;
       receivedPhasesRef.current.clear();
+
+      applyBrainEventsFromToolCalls(body.toolCalls);
 
       appendTranscript({ role: "user", text: body.transcript, turnId: body.turnId });
       appendTranscript({ role: "ack", text: body.ackText, turnId: body.turnId });
@@ -135,7 +189,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       enqueuePlayback(body.ackAudio.audioBase64, body.ackAudio.mimeType);
       enqueuePlayback(body.resultAudio.audioBase64, body.resultAudio.mimeType);
     },
-    [appendTranscript, enqueuePlayback],
+    [appendTranscript, applyBrainEventsFromToolCalls, enqueuePlayback],
   );
 
   const submitPttAudio = useCallback(
@@ -237,14 +291,34 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       }
     });
 
+    source.addEventListener("memory.saved", (event) => {
+      handleMemoryBrainEvent(JSON.parse(event.data));
+    });
+
+    source.addEventListener("memory.search", (event) => {
+      handleMemoryBrainEvent(JSON.parse(event.data));
+    });
+
+    source.addEventListener("memory.contradiction", (event) => {
+      handleMemoryBrainEvent(JSON.parse(event.data));
+    });
+
+    source.addEventListener("memory.entity_changed", (event) => {
+      handleMemoryBrainEvent(JSON.parse(event.data));
+    });
+
     return () => {
+      if (brainIdleTimerRef.current) {
+        clearTimeout(brainIdleTimerRef.current);
+      }
       source.close();
     };
-  }, [appendTranscript, handleVoiceAudio]);
+  }, [appendTranscript, handleMemoryBrainEvent, handleVoiceAudio]);
 
   const value = useMemo(
     () => ({
       voiceState,
+      brainState,
       micLevel,
       outputLevel,
       transcripts,
@@ -254,6 +328,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
     }),
     [
       voiceState,
+      brainState,
       micLevel,
       outputLevel,
       transcripts,

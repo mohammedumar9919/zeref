@@ -91,6 +91,23 @@
   .globe-voice-speaking {
     filter: brightness(1.1);
   }
+
+  /* Phase 7 C67 — brain states (shader-safe; ADR-015/023 — no bloom) */
+  .globe-brain-memory_saved {
+    filter: brightness(1.06);
+  }
+
+  .globe-brain-searching {
+    filter: brightness(1.04);
+  }
+
+  .globe-brain-contradiction {
+    filter: brightness(1.05) hue-rotate(-12deg);
+  }
+
+  .globe-brain-entity_changed {
+    filter: brightness(1.07);
+  }
 }
 
 @media (max-width: 1023px) {

@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import type { Group, Points, PointsMaterial } from "three";
 
+import type { BrainGlobeState } from "@/components/brain/brain-state";
 import type { VoiceGlobeState } from "@/lib/voice/parse-voice-events";
 
 /** ADR-015 amendment: ≤12k points budget. */
@@ -32,11 +33,13 @@ function fibonacciSpherePositions(count: number, radius: number): Float32Array {
 
 type GlobeSceneProps = {
   voiceState: VoiceGlobeState;
+  brainState: BrainGlobeState;
   outputLevel: number;
 };
 
 function PointCloudEarth({
   voiceState,
+  brainState,
   outputLevel,
 }: GlobeSceneProps): React.ReactElement {
   const pointsRef = useRef<Points>(null);
@@ -64,6 +67,18 @@ function PointCloudEarth({
       const scale = 1 + outputLevel * 0.18;
       material.opacity = 0.85 + outputLevel * 0.15;
       pointsRef.current.scale.setScalar(scale);
+    } else if (brainState === "memory_saved") {
+      material.opacity = 0.9 + Math.sin(t * 6) * 0.08;
+      pointsRef.current.scale.setScalar(1 + Math.sin(t * 6) * 0.035);
+    } else if (brainState === "searching") {
+      material.opacity = 0.82 + Math.sin(t * 7) * 0.1;
+      pointsRef.current.scale.setScalar(1 + Math.sin(t * 7) * 0.025);
+    } else if (brainState === "contradiction") {
+      material.opacity = 0.8 + Math.sin(t * 5) * 0.12;
+      pointsRef.current.scale.setScalar(1 + Math.sin(t * 4) * 0.03);
+    } else if (brainState === "entity_changed") {
+      material.opacity = 0.88 + Math.sin(t * 5.5) * 0.06;
+      pointsRef.current.scale.setScalar(1 + Math.sin(t * 5.5) * 0.04);
     } else {
       material.opacity = 0.88;
       pointsRef.current.scale.setScalar(1);
@@ -77,7 +92,13 @@ function PointCloudEarth({
       </bufferGeometry>
       <pointsMaterial
         size={0.022}
-        color="#22d3ee"
+        color={
+          brainState === "contradiction"
+            ? "#fbbf24"
+            : brainState === "entity_changed"
+              ? "#67e8f9"
+              : "#22d3ee"
+        }
         transparent
         opacity={0.88}
         sizeAttenuation
@@ -87,7 +108,11 @@ function PointCloudEarth({
   );
 }
 
-function CompassRings({ voiceState, outputLevel }: GlobeSceneProps): React.ReactElement {
+function CompassRings({
+  voiceState,
+  brainState,
+  outputLevel,
+}: GlobeSceneProps): React.ReactElement {
   const groupRef = useRef<Group>(null);
 
   useFrame(({ clock }, delta) => {
@@ -98,7 +123,11 @@ function CompassRings({ voiceState, outputLevel }: GlobeSceneProps): React.React
         ? 0.06
         : voiceState === "listening"
           ? 0.045
-          : 0.03;
+          : brainState === "searching"
+            ? 0.05
+            : brainState === "memory_saved"
+              ? 0.04
+              : 0.03;
 
     groupRef.current.rotation.z -= delta * speed;
     groupRef.current.rotation.x += delta * speed * 0.5;
@@ -134,11 +163,13 @@ function CompassRings({ voiceState, outputLevel }: GlobeSceneProps): React.React
 
 type GlobeCanvasProps = {
   voiceState?: VoiceGlobeState;
+  brainState?: BrainGlobeState;
   outputLevel?: number;
 };
 
 export function GlobeCanvas({
   voiceState = "idle",
+  brainState = "idle",
   outputLevel = 0,
 }: GlobeCanvasProps): React.ReactElement {
   return (
@@ -146,14 +177,23 @@ export function GlobeCanvas({
       data-testid="globe-canvas"
       data-globe-mode={GLOBE_MODE}
       data-globe-voice-state={voiceState}
+      data-globe-brain-state={brainState}
       gl={{ antialias: true, alpha: true }}
       camera={{ position: [0, 0, 4.6], fov: 40 }}
       dpr={[1, 2]}
     >
       <ambientLight intensity={0.4} />
       <pointLight position={[3, 4, 5]} intensity={0.85} color="#22d3ee" />
-      <PointCloudEarth voiceState={voiceState} outputLevel={outputLevel} />
-      <CompassRings voiceState={voiceState} outputLevel={outputLevel} />
+      <PointCloudEarth
+        voiceState={voiceState}
+        brainState={brainState}
+        outputLevel={outputLevel}
+      />
+      <CompassRings
+        voiceState={voiceState}
+        brainState={brainState}
+        outputLevel={outputLevel}
+      />
     </Canvas>
   );
 }
