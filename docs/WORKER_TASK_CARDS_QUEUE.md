@@ -35,18 +35,277 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 
 ---
 
-## READY — Phase 8 (Wave 3 DONE — verify + sign-off)
+## COMPLETED — Phase 8 (APPROVED 2026-06-03)
 
-| Wave | Slices | Gate |
-|------|--------|------|
-| 1 | ~~**P8-A**~~ | **DONE** @ `12a0e65` |
-| 2 | ~~**P8-B**~~ | **DONE** @ `10240c3` |
-| 2 | ~~**P8-E**~~ scaffold | **DONE** @ `7678cee` |
-| 3 | ~~**P8-C**~~ | **DONE** @ `c159de9` |
-| 3 | ~~**P8-D**~~ | **DONE** @ `76eaf64` |
-| 4 | ~~**P8-E**~~ finalize | Wave 4 e2e @ `47f61ec` — user runs `verify:phase-8` |
+| Slice | Commit |
+|-------|--------|
+| P8-A Contracts + Data | `12a0e65` |
+| P8-B BFF | `10240c3` |
+| P8-E scaffold | `7678cee` |
+| P8-C Studio UI | `c159de9` |
+| P8-D Calendar UI | `76eaf64` |
+| P8-E Wave 4 e2e + build fix | `47f61ec` |
+| QA Playwright reuse fix | `e5dc5b6` |
 
-**Follow-up (non-blocking):** `GET /api/v1/calendar/events/:id` (C73) — defer or P8-B hotfix.
+`verify:phase-8` green 2026-06-03 · Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
+
+**Follow-up (non-blocking):** `GET /api/v1/calendar/events/:id` (C73) — **deferred** per Amendment K; P8-HOTFIX-A **NO** before Phase 9.
+
+---
+
+## READY — Phase 9 + Phase 6.1 (PARALLEL — Planner 2026-06-03)
+
+**Governance:** `phase-9-contract.md`, `phase-6.1-contract.md`, ADR-031/032/033 @ Lead commit.
+
+| Track | Wave | Slice | Spawn |
+|-------|------|-------|-------|
+| **9** (primary) | 1 | **P9-A** | **NOW** — separate chat |
+| **6.1** (UI-only) | 1 | **P6.1-A** | **NOW** — separate chat |
+| **9** | 2 | P9-B + P9-E scaffold | After P9-A report |
+| **6.1** | 2 | P6.1-E | After P6.1-A report |
+| **9** | 3 | P9-C | After P9-B |
+| **9** | 4 | P9-E finalize | After P9-C |
+
+**File firewall:** Phase 9 ↔ 6.1 paths must not overlap (see Amendment M / N in contracts).
+
+---
+
+### Card P9-A — Agent Contracts + Data + Worker (SPAWN NOW — Wave 1)
+
+```text
+You are the Zeref Contracts + Data + Worker agent for Phase 9 slice P9-A.
+
+HARD RULE
+- packages/contracts phase9, packages/db migration, worker `research` job ONLY.
+- STOP with report + test output. Do not claim Planner sign-off.
+- Do NOT touch apps/web/components/** or 6.1 HUD paths.
+
+Skills: using-superpowers, test-driven-development, verification-before-completion
+
+Read first (mandatory):
+1. docs/SKILL_INVOCATION.md
+2. docs/CURRENT_STATE.md
+3. docs/governance/phase-9-contract.md (C81–C83, Amendment L)
+4. docs/governance/adr/ADR-031-research-postgres-schema.md
+5. docs/governance/adr/ADR-032-research-worker-bff.md (worker section)
+6. packages/db/drizzle/0003_phase8_studio_calendar.sql (migration pattern)
+7. packages/contracts/src/phase8/ (cockpit v8 pattern)
+8. apps/worker/src/handlers/ (existing job handlers)
+9. packages/analytics/src/ (metric_facts readers)
+
+Repo: c:\Projects\zeref
+
+Deliverables
+1. packages/contracts/src/phase9/ — ResearchTopicSchema, ResearchSignalSchema, ResearchTopicDetailSchema, CockpitSlicesSchemaV9, PHASE9_CONTRACT_VERSION=9.0.0, research job I/O schemas
+2. packages/db migration 0004_phase9_research.sql + Drizzle schema
+3. fixtures/phase-9/ — research-topic.valid.json, research-signals.valid.json, cockpit-slices.valid.json (phase9-cockpit-v1, research panel populated)
+4. Worker handler `research` — reads metric_facts/embeddings, writes signals, updates topic aggregates; register in worker registry
+5. Unit tests: contracts round-trip, db migration smoke, worker handler fixture test
+
+Allowed: packages/contracts/**, packages/db/**, fixtures/phase-9/**, apps/worker/**, packages/analytics/** (read helpers only)
+Forbidden: apps/web/**, packages/contracts phase8 breaking changes
+
+Acceptance: npm run build; npm run test -w @zeref/contracts; db tests if DATABASE_URL set
+Report back: files, fixture paths, test counts, commit-ready summary.
+```
+
+---
+
+### Card P6.1-A — Agent UI Visual Polish (SPAWN NOW — Wave 1, parallel)
+
+```text
+You are the Zeref UI agent for Phase 6.1 slice P6.1-A.
+
+HARD RULE
+- Luke Tier-2 VISUAL polish ONLY — HUD chrome, typography, spacing, glass columns, telemetry/AUDIO strip styling.
+- STOP with report + screenshot. Do not claim Planner sign-off.
+- Do NOT touch BFF, worker, contracts, voice, memory, studio, calendar, research, or globe WebGL internals.
+
+Skills: using-superpowers, brainstorming, ui-ux-pro-max, verification-before-completion
+
+Read first (mandatory):
+1. docs/SKILL_INVOCATION.md
+2. docs/CURRENT_STATE.md
+3. docs/design/DESIGN_SYSTEM.md
+4. docs/governance/phase-6.1-contract.md (C91–C95, Amendment N)
+5. docs/governance/adr/ADR-033-luke-tier2-visual-acceptance.md
+6. docs/design/reference/lukebuildsai-jarvis-hud.jpeg
+7. apps/web/components/hud/HudHeader.tsx, HudFooter.tsx, HudShell.tsx
+8. apps/web/components/cockpit/CockpitPanel.tsx, TelemetryStrip.tsx, CockpitShell.tsx
+
+Repo: c:\Projects\zeref
+
+Deliverables
+1. HudHeader — status chip density + mono label alignment (C91)
+2. HudFooter — objective + telemetry row spacing (C92)
+3. Glass column / panel chrome harmonized across four panels (C93)
+4. TelemetryStrip + AUDIO I/O strip visual polish; SIMULATED/live badges unchanged in meaning (C94)
+5. Globe hero wrapper tokens only if needed — ≥45vh preserved; NO PointCloudGlobe logic edits (C95)
+6. Screenshot: docs/design/reference/screenshots/zeref-cockpit-6.1-hud.png
+
+Allowed: apps/web/components/hud/**, apps/web/components/cockpit/CockpitPanel.tsx, CockpitShell.tsx, CockpitGrid.tsx (className only), TelemetryStrip.tsx, AudioIoStrip (styling), GlobeHero.tsx (wrapper only), apps/web/app/globals.css, tailwind.config.ts
+Forbidden: apps/web/app/api/**, apps/web/lib/**, packages/**, apps/web/components/studio/**, calendar/**, research/**, voice/**, brain/**, PointCloudGlobe.tsx, scripts/**
+
+Acceptance: manual visual compare vs Luke JPEG; npm run build -w @zeref/web; no behavior regressions
+Report back: files changed, screenshot path, before/after notes vs ADR-033 checklist.
+```
+
+---
+
+### Card P9-B — Agent BFF (Wave 2 — after P9-A)
+
+```text
+You are the Zeref BFF agent for Phase 9 slice P9-B.
+
+HARD RULE
+- BFF research routes + phase9-cockpit-v1 slices ONLY. Wire to P9-A schemas.
+- STOP with report + route test output.
+
+Skills: using-superpowers, test-driven-development, verification-before-completion
+
+Read first:
+1. docs/governance/phase-9-contract.md (C84–C86, Amendment L)
+2. docs/governance/adr/ADR-032-research-worker-bff.md
+3. P9-A commit — contracts, fixtures, migration
+4. apps/web/lib/studio-bff.ts, calendar-bff.ts, cockpit-bff.ts (patterns)
+5. apps/web/lib/jobs/enqueue-job.ts — extend allowlist for `research`
+
+Deliverables
+1. apps/web/lib/research-bff.ts — fixture + DB paths
+2. GET/POST /api/v1/research/topics, GET /api/v1/research/topics/[id]/route.ts
+3. loadCockpitSlices() → phase9-cockpit-v1
+4. enqueue-job.ts — Amendment L: allow `research`
+5. apps/web/test/phase-9-routes.test.mjs
+
+Allowed: apps/web/lib/research-bff.ts, apps/web/lib/cockpit-bff.ts, apps/web/lib/jobs/enqueue-job.ts, apps/web/app/api/v1/research/**, apps/web/test/phase-9-routes.test.mjs
+Forbidden: apps/web/components/**, packages/db/**, apps/worker/**
+
+Acceptance: node --test apps/web/test/phase-9-routes.test.mjs (fixture mode)
+Report back: files, test output, integration notes for P9-C.
+```
+
+---
+
+### Card P9-E — Agent Docs/QA scaffold (Wave 2 — parallel with P9-B)
+
+```text
+You are the Zeref Docs/QA agent for Phase 9 slice P9-E (Wave 2 scaffold).
+
+HARD RULE
+- scripts/verify-phase-9.mjs shell + CI step + e2e scaffold ONLY. No components.
+- STOP with report. Playwright may skip until Wave 4.
+
+Skills: using-superpowers, run-verify-gate, verification-before-completion
+
+Read first:
+- docs/governance/phase-9-contract.md (C90)
+- scripts/verify-phase-8.mjs (pattern)
+- docs/governance/adr/ADR-018-verify-phase-5-harness.md
+
+Deliverables
+1. scripts/verify-phase-9.mjs — chain verify:phase-8 + phase-9 static checks
+2. package.json verify:phase-9 script
+3. CI env: ZEREF_PHASE9_RESEARCH=1 (+ Phase 8 flags)
+4. apps/web/e2e/cockpit-research-9.spec.ts scaffold (skip until ZEREF_PHASE9_RESEARCH=1 enforced in Wave 4)
+
+Allowed: scripts/verify-phase-9.mjs, package.json (script only), .github/workflows/ci.yml, apps/web/e2e/cockpit-research-9.spec.ts, docs/governance/verify.md
+Forbidden: apps/web/components/**, apps/web/app/api/**
+
+Acceptance: verify shell runs; documents Wave 4 deferrals
+Report back: CI diff, verify output snippet.
+```
+
+---
+
+### Card P6.1-E — Agent Docs/QA (Wave 2 — after P6.1-A)
+
+```text
+You are the Zeref Docs/QA agent for Phase 6.1 slice P6.1-E.
+
+HARD RULE
+- verify:phase-6.1 + Playwright C91–C94 ONLY. No HUD component edits.
+
+Skills: using-superpowers, run-verify-gate, verification-before-completion
+
+Read first:
+- docs/governance/phase-6.1-contract.md (C96–C98)
+- docs/governance/adr/ADR-033-luke-tier2-visual-acceptance.md
+- scripts/verify-phase-5.1.mjs (pattern)
+
+Deliverables
+1. scripts/verify-phase-6.1.mjs — chain verify:phase-5.1 + C91–C94 checks
+2. package.json verify:phase-6.1 script
+3. apps/web/e2e/cockpit-hud-6.1.spec.ts (or extend cockpit-hud-5.1.spec.ts)
+4. CI step with ZEREF_PHASE61_UI=1
+
+Allowed: scripts/verify-phase-6.1.mjs, package.json, .github/workflows/ci.yml, apps/web/e2e/cockpit-hud-6.1.spec.ts, docs/governance/verify.md
+Forbidden: apps/web/components/**
+
+Acceptance: npm run verify:phase-6.1 (document if Playwright needs P6.1-A screenshot first)
+Report back: verify output, CI diff.
+```
+
+---
+
+### Card P9-C — Agent UI Research (Wave 3 — after P9-B)
+
+```text
+You are the Zeref UI agent for Phase 9 slice P9-C.
+
+HARD RULE
+- Research hub + detail UI + e2e ONLY. Wire to P9-B BFF.
+- STOP with report + screenshot.
+
+Skills: using-superpowers, brainstorming, ui-ux-pro-max, test-driven-development, verification-before-completion
+
+Read first:
+1. docs/governance/phase-9-contract.md (C87–C88)
+2. apps/web/components/cockpit/ResearchPanel.tsx
+3. apps/web/app/cockpit/research/page.tsx
+4. P9-B — research BFF routes + CockpitSlicesV9
+
+Deliverables
+1. /cockpit/research — data-testid="research-hub"
+2. /cockpit/research/[topicId] — detail view with signals
+3. ResearchPanel links to hub; remove Phase 5 placeholder copy when topics exist
+4. RSC-first detail fetch (C88)
+5. apps/web/e2e/cockpit-research-9.spec.ts (enable when P9-E Wave 4 flag on)
+
+Allowed: apps/web/components/research/**, apps/web/app/cockpit/research/**, apps/web/components/cockpit/ResearchPanel.tsx, apps/web/e2e/cockpit-research-9.spec.ts
+Forbidden: apps/web/app/api/**, packages/**, apps/web/components/hud/** (6.1 owner)
+
+Acceptance: manual hub flow + e2e when P9-E enables flag
+Report back: files, screenshot path, test output.
+```
+
+---
+
+### Card P9-E — Agent Docs/QA finalize (Wave 4 — after P9-C)
+
+```text
+You are the Zeref Docs/QA agent for Phase 9 slice P9-E (Wave 4 finalize).
+
+HARD RULE
+- Enforce cockpit-research-9.spec.ts in verify:phase-9; CI Phase 0–9 gate.
+- STOP with report when verify:phase-9 green.
+
+Skills: run-verify-gate, verification-before-completion
+
+Read first:
+- P9-C report + P9-E Wave 2 scaffold
+- docs/governance/phase-9-contract.md (C90)
+
+Deliverables
+1. verify-phase-9.mjs — enforce Playwright with ZEREF_PHASE9_RESEARCH=1
+2. CI Phase 0–9 gate green
+3. Document verify env in docs/governance/verify.md
+
+Allowed: scripts/verify-phase-9.mjs, .github/workflows/ci.yml, docs/governance/verify.md, apps/web/e2e/cockpit-research-9.spec.ts (assertions only)
+Forbidden: apps/web/components/**
+
+Acceptance: npm run verify:phase-9
+Report back: verify log summary, CI diff.
+```
 
 ---
 

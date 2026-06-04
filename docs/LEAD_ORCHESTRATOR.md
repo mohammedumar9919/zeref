@@ -41,11 +41,11 @@ Planner Discuss → Contract → Planner APPROVE
 
 ---
 
-## Current focus (2026-05-31)
+## Current focus (2026-06-03)
 
-1. **Phase 7** — `packages/zeref-memory` Discuss + Contract (skills: `gsd-discuss-phase`, `council-propose-slice`)
-2. **Phase 6.1** (optional parallel) — Luke visual polish contract
-3. Phase 6 **APPROVED** — do not re-open voice implementation without contract amendment
+1. **Phase 9** — Research pipelines (**P9-A** spawn now)
+2. **Phase 6.1** — Luke visual polish (**P6.1-A** spawn now, parallel UI-only)
+3. Phase 8 **CLOSED** — Amendment K C73 errata; no P8-HOTFIX-A before Phase 9
 
 ---
 

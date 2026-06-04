@@ -1,19 +1,18 @@
 ﻿# Zeref — STATE
 
-**Updated:** 2026-06-03
+**Updated:** 2026-06-03 (Phase 9 + 6.1 contracts)
 
 ## Current position
 
-- **Phase:** 8 — Wave 3 **DONE** (await verify + sign-off)
-- **P8-C:** `c159de9` — studio editor
-- **P8-D:** `76eaf64` — calendar scheduler
-- **P8-B:** `10240c3` · **P8-E scaffold:** `7678cee`
+- **Phase:** 8 **CLOSED** @ `e5dc5b6` · **9 + 6.1 READY** (Planner 2026-06-03)
+- **Parallel:** P9-A (primary) + P6.1-A (UI-only) — Wave 1 spawn now
+- **Governance:** phase-9-contract, phase-6.1-contract, ADR-031/032/033, Amendment K (C73 errata)
 
 ## Next
 
-1. User: local dev with `ZEREF_BFF_FIXTURE=1` (see CURRENT_STATE Phase 8 dev URLs)
-2. ~~Wave 4 e2e + build fix~~ @ `47f61ec`
-3. User: `npm run verify:phase-8` in PowerShell
+1. User spawns P9-A + P6.1-A (separate chats)
+2. Wave 2: P9-B + P9-E scaffold | P6.1-E (after Wave 1 reports)
+3. Wave 3: P9-C · Wave 4: P9-E finalize
 
 ## Dev Postgres
 

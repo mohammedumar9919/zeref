@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-03  
+**Last updated:** 2026-06-03 (Phase 8 sign-off)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -23,10 +23,11 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
-| Phase 8 Studio + Calendar | **P8-C** `c159de9` · **P8-D** `76eaf64` — user `verify:phase-8` + Planner sign-off |
-| Phase 6.1 Luke visual polish | **DEFER** — separate Discuss + Contract (non-blocking) |
+| Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
+| Phase 9 Research pipelines | **READY** — contract @ Planner 2026-06-03; spawn **P9-A** |
+| Phase 6.1 Luke visual polish | **READY** — contract @ Planner 2026-06-03; spawn **P6.1-A** (parallel, UI-only) |
 
-**Immediate goal:** User runs `npm run verify:phase-8`; local UAT requires `ZEREF_BFF_FIXTURE=1` (see Phase 8 dev URLs below).
+**Immediate goal:** Wave 1 — spawn **P9-A** and **P6.1-A** in **separate** worker chats. Lead STOP until reports.
 
 ---
 
@@ -168,7 +169,9 @@ Restart dev after setting env vars. Link from `/cockpit` studio panel uses the s
 
 Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 
-**P8-E Wave 4:** e2e flags enabled; `enqueue-job.ts` build fix applied (see latest commit).
+**Verify:** `npm run verify:phase-8` **GREEN** (2026-06-03) @ `e5dc5b6` — Playwright reuse fix; full chain 0–8 + 25/25 e2e.
+
+Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 
 ---
 
@@ -176,9 +179,9 @@ Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | `npm run verify:phase-8` — kill port **3099** first if prior stale server; do **not** preset `ZEREF_PLAYWRIGHT_REUSE=1` |
-| 2 | User | Local UAT: fixture dev URLs below (avoids studio 404) |
-| 3 | Planner | Phase 8 sign-off after verify green + screenshots |
+| 1 | User | Spawn **P9-A** + **P6.1-A** in separate chats (Wave 1 parallel) |
+| 2 | Lead | Integrate worker reports; Wave 2 cards after P9-A / P6.1-A |
+| 3 | User | Optional `git push` after governance commit |
 
 ---
 

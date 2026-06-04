@@ -1,7 +1,7 @@
 # Zeref — Phase 8 Contract (Implementation)
 
 **Phase:** 8  
-**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03)  
+**Status:** **APPROVED** — functional sign-off 2026-06-03 (planning: APPROVED WITH CONDITIONS 2026-06-03)  
 **Theme:** Studio editor + Calendar scheduling UX (left-stack product panels)
 
 **Prerequisites:** Phase 7 **APPROVED** (`0e7f8d5`, `verify:phase-7` @ `0461bc1`, screenshot `zeref-cockpit-7-brain.png`).
@@ -38,6 +38,19 @@
 | **C80** | **`npm run verify:phase-8`** chains 0–7; `ZEREF_PHASE8_PRODUCT=1`, `ZEREF_JOB_ENQUEUE_MOCK=1`. |
 
 **CI env (binding):** Phase 7 flags + `ZEREF_PHASE8_PRODUCT=1`, `ZEREF_JOB_ENQUEUE_MOCK=1`, `ZEREF_BFF_FIXTURE=1`
+
+---
+
+## Amendment K — C73 GET `:id` errata (Planner 2026-06-03)
+
+**Phase 8 CLOSED.** No reopen unless this errata is amended again.
+
+| Item | Ruling |
+|------|--------|
+| **C73** `GET /api/v1/calendar/events/:id` | **Deferred** to Phase 8.1+ (optional). Shipped MVP uses **list + PATCH** only; Calendar UI does not call GET-by-id. |
+| **Route file** | `apps/web/app/api/v1/calendar/events/[id]/route.ts` may remain **PATCH-only** for Phase 8 sign-off. |
+| **Verify** | `verify:phase-8` does **not** require GET-by-id test. |
+| **P8-HOTFIX-A** | **NO** before Phase 9 (Planner 2026-06-03). |
 
 ---
 
@@ -131,6 +144,7 @@ sequenceDiagram
 | `GET /api/v1/calendar/events` | List calendar events |
 | `POST /api/v1/calendar/events` | Create event |
 | `PATCH /api/v1/calendar/events/:id` | Update event |
+| `GET /api/v1/calendar/events/:id` | **Deferred** (Amendment K) — Phase 8.1+ optional |
 | `POST /api/v1/jobs/enqueue` | Allowlisted enqueue (Amendment F) |
 
 ---

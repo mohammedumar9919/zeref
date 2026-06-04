@@ -124,6 +124,29 @@
 
 **Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03) — spawn P8-A after governance commit.
 
+## Phase 9 (Research pipelines)
+
+**Contract:** [phase-9-contract.md](../phase-9-contract.md) (Q1–Q5, C81–C90, Amendments L–M)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-031](./ADR-031-research-postgres-schema.md) | Research topics + signals schema (Q2, C82) | **APPROVED** | Data |
+| [ADR-032](./ADR-032-research-worker-bff.md) | Research worker + BFF routes (Q1, Q3–Q5, C83–C86) | **APPROVED** | Worker + BFF |
+
+**Reading order:** ADR-031 → ADR-032
+
+**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03) — spawn P9-A (parallel with P6.1-A).
+
+## Phase 6.1 (Luke Tier-2 visual polish)
+
+**Contract:** [phase-6.1-contract.md](../phase-6.1-contract.md) (Q1–Q5, C91–C98, Amendment N)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-033](./ADR-033-luke-tier2-visual-acceptance.md) | Visual acceptance + UI-only firewall (Q1, Q4) | **APPROVED** | UI |
+
+**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03) — spawn P6.1-A (parallel with P9-A; UI-only).
+
 ## Planner quick reference
 
 | ID | ADR / doc |
