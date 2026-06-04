@@ -7,6 +7,7 @@ export const PHASE5_CONTRACT_VERSION = "5.0.0";
 export const PHASE5_1_CONTRACT_VERSION = "5.1.0";
 export const PHASE6_CONTRACT_VERSION = "6.0.0";
 export const PHASE7_CONTRACT_VERSION = "7.0.0";
+export const PHASE8_CONTRACT_VERSION = "8.0.0";
 
 export {
   PlatformSchema,
@@ -157,6 +158,33 @@ export {
   type MemoryBrainEvent,
   type CockpitSseOutbox,
 } from "./phase7/index.js";
+
+export {
+  CalendarEventStatusSchema,
+  CalendarEventSchema,
+  StudioDraftSchema,
+  UiJobTypeSchema,
+  JobEnqueueRequestSchema,
+  CockpitSlicesSchemaV8,
+  CockpitStudioItemSchemaV8,
+  CockpitCalendarItemSchemaV8,
+  CockpitReportItemSchemaV8,
+  CockpitResearchItemSchemaV8,
+  CockpitStudioPanelSchemaV8,
+  CockpitCalendarPanelSchemaV8,
+  CockpitReportsPanelSchemaV8,
+  CockpitResearchPanelSchemaV8,
+  type CalendarEventStatus,
+  type CalendarEvent,
+  type StudioDraft,
+  type UiJobType,
+  type JobEnqueueRequest,
+  type CockpitSlicesV8,
+  type CockpitStudioItemV8,
+  type CockpitCalendarItemV8,
+  type CockpitReportItemV8,
+  type CockpitResearchItemV8,
+} from "./phase8/index.js";
 
 export {
   NormalizedPostPayloadSchema,
