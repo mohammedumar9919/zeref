@@ -7,9 +7,6 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const webRoot = join(repoRoot, "apps/web");
 
-// Propagate before chaining verify:phase-6 → 5.1 → 5 so nested Playwright runs reuse :3099 (CI=true).
-process.env.ZEREF_PLAYWRIGHT_REUSE = "1";
-
 const PHASE7_E2E_SPEC = "apps/web/e2e/cockpit-brain-7.spec.ts";
 
 const C67_BRAIN_STATES = ["idle", "memory_saved", "searching", "contradiction", "entity_changed"];
@@ -63,7 +60,6 @@ function ciSafeEnv(extra = {}) {
   env.ZEREF_BFF_FIXTURE = "1";
   env.ZEREF_PHASE51_UI = "1";
   env.ZEREF_MEMORY_MOCK = "1";
-  env.ZEREF_PLAYWRIGHT_REUSE = "1";
   env.SKIP_DB_TESTS = "1";
   env.CI = "true";
   const port = env.PLAYWRIGHT_PORT ?? "3099";

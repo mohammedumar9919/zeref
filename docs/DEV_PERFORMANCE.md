@@ -77,7 +77,10 @@ Get-NetTCPConnection -LocalPort 3099 -ErrorAction SilentlyContinue |
 **Prevention:**
 
 - `verify:phase-5.1` does **not** start a second Playwright server — C48 runs inside the `verify:phase-5` chain
-- For manual re-runs while a server is already up: `$env:ZEREF_PLAYWRIGHT_REUSE='1'`
+- `verify:phase-5` sets `ZEREF_PLAYWRIGHT_REUSE=1` **after** the first full Playwright run so nested phases (6→8) reuse the same fixture server
+- Playwright only reuses when `ZEREF_PLAYWRIGHT_REUSE=1` (not automatic in CI). The webServer always injects `ZEREF_BFF_FIXTURE=1` when it **does** start.
+- **Do not** set `ZEREF_PLAYWRIGHT_REUSE=1` before `verify:phase-5` unless port 3099 was started by a prior verify run with fixture mocks — stale servers cause mass e2e failures (404 / missing globe).
+- For manual re-runs after a good verify: `$env:ZEREF_PLAYWRIGHT_REUSE='1'` is OK. Otherwise kill 3099 first (see above).
 
 ---
 

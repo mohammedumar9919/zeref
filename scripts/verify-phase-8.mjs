@@ -61,7 +61,6 @@ function ciSafeEnv(extra = {}) {
   env.ZEREF_PHASE51_UI = "1";
   env.ZEREF_MEMORY_MOCK = "1";
   env.ZEREF_JOB_ENQUEUE_MOCK = "1";
-  env.ZEREF_PLAYWRIGHT_REUSE = "1";
   env.SKIP_DB_TESTS = "1";
   env.CI = "true";
   const port = env.PLAYWRIGHT_PORT ?? "3099";

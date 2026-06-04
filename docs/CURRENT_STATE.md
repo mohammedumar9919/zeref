@@ -176,7 +176,7 @@ Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | `npm run verify:phase-8` (full chain; `ZEREF_PLAYWRIGHT_REUSE=1` if port 3099 busy) |
+| 1 | User | `npm run verify:phase-8` — kill port **3099** first if prior stale server; do **not** preset `ZEREF_PLAYWRIGHT_REUSE=1` |
 | 2 | User | Local UAT: fixture dev URLs below (avoids studio 404) |
 | 3 | Planner | Phase 8 sign-off after verify green + screenshots |
 
