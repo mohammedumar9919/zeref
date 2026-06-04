@@ -50,7 +50,7 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 
 ### Card P8-A — Agent Contracts + Data (COMPLETED)
 
-Commit: _(pending Lead integration commit)_
+Commit: `12a0e65`
 
 ```text
 (Done — see git log for P8-A commit after Lead integration)
