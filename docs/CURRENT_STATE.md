@@ -23,10 +23,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
-| Phase 8 Studio + Calendar | **P8-A** `12a0e65` · **P8-B** `10240c3` · **P8-E** `7678cee` — spawn **P8-C + P8-D** |
+| Phase 8 Studio + Calendar | **P8-C** `c159de9` · **P8-D** `76eaf64` — user `verify:phase-8` + Planner sign-off |
 | Phase 6.1 Luke visual polish | **DEFER** — separate Discuss + Contract (non-blocking) |
 
-**Immediate goal:** User spawns **P8-B** (BFF) + **P8-E** (QA scaffold) in parallel worker chats.
+**Immediate goal:** User runs `npm run verify:phase-8`; local UAT requires `ZEREF_BFF_FIXTURE=1` (see Phase 8 dev URLs below).
 
 ---
 
@@ -147,13 +147,38 @@ Screenshot: `docs/design/reference/screenshots/zeref-cockpit-7-brain.png` @ `0e7
 
 ---
 
+## Phase 8 — local dev UAT (fixture mode)
+
+Studio entity pages return **404** when `ZEREF_BFF_FIXTURE` is unset and Postgres has no matching `normalized_entities` row. In fixture mode only this entity resolves:
+
+| URL | Notes |
+|-----|--------|
+| `http://localhost:3000/cockpit` | Main cockpit (or your dev port) |
+| `http://localhost:3000/cockpit/studio/550e8400-e29b-41d4-a716-446655440001` | Studio editor (`studio-editor`) |
+| `http://localhost:3000/cockpit/calendar` | Calendar scheduler (`calendar-scheduler`) |
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_JOB_ENQUEUE_MOCK='1'
+npm run dev -w @zeref/web
+```
+
+Restart dev after setting env vars. Link from `/cockpit` studio panel uses the same fixture entity id.
+
+Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
+
+**P8-E Wave 4:** e2e flags enabled; `enqueue-job.ts` build fix applied (see latest commit).
+
+---
+
 ## What's NEXT
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Spawn **P8-C** Studio UI + **P8-D** Calendar UI (parallel; cards below) |
-| 2 | User | Run `npm run verify:phase-8` in PowerShell when Wave 4 ready |
-| 3 | Lead | Integrate P8-C/D → P8-E Wave 4 finalize |
+| 1 | User | `npm run verify:phase-8` (full chain; `ZEREF_PLAYWRIGHT_REUSE=1` if port 3099 busy) |
+| 2 | User | Local UAT: fixture dev URLs below (avoids studio 404) |
+| 3 | Planner | Phase 8 sign-off after verify green + screenshots |
 
 ---
 

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 /**
  * Phase 8 C76 — calendar scheduler (week/list MVP).
  *
- * Wave 2 scaffold: skipped until Wave 4 (P8-D UI).
+ * Wave 4: enforced when ZEREF_PHASE8_PRODUCT=1 (P8-D @ 76eaf64).
  * `verify:phase-8` sets ZEREF_PHASE8_PRODUCT=1 in CI; hard enforcement after P8-D lands.
  *
  * Contract testids (phase-8-contract C76, DESIGN_SYSTEM carry-forward C26):
@@ -12,8 +12,8 @@ import { expect, test } from "@playwright/test";
  */
 const phase8ProductReady = process.env.ZEREF_PHASE8_PRODUCT === "1";
 
-/** Wave 4 — flip to true when P8-D calendar-scheduler UI merges. */
-const wave4CalendarUiReady = false;
+/** Wave 4 — P8-D calendar-scheduler UI @ 76eaf64 */
+const wave4CalendarUiReady = true;
 
 test.describe("cockpit calendar phase 8 (C76)", () => {
   test.beforeEach(() => {

@@ -39,7 +39,7 @@ function validationError(message: string): Error {
 }
 
 /** Map UI enqueue body to worker job payload (Amendment F / ADR-030). */
-export function buildWorkerJobPayload(request: JobEnqueueRequest): unknown {
+export function buildWorkerJobPayload(request: JobEnqueueRequest): Record<string, unknown> {
   switch (request.jobType) {
     case "normalize": {
       if (!request.snapshotId) {

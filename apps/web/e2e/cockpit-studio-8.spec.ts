@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 /**
  * Phase 8 C75 — studio editor at /cockpit/studio/[entityId].
  *
- * Wave 2 scaffold: skipped until Wave 4 (P8-C UI).
+ * Wave 4: enforced when ZEREF_PHASE8_PRODUCT=1 (P8-C @ c159de9).
  * `verify:phase-8` sets ZEREF_PHASE8_PRODUCT=1 in CI; hard enforcement after P8-C lands.
  *
  * Contract testids (phase-8-contract C75, DESIGN_SYSTEM carry-forward C26):
@@ -12,8 +12,8 @@ import { expect, test } from "@playwright/test";
  */
 const phase8ProductReady = process.env.ZEREF_PHASE8_PRODUCT === "1";
 
-/** Wave 4 — flip to true when P8-C studio-editor UI merges. */
-const wave4StudioUiReady = false;
+/** Wave 4 — P8-C studio-editor UI @ c159de9 */
+const wave4StudioUiReady = true;
 
 test.describe("cockpit studio phase 8 (C75)", () => {
   test.beforeEach(() => {
