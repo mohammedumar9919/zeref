@@ -69,7 +69,7 @@ Commit: `12a0e65`
 
 ### Card P8-E — Agent Docs/QA (Wave 2 scaffold — COMPLETED)
 
-Commit: _(see P8-E integration commit)_
+Commit: `7678cee`
 
 ```text
 (Done — verify:phase-8 script, CI Phase 0–8 gate, e2e scaffolds skipped until Wave 4)
@@ -88,11 +88,21 @@ HARD RULE
 
 Skills: using-superpowers, brainstorming, ui-ux-pro-max, test-driven-development, verification-before-completion
 
-Read first:
-- docs/design/DESIGN_SYSTEM.md
-- docs/governance/phase-8-contract.md (C75, C77, C78)
-- apps/web/components/cockpit/StudioPanel.tsx
-- apps/web/app/cockpit/studio/page.tsx
+Read first (mandatory):
+1. docs/SKILL_INVOCATION.md
+2. docs/CURRENT_STATE.md
+3. docs/design/DESIGN_SYSTEM.md
+4. docs/governance/phase-8-contract.md (C75, C77, C78)
+5. apps/web/components/cockpit/StudioPanel.tsx, CockpitShell.tsx, CockpitGrid.tsx
+6. apps/web/lib/bff.ts — getCockpitSlices() returns CockpitSlicesV8
+7. apps/web/app/cockpit/studio/page.tsx
+8. P8-B @ 10240c3 — PUT /api/v1/studio/drafts/:entityId
+
+Repo: c:\Projects\zeref
+
+Binding (from P8-B council note):
+- Update CockpitShell/CockpitGrid (and related) types: CockpitSlices → CockpitSlicesV8 from @zeref/contracts
+- Use phase8 panel item fields: hasDraft, draftPreview, status, scheduledAt where shown
 
 Deliverables
 1. /cockpit/studio/[entityId] — editor page, data-testid="studio-editor"
@@ -121,11 +131,19 @@ HARD RULE
 
 Skills: using-superpowers, brainstorming, ui-ux-pro-max, test-driven-development, verification-before-completion
 
-Read first:
-- docs/design/DESIGN_SYSTEM.md
-- docs/governance/phase-8-contract.md (C76, C77, Q5)
-- apps/web/components/cockpit/CalendarPanel.tsx
-- apps/web/app/cockpit/calendar/page.tsx
+Read first (mandatory):
+1. docs/SKILL_INVOCATION.md
+2. docs/CURRENT_STATE.md
+3. docs/design/DESIGN_SYSTEM.md
+4. docs/governance/phase-8-contract.md (C76, C77, Q5)
+5. apps/web/components/cockpit/CalendarPanel.tsx, CockpitShell.tsx
+6. apps/web/lib/bff.ts — CockpitSlicesV8
+7. apps/web/app/cockpit/calendar/page.tsx
+8. P8-B @ 10240c3 — calendar CRUD + POST /api/v1/jobs/enqueue
+
+Repo: c:\Projects\zeref
+
+Binding: Align CockpitSlices → CockpitSlicesV8 in cockpit components (same as P8-C).
 
 Deliverables
 1. Full calendar scheduler view — data-testid="calendar-scheduler"

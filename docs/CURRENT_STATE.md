@@ -23,7 +23,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
-| Phase 8 Studio + Calendar | **P8-A** `12a0e65` · **P8-B** `10240c3` · **P8-E** scaffold — spawn **P8-C + P8-D** |
+| Phase 8 Studio + Calendar | **P8-A** `12a0e65` · **P8-B** `10240c3` · **P8-E** `7678cee` — spawn **P8-C + P8-D** |
 | Phase 6.1 Luke visual polish | **DEFER** — separate Discuss + Contract (non-blocking) |
 
 **Immediate goal:** User spawns **P8-B** (BFF) + **P8-E** (QA scaffold) in parallel worker chats.
