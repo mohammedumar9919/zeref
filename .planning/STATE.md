@@ -4,15 +4,15 @@
 
 ## Current position
 
-- **Phase:** 8 **CLOSED** @ `e5dc5b6` · **9 + 6.1 READY** (Planner 2026-06-03)
-- **Parallel:** P9-A (primary) + P6.1-A (UI-only) — Wave 1 spawn now
-- **Governance:** phase-9-contract, phase-6.1-contract, ADR-031/032/033, Amendment K (C73 errata)
+- **Phase:** 9 Wave 1 **DONE** · 6.1 Wave 1 **DONE** · Wave 2 **READY**
+- **P9-A:** integrated (contracts 9.0.0, migration 0004, worker `research`)
+- **P6.1-A:** integrated (HUD C91–C95, screenshot `zeref-cockpit-6.1-hud.png`)
 
 ## Next
 
-1. User spawns P9-A + P6.1-A (separate chats)
-2. Wave 2: P9-B + P9-E scaffold | P6.1-E (after Wave 1 reports)
-3. Wave 3: P9-C · Wave 4: P9-E finalize
+1. Wave 2 spawn: P9-B + P9-E scaffold + P6.1-E (parallel)
+2. Wave 3: P9-C after P9-B
+3. Wave 4: P9-E finalize
 
 ## Dev Postgres
 

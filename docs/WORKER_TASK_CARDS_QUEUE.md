@@ -59,10 +59,10 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 
 | Track | Wave | Slice | Spawn |
 |-------|------|-------|-------|
-| **9** (primary) | 1 | **P9-A** | **NOW** — separate chat |
-| **6.1** (UI-only) | 1 | **P6.1-A** | **NOW** — separate chat |
-| **9** | 2 | P9-B + P9-E scaffold | After P9-A report |
-| **6.1** | 2 | P6.1-E | After P6.1-A report |
+| **9** (primary) | 1 | ~~**P9-A**~~ | **DONE** — await Lead integration commit |
+| **6.1** (UI-only) | 1 | ~~**P6.1-A**~~ | **DONE** — screenshot `zeref-cockpit-6.1-hud.png` |
+| **9** | 2 | **P9-B** + **P9-E** scaffold | **SPAWN NOW** (parallel, after integration) |
+| **6.1** | 2 | **P6.1-E** | **SPAWN NOW** (after integration) |
 | **9** | 3 | P9-C | After P9-B |
 | **9** | 4 | P9-E finalize | After P9-C |
 
@@ -70,89 +70,27 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 
 ---
 
-### Card P9-A — Agent Contracts + Data + Worker (SPAWN NOW — Wave 1)
+### Card P9-A — Agent Contracts + Data + Worker (COMPLETED — Wave 1)
+
+Report: contracts 85/85 (7 phase-9), analytics 3, worker fixture 3; migration `0004_phase9_research.sql`; fixtures `fixtures/phase-9/`.
 
 ```text
-You are the Zeref Contracts + Data + Worker agent for Phase 9 slice P9-A.
-
-HARD RULE
-- packages/contracts phase9, packages/db migration, worker `research` job ONLY.
-- STOP with report + test output. Do not claim Planner sign-off.
-- Do NOT touch apps/web/components/** or 6.1 HUD paths.
-
-Skills: using-superpowers, test-driven-development, verification-before-completion
-
-Read first (mandatory):
-1. docs/SKILL_INVOCATION.md
-2. docs/CURRENT_STATE.md
-3. docs/governance/phase-9-contract.md (C81–C83, Amendment L)
-4. docs/governance/adr/ADR-031-research-postgres-schema.md
-5. docs/governance/adr/ADR-032-research-worker-bff.md (worker section)
-6. packages/db/drizzle/0003_phase8_studio_calendar.sql (migration pattern)
-7. packages/contracts/src/phase8/ (cockpit v8 pattern)
-8. apps/worker/src/handlers/ (existing job handlers)
-9. packages/analytics/src/ (metric_facts readers)
-
-Repo: c:\Projects\zeref
-
-Deliverables
-1. packages/contracts/src/phase9/ — ResearchTopicSchema, ResearchSignalSchema, ResearchTopicDetailSchema, CockpitSlicesSchemaV9, PHASE9_CONTRACT_VERSION=9.0.0, research job I/O schemas
-2. packages/db migration 0004_phase9_research.sql + Drizzle schema
-3. fixtures/phase-9/ — research-topic.valid.json, research-signals.valid.json, cockpit-slices.valid.json (phase9-cockpit-v1, research panel populated)
-4. Worker handler `research` — reads metric_facts/embeddings, writes signals, updates topic aggregates; register in worker registry
-5. Unit tests: contracts round-trip, db migration smoke, worker handler fixture test
-
-Allowed: packages/contracts/**, packages/db/**, fixtures/phase-9/**, apps/worker/**, packages/analytics/** (read helpers only)
-Forbidden: apps/web/**, packages/contracts phase8 breaking changes
-
-Acceptance: npm run build; npm run test -w @zeref/contracts; db tests if DATABASE_URL set
-Report back: files, fixture paths, test counts, commit-ready summary.
+(Done — Lead integration commit pending)
 ```
 
 ---
 
-### Card P6.1-A — Agent UI Visual Polish (SPAWN NOW — Wave 1, parallel)
+### Card P6.1-A — Agent UI Visual Polish (COMPLETED — Wave 1)
+
+Report: HUD chrome C91–C95; screenshot `docs/design/reference/screenshots/zeref-cockpit-6.1-hud.png`; build green.
 
 ```text
-You are the Zeref UI agent for Phase 6.1 slice P6.1-A.
-
-HARD RULE
-- Luke Tier-2 VISUAL polish ONLY — HUD chrome, typography, spacing, glass columns, telemetry/AUDIO strip styling.
-- STOP with report + screenshot. Do not claim Planner sign-off.
-- Do NOT touch BFF, worker, contracts, voice, memory, studio, calendar, research, or globe WebGL internals.
-
-Skills: using-superpowers, brainstorming, ui-ux-pro-max, verification-before-completion
-
-Read first (mandatory):
-1. docs/SKILL_INVOCATION.md
-2. docs/CURRENT_STATE.md
-3. docs/design/DESIGN_SYSTEM.md
-4. docs/governance/phase-6.1-contract.md (C91–C95, Amendment N)
-5. docs/governance/adr/ADR-033-luke-tier2-visual-acceptance.md
-6. docs/design/reference/lukebuildsai-jarvis-hud.jpeg
-7. apps/web/components/hud/HudHeader.tsx, HudFooter.tsx, HudShell.tsx
-8. apps/web/components/cockpit/CockpitPanel.tsx, TelemetryStrip.tsx, CockpitShell.tsx
-
-Repo: c:\Projects\zeref
-
-Deliverables
-1. HudHeader — status chip density + mono label alignment (C91)
-2. HudFooter — objective + telemetry row spacing (C92)
-3. Glass column / panel chrome harmonized across four panels (C93)
-4. TelemetryStrip + AUDIO I/O strip visual polish; SIMULATED/live badges unchanged in meaning (C94)
-5. Globe hero wrapper tokens only if needed — ≥45vh preserved; NO PointCloudGlobe logic edits (C95)
-6. Screenshot: docs/design/reference/screenshots/zeref-cockpit-6.1-hud.png
-
-Allowed: apps/web/components/hud/**, apps/web/components/cockpit/CockpitPanel.tsx, CockpitShell.tsx, CockpitGrid.tsx (className only), TelemetryStrip.tsx, AudioIoStrip (styling), GlobeHero.tsx (wrapper only), apps/web/app/globals.css, tailwind.config.ts
-Forbidden: apps/web/app/api/**, apps/web/lib/**, packages/**, apps/web/components/studio/**, calendar/**, research/**, voice/**, brain/**, PointCloudGlobe.tsx, scripts/**
-
-Acceptance: manual visual compare vs Luke JPEG; npm run build -w @zeref/web; no behavior regressions
-Report back: files changed, screenshot path, before/after notes vs ADR-033 checklist.
+(Done — Lead integration commit pending; P6.1-E next)
 ```
 
 ---
 
-### Card P9-B — Agent BFF (Wave 2 — after P9-A)
+### Card P9-B — Agent BFF (Wave 2 — SPAWN NOW after P9-A integration)
 
 ```text
 You are the Zeref BFF agent for Phase 9 slice P9-B.

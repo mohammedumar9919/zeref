@@ -24,10 +24,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
-| Phase 9 Research pipelines | **READY** — contract @ Planner 2026-06-03; spawn **P9-A** |
-| Phase 6.1 Luke visual polish | **READY** — contract @ Planner 2026-06-03; spawn **P6.1-A** (parallel, UI-only) |
+| Phase 9 Research pipelines | **P9-A DONE** — Wave 2: spawn **P9-B** + **P9-E** scaffold |
+| Phase 6.1 Luke visual polish | **P6.1-A DONE** — Wave 2: spawn **P6.1-E**; Planner visual sign-off on screenshot |
 
-**Immediate goal:** Wave 1 — spawn **P9-A** and **P6.1-A** in **separate** worker chats. Lead STOP until reports.
+**Immediate goal:** Lead integration commits for Wave 1; spawn Wave 2 in **three chats** (P9-B, P9-E scaffold, P6.1-E).
 
 ---
 
@@ -179,9 +179,9 @@ Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Spawn **P9-A** + **P6.1-A** in separate chats (Wave 1 parallel) |
-| 2 | Lead | Integrate worker reports; Wave 2 cards after P9-A / P6.1-A |
-| 3 | User | Optional `git push` after governance commit |
+| 1 | Lead | Integration commits P9-A + P6.1-A |
+| 2 | User | Spawn **P9-B**, **P9-E scaffold**, **P6.1-E** (3 chats) |
+| 3 | Planner | Visual sign-off on `zeref-cockpit-6.1-hud.png` |
 
 ---
 
