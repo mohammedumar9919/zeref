@@ -253,6 +253,48 @@ After `verify:phase-4`:
 
 ---
 
+## Phase 6.1 (Luke Tier-2 HUD visual polish)
+
+**Contract:** [phase-6.1-contract.md](./phase-6.1-contract.md) (C91–C98, Amendment N) · **ADR:** [033](./adr/ADR-033-luke-tier2-visual-acceptance.md)
+
+Chains Phase 0–5.1 only — **independent** of `verify:phase-6` through `verify:phase-9`.
+
+```powershell
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_LLM_MOCK='1'
+$env:ZEREF_PHASE51_UI='1'
+$env:ZEREF_PHASE61_UI='1'
+npm run verify:phase-6.1
+```
+
+### Env flags
+
+| Env | Default verify / CI |
+|-----|---------------------|
+| `ZEREF_PHASE61_UI` | **`1`** — enforce `cockpit-hud-6.1.spec.ts` (C91–C94) + C48 regression via `cockpit-hud-5.1.spec.ts` |
+| `ZEREF_PHASE51_UI` | **`1`** — required so C48 HUD tests are not skipped |
+| `ZEREF_BFF_FIXTURE` | **`1`** — fixture BFF; no Postgres for Playwright path |
+
+Does **not** require `ZEREF_PHASE6_VOICE`, `ZEREF_PHASE7_BRAIN`, or Phase 8–9 flags (C98).
+
+### What `verify:phase-6.1` checks
+
+Script: `scripts/verify-phase-6.1.mjs`
+
+- `phase-6.1-contract.md`, ADR-033
+- Reference screenshot `docs/design/reference/screenshots/zeref-cockpit-6.1-hud.png` (Planner sign-off artifact)
+- Chains `verify:phase-5.1` (phases 0–5.1)
+- **C96:** Playwright `cockpit-hud-5.1` (C48) + `cockpit-hud-6.1` (C91–C94) when `ZEREF_PHASE61_UI=1`
+
+### CI (C98)
+
+After `verify:phase-5.1`:
+
+- `ZEREF_PHASE51_UI=1`, `ZEREF_PHASE61_UI=1`, `ZEREF_BFF_FIXTURE=1`, `ZEREF_LLM_MOCK=1`
+- `npm run verify:phase-6.1`
+
+---
+
 ## Phase 7 (zeref-memory + event→orb)
 
 **Contract:** [phase-7-contract.md](./phase-7-contract.md) (C61–C70, Amendments A–D) · **ADRs:** [025](./adr/ADR-025-memory-postgres-schema.md)–[027](./adr/ADR-027-sse-brain-events-outbox.md)
@@ -349,3 +391,55 @@ After `verify:phase-7`:
 
 - `ZEREF_PHASE8_PRODUCT=1`, `ZEREF_JOB_ENQUEUE_MOCK=1`, `ZEREF_BFF_FIXTURE=1` (+ Phase 6–7 mock flags)
 - `npm run verify:phase-8`
+
+---
+
+## Phase 9 (research trend pipelines)
+
+**Contract:** [phase-9-contract.md](./phase-9-contract.md) (C81–C90, Amendments L–M) · **ADRs:** [031](./adr/ADR-031-research-postgres-schema.md)–[032](./adr/ADR-032-research-worker-bff.md)
+
+Chains Phase 0–8, then Phase 9 contract/fixture/BFF/worker checks. **Wave 2:** Playwright research spec **skips until Wave 4** (P9-C research UI).
+
+```powershell
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_WHISPER_MOCK='1'
+$env:ZEREF_TTS_MOCK='1'
+$env:ZEREF_LLM_MOCK='1'
+$env:ZEREF_MEMORY_MOCK='1'
+$env:ZEREF_JOB_ENQUEUE_MOCK='1'
+$env:ZEREF_PHASE6_VOICE='1'
+$env:ZEREF_PHASE7_BRAIN='1'
+$env:ZEREF_PHASE8_PRODUCT='1'
+$env:ZEREF_PHASE9_RESEARCH='1'
+npm run verify:phase-9
+```
+
+### Env flags
+
+| Env | Default verify / CI | Wave 4 enforcement |
+|-----|---------------------|-------------------|
+| `ZEREF_PHASE9_RESEARCH` | **`1`** (C90) | hard-fail research e2e after P9-C |
+| `ZEREF_JOB_ENQUEUE_MOCK` | **`1`** | required (Amendment L) |
+| `ZEREF_BFF_FIXTURE` | **`1`** | fixture BFF; no Postgres for Playwright path |
+| Phase 8 flags | same as `verify:phase-8` | inherited in chain |
+
+**Wave 4 (after P9-C):** set `wave4ResearchUiReady` to `true` in `cockpit-research-9.spec.ts` so `ZEREF_PHASE9_RESEARCH=1` enforces `research-hub`.
+
+### What `verify:phase-9` checks
+
+Script: `scripts/verify-phase-9.mjs`
+
+- `phase-9-contract.md`, ADR-031–032
+- `fixtures/phase-9/` including `cockpit-slices.valid.json` (`phase9-cockpit-v1`)
+- **C81:** `PHASE9_CONTRACT_VERSION` = `9.0.0`, research + `CockpitSlicesSchemaV9`
+- **C83:** `@zeref/worker` research handler unit test
+- **C84–C85:** BFF routes + `phase-9-routes.test.mjs`
+- **C87:** Playwright scaffold `cockpit-research-9` (skipped until Wave 4)
+- `@zeref/contracts`, `@zeref/worker`, `@zeref/web` tests
+
+### CI (C90)
+
+After `verify:phase-8`:
+
+- `ZEREF_PHASE9_RESEARCH=1`, `ZEREF_JOB_ENQUEUE_MOCK=1`, `ZEREF_BFF_FIXTURE=1` (+ Phase 6–8 mock flags)
+- `npm run verify:phase-9`

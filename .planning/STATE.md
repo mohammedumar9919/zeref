@@ -9,9 +9,9 @@
 
 ## Next
 
-1. Wave 2 spawn: P9-B + P9-E scaffold + P6.1-E (parallel)
-2. Wave 3: P9-C after P9-B
-3. Wave 4: P9-E finalize
+1. Wave 3: spawn **P9-C** Research UI
+2. Wave 4: P9-E finalize after P9-C
+3. User: `verify:phase-6.1` + Planner visual sign-off on `zeref-cockpit-6.1-hud.png`
 
 ## Dev Postgres
 

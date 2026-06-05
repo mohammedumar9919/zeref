@@ -61,9 +61,9 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 |-------|------|-------|-------|
 | **9** (primary) | 1 | ~~**P9-A**~~ | **DONE** — await Lead integration commit |
 | **6.1** (UI-only) | 1 | ~~**P6.1-A**~~ | **DONE** — screenshot `zeref-cockpit-6.1-hud.png` |
-| **9** | 2 | **P9-B** + **P9-E** scaffold | **SPAWN NOW** (parallel, after integration) |
-| **6.1** | 2 | **P6.1-E** | **SPAWN NOW** (after integration) |
-| **9** | 3 | P9-C | After P9-B |
+| **9** | 2 | ~~**P9-B**~~ + ~~**P9-E**~~ scaffold | **DONE** — build fix in Lead merge |
+| **6.1** | 2 | ~~**P6.1-E**~~ | **DONE** — C94 exact match fix in spec |
+| **9** | 3 | **P9-C** | **SPAWN NOW** |
 | **9** | 4 | P9-E finalize | After P9-C |
 
 **File firewall:** Phase 9 ↔ 6.1 paths must not overlap (see Amendment M / N in contracts).
@@ -79,6 +79,24 @@ Report: contracts 85/85 (7 phase-9), analytics 3, worker fixture 3; migration `0
 ### Card P6.1-A — Agent UI Visual Polish (COMPLETED — Wave 1)
 
 Report: HUD chrome C91–C95; screenshot `docs/design/reference/screenshots/zeref-cockpit-6.1-hud.png`; build green. **Commit:** `f6a3d01`
+
+---
+
+### Card P9-B — Agent BFF (COMPLETED — Wave 2)
+
+Report: 8/8 phase-9-routes; phase9-cockpit-v1; Amendment L enqueue. Lead merge: enqueue route V9 schema + TS default fix.
+
+---
+
+### Card P9-E — Agent Docs/QA scaffold (COMPLETED — Wave 2)
+
+Report: `verify-phase-9.mjs` shell; `cockpit-research-9.spec.ts` scaffold (Wave 4 defer).
+
+---
+
+### Card P6.1-E — Agent Docs/QA (COMPLETED — Wave 2)
+
+Report: `verify-phase-6.1.mjs`; `cockpit-hud-6.1.spec.ts` C91–C94; CI step.
 
 ---
 
