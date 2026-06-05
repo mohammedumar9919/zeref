@@ -4,15 +4,20 @@ import {
   AnalyzeJobInputSchema,
   EmbedJobInputSchema,
   JobEnqueueRequestSchema,
+  JobEnqueueRequestSchemaV9,
   NormalizeJobInputSchema,
   ReportJobInputSchema,
+  ResearchJobInputSchema,
   type JobEnqueueRequest,
+  type JobEnqueueRequestV9,
 } from "@zeref/contracts";
 import PgBoss from "pg-boss";
 
 import { resetCalendarFixtureStateForTests } from "../calendar-bff";
+import { isPhase9ResearchActive } from "../cockpit-bff";
 import { isWorkerAvailable } from "../cockpit/simulated-pipeline";
 import { getDatabaseUrl } from "../db";
+import { resetResearchFixtureStateForTests } from "../research-bff";
 import { resetStudioFixtureStateForTests } from "../studio-bff";
 
 const PHASE3_SCHEMA_VERSION = "phase3-v1";
@@ -38,8 +43,18 @@ function validationError(message: string): Error {
   return new Error(message);
 }
 
-/** Map UI enqueue body to worker job payload (Amendment F / ADR-030). */
-export function buildWorkerJobPayload(request: JobEnqueueRequest): Record<string, unknown> {
+type EnqueueRequest = JobEnqueueRequest | JobEnqueueRequestV9;
+
+function parseEnqueueRequest(rawBody: unknown): EnqueueRequest {
+  if (isPhase9ResearchActive()) {
+    return JobEnqueueRequestSchemaV9.parse(rawBody);
+  }
+
+  return JobEnqueueRequestSchema.parse(rawBody);
+}
+
+/** Map UI enqueue body to worker job payload (Amendment F / L). */
+export function buildWorkerJobPayload(request: EnqueueRequest): Record<string, unknown> {
   switch (request.jobType) {
     case "normalize": {
       if (!request.snapshotId) {
@@ -83,16 +98,20 @@ export function buildWorkerJobPayload(request: JobEnqueueRequest): Record<string
         snapshotId: request.snapshotId,
       });
     }
-    default: {
-      const _exhaustive: never = request.jobType;
-      throw validationError(`unsupported job type: ${String(_exhaustive)}`);
+    case "research": {
+      return ResearchJobInputSchema.parse({
+        jobType: "research",
+        topicId: "topicId" in request ? request.topicId : undefined,
+      });
     }
+    default:
+      throw validationError("unsupported job type");
   }
 }
 
 /** Shared pg-boss enqueue (Amendment I). */
 export async function enqueueJob(rawBody: unknown): Promise<EnqueueJobResult> {
-  const request = JobEnqueueRequestSchema.parse(rawBody);
+  const request = parseEnqueueRequest(rawBody);
   const workerConsuming = isWorkerAvailable();
 
   if (isEnqueueMockMode()) {
@@ -133,4 +152,10 @@ export async function enqueueJob(rawBody: unknown): Promise<EnqueueJobResult> {
 export function resetPhase8FixtureStateForTests(): void {
   resetStudioFixtureStateForTests();
   resetCalendarFixtureStateForTests();
+}
+
+/** Test hook — resets in-memory phase-9 fixture stores. */
+export function resetPhase9FixtureStateForTests(): void {
+  resetPhase8FixtureStateForTests();
+  resetResearchFixtureStateForTests();
 }

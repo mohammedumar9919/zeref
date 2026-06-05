@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { JobEnqueueRequestSchema } from "@zeref/contracts";
+import { JobEnqueueRequestSchema, JobEnqueueRequestSchemaV9 } from "@zeref/contracts";
 
+import { isPhase9ResearchActive } from "@/lib/cockpit-bff";
 import { enqueueJob } from "@/lib/jobs/enqueue-job";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +16,10 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "invalid JSON body" }, { status: 400 });
   }
 
-  const parsed = JobEnqueueRequestSchema.safeParse(body);
+  const schema = isPhase9ResearchActive()
+    ? JobEnqueueRequestSchemaV9
+    : JobEnqueueRequestSchema;
+  const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid job enqueue request" }, { status: 400 });
   }
