@@ -5,8 +5,7 @@
 ## Current position
 
 - **Phase:** 9 Wave 1 **DONE** · 6.1 Wave 1 **DONE** · Wave 2 **READY**
-- **P9-A:** integrated (contracts 9.0.0, migration 0004, worker `research`)
-- **P6.1-A:** integrated (HUD C91–C95, screenshot `zeref-cockpit-6.1-hud.png`)
+- **P9-A:** `67e606e` · **P6.1-A:** `f6a3d01`
 
 ## Next
 

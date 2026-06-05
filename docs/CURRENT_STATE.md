@@ -24,8 +24,8 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
-| Phase 9 Research pipelines | **P9-A DONE** — Wave 2: spawn **P9-B** + **P9-E** scaffold |
-| Phase 6.1 Luke visual polish | **P6.1-A DONE** — Wave 2: spawn **P6.1-E**; Planner visual sign-off on screenshot |
+| Phase 9 Research pipelines | **P9-A** @ `67e606e` — Wave 2: spawn **P9-B** + **P9-E** scaffold |
+| Phase 6.1 Luke visual polish | **P6.1-A** @ `f6a3d01` — Wave 2: spawn **P6.1-E**; Planner visual sign-off on screenshot |
 
 **Immediate goal:** Lead integration commits for Wave 1; spawn Wave 2 in **three chats** (P9-B, P9-E scaffold, P6.1-E).
 

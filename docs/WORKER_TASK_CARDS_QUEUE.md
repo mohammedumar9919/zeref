@@ -72,21 +72,13 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 
 ### Card P9-A — Agent Contracts + Data + Worker (COMPLETED — Wave 1)
 
-Report: contracts 85/85 (7 phase-9), analytics 3, worker fixture 3; migration `0004_phase9_research.sql`; fixtures `fixtures/phase-9/`.
-
-```text
-(Done — Lead integration commit pending)
-```
+Report: contracts 85/85 (7 phase-9), analytics 3, worker fixture 3; migration `0004_phase9_research.sql`; fixtures `fixtures/phase-9/`. **Commit:** `67e606e`
 
 ---
 
 ### Card P6.1-A — Agent UI Visual Polish (COMPLETED — Wave 1)
 
-Report: HUD chrome C91–C95; screenshot `docs/design/reference/screenshots/zeref-cockpit-6.1-hud.png`; build green.
-
-```text
-(Done — Lead integration commit pending; P6.1-E next)
-```
+Report: HUD chrome C91–C95; screenshot `docs/design/reference/screenshots/zeref-cockpit-6.1-hud.png`; build green. **Commit:** `f6a3d01`
 
 ---
 
