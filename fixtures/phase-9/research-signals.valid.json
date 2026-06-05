@@ -1,0 +1,27 @@
+[
+  {
+    "id": "880e8400-e29b-41d4-a716-446655440001",
+    "topicId": "770e8400-e29b-41d4-a716-446655440001",
+    "sourceEntityId": "550e8400-e29b-41d4-a716-446655440001",
+    "sourceSnapshotId": "550e8400-e29b-41d4-a716-446655440002",
+    "signalType": "engagement_delta",
+    "score": 0.68,
+    "payloadJson": {
+      "metricFactId": "990e8400-e29b-41d4-a716-446655440001",
+      "engagementScore": 0.68
+    },
+    "computedAt": "2026-06-03T10:00:00.000Z"
+  },
+  {
+    "id": "880e8400-e29b-41d4-a716-446655440002",
+    "topicId": "770e8400-e29b-41d4-a716-446655440001",
+    "sourceEntityId": "550e8400-e29b-41d4-a716-446655440001",
+    "signalType": "embedding_cluster",
+    "score": 0.62,
+    "payloadJson": {
+      "embeddingCount": 1,
+      "model": "text-embedding-3-small"
+    },
+    "computedAt": "2026-06-03T10:00:00.000Z"
+  }
+]

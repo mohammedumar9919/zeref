@@ -5,12 +5,14 @@ import { createCollectHandler } from "./jobs/collect.js";
 import { createEmbedHandler } from "./jobs/embed.js";
 import { createNormalizeHandler } from "./jobs/normalize.js";
 import { createReportHandler } from "./jobs/report.js";
+import { createResearchHandler } from "./jobs/research.js";
 import {
   ANALYZE_JOB_NAME,
   COLLECT_JOB_NAME,
   EMBED_JOB_NAME,
   NORMALIZE_JOB_NAME,
   REPORT_JOB_NAME,
+  RESEARCH_JOB_NAME,
   type WorkerJobName,
 } from "./jobs/registry.js";
 import { insertCockpitPipelineOutbox } from "./lib/cockpit-outbox.js";
@@ -44,7 +46,7 @@ async function registerJobHandler(
   });
 }
 
-/** Register collect, normalize, embed, analyze, and report handlers (C18). */
+/** Register collect, normalize, embed, analyze, report, and research handlers (C18, C83). */
 export async function registerWorkers(
   boss: PgBoss,
   options: WorkerBossOptions,
@@ -79,6 +81,12 @@ export async function registerWorkers(
     boss,
     REPORT_JOB_NAME,
     createReportHandler(shared),
+    options.pool,
+  );
+  await registerJobHandler(
+    boss,
+    RESEARCH_JOB_NAME,
+    createResearchHandler(shared),
     options.pool,
   );
 }

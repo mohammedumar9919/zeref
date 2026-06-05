@@ -8,6 +8,7 @@ export const PHASE5_1_CONTRACT_VERSION = "5.1.0";
 export const PHASE6_CONTRACT_VERSION = "6.0.0";
 export const PHASE7_CONTRACT_VERSION = "7.0.0";
 export const PHASE8_CONTRACT_VERSION = "8.0.0";
+export const PHASE9_CONTRACT_VERSION = "9.0.0";
 
 export {
   PlatformSchema,
@@ -28,6 +29,8 @@ export {
   ReportArtifactIdSchema,
   MetricFactIdSchema,
   EmbeddingVectorIdSchema,
+  ResearchTopicIdSchema,
+  ResearchSignalIdSchema,
   type PlatformAccountId,
   type SnapshotId,
   type NormalizedEntityId,
@@ -35,6 +38,8 @@ export {
   type ReportArtifactId,
   type MetricFactId,
   type EmbeddingVectorId,
+  type ResearchTopicId,
+  type ResearchSignalId,
 } from "./ids.js";
 
 export {
@@ -185,6 +190,40 @@ export {
   type CockpitReportItemV8,
   type CockpitResearchItemV8,
 } from "./phase8/index.js";
+
+export {
+  ResearchSignalTypeSchema,
+  ResearchTopicSchema,
+  ResearchSignalSchema,
+  ResearchTopicDetailSchema,
+  ResearchMetricFactRowSchema,
+  ResearchEmbeddingRowSchema,
+  ResearchSignalCandidateSchema,
+  ResearchJobInputSchema,
+  ResearchJobOutputSchema,
+  UiJobTypeSchemaV9,
+  JobEnqueueRequestSchemaV9,
+  CockpitSlicesSchemaV9,
+  CockpitStudioItemSchemaV9,
+  CockpitCalendarItemSchemaV9,
+  CockpitReportItemSchemaV9,
+  CockpitResearchItemSchemaV9,
+  CockpitStudioPanelSchemaV9,
+  CockpitCalendarPanelSchemaV9,
+  CockpitReportsPanelSchemaV9,
+  CockpitResearchPanelSchemaV9,
+  type ResearchSignalType,
+  type ResearchTopic,
+  type ResearchSignal,
+  type ResearchTopicDetail,
+  type ResearchSignalCandidate,
+  type ResearchJobInput,
+  type ResearchJobOutput,
+  type UiJobTypeV9,
+  type JobEnqueueRequestV9,
+  type CockpitSlicesV9,
+  type CockpitResearchItemV9,
+} from "./phase9/index.js";
 
 export {
   NormalizedPostPayloadSchema,

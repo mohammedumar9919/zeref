@@ -38,6 +38,12 @@ export {
   topKNeighborIds,
   retrievalAtK,
 } from "./retrieval.js";
+export {
+  buildResearchSignalCandidates,
+  aggregateTrendScore,
+  type ResearchMetricFactInput,
+  type ResearchEmbeddingInput,
+} from "./research.js";
 
 /** Normalize-stage metric bundle for `metric_facts` persistence. */
 export function computeMetricFacts(input: {

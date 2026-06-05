@@ -115,7 +115,7 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
     }
   });
 
-  it("applies Phase 1–8 migrations cleanly on Postgres 16", async () => {
+  it("applies Phase 1–9 migrations cleanly on Postgres 16", async () => {
     const url = new URL(databaseUrl);
     url.pathname = `/${testDbName}`;
     const testUrl = url.toString();
@@ -144,12 +144,14 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
           "normalized_entities",
           "platform_accounts",
           "report_artifacts",
+          "research_signals",
+          "research_topics",
           "snapshots",
           "studio_drafts",
         ],
       ],
     );
-    assert.equal(tables.rowCount, 14);
+    assert.equal(tables.rowCount, 16);
 
     const ext = await pool.query(
       `SELECT 1 FROM pg_extension WHERE extname = 'vector'`,
@@ -319,6 +321,62 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
       `INSERT INTO studio_drafts (entity_id, caption, notes, tags_json)
        VALUES ($1, 'draft caption', 'draft notes', '["tag-a"]'::jsonb)`,
       [entityId],
+    );
+
+    const snapshotAfter = await client.query(
+      `SELECT payload_json FROM snapshots WHERE id = $1`,
+      [snapshotId],
+    );
+    assert.deepEqual(snapshotAfter.rows[0].payload_json, { caption: "immutable" });
+
+    await assert.rejects(
+      () =>
+        client.query(`UPDATE snapshots SET payload_json = '{"v":2}'::jsonb WHERE id = $1`, [
+          snapshotId,
+        ]),
+      /immutable/i,
+    );
+
+    await client.end();
+  });
+
+  it("supports research topics + signals without snapshot mutation (C83)", async () => {
+    const url = new URL(databaseUrl);
+    url.pathname = `/${testDbName}`;
+    const client = new pg.Client({ connectionString: url.toString() });
+    await client.connect();
+
+    const account = await client.query(
+      `INSERT INTO platform_accounts (platform, external_id)
+       VALUES ('instagram', 'phase9_research') RETURNING id`,
+    );
+    const accountId = account.rows[0].id;
+
+    const snap = await client.query(
+      `INSERT INTO snapshots (platform_account_id, platform, kind, source_ref, content_hash, payload_json, collected_at)
+       VALUES ($1, 'instagram', 'instagram_post_raw', 'ref-p9', 'hash-p9', '{"caption":"immutable"}'::jsonb, NOW()) RETURNING id`,
+      [accountId],
+    );
+    const snapshotId = snap.rows[0].id;
+
+    const normalized = await client.query(
+      `INSERT INTO normalized_entities (snapshot_id, schema_version, payload_json)
+       VALUES ($1, 'phase9-v1', '{"text":"research entity"}'::jsonb) RETURNING id`,
+      [snapshotId],
+    );
+    const entityId = normalized.rows[0].id;
+
+    const topic = await client.query(
+      `INSERT INTO research_topics (title, scope_entity_id)
+       VALUES ('Phase 9 fixture topic', $1) RETURNING id`,
+      [entityId],
+    );
+    const topicId = topic.rows[0].id;
+
+    await client.query(
+      `INSERT INTO research_signals (topic_id, source_entity_id, source_snapshot_id, signal_type, score, computed_at)
+       VALUES ($1, $2, $3, 'engagement_delta', 0.55, NOW())`,
+      [topicId, entityId, snapshotId],
     );
 
     const snapshotAfter = await client.query(

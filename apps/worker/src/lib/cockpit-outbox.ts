@@ -9,6 +9,7 @@ const STAGE_MESSAGES: Record<WorkerJobName, string> = {
   embed: "Embed job completed",
   analyze: "Analyze job completed",
   report: "Report job completed",
+  research: "Research job completed",
 };
 
 export function buildPipelineOutboxPayload(stage: WorkerJobName): PipelineEvent {

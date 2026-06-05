@@ -16,6 +16,8 @@ export { memoryObservations } from "./memory-observations.js";
 export { cockpitSseOutbox } from "./cockpit-sse-outbox.js";
 export { calendarEvents } from "./calendar-events.js";
 export { studioDrafts } from "./studio-drafts.js";
+export { researchTopics } from "./research-topics.js";
+export { researchSignals } from "./research-signals.js";
 
 import { platformAccounts } from "./platform-accounts.js";
 import { snapshots } from "./snapshots.js";
@@ -31,6 +33,8 @@ import { memoryObservations } from "./memory-observations.js";
 import { cockpitSseOutbox } from "./cockpit-sse-outbox.js";
 import { calendarEvents } from "./calendar-events.js";
 import { studioDrafts } from "./studio-drafts.js";
+import { researchTopics } from "./research-topics.js";
+import { researchSignals } from "./research-signals.js";
 
 export const schema = {
   platformAccounts,
@@ -47,4 +51,6 @@ export const schema = {
   cockpitSseOutbox,
   calendarEvents,
   studioDrafts,
+  researchTopics,
+  researchSignals,
 };
