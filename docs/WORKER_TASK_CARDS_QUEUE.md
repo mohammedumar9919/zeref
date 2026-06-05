@@ -84,13 +84,13 @@ Report: HUD chrome C91–C95; screenshot `docs/design/reference/screenshots/zere
 
 ### Card P9-B — Agent BFF (COMPLETED — Wave 2)
 
-Report: 8/8 phase-9-routes; phase9-cockpit-v1; Amendment L enqueue. Lead merge: enqueue route V9 schema + TS default fix.
+Report: 8/8 phase-9-routes; phase9-cockpit-v1; Amendment L enqueue. **Commit:** `c5032f4` (Lead: enqueue route V9 + TS fix).
 
 ---
 
 ### Card P9-E — Agent Docs/QA scaffold (COMPLETED — Wave 2)
 
-Report: `verify-phase-9.mjs` shell; `cockpit-research-9.spec.ts` scaffold (Wave 4 defer).
+Report: `verify-phase-9.mjs` shell; `cockpit-research-9.spec.ts` scaffold. **Commit:** `b38aa55`
 
 ---
 
