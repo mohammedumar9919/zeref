@@ -32,12 +32,14 @@ function resolveDatabaseUrl() {
 
 describe("cockpit BFF (fixture mode)", () => {
   before(() => {
+    delete process.env.ZEREF_PHASE9_RESEARCH;
     process.env.ZEREF_BFF_FIXTURE = "1";
     delete process.env.DATABASE_URL;
   });
 
   after(() => {
     delete process.env.ZEREF_BFF_FIXTURE;
+    delete process.env.ZEREF_PHASE9_RESEARCH;
   });
 
   it("loadCockpitSlices returns CockpitSlicesSchemaV8-valid fixture", async () => {

@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-03 (Phase 8 sign-off)  
+**Last updated:** 2026-06-06 (Phase 9 harness green)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -24,10 +24,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
-| Phase 9 Research pipelines | **P9-B + P9-E scaffold DONE** — Wave 3: spawn **P9-C** |
-| Phase 6.1 Luke visual polish | **P6.1-E DONE** — run `verify:phase-6.1`; Planner visual sign-off pending |
+| Phase 9 Research pipelines | **P9-B + P9-E scaffold DONE** — `verify:phase-9` **GREEN** (harness fix pending commit); Wave 3: **P9-C** |
+| Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
 
-**Immediate goal:** Spawn **P9-C** Research UI. User may run `verify:phase-6.1` / `verify:phase-9` after integration commits.
+**Immediate goal:** Spawn **P9-C** Research UI (hub + detail). After P9-C: **P9-E Wave 4** hard-enforce `cockpit-research-9.spec.ts`.
 
 ---
 

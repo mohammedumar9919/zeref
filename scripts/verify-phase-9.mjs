@@ -92,12 +92,19 @@ function assertPhase9FixtureRoundTrip() {
   }
 }
 
+/** Chaining phases 0–8 must not see Phase 9 cockpit slices or enqueue schema. */
+function priorPhaseEnv(extra = {}) {
+  const env = ciSafeEnv(extra);
+  delete env.ZEREF_PHASE9_RESEARCH;
+  return env;
+}
+
 function runPriorPhases() {
   console.log("[verify:phase-9] chaining verify:phase-8 …");
   run(
     "npm",
     ["run", "verify:phase-8"],
-    ciSafeEnv({
+    priorPhaseEnv({
       ZEREF_PHASE7_BRAIN: "1",
       ZEREF_PHASE6_VOICE: "1",
       ZEREF_PHASE8_PRODUCT: "1",
@@ -109,7 +116,17 @@ function runPhase9PackageTests() {
   const env = ciSafeEnv({ ZEREF_PHASE9_RESEARCH: "1" });
   run("npm", ["-w", "@zeref/contracts", "test"], env);
   run("npm", ["-w", "@zeref/worker", "test"], env);
-  run("npm", ["-w", "@zeref/web", "test"], env);
+  const res = spawnSync(
+    "node",
+    ["--import", "tsx", "--test", "test/phase-9-routes.test.mjs"],
+    {
+      cwd: join(repoRoot, "apps/web"),
+      stdio: "inherit",
+      shell: process.platform === "win32",
+      env,
+    },
+  );
+  if (res.status !== 0) fail("Command failed: node --import tsx --test test/phase-9-routes.test.mjs");
 }
 
 function runPhase9ResearchPlaywright() {

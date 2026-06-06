@@ -45,6 +45,7 @@ function clearPhase8Env() {
   delete process.env.ZEREF_BFF_FIXTURE;
   delete process.env.ZEREF_JOB_ENQUEUE_MOCK;
   delete process.env.ZEREF_WORKER_AVAILABLE;
+  delete process.env.ZEREF_PHASE9_RESEARCH;
   delete process.env.DATABASE_URL;
 }
 

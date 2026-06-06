@@ -1,10 +1,12 @@
 import {
   CockpitSlicesSchemaV8,
+  CockpitSlicesSchemaV9,
   PHASE8_CONTRACT_VERSION,
   type CockpitSlicesV8,
+  type CockpitSlicesV9,
 } from "@zeref/contracts";
 
-import { loadCockpitSlices } from "./cockpit-bff";
+import { isPhase9ResearchActive, loadCockpitSlices } from "./cockpit-bff";
 import { EMPTY_COCKPIT_SLICES } from "./cockpit-slices-empty";
 
 /** Thrown when cockpit BFF load or parse fails (ZR-004 — no silent empty). */
@@ -25,9 +27,12 @@ export { EMPTY_COCKPIT_SLICES };
  * RSC server load for cockpit panel summaries (C27).
  * Calls loadCockpitSlices() directly — no HTTP loopback (Phase 5.0.2 / ADR-016).
  */
-export async function getCockpitSlices(): Promise<CockpitSlicesV8> {
+export async function getCockpitSlices(): Promise<CockpitSlicesV8 | CockpitSlicesV9> {
   try {
     const slices = await loadCockpitSlices();
+    if (isPhase9ResearchActive()) {
+      return CockpitSlicesSchemaV9.parse(slices);
+    }
     return CockpitSlicesSchemaV8.parse(slices);
   } catch (err) {
     if (err instanceof CockpitBffError) {

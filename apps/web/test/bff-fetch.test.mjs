@@ -10,11 +10,13 @@ describe("getCockpitSlices (RSC direct load)", () => {
   let bff;
 
   before(async () => {
+    delete process.env.ZEREF_PHASE9_RESEARCH;
     bff = await import(pathToFileURL(join(webRoot, "lib/bff.ts")).href);
   });
 
   after(() => {
     delete process.env.ZEREF_BFF_FIXTURE;
+    delete process.env.ZEREF_PHASE9_RESEARCH;
     delete process.env.DATABASE_URL;
   });
 
