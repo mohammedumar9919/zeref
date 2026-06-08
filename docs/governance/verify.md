@@ -398,7 +398,7 @@ After `verify:phase-7`:
 
 **Contract:** [phase-9-contract.md](./phase-9-contract.md) (C81–C90, Amendments L–M) · **ADRs:** [031](./adr/ADR-031-research-postgres-schema.md)–[032](./adr/ADR-032-research-worker-bff.md)
 
-Chains Phase 0–8, then Phase 9 contract/fixture/BFF/worker checks. **Wave 2:** Playwright research spec **skips until Wave 4** (P9-C research UI).
+Chains Phase 0–8, then Phase 9 contract/fixture/BFF/worker checks. **Wave 4:** Playwright research spec **hard-enforced** when `ZEREF_PHASE9_RESEARCH=1` (P9-C + P9-E).
 
 ```powershell
 $env:ZEREF_BFF_FIXTURE='1'
@@ -418,12 +418,12 @@ npm run verify:phase-9
 
 | Env | Default verify / CI | Wave 4 enforcement |
 |-----|---------------------|-------------------|
-| `ZEREF_PHASE9_RESEARCH` | **`1`** (C90) | hard-fail research e2e after P9-C |
+| `ZEREF_PHASE9_RESEARCH` | **`1`** (C90) | **enforced** — `cockpit-research-9.spec.ts` hard-fails on non-zero |
 | `ZEREF_JOB_ENQUEUE_MOCK` | **`1`** | required (Amendment L) |
 | `ZEREF_BFF_FIXTURE` | **`1`** | fixture BFF; no Postgres for Playwright path |
 | Phase 8 flags | same as `verify:phase-8` | inherited in chain |
 
-**Wave 4 (after P9-C):** set `wave4ResearchUiReady` to `true` in `cockpit-research-9.spec.ts` so `ZEREF_PHASE9_RESEARCH=1` enforces `research-hub`.
+**Wave 4 (P9-E):** `wave4ResearchUiReady = true` in `cockpit-research-9.spec.ts`; `verify:phase-9` hard-fails when Playwright exits non-zero. Testids: `research-hub` on `/cockpit/research`, `panel-research` on `/cockpit`.
 
 ### What `verify:phase-9` checks
 
@@ -434,7 +434,7 @@ Script: `scripts/verify-phase-9.mjs`
 - **C81:** `PHASE9_CONTRACT_VERSION` = `9.0.0`, research + `CockpitSlicesSchemaV9`
 - **C83:** `@zeref/worker` research handler unit test
 - **C84–C85:** BFF routes + `phase-9-routes.test.mjs`
-- **C87:** Playwright scaffold `cockpit-research-9` (skipped until Wave 4)
+- **C87:** Playwright `cockpit-research-9` — `research-hub` + `panel-research` (hard-enforced)
 - `@zeref/contracts`, `@zeref/worker`, `@zeref/web` tests
 
 ### CI (C90)

@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-06 (Phase 9 harness green)  
+**Last updated:** 2026-06-08 (P9-E Wave 4 finalize)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -24,10 +24,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
-| Phase 9 Research pipelines | **P9-C DONE** @ `552e788` — verify:phase-9 **GREEN** post-merge; Wave 4: **P9-E** |
+| Phase 9 Research pipelines | **P9-E DONE (local)** — Wave 4 e2e enforced; **CI `verify:phase-9` pending** (P9-C @ `552e788`) |
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
 
-**Immediate goal:** **P9-E Wave 4** — flip `wave4ResearchUiReady`, hard-enforce `cockpit-research-9.spec.ts` in `verify:phase-9` + CI.
+**Immediate goal:** Commit P9-E Wave 4 enforcement; **CI `verify:phase-9` green** closes Phase 9 (research e2e 2 passed, 0 skipped). Brain-7 SSE flake triaged separately if CI fails upstream.
 
 ---
 

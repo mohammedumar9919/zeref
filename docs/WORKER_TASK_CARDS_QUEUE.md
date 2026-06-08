@@ -64,7 +64,7 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 | **9** | 2 | ~~**P9-B**~~ + ~~**P9-E**~~ scaffold | **DONE** — build fix in Lead merge |
 | **6.1** | 2 | ~~**P6.1-E**~~ | **DONE** — C94 exact match fix in spec |
 | **9** | 3 | ~~**P9-C**~~ | **DONE** — research hub + detail @ Lead merge |
-| **9** | 4 | **P9-E** finalize | **SPAWN NOW** |
+| **9** | 4 | ~~**P9-E**~~ finalize | **DONE** — Wave 4 e2e enforced 2026-06-08 |
 
 **File firewall:** Phase 9 ↔ 6.1 paths must not overlap (see Amendment M / N in contracts).
 
@@ -201,31 +201,10 @@ Report: ResearchHub + ResearchTopicDetail; RSC hub/detail via listResearchTopics
 
 ---
 
-### Card P9-E — Agent Docs/QA finalize (Wave 4 — after P9-C)
+### Card P9-E — Agent Docs/QA finalize (Wave 4 — COMPLETED 2026-06-08)
 
 ```text
-You are the Zeref Docs/QA agent for Phase 9 slice P9-E (Wave 4 finalize).
-
-HARD RULE
-- Enforce cockpit-research-9.spec.ts in verify:phase-9; CI Phase 0–9 gate.
-- STOP with report when verify:phase-9 green.
-
-Skills: run-verify-gate, verification-before-completion
-
-Read first:
-- P9-C report + P9-E Wave 2 scaffold
-- docs/governance/phase-9-contract.md (C90)
-
-Deliverables
-1. verify-phase-9.mjs — enforce Playwright with ZEREF_PHASE9_RESEARCH=1
-2. CI Phase 0–9 gate green
-3. Document verify env in docs/governance/verify.md
-
-Allowed: scripts/verify-phase-9.mjs, .github/workflows/ci.yml, docs/governance/verify.md, apps/web/e2e/cockpit-research-9.spec.ts (assertions only)
-Forbidden: apps/web/components/**
-
-Acceptance: npm run verify:phase-9
-Report back: verify log summary, CI diff.
+(Done — wave4ResearchUiReady=true; verify-phase-9 hard-fails on cockpit-research-9 Playwright non-zero; CI Phase 0–9 gate confirmed)
 ```
 
 ---

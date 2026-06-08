@@ -12,8 +12,8 @@ import { expect, test } from "@playwright/test";
  */
 const phase9ResearchReady = process.env.ZEREF_PHASE9_RESEARCH === "1";
 
-/** Wave 4 — P9-C research-hub UI */
-const wave4ResearchUiReady = false;
+/** Wave 4 — P9-C research-hub UI (enforced when ZEREF_PHASE9_RESEARCH=1) */
+const wave4ResearchUiReady = true;
 
 test.describe("cockpit research phase 9 (C87)", () => {
   test.beforeEach(() => {

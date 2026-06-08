@@ -23,10 +23,6 @@ function fail(message) {
   process.exitCode = 1;
 }
 
-function warn(message) {
-  console.warn(`[verify:phase-9] ${message}`);
-}
-
 function assertExists(relPath, label = relPath) {
   if (!existsSync(join(repoRoot, relPath))) fail(`Missing ${label}: ${relPath}`);
 }
@@ -74,8 +70,8 @@ function assertPhase9E2eSpecDocumentsTestids(specPath, testids, label) {
   if (!source.includes("ZEREF_PHASE9_RESEARCH")) {
     fail(`${label}: ${specPath} must document ZEREF_PHASE9_RESEARCH enforcement gate`);
   }
-  if (!source.includes("Wave 4")) {
-    fail(`${label}: ${specPath} must document Wave 4 deferral until P9-C research UI`);
+  if (!source.includes("wave4ResearchUiReady = true")) {
+    fail(`${label}: ${specPath} must set wave4ResearchUiReady = true (Wave 4 enforcement)`);
   }
 }
 
@@ -130,8 +126,13 @@ function runPhase9PackageTests() {
 }
 
 function runPhase9ResearchPlaywright() {
+  if (process.env.ZEREF_PHASE9_RESEARCH !== "1") {
+    fail("C87: ZEREF_PHASE9_RESEARCH=1 required (Wave 4) — refusing to skip cockpit-research-9 e2e");
+    return;
+  }
+
   const env = ciSafeEnv({
-    ZEREF_PHASE9_RESEARCH: process.env.ZEREF_PHASE9_RESEARCH ?? "1",
+    ZEREF_PHASE9_RESEARCH: "1",
     ZEREF_PHASE8_PRODUCT: "1",
     ZEREF_PHASE7_BRAIN: "1",
     ZEREF_PHASE6_VOICE: "1",
@@ -150,19 +151,11 @@ function runPhase9ResearchPlaywright() {
     },
   );
 
-  if (res.status !== 0) {
-    warn(
-      "C87 Playwright cockpit-research-9.spec.ts exited non-zero — Wave 2 scaffold; tests skip until Wave 4 (P9-C research UI).",
-    );
+  if (res.status === 0) {
     return;
   }
 
-  warn(
-    "C87 Playwright cockpit-research-9.spec.ts OK (skipped tests expected until Wave 4 — enable hard enforcement after P9-C).",
-  );
-  warn(
-    "Wave 4 enforcement: ZEREF_PHASE9_RESEARCH=1 + research-hub UI — set wave4ResearchUiReady=true in e2e spec.",
-  );
+  fail("C87 Playwright cockpit-research-9.spec.ts failed (ZEREF_PHASE9_RESEARCH=1)");
 }
 
 const [major] = process.versions.node.split(".").map(Number);
@@ -253,9 +246,6 @@ runPhase9ResearchPlaywright();
 if (!process.exitCode) {
   console.log("[verify:phase-9] OK");
   console.log(
-    "[verify:phase-9] Note: research Playwright assertions deferred until Wave 4 (P9-C research UI).",
-  );
-  console.log(
-    "[verify:phase-9] Wave 4 CI: ZEREF_PHASE9_RESEARCH=1, ZEREF_JOB_ENQUEUE_MOCK=1, ZEREF_BFF_FIXTURE=1 (+ Phase 8 flags).",
+    "[verify:phase-9] C87 Playwright cockpit-research-9.spec.ts enforced (ZEREF_PHASE9_RESEARCH=1).",
   );
 }
