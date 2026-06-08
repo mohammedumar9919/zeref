@@ -24,10 +24,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
-| Phase 9 Research pipelines | **P9-B + P9-E scaffold DONE** — `verify:phase-9` **GREEN** @ `04140ec`; Wave 3: **P9-C** |
+| Phase 9 Research pipelines | **P9-C DONE** — research hub + detail UI; `verify:phase-9` **GREEN** @ `04140ec`; Wave 4: **P9-E** |
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
 
-**Immediate goal:** Spawn **P9-C** Research UI (hub + detail). After P9-C: **P9-E Wave 4** hard-enforce `cockpit-research-9.spec.ts`.
+**Immediate goal:** **P9-E Wave 4** — flip `wave4ResearchUiReady`, hard-enforce `cockpit-research-9.spec.ts` in `verify:phase-9` + CI.
 
 ---
 

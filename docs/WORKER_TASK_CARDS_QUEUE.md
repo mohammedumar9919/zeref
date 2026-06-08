@@ -63,8 +63,8 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 | **6.1** (UI-only) | 1 | ~~**P6.1-A**~~ | **DONE** — screenshot `zeref-cockpit-6.1-hud.png` |
 | **9** | 2 | ~~**P9-B**~~ + ~~**P9-E**~~ scaffold | **DONE** — build fix in Lead merge |
 | **6.1** | 2 | ~~**P6.1-E**~~ | **DONE** — C94 exact match fix in spec |
-| **9** | 3 | **P9-C** | **SPAWN NOW** |
-| **9** | 4 | P9-E finalize | After P9-C |
+| **9** | 3 | ~~**P9-C**~~ | **DONE** — research hub + detail @ Lead merge |
+| **9** | 4 | **P9-E** finalize | **SPAWN NOW** |
 
 **File firewall:** Phase 9 ↔ 6.1 paths must not overlap (see Amendment M / N in contracts).
 
@@ -96,7 +96,7 @@ Report: `verify-phase-9.mjs` shell; `cockpit-research-9.spec.ts` scaffold. **Com
 
 ### Card P6.1-E — Agent Docs/QA (COMPLETED — Wave 2)
 
-Report: `verify-phase-6.1.mjs`; `cockpit-hud-6.1.spec.ts` C91–C94; CI step.
+Report: `verify-phase-6.1.mjs`; `cockpit-hud-6.1.spec.ts` C91–C94; CI step. **Commit:** `b38aa55`
 
 ---
 
@@ -195,36 +195,9 @@ Report back: verify output, CI diff.
 
 ---
 
-### Card P9-C — Agent UI Research (Wave 3 — after P9-B)
+### Card P9-C — Agent UI Research (COMPLETED — Wave 3)
 
-```text
-You are the Zeref UI agent for Phase 9 slice P9-C.
-
-HARD RULE
-- Research hub + detail UI + e2e ONLY. Wire to P9-B BFF.
-- STOP with report + screenshot.
-
-Skills: using-superpowers, brainstorming, ui-ux-pro-max, test-driven-development, verification-before-completion
-
-Read first:
-1. docs/governance/phase-9-contract.md (C87–C88)
-2. apps/web/components/cockpit/ResearchPanel.tsx
-3. apps/web/app/cockpit/research/page.tsx
-4. P9-B — research BFF routes + CockpitSlicesV9
-
-Deliverables
-1. /cockpit/research — data-testid="research-hub"
-2. /cockpit/research/[topicId] — detail view with signals
-3. ResearchPanel links to hub; remove Phase 5 placeholder copy when topics exist
-4. RSC-first detail fetch (C88)
-5. apps/web/e2e/cockpit-research-9.spec.ts (enable when P9-E Wave 4 flag on)
-
-Allowed: apps/web/components/research/**, apps/web/app/cockpit/research/**, apps/web/components/cockpit/ResearchPanel.tsx, apps/web/e2e/cockpit-research-9.spec.ts
-Forbidden: apps/web/app/api/**, packages/**, apps/web/components/hud/** (6.1 owner)
-
-Acceptance: manual hub flow + e2e when P9-E enables flag
-Report back: files, screenshot path, test output.
-```
+Report: ResearchHub + ResearchTopicDetail; RSC hub/detail via listResearchTopics/getResearchTopic; screenshot `zeref-cockpit-research-hub.png`. **Commit:** Lead merge 2026-06-06
 
 ---
 
