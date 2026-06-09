@@ -1,5 +1,4 @@
 import type {
-  JarvisToolCall,
   JarvisTurnAckOutput,
   JarvisTurnInput,
   JarvisTurnResultOutput,
@@ -13,7 +12,11 @@ import {
   selectToolsForTranscript,
 } from "./tools/registry.js";
 import { defaultTtsAdapter } from "./tts/synthesize-speech.js";
-import type { JarvisKernelDeps, ProcessTurnHandle } from "./types.js";
+import type {
+  JarvisKernelDeps,
+  JarvisKernelToolCall,
+  ProcessTurnHandle,
+} from "./types.js";
 
 function defaultNow(): string {
   return new Date().toISOString();
@@ -83,13 +86,17 @@ async function runSlowPath(
   }
 
   const now = deps.now ?? defaultNow;
-  const toolCalls: JarvisToolCall[] = [];
+  const toolCalls: JarvisKernelToolCall[] = [];
   const selected = selectToolsForTranscript(input.transcript);
 
   for (const selection of selected) {
     const started = Date.now();
     const handler = deps.tools[selection.name];
-    const result = await handler(selection.args, deps.toolContext);
+    const result = await handler(selection.args, {
+      ...deps.toolContext,
+      turnId: input.turnId,
+      transcript: input.transcript,
+    });
     toolCalls.push({
       name: selection.name,
       args: selection.args,
@@ -103,7 +110,7 @@ async function runSlowPath(
 
   return {
     resultText: llm.text,
-    toolCalls,
+    toolCalls: toolCalls as unknown as JarvisTurnResultOutput["toolCalls"],
     globeState: "speaking",
     events: [
       transcriptEvent(input.turnId, "assistant", llm.text, resultTs),
@@ -118,7 +125,7 @@ export async function processTurnSync(
 ): Promise<{
   ackText: string;
   resultText: string;
-  toolCalls: JarvisToolCall[];
+  toolCalls: JarvisKernelToolCall[];
   globeState: "speaking";
   events: Array<VoiceTranscriptEvent | VoiceStateEvent>;
 }> {
@@ -127,7 +134,7 @@ export async function processTurnSync(
   return {
     ackText: handle.ack.ackText,
     resultText: result.resultText,
-    toolCalls: result.toolCalls,
+    toolCalls: result.toolCalls as unknown as JarvisKernelToolCall[],
     globeState: "speaking",
     events: [...handle.ack.events, ...result.events],
   };

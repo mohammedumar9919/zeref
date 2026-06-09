@@ -1,8 +1,10 @@
 # Zeref — Phase 6 Contract (Implementation)
 
 **Phase:** 6  
-**Status:** **IMPLEMENTATION COMPLETE** (pending Planner sign-off)  
+**Status:** **APPROVED** (Planner functional sign-off 2026-05-31)  
 **Theme:** Jarvis voice — Whisper STT sidecar, jarvis-kernel, ElevenLabs British TTS, PTT, two-phase speak, globe voice states, live AUDIO I/O
+
+**Sign-off evidence:** CI green @ `d9c589f`; hotfixes `9c5869f` / `358d757`; screenshot [`zeref-cockpit-6-d.png`](../design/reference/screenshots/zeref-cockpit-6-d.png) @ `3020d1e`. Tier-2 visual vs Luke — Phase 6.1 polish deferred.
 
 **Prerequisites:** Phase 5.1 **APPROVED** (`verify:phase-5.1` green @ `abb9dec`; CI Phase 0–5.1).
 
@@ -129,6 +131,16 @@ Realtime API, wake word, `zeref-memory`, voice worker enqueue, browser OpenRoute
 1. **P6-A** Whisper + **P6-B** Kernel (parallel)
 2. **P6-C** BFF/Voice + **P6-E** Docs/QA (parallel)
 3. **P6-D** UI
-4. User: `verify:phase-6` → CI → Planner sign-off
+4. User: `verify:phase-6` → CI → Planner sign-off — **DONE** 2026-05-31
 
 **HARD RULE:** Lead does not implement domain code without agent reports.
+
+---
+
+## Acceptance (sign-off)
+
+- [x] Planner approved Q1–Q5 and C51–C60.
+- [x] `verify:phase-6` green locally + CI with mock STT/TTS.
+- [x] UAT: Option A mocks — audible ack + result beeps; two-phase transcript.
+- [x] Screenshot committed: `docs/design/reference/screenshots/zeref-cockpit-6-d.png`.
+- [x] No browser API keys; honest SSE `simulated` flags.

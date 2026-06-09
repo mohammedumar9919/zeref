@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "phase9-cockpit-v1",
+  "panels": {
+    "studio": {
+      "items": [
+        {
+          "entityId": "550e8400-e29b-41d4-a716-446655440001",
+          "title": "LOG240 ride log",
+          "snapshotId": "550e8400-e29b-41d4-a716-446655440002",
+          "updatedAt": "2026-05-29T12:00:00.000Z",
+          "hasDraft": true,
+          "draftPreview": "Night ride recap — draft caption",
+          "status": "draft"
+        }
+      ],
+      "insufficientData": false
+    },
+    "calendar": {
+      "items": [
+        {
+          "id": "660e8400-e29b-41d4-a716-446655440010",
+          "title": "Embed scheduled post",
+          "scheduledAt": "2026-06-10T18:00:00.000Z",
+          "status": "scheduled"
+        }
+      ],
+      "insufficientData": false
+    },
+    "reports": {
+      "items": [
+        {
+          "artifactId": "550e8400-e29b-41d4-a716-446655440000",
+          "kind": "elite",
+          "headline": "Ride log post shows solid engagement vs account baseline.",
+          "createdAt": "2026-05-29T12:00:00.000Z"
+        }
+      ],
+      "insufficientData": false
+    },
+    "research": {
+      "items": [
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440001",
+          "title": "Ride log engagement trends",
+          "trendScore": 0.65,
+          "signalCount": 2,
+          "lastComputedAt": "2026-06-03T10:00:00.000Z"
+        }
+      ],
+      "insufficientData": false
+    }
+  }
+}

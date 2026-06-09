@@ -28,7 +28,7 @@ Rules:
 - ui-ux-pro-max before frontend work (Jarvis HUD aesthetic)
 - systematic-debugging for perf/500 issues; read docs/DEV_PERFORMANCE.md
 
-Current priority: Phase 5.1 Luke HUD → Phase 6 voice.
+Current priority: Phase 7 zeref-memory Discuss + Contract (Phase 6 APPROVED 2026-05-31).
 
 Confirm you have read CURRENT_STATE and summarize immediate next task.
 ```

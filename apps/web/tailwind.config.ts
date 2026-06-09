@@ -18,7 +18,8 @@ const config: Config = {
         panel: "var(--radius-panel)",
       },
       boxShadow: {
-        "hud-inner": "inset 0 1px 0 rgba(34, 211, 238, 0.08)",
+        "hud-inner": "inset 0 1px 0 rgba(34, 211, 238, 0.1)",
+        "hud-glow": "0 0 12px rgba(34, 211, 238, 0.15)",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],

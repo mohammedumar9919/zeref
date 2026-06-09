@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import type { CockpitStudioItem } from "@zeref/contracts";
+import type { CockpitStudioItemV8 } from "@zeref/contracts";
 
 import { CockpitPanel } from "./CockpitPanel";
 
 type StudioPanelProps = {
-  items: CockpitStudioItem[];
+  items: CockpitStudioItemV8[];
   insufficientData: boolean;
   focused?: boolean;
 };
@@ -21,7 +21,19 @@ export function StudioPanel({
         <ul className="space-y-2 text-sm text-hud-primary">
           {items.map((item) => (
             <li key={item.entityId}>
-              <span>{item.title}</span>
+              <Link
+                href={`/cockpit/studio/${item.entityId}`}
+                className="cursor-pointer text-hud-primary transition-colors hover:text-hud-cyan"
+              >
+                {item.title}
+              </Link>
+              {item.hasDraft && item.draftPreview ? (
+                <p className="font-mono text-[10px] text-amber-200/90">
+                  draft · {item.draftPreview}
+                </p>
+              ) : item.hasDraft ? (
+                <p className="font-mono text-[10px] text-amber-200/90">draft saved</p>
+              ) : null}
               {item.snapshotId ? (
                 <p className="font-mono text-[10px] text-hud-muted">
                   snapshot {item.snapshotId.slice(0, 8)}…
@@ -39,7 +51,7 @@ export function StudioPanel({
       )}
       <Link
         href="/cockpit/studio"
-        className="mt-auto font-mono text-xs text-hud-cyan hover:underline"
+        className="mt-auto cursor-pointer font-mono text-xs text-hud-cyan hover:underline"
       >
         Open studio →
       </Link>

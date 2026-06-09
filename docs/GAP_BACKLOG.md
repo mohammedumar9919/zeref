@@ -36,14 +36,14 @@
 
 | ID | Item | Status | Notes |
 |----|------|--------|-------|
-| ZR-010 | Point-cloud globe + compass rings | **OPEN** | ADR-015 forbids particles today |
-| ZR-011 | Full-bleed hero globe (≥45vh, no panel box) | **OPEN** | |
-| ZR-012 | Luke-style HUD chrome (header chips, footer objective) | **OPEN** | Keep 4 product panels inside glass columns |
-| ZR-013 | Telemetry strip (real pipeline SSE) | **OPEN** | Not fake logs |
-| ZR-014 | AUDIO I/O waveform placeholder | **OPEN** | Wire in Phase 6 |
-| ZR-015 | Conversation dock under globe | **OPEN** | |
-| ZR-016 | `verify:phase-5.1` or extend phase-5 | **OPEN** | |
-| ZR-017 | Reference JPEG in git | **PARTIAL** | File exists locally; commit pending |
+| ZR-010 | Point-cloud globe + compass rings | **DONE** | Phase 5.1 @ `838e34d` |
+| ZR-011 | Full-bleed hero globe (≥45vh, no panel box) | **DONE** | Phase 5.1 |
+| ZR-012 | Luke-style HUD chrome (header chips, footer objective) | **PARTIAL** | Phase 5.1 fusion; Phase 6.1 polish deferred |
+| ZR-013 | Telemetry strip (real pipeline SSE) | **PARTIAL** | Voice SSE live; pipeline stub remains |
+| ZR-014 | AUDIO I/O waveform placeholder | **DONE** | Phase 6 live meters @ `183acf9` |
+| ZR-015 | Conversation dock under globe | **DONE** | Phase 6 transcript panel |
+| ZR-016 | `verify:phase-5.1` or extend phase-5 | **DONE** | |
+| ZR-017 | Reference JPEG in git | **DONE** | `lukebuildsai-jarvis-hud.jpeg` |
 
 ---
 
@@ -51,13 +51,13 @@
 
 | ID | Item | Status | Notes |
 |----|------|--------|-------|
-| ZR-020 | `apps/whisper` STT sidecar | **OPEN** | Master plan; not scaffolded |
-| ZR-021 | `packages/jarvis-kernel` tools + TTS | **OPEN** | |
-| ZR-022 | ElevenLabs British Jarvis TTS primary | **OPEN** | Planner decision; not in contract |
-| ZR-023 | Two-phase speak (ack then result) | **OPEN** | |
-| ZR-024 | Globe states idle/listening/thinking/speaking | **OPEN** | |
-| ZR-025 | `ZEREF_TTS_MOCK=1` for CI | **OPEN** | |
-| ZR-026 | SSE `/api/v1/events` job + voice events | **OPEN** | Luke jarvis-orb pattern |
+| ZR-020 | `apps/whisper` STT sidecar | **DONE** | P6-A @ `7cd1f2b` |
+| ZR-021 | `packages/jarvis-kernel` tools + TTS | **DONE** | P6-B @ `d1a1063` |
+| ZR-022 | ElevenLabs British Jarvis TTS primary | **DONE** | ADR-022; mock in CI |
+| ZR-023 | Two-phase speak (ack then result) | **DONE** | Amendment A |
+| ZR-024 | Globe states idle/listening/thinking/speaking | **DONE** | ADR-023 |
+| ZR-025 | `ZEREF_TTS_MOCK=1` for CI | **DONE** | hotfix audible @ `9c5869f` |
+| ZR-026 | SSE `/api/v1/events` job + voice events | **PARTIAL** | BFF voice events; worker bridge Phase 7+ |
 
 ---
 
@@ -65,9 +65,9 @@
 
 | ID | Item | Status | Notes |
 |----|------|--------|-------|
-| ZR-030 | `packages/zeref-memory` 4-tier memory | **DEFER** | Luke jarvis-orb brain |
-| ZR-031 | Event→orb mapping sub-100ms | **DEFER** | |
-| ZR-032 | Contradiction detection | **DEFER** | |
+| ZR-030 | `packages/zeref-memory` 4-tier memory | **OPEN** | Phase 7 — unblocked after Phase 6 sign-off |
+| ZR-031 | Event→orb mapping sub-100ms | **OPEN** | Phase 7 |
+| ZR-032 | Contradiction detection | **OPEN** | Phase 7+ |
 
 ---
 

@@ -7,7 +7,7 @@ on:
 
 jobs:
   phase0:
-    name: Phase 0–6 gate
+    name: Phase 0–9 gate
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -85,6 +85,14 @@ jobs:
           ZEREF_BFF_FIXTURE: "1"
           ZEREF_PHASE51_UI: "1"
 
+      - name: Verify Phase 6.1
+        run: npm run verify:phase-6.1
+        env:
+          ZEREF_LLM_MOCK: "1"
+          ZEREF_BFF_FIXTURE: "1"
+          ZEREF_PHASE51_UI: "1"
+          ZEREF_PHASE61_UI: "1"
+
       - name: Verify Phase 6
         run: npm run verify:phase-6
         env:
@@ -94,5 +102,45 @@ jobs:
           ZEREF_BFF_FIXTURE: "1"
           ZEREF_PHASE51_UI: "1"
           ZEREF_PHASE6_VOICE: "1"
-          ZEREF_PLAYWRIGHT_REUSE: "1"
+
+      - name: Verify Phase 7
+        run: npm run verify:phase-7
+        env:
+          ZEREF_LLM_MOCK: "1"
+          ZEREF_TTS_MOCK: "1"
+          ZEREF_WHISPER_MOCK: "1"
+          ZEREF_BFF_FIXTURE: "1"
+          ZEREF_PHASE51_UI: "1"
+          ZEREF_PHASE6_VOICE: "1"
+          ZEREF_MEMORY_MOCK: "1"
+          ZEREF_PHASE7_BRAIN: "1"
+
+      - name: Verify Phase 8
+        run: npm run verify:phase-8
+        env:
+          ZEREF_LLM_MOCK: "1"
+          ZEREF_TTS_MOCK: "1"
+          ZEREF_WHISPER_MOCK: "1"
+          ZEREF_BFF_FIXTURE: "1"
+          ZEREF_PHASE51_UI: "1"
+          ZEREF_PHASE6_VOICE: "1"
+          ZEREF_MEMORY_MOCK: "1"
+          ZEREF_PHASE7_BRAIN: "1"
+          ZEREF_PHASE8_PRODUCT: "1"
+          ZEREF_JOB_ENQUEUE_MOCK: "1"
+
+      - name: Verify Phase 9
+        run: npm run verify:phase-9
+        env:
+          ZEREF_LLM_MOCK: "1"
+          ZEREF_TTS_MOCK: "1"
+          ZEREF_WHISPER_MOCK: "1"
+          ZEREF_BFF_FIXTURE: "1"
+          ZEREF_PHASE51_UI: "1"
+          ZEREF_PHASE6_VOICE: "1"
+          ZEREF_MEMORY_MOCK: "1"
+          ZEREF_PHASE7_BRAIN: "1"
+          ZEREF_PHASE8_PRODUCT: "1"
+          ZEREF_JOB_ENQUEUE_MOCK: "1"
+          ZEREF_PHASE9_RESEARCH: "1"
 

@@ -1,0 +1,12 @@
+{
+  "id": "c3000000-0000-4000-8000-000000000003",
+  "eventType": "pipeline",
+  "payloadJson": {
+    "type": "pipeline",
+    "stage": "report",
+    "message": "Report job completed",
+    "simulated": false
+  },
+  "createdAt": "2026-05-31T12:05:00.000Z",
+  "deliveredAt": null
+}

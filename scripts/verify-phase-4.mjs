@@ -21,6 +21,7 @@ const EXPECTED_WORKER_JOBS = [
   "embed",
   "analyze",
   "report",
+  "research",
 ];
 
 /** Paths that must not import @zeref/instagram (C19). */

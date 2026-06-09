@@ -21,3 +21,9 @@ export type MetricFactId = z.infer<typeof MetricFactIdSchema>;
 
 export const EmbeddingVectorIdSchema = z.string().uuid().brand<"EmbeddingVectorId">();
 export type EmbeddingVectorId = z.infer<typeof EmbeddingVectorIdSchema>;
+
+export const ResearchTopicIdSchema = z.string().uuid().brand<"ResearchTopicId">();
+export type ResearchTopicId = z.infer<typeof ResearchTopicIdSchema>;
+
+export const ResearchSignalIdSchema = z.string().uuid().brand<"ResearchSignalId">();
+export type ResearchSignalId = z.infer<typeof ResearchSignalIdSchema>;

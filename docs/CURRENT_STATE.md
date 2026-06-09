@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-05-31  
+**Last updated:** 2026-06-08 (P9-E Wave 4 finalize)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -19,11 +19,15 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
 | Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
-| Phase 6 Jarvis voice | **IMPLEMENTATION DONE** @ `183acf9` — Planner sign-off pending |
+| Phase 6 Jarvis voice | **APPROVED** @ `183acf9` + hotfixes; screenshot @ `3020d1e` (2026-05-31) |
 | P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
+| Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
+| Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
+| Phase 9 Research pipelines | **P9-E DONE (local)** — Wave 4 e2e enforced; **CI `verify:phase-9` pending** (P9-C @ `552e788`) |
+| Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
 
-**Immediate goal:** Re-UAT PTT audio at `/cockpit` (mock mode), save `zeref-cockpit-6-d.png`, Planner functional sign-off. Phase 6.1 visual polish is separate (non-blocking Phase 7).
+**Immediate goal:** Commit P9-E Wave 4 enforcement; **CI `verify:phase-9` green** closes Phase 9 (research e2e 2 passed, 0 skipped). Brain-7 SSE flake triaged separately if CI fails upstream.
 
 ---
 
@@ -121,22 +125,71 @@ npm run verify:phase-6
 
 **Live Jarvis (your OpenRouter key):** edit `apps/web/.env.local` — set `OPENROUTER_API_KEY`, comment out `ZEREF_LLM_MOCK=1`, restart `npm run dev -w @zeref/web`, hold PTT on cockpit.
 
+### Phase 7 progress
+
+| Slice | Status |
+|-------|--------|
+| P7-A Memory + schema | **DONE** @ `93ef982` |
+| P7-B Kernel memory tools | **DONE** @ `afffaef` |
+| P7-C BFF + outbox | **DONE** @ `547103b` + hotfix @ `5084a9d` |
+| P7-D UI brain states | **DONE** @ `0e7f8d5` |
+| P7-E verify + CI | **DONE** @ `0461bc1` |
+| Full `verify:phase-7` (local) | **GREEN** (2026-06-03) |
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_WHISPER_MOCK='1'; $env:ZEREF_TTS_MOCK='1'; $env:ZEREF_LLM_MOCK='1'
+$env:ZEREF_BFF_FIXTURE='1'; $env:ZEREF_PHASE51_UI='1'; $env:ZEREF_PHASE6_VOICE='1'
+$env:ZEREF_MEMORY_MOCK='1'; $env:ZEREF_PHASE7_BRAIN='1'
+npm run verify:phase-7
+```
+
+Screenshot: `docs/design/reference/screenshots/zeref-cockpit-7-brain.png` @ `0e7f8d5`
+
+---
+
+## Phase 8 — local dev UAT (fixture mode)
+
+Studio entity pages return **404** when `ZEREF_BFF_FIXTURE` is unset and Postgres has no matching `normalized_entities` row. In fixture mode only this entity resolves:
+
+| URL | Notes |
+|-----|--------|
+| `http://localhost:3000/cockpit` | Main cockpit (or your dev port) |
+| `http://localhost:3000/cockpit/studio/550e8400-e29b-41d4-a716-446655440001` | Studio editor (`studio-editor`) |
+| `http://localhost:3000/cockpit/calendar` | Calendar scheduler (`calendar-scheduler`) |
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_JOB_ENQUEUE_MOCK='1'
+npm run dev -w @zeref/web
+```
+
+Restart dev after setting env vars. Link from `/cockpit` studio panel uses the same fixture entity id.
+
+Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
+
+**Verify:** `npm run verify:phase-8` **GREEN** (2026-06-03) @ `e5dc5b6` — Playwright reuse fix; full chain 0–8 + 25/25 e2e.
+
+Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
+
 ---
 
 ## What's NEXT
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | User | Re-UAT PTT at http://localhost:3000/cockpit — full mocks in `.env.local`; expect **440 Hz beep** on ack/result |
-| 2 | User | Save screenshot → `docs/design/reference/screenshots/zeref-cockpit-6-d.png` |
-| 3 | Planner | Functional sign-off vs Luke JPEG + screenshot; Phase 6.1 visual contract (separate) |
-| 4 | Follow-up | ~~P6-HOTFIX-B~~ **DONE** — voice-routes fixture aligned |
+| 1 | Lead | Integration commits P9-A + P6.1-A |
+| 2 | User | Spawn **P9-B**, **P9-E scaffold**, **P6.1-E** (3 chats) |
+| 3 | Planner | Visual sign-off on `zeref-cockpit-6.1-hud.png` |
 
 ---
 
 ## Do not start
 
-- Phase 6 **Lead domain code** without agent reports
+- Phase 8 **UI** until **P8-B** integrated (closed @ `10240c3`)
+- Phase 8 **BFF** without P8-A schemas (closed after P8-A commit)
+- Phase 6 **Lead domain code** without agent reports (phase closed)
 - Full-screen particle globe without ADR-015 amendment
 - Fake scrolling telemetry (legacy ios theater pattern)
 
@@ -146,7 +199,7 @@ npm run verify:phase-6
 
 | Doc | Path |
 |-----|------|
-| Phase contracts | `docs/governance/phase-{0-5}-contract.md` |
+| Phase contracts | `docs/governance/phase-{0-8}-contract.md` |
 | Verify | `docs/governance/verify.md` |
 | Legacy lessons | `docs/handoff/legacy-ios.md` |
 | Gap backlog | `docs/GAP_BACKLOG.md` |

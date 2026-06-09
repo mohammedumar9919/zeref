@@ -1,19 +1,18 @@
 ﻿# Zeref — STATE
 
-**Updated:** 2026-05-31
+**Updated:** 2026-06-03 (Phase 9 + 6.1 contracts)
 
 ## Current position
 
-- **Phase:** 6 **implementation complete** @ `183acf9` — Planner sign-off pending
-- **Tips:** P6-A `7cd1f2b`, P6-B `d1a1063`, P6-C `4171e14`, P6-E `2cbe98b`, P6-D `183acf9`
-- **Hotfix:** P6-HOTFIX-A @ `9c5869f`, P6-HOTFIX-B @ `358d757` — audible mock survives web + kernel tests
+- **Phase:** 9 Wave 1 **DONE** · 6.1 Wave 1 **DONE** · Wave 2 **READY**
+- **P9-A:** `67e606e` · **P6.1-A:** `f6a3d01`
 
 ## Next
 
-1. User: re-UAT PTT audio at `/cockpit` (full mocks) — audible beep expected
-2. User: screenshot → `docs/design/reference/screenshots/zeref-cockpit-6-d.png`
-3. Planner: functional sign-off; Phase 6.1 visual contract (Discuss, non-blocking)
+1. Wave 3: spawn **P9-C** Research UI
+2. Wave 4: P9-E finalize after P9-C
+3. User: `verify:phase-6.1` + Planner visual sign-off on `zeref-cockpit-6.1-hud.png`
 
-## Do not start
+## Dev Postgres
 
-- Phase 7 until Phase 6 Planner sign-off
+`POSTGRES_PORT=5434`, `DATABASE_URL=postgres://zeref:zeref@localhost:5434/zeref`

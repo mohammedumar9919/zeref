@@ -94,7 +94,58 @@
 
 **Reading order:** ADR-020 → ADR-021 → ADR-022 → ADR-023 → ADR-024 → ADR-018 (6 extension)
 
-**Status:** **APPROVED** (Planner 2026-05-30) — `verify:phase-6` scaffold (P6-E); UI voice Playwright (P6-D) pending.
+**Status:** **APPROVED** (Planner 2026-05-31)
+
+## Phase 7 (zeref-memory + event→orb)
+
+**Contract:** [phase-7-contract.md](../phase-7-contract.md) (Q1–Q5, C61–C70, Amendments A–D)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-025](./ADR-025-memory-postgres-schema.md) | Postgres 4-tier memory schema (Q1, C63) | **APPROVED** | Data |
+| [ADR-026](./ADR-026-kernel-memory-tools.md) | Kernel memory tools, slow-path only (Q2, C65) | **APPROVED** | Kernel |
+| [ADR-027](./ADR-027-sse-brain-events-outbox.md) | SSE brain events + worker outbox (Q3, Q5, C66–C69) | **APPROVED** | BFF + Worker |
+
+**Reading order:** ADR-025 → ADR-026 → ADR-027
+
+**Status:** **APPROVED** (Planner 2026-06-03) — implementation @ `0e7f8d5`, verify green, screenshot `zeref-cockpit-7-brain.png`.
+
+## Phase 8 (Studio + Calendar UX)
+
+**Contract:** [phase-8-contract.md](../phase-8-contract.md) (Q1–Q5, C71–C80, Amendments F–J)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-028](./ADR-028-studio-drafts-editor.md) | Studio drafts + editor (Q2, C75, C78) | **APPROVED** | Data + BFF |
+| [ADR-029](./ADR-029-calendar-events-schema.md) | Calendar events Postgres schema (Q1, C72) | **APPROVED** | Data |
+| [ADR-030](./ADR-030-bff-job-enqueue.md) | BFF job enqueue allowlist; amends ADR-016 (Q3, C74) | **APPROVED** | BFF |
+
+**Reading order:** ADR-028 → ADR-029 → ADR-030
+
+**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03) — spawn P8-A after governance commit.
+
+## Phase 9 (Research pipelines)
+
+**Contract:** [phase-9-contract.md](../phase-9-contract.md) (Q1–Q5, C81–C90, Amendments L–M)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-031](./ADR-031-research-postgres-schema.md) | Research topics + signals schema (Q2, C82) | **APPROVED** | Data |
+| [ADR-032](./ADR-032-research-worker-bff.md) | Research worker + BFF routes (Q1, Q3–Q5, C83–C86) | **APPROVED** | Worker + BFF |
+
+**Reading order:** ADR-031 → ADR-032
+
+**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03) — spawn P9-A (parallel with P6.1-A).
+
+## Phase 6.1 (Luke Tier-2 visual polish)
+
+**Contract:** [phase-6.1-contract.md](../phase-6.1-contract.md) (Q1–Q5, C91–C98, Amendment N)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-033](./ADR-033-luke-tier2-visual-acceptance.md) | Visual acceptance + UI-only firewall (Q1, Q4) | **APPROVED** | UI |
+
+**Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03) — spawn P6.1-A (parallel with P9-A; UI-only).
 
 ## Planner quick reference
 

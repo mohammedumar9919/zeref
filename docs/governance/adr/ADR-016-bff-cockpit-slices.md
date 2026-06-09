@@ -13,10 +13,12 @@ Phase 5 cockpit panels need **summary DTOs** for RSC pages and a **detail endpoi
 
 **Amended 2026-05-30 (Phase 5.0.2):** RSC pages call `loadCockpitSlices()` directly via `getCockpitSlices()` — no HTTP loopback to `/api/v1/cockpit/slices`. The route remains for Playwright, curl, and external clients.
 
+**Amended 2026-06-03 (Phase 8):** BFF may enqueue jobs **only** via `POST /api/v1/jobs/enqueue` per [ADR-030](./ADR-030-bff-job-enqueue.md) (allowlist: `normalize`, `embed`, `analyze`, `report`; **`collect` excluded**). All other routes remain read-only for worker side effects.
+
 ## Decision
 
 1. **BFF lives in `apps/web/app/api/v1/`** — Next.js 15 Route Handlers, same origin as RSC pages.
-2. **Read-only Postgres** via `@zeref/db` + Drizzle; handlers never enqueue worker jobs.
+2. **Read-only Postgres** via `@zeref/db` + Drizzle; handlers **do not enqueue worker jobs** except via ADR-030 allowlisted `POST /api/v1/jobs/enqueue` (Phase 8).
 3. **No `@zeref/instagram`** imports in web BFF modules (C19-style boundary).
 4. **Routes**
    - `GET /api/v1/cockpit/slices` → `CockpitSlicesSchema`
@@ -67,7 +69,7 @@ When `DATABASE_URL` is unset and `ZEREF_BFF_FIXTURE` is not `1`:
 |--------|------------------|
 | Standalone `apps/api` HTTP server | Extra deploy/proxy; stub only today; RSC already in web |
 | Full elite blobs in slices response | Violates Q2 summary-DTO contract |
-| Worker enqueue from BFF | Forbidden — report generation stays worker-only |
+| Worker enqueue from BFF (general) | Forbidden — report generation stays worker-only; **exception:** ADR-030 dedicated enqueue route with UI allowlist |
 
 ## Verification
 

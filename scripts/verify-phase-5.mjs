@@ -197,6 +197,9 @@ run("npm", ["-w", "@zeref/web", "test"]);
 run("npm", ["-w", "@zeref/web", "run", "test:e2e:install"]);
 run("npm", ["-w", "@zeref/web", "run", "test:e2e"]);
 
+// Nested verify phases (5.1 → 6 → 7 → 8) may reuse this Playwright webServer on :3099.
+process.env.ZEREF_PLAYWRIGHT_REUSE = "1";
+
 if (!process.exitCode) {
   console.log("[verify:phase-5] OK");
 }

@@ -41,11 +41,11 @@ Planner Discuss → Contract → Planner APPROVE
 
 ---
 
-## Current focus (2026-05-30)
+## Current focus (2026-06-03)
 
-1. **Phase 5.1** — Luke JARVIS HUD Discuss + Contract (skills: `brainstorming`, `ui-ux-pro-max`, `gsd-discuss-phase`, `council-propose-slice`)
-2. Phase 5.0.2 **DONE** — dev perf docs, dev:clean port kill, BFF direct load
-3. Phase 6 voice after 5.1 sign-off
+1. **Phase 9** — Research pipelines (**P9-A** spawn now)
+2. **Phase 6.1** — Luke visual polish (**P6.1-A** spawn now, parallel UI-only)
+3. Phase 8 **CLOSED** — Amendment K C73 errata; no P8-HOTFIX-A before Phase 9
 
 ---
 

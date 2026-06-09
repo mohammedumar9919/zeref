@@ -20,12 +20,12 @@ export function CockpitPanel({
       data-testid={testId}
       aria-label={title}
       className={cn(
-        "hud-panel flex min-h-[140px] flex-col gap-3 p-4",
-        focused && "ring-1 ring-hud-cyan/40",
+        "hud-panel flex min-h-[140px] flex-col gap-2.5 p-3.5",
+        focused && "ring-1 ring-hud-cyan/45",
         className,
       )}
     >
-      <h2 className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/90">
+      <h2 className="border-b border-hud-border/35 pb-2 font-mono text-[10px] uppercase leading-none tracking-[0.22em] text-hud-cyan/90">
         {title}
       </h2>
       {children}

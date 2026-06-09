@@ -1,0 +1,14 @@
+{
+  "id": "a1000000-0000-4000-8000-000000000001",
+  "tier": "episodic",
+  "content": "User asked about the latest report headline during voice turn.",
+  "source": "voice",
+  "entityId": null,
+  "valueKey": null,
+  "value": null,
+  "temporalScore": 0.95,
+  "observation": "verified",
+  "metadata": { "turnId": "550e8400-e29b-41d4-a716-446655440099" },
+  "createdAt": "2026-05-31T12:00:00.000Z",
+  "updatedAt": "2026-05-31T12:00:00.000Z"
+}

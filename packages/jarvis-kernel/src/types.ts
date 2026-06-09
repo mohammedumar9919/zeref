@@ -1,13 +1,25 @@
-import type {
-  JarvisToolCall,
-  JarvisToolName,
-  JarvisTurnInput,
-} from "@zeref/contracts";
+import type { JarvisTurnInput } from "@zeref/contracts";
+
+export type JarvisKernelToolName =
+  | "get_cockpit_summary"
+  | "get_latest_report_headline"
+  | "get_pipeline_status"
+  | "memory_save"
+  | "memory_search";
+
+export type JarvisKernelToolCall = {
+  name: JarvisKernelToolName;
+  args: Record<string, unknown>;
+  result: unknown;
+  durationMs?: number;
+};
 
 export type ToolContext = {
   cockpitFixturePath?: string;
   reportFixturePath?: string;
   workerAvailable?: boolean;
+  turnId?: string;
+  transcript?: string;
 };
 
 export type JarvisToolHandler = (
@@ -15,11 +27,11 @@ export type JarvisToolHandler = (
   ctx: ToolContext,
 ) => Promise<unknown>;
 
-export type JarvisToolRegistry = Record<JarvisToolName, JarvisToolHandler>;
+export type JarvisToolRegistry = Record<JarvisKernelToolName, JarvisToolHandler>;
 
 export type LlmGenerateInput = {
   transcript: string;
-  toolCalls: JarvisToolCall[];
+  toolCalls: JarvisKernelToolCall[];
 };
 
 export type LlmGenerateResult = {

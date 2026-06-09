@@ -15,6 +15,27 @@
       "when": 1748476800000,
       "tag": "0001_phase3_analytics_embeddings",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1748736000000,
+      "tag": "0002_phase7_memory_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1748822400000,
+      "tag": "0003_phase8_studio_calendar",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1748908800000,
+      "tag": "0004_phase9_research",
+      "breakpoints": true
     }
   ]
 }

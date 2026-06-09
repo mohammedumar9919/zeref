@@ -6,6 +6,9 @@ export const PHASE4_CONTRACT_VERSION = "4.0.0";
 export const PHASE5_CONTRACT_VERSION = "5.0.0";
 export const PHASE5_1_CONTRACT_VERSION = "5.1.0";
 export const PHASE6_CONTRACT_VERSION = "6.0.0";
+export const PHASE7_CONTRACT_VERSION = "7.0.0";
+export const PHASE8_CONTRACT_VERSION = "8.0.0";
+export const PHASE9_CONTRACT_VERSION = "9.0.0";
 
 export {
   PlatformSchema,
@@ -26,6 +29,8 @@ export {
   ReportArtifactIdSchema,
   MetricFactIdSchema,
   EmbeddingVectorIdSchema,
+  ResearchTopicIdSchema,
+  ResearchSignalIdSchema,
   type PlatformAccountId,
   type SnapshotId,
   type NormalizedEntityId,
@@ -33,6 +38,8 @@ export {
   type ReportArtifactId,
   type MetricFactId,
   type EmbeddingVectorId,
+  type ResearchTopicId,
+  type ResearchSignalId,
 } from "./ids.js";
 
 export {
@@ -125,6 +132,98 @@ export {
   type VoiceAudioEvent,
   type PipelineEvent,
 } from "./phase6/index.js";
+
+export {
+  MemoryTierSchema,
+  MemoryObservationSchema,
+  MemorySourceSchema,
+  MemoryEntrySchema,
+  MemorySearchResultItemSchema,
+  MemorySearchResultSchema,
+  MemoryEntitySchema,
+  MemoryRelationSchema,
+  MemorySavedEventSchema,
+  MemorySearchEventSchema,
+  MemoryContradictionEventSchema,
+  MemoryEntityChangedEventSchema,
+  MemoryBrainEventSchema,
+  CockpitSseOutboxSchema,
+  type MemoryTier,
+  type MemoryObservation,
+  type MemorySource,
+  type MemoryEntry,
+  type MemorySearchResultItem,
+  type MemorySearchResult,
+  type MemoryEntity,
+  type MemoryRelation,
+  type MemorySavedEvent,
+  type MemorySearchEvent,
+  type MemoryContradictionEvent,
+  type MemoryEntityChangedEvent,
+  type MemoryBrainEvent,
+  type CockpitSseOutbox,
+} from "./phase7/index.js";
+
+export {
+  CalendarEventStatusSchema,
+  CalendarEventSchema,
+  StudioDraftSchema,
+  UiJobTypeSchema,
+  JobEnqueueRequestSchema,
+  CockpitSlicesSchemaV8,
+  CockpitStudioItemSchemaV8,
+  CockpitCalendarItemSchemaV8,
+  CockpitReportItemSchemaV8,
+  CockpitResearchItemSchemaV8,
+  CockpitStudioPanelSchemaV8,
+  CockpitCalendarPanelSchemaV8,
+  CockpitReportsPanelSchemaV8,
+  CockpitResearchPanelSchemaV8,
+  type CalendarEventStatus,
+  type CalendarEvent,
+  type StudioDraft,
+  type UiJobType,
+  type JobEnqueueRequest,
+  type CockpitSlicesV8,
+  type CockpitStudioItemV8,
+  type CockpitCalendarItemV8,
+  type CockpitReportItemV8,
+  type CockpitResearchItemV8,
+} from "./phase8/index.js";
+
+export {
+  ResearchSignalTypeSchema,
+  ResearchTopicSchema,
+  ResearchSignalSchema,
+  ResearchTopicDetailSchema,
+  ResearchMetricFactRowSchema,
+  ResearchEmbeddingRowSchema,
+  ResearchSignalCandidateSchema,
+  ResearchJobInputSchema,
+  ResearchJobOutputSchema,
+  UiJobTypeSchemaV9,
+  JobEnqueueRequestSchemaV9,
+  CockpitSlicesSchemaV9,
+  CockpitStudioItemSchemaV9,
+  CockpitCalendarItemSchemaV9,
+  CockpitReportItemSchemaV9,
+  CockpitResearchItemSchemaV9,
+  CockpitStudioPanelSchemaV9,
+  CockpitCalendarPanelSchemaV9,
+  CockpitReportsPanelSchemaV9,
+  CockpitResearchPanelSchemaV9,
+  type ResearchSignalType,
+  type ResearchTopic,
+  type ResearchSignal,
+  type ResearchTopicDetail,
+  type ResearchSignalCandidate,
+  type ResearchJobInput,
+  type ResearchJobOutput,
+  type UiJobTypeV9,
+  type JobEnqueueRequestV9,
+  type CockpitSlicesV9,
+  type CockpitResearchItemV9,
+} from "./phase9/index.js";
 
 export {
   NormalizedPostPayloadSchema,

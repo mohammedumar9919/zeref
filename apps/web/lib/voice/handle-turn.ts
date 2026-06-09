@@ -5,6 +5,7 @@ import type {
   VoiceStateEvent,
   VoiceTranscriptEvent,
 } from "@zeref/contracts";
+import { MemorySavedEventSchema } from "@zeref/contracts";
 import {
   createDefaultDeps,
   defaultTtsAdapter,
@@ -20,7 +21,8 @@ import type {
   VoiceTurnAudioBlob,
   VoiceTurnSyncResponse,
 } from "./types";
-import { getVoiceEventBus } from "./voice-event-bus";
+import { emitMemoryBrainEventsFromToolCalls } from "../memory/emit-brain-events";
+import { getCockpitEventBus } from "../cockpit/cockpit-event-bus";
 
 const pendingTurns = new Set<Promise<void>>();
 
@@ -31,7 +33,7 @@ function nowIso(): string {
 function emitVoiceEvent(
   event: VoiceTranscriptEvent | VoiceStateEvent | VoiceAudioEvent,
 ): void {
-  getVoiceEventBus().emit(event.type, event);
+  getCockpitEventBus().emit(event.type, event);
 }
 
 function emitUserTranscript(turnId: string, transcript: string): void {
@@ -95,6 +97,7 @@ async function completeTurnInBackground(
   try {
     const result = await handle.complete;
     emitKernelEvents(result.events);
+    emitMemoryBrainEventsFromToolCalls(result.toolCalls);
     await synthesizeAndEmitAudio(turnId, "result", result.resultText);
   } catch (error) {
     console.error("[voice/turn] background complete failed:", error);
@@ -120,6 +123,34 @@ async function handleVoiceTurnSync(
     synthesizeAudioBlob(output.ackText, "ack"),
     synthesizeAudioBlob(output.resultText, "result"),
   ]);
+
+  emitMemoryBrainEventsFromToolCalls(output.toolCalls);
+
+  // Deterministic CI emission for Phase 7 brain SSE when the LLM mock transcript
+  // does not naturally route through memory_save (ADR-027, C66).
+  if (
+    process.env.ZEREF_PHASE7_BRAIN === "1" &&
+    process.env.ZEREF_MEMORY_MOCK === "1" &&
+    !output.toolCalls.some(
+      (c) =>
+        (c.name === "memory_save" || c.name === "memory_search") &&
+        c.result &&
+        typeof c.result === "object" &&
+        "brainEvent" in c.result &&
+        (c.result as { brainEvent?: { type?: unknown } }).brainEvent?.type ===
+          "memory.saved",
+    )
+  ) {
+    const event = MemorySavedEventSchema.parse({
+      type: "memory.saved",
+      entryId: randomUUID(),
+      tier: "episodic",
+      ts: nowIso(),
+      turnId,
+      simulated: true,
+    });
+    getCockpitEventBus().emit(event.type, event);
+  }
 
   const body: VoiceTurnSyncResponse = {
     mode: "sync-mock",

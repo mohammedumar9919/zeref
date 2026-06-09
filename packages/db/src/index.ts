@@ -12,3 +12,6 @@ export const PHASE1_TABLES = [
 
 /** Phase 3 analytics + embeddings tables. */
 export const PHASE3_TABLES = ["metric_facts", "embedding_vectors"] as const;
+
+/** Phase 8 studio + calendar tables. */
+export const PHASE8_TABLES = ["calendar_events", "studio_drafts"] as const;

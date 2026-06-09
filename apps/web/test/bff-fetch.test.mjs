@@ -10,11 +10,13 @@ describe("getCockpitSlices (RSC direct load)", () => {
   let bff;
 
   before(async () => {
+    delete process.env.ZEREF_PHASE9_RESEARCH;
     bff = await import(pathToFileURL(join(webRoot, "lib/bff.ts")).href);
   });
 
   after(() => {
     delete process.env.ZEREF_BFF_FIXTURE;
+    delete process.env.ZEREF_PHASE9_RESEARCH;
     delete process.env.DATABASE_URL;
   });
 
@@ -36,7 +38,7 @@ describe("getCockpitSlices (RSC direct load)", () => {
     process.env.ZEREF_BFF_FIXTURE = "1";
 
     const slices = await bff.getCockpitSlices();
-    assert.equal(slices.schemaVersion, "phase5-cockpit-v1");
+    assert.equal(slices.schemaVersion, "phase8-cockpit-v1");
     assert.ok(slices.panels.studio);
     assert.ok(Array.isArray(slices.panels.reports.items));
   });
