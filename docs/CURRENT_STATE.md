@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-08 (Phase 9 APPROVED @ `9960c92`)  
+**Last updated:** 2026-06-08 (P8 hotfix wave queued — blocks Phase 10)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -24,10 +24,24 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
-| Phase 9 Research pipelines | **APPROVED** @ `9960c92` — CI Phase 0–9 green; research e2e 2/2 enforced (P9-E Wave 4) |
+| Phase 9 Research pipelines | **APPROVED** @ `9960c92` — CI Phase 0–9 green; research e2e 2/2 enforced |
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
+| **P8 hotfix (Studio/Reports hubs)** | **QUEUED** — Wave 1: P8-HOTFIX-B ∥ P8-HOTFIX-C; Wave 2: P8-HOTFIX-E |
+| Phase 6.2 Visual Tier 3 | **PLANNING** — contract draft @ `phase-6.2-contract.md`; **no workers** until hotfix green + Planner APPROVED |
+| Phase 10 | **BLOCKED** — until `verify:hotfix-p8` green |
 
-**Immediate goal:** Planner sign-off Phase 9 + Phase 6.1 HUD screenshot; then **next milestone** scoping (no Phase 10 contract yet).
+**Immediate goal:** Spawn **P8-HOTFIX-B** + **P8-HOTFIX-C** in parallel → **P8-HOTFIX-E** verify → then Phase 10 scoping. Phase 6.2 deferred until hotfix exit gate.
+
+### P8 hotfix root cause
+
+`/cockpit/studio` and `/cockpit/reports` render **CockpitShell only** (grid). Calendar/Research work because they add a **hub below the grid**. Studio/Reports deep links feel broken — no hub surface.
+
+**Exit gate (before Phase 10):**
+
+- `/cockpit/studio` — `StudioHub` + links to entity editor
+- `/cockpit/reports` — `ReportsHub` + artifact detail for `?artifact=`
+- `verify:phase-8` still green
+- `verify:hotfix-p8` green (new)
 
 ---
 

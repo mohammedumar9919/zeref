@@ -147,6 +147,16 @@
 
 **Status:** **APPROVED WITH CONDITIONS** (Planner 2026-06-03) — spawn P6.1-A (parallel with P9-A; UI-only).
 
+## Phase 6.2 (Visual Tier 3 — PLANNING)
+
+**Contract:** [phase-6.2-contract.md](../phase-6.2-contract.md) (draft C99–C110, Amendment O)
+
+| ADR | Topic | Status | Owner |
+|-----|--------|--------|-------|
+| [ADR-035](./ADR-035-globe-pulse-workspace-ux.md) | Workspace mode, unified header, globe pulse (Q1–Q4) | **DRAFT** | UI |
+
+**Status:** **PLANNING** — no workers until P8 hotfix green + Planner APPROVED.
+
 ## Planner quick reference
 
 | ID | ADR / doc |

@@ -72,14 +72,34 @@ Screenshot: `zeref-cockpit-research-hub.png` @ `552e788`
 
 ---
 
-## READY — Phase 6.1 sign-off + next milestone
+## READY — P8 hotfix (BLOCKS Phase 10)
 
-**Phase 9 track complete.** Do not spawn Phase 10 workers without Planner contract.
+**Planner approved** pre–Phase 10 hotfix wave (2026-06-08). Amendment K stands — **hub UX only**; no `GET /calendar/events/:id` work.
+
+| Wave | Slice | Spawn |
+|------|-------|-------|
+| **1** | **P8-HOTFIX-B** Studio hub | **SPAWN NOW** (parallel) |
+| **1** | **P8-HOTFIX-C** Reports hub | **SPAWN NOW** (parallel) |
+| **2** | **P8-HOTFIX-E** verify + e2e | After B + C reports |
+
+**Do NOT spawn Phase 10 (P10-A/B) until `verify:hotfix-p8` green.**
+
+---
+
+## PLANNING — Phase 6.2 Visual Tier 3 (after hotfix)
+
+**Status:** Contract draft only — [phase-6.2-contract.md](./governance/phase-6.2-contract.md) + [ADR-035](./governance/adr/ADR-035-globe-pulse-workspace-ux.md). **No workers** until hotfix green + Planner APPROVED.
+
+Preview: workspace mode (deep routes hide grid), unified header, hero globe ≥58vh, voice pulse + JARVIS sync rings, optional Luke widgets Wave 3.
+
+---
+
+## READY — Phase 6.1 sign-off + Phase 10 (blocked)
 
 | Track | Status |
 |-------|--------|
-| **6.1** | Implementation DONE — **Planner visual sign-off pending** (`zeref-cockpit-6.1-hud.png`) |
-| **Next milestone** | **Planner scoping** — see GAP_BACKLOG / ops worker daemon gap |
+| **6.1** | Implementation DONE — Planner visual sign-off pending |
+| **Phase 10** | **BLOCKED** on P8 hotfix exit gate |
 
 ---
 
@@ -97,6 +117,126 @@ Screenshot: `zeref-cockpit-research-hub.png` @ `552e788`
 | **9** | 4 | ~~**P9-E**~~ finalize | **DONE** |
 
 **File firewall:** Phase 9 ↔ 6.1 paths must not overlap (see Amendment M / N in contracts).
+
+---
+
+### Card P8-HOTFIX-B — Agent UI Studio hub (Wave 1 — SPAWN NOW)
+
+```text
+You are the Zeref UI agent for slice P8-HOTFIX-B.
+
+HARD RULE
+- Implement ONLY apps/web/components/studio/StudioHub.tsx and apps/web/app/cockpit/studio/page.tsx.
+- Do NOT edit packages/**, apps/worker/**, globe/**, hud/**, BFF routes, or API routes.
+- STOP with report + blockers.
+
+Skills: using-superpowers, brainstorming, ui-ux-pro-max, test-driven-development, verification-before-completion
+
+Read first:
+1. docs/CURRENT_STATE.md — P8 hotfix root cause
+2. apps/web/app/cockpit/research/page.tsx — hub template (VoiceHudShell + CockpitGrid + Hub)
+3. apps/web/components/research/ResearchHub.tsx — list + links pattern
+4. apps/web/components/cockpit/StudioPanel.tsx — panel items shape
+5. docs/governance/phase-8-contract.md C75
+
+Env: ZEREF_BFF_FIXTURE=1, ZEREF_PHASE8_PRODUCT=1
+
+Fixture entity id: 550e8400-e29b-41d4-a716-446655440001
+
+Deliverables
+1. StudioHub — lists slices.panels.studio.items; links to /cockpit/studio/[entityId]; honest empty state
+2. /cockpit/studio — VoiceHudShell + CockpitGrid focus="studio" + StudioHub (match research/calendar)
+3. data-testid="studio-hub"
+
+Allowed: apps/web/components/studio/StudioHub.tsx, apps/web/app/cockpit/studio/page.tsx
+Forbidden: packages/**, apps/worker/**, apps/web/components/globe/**, apps/web/components/hud/**, apps/web/lib/**, apps/web/app/api/**
+
+Acceptance
+- /cockpit/studio shows hub with fixture entity in fixture mode
+- Link opens /cockpit/studio/550e8400-e29b-41d4-a716-446655440001 editor
+- npm run lint passes for touched files
+
+Report back: files changed, commit hash, manual test notes, blockers.
+```
+
+---
+
+### Card P8-HOTFIX-C — Agent UI Reports hub (Wave 1 — SPAWN NOW)
+
+```text
+You are the Zeref UI agent for slice P8-HOTFIX-C.
+
+HARD RULE
+- Implement ONLY apps/web/components/reports/** and apps/web/app/cockpit/reports/page.tsx.
+- Do NOT edit packages/**, apps/worker/**, or API routes.
+- getReportArtifact already exists in apps/web/lib/cockpit-bff.ts — import only, do not modify BFF.
+- STOP with report + blockers.
+
+Skills: using-superpowers, brainstorming, ui-ux-pro-max, test-driven-development, verification-before-completion
+
+Read first:
+1. docs/CURRENT_STATE.md — P8 hotfix root cause
+2. apps/web/app/cockpit/research/page.tsx — hub template
+3. apps/web/components/cockpit/ReportsPanel.tsx
+4. getReportArtifact in apps/web/lib/cockpit-bff.ts (read-only)
+5. Fixture artifact id: 550e8400-e29b-41d4-a716-446655440000
+
+Env: ZEREF_BFF_FIXTURE=1, ZEREF_PHASE8_PRODUCT=1
+
+Deliverables
+1. ReportsHub — lists slices.panels.reports.items
+2. ReportArtifactDetail — when ?artifact= set, server-fetch via getReportArtifact (RSC); headline + JSON sections read-only
+3. /cockpit/reports — VoiceHudShell + CockpitGrid focus="reports" + hub/detail
+4. data-testid="reports-hub", "report-artifact-detail"
+5. Remove placeholder “Artifact detail loads via GET…” text
+
+Allowed: apps/web/components/reports/**, apps/web/app/cockpit/reports/page.tsx
+Forbidden: packages/**, apps/worker/**, apps/web/lib/**, apps/web/app/api/**
+
+Acceptance
+- /cockpit/reports loads hub in fixture mode
+- /cockpit/reports?artifact=550e8400-e29b-41d4-a716-446655440000 shows detail
+- npm run lint passes for touched files
+
+Report back: files changed, commit hash, manual test notes, blockers.
+```
+
+---
+
+### Card P8-HOTFIX-E — Agent Docs/QA verify (Wave 2 — after B + C)
+
+```text
+You are the Zeref QA agent for slice P8-HOTFIX-E.
+
+HARD RULE
+- scripts/**, apps/web/e2e/**, package.json (verify:hotfix-p8 script only), .github/workflows/ci.yml (hotfix step), docs/governance/verify.md ONLY.
+- No product component edits.
+- STOP with report when verify:hotfix-p8 green and verify:phase-9 still green.
+
+Skills: run-verify-gate, verification-before-completion
+
+Read first:
+1. P8-HOTFIX-B + P8-HOTFIX-C worker reports
+2. scripts/verify-phase-8.mjs — chain pattern
+3. apps/web/e2e/cockpit-research-9.spec.ts — Wave 4 enforcement pattern
+
+Deliverables
+1. apps/web/e2e/cockpit-studio-hub.spec.ts — studio-hub visible on /cockpit/studio
+2. apps/web/e2e/cockpit-reports-hub.spec.ts — reports-hub + artifact detail (?artifact= fixture id)
+3. scripts/verify-hotfix-p8.mjs — chains verify:phase-8 + new e2e; ZEREF_BFF_FIXTURE=1, ZEREF_PHASE8_PRODUCT=1
+4. Root package.json script verify:hotfix-p8
+5. CI step after Verify Phase 9 (or document as pre-Phase-10 gate in verify.md)
+6. docs/governance/verify.md — hotfix section
+
+Allowed: scripts/verify-hotfix-p8.mjs, apps/web/e2e/cockpit-studio-hub.spec.ts, apps/web/e2e/cockpit-reports-hub.spec.ts, package.json (script), .github/workflows/ci.yml, docs/governance/verify.md
+Forbidden: apps/web/components/**, apps/web/app/**, packages/**
+
+Acceptance
+- npm run verify:hotfix-p8 green
+- npm run verify:phase-9 still green (full env — document if user runs locally)
+
+Report back: verify log tail, CI diff, blockers.
+```
 
 ---
 
