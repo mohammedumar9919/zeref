@@ -53,18 +53,48 @@ Screenshot: `zeref-cockpit-7-brain.png` @ `0e7f8d5` · `verify:phase-7` green 20
 
 ---
 
-## READY — Phase 9 + Phase 6.1 (PARALLEL — Planner 2026-06-03)
+## COMPLETED — Phase 9 (APPROVED 2026-06-08)
+
+Merge @ `9960c92` · CI Phase 0–9 gate green · `verify:phase-9` enforced (research e2e 2/2).
+
+| Slice | Commit |
+|-------|--------|
+| Governance + cards | `02956be` |
+| P9-A Contracts + worker | `67e606e` |
+| P9-B BFF | `c5032f4` |
+| P9-E scaffold | `b38aa55` |
+| Harness fix | `04140ec` |
+| P9-C Research UI | `552e788` |
+| P9-E Wave 4 e2e | `5db21d6` |
+| Build fix (jarvis-kernel refs) | `d7e241f` |
+
+Screenshot: `zeref-cockpit-research-hub.png` @ `552e788`
+
+---
+
+## READY — Phase 6.1 sign-off + next milestone
+
+**Phase 9 track complete.** Do not spawn Phase 10 workers without Planner contract.
+
+| Track | Status |
+|-------|--------|
+| **6.1** | Implementation DONE — **Planner visual sign-off pending** (`zeref-cockpit-6.1-hud.png`) |
+| **Next milestone** | **Planner scoping** — see GAP_BACKLOG / ops worker daemon gap |
+
+---
+
+## ARCHIVE — Phase 9 + Phase 6.1 parallel track (2026-06-03 – 2026-06-08)
 
 **Governance:** `phase-9-contract.md`, `phase-6.1-contract.md`, ADR-031/032/033 @ Lead commit.
 
 | Track | Wave | Slice | Spawn |
 |-------|------|-------|-------|
-| **9** (primary) | 1 | ~~**P9-A**~~ | **DONE** — await Lead integration commit |
-| **6.1** (UI-only) | 1 | ~~**P6.1-A**~~ | **DONE** — screenshot `zeref-cockpit-6.1-hud.png` |
-| **9** | 2 | ~~**P9-B**~~ + ~~**P9-E**~~ scaffold | **DONE** — build fix in Lead merge |
-| **6.1** | 2 | ~~**P6.1-E**~~ | **DONE** — C94 exact match fix in spec |
-| **9** | 3 | ~~**P9-C**~~ | **DONE** — research hub + detail @ Lead merge |
-| **9** | 4 | ~~**P9-E**~~ finalize | **DONE** — Wave 4 e2e enforced 2026-06-08 |
+| **9** (primary) | 1 | ~~**P9-A**~~ | **DONE** |
+| **6.1** (UI-only) | 1 | ~~**P6.1-A**~~ | **DONE** |
+| **9** | 2 | ~~**P9-B**~~ + ~~**P9-E**~~ scaffold | **DONE** |
+| **6.1** | 2 | ~~**P6.1-E**~~ | **DONE** |
+| **9** | 3 | ~~**P9-C**~~ | **DONE** |
+| **9** | 4 | ~~**P9-E**~~ finalize | **DONE** |
 
 **File firewall:** Phase 9 ↔ 6.1 paths must not overlap (see Amendment M / N in contracts).
 

@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-08 (P9-E Wave 4 finalize)  
+**Last updated:** 2026-06-08 (Phase 9 APPROVED @ `9960c92`)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -24,10 +24,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
-| Phase 9 Research pipelines | **P9-E DONE (local)** — Wave 4 e2e enforced; **CI `verify:phase-9` pending** (P9-C @ `552e788`) |
+| Phase 9 Research pipelines | **APPROVED** @ `9960c92` — CI Phase 0–9 green; research e2e 2/2 enforced (P9-E Wave 4) |
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
 
-**Immediate goal:** Commit P9-E Wave 4 enforcement; **CI `verify:phase-9` green** closes Phase 9 (research e2e 2 passed, 0 skipped). Brain-7 SSE flake triaged separately if CI fails upstream.
+**Immediate goal:** Planner sign-off Phase 9 + Phase 6.1 HUD screenshot; then **next milestone** scoping (no Phase 10 contract yet).
 
 ---
 
