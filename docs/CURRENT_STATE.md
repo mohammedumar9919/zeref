@@ -26,11 +26,11 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
 | Phase 9 Research pipelines | **APPROVED** @ `9960c92` — CI Phase 0–9 green; research e2e 2/2 enforced |
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
-| **P8 hotfix (Studio/Reports hubs)** | **Wave 1 DONE** — B @ `f52e0ef`, C @ `019e7bd`; **Wave 2: P8-HOTFIX-E SPAWN NOW** |
-| Phase 6.2 Visual Tier 3 | **PLANNING** — contract draft @ `phase-6.2-contract.md`; **no workers** until hotfix green + Planner APPROVED |
-| Phase 10 | **BLOCKED** — until `verify:hotfix-p8` green |
+| **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ pending merge — B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` **GREEN** (local) |
+| Phase 6.2 Visual Tier 3 | **PLANNING** — contract draft; **no workers** until Planner APPROVED |
+| Phase 10 | **UNBLOCKED** — Planner contract + spawn cards required before P10-A/B |
 
-**Immediate goal:** Spawn **P8-HOTFIX-E** (verify:hotfix-p8 + e2e + CI). Phase 10 **BLOCKED** until hotfix gate green.
+**Immediate goal:** Lead merge P8-HOTFIX-E → CI green on `verify:hotfix-p8` step → **Planner Phase 10 scoping**. Phase 6.1 visual sign-off parallel.
 
 ### P8 hotfix root cause
 

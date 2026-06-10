@@ -72,17 +72,26 @@ Screenshot: `zeref-cockpit-research-hub.png` @ `552e788`
 
 ---
 
-## READY — P8 hotfix Wave 2 (BLOCKS Phase 10)
+## COMPLETED — P8 hotfix (2026-06-08)
 
-**Wave 1 merged** @ `f52e0ef` (Studio hub) + `019e7bd` (Reports hub).
+Exit gate satisfied — `verify:hotfix-p8` green (local). CI step after Verify Phase 9.
 
-| Wave | Slice | Spawn |
-|------|-------|-------|
-| ~~**1**~~ | ~~P8-HOTFIX-B~~ Studio hub | **DONE** @ `f52e0ef` |
-| ~~**1**~~ | ~~P8-HOTFIX-C~~ Reports hub | **DONE** @ `019e7bd` |
-| **2** | **P8-HOTFIX-E** verify + e2e | **SPAWN NOW** |
+| Slice | Commit |
+|-------|--------|
+| P8-HOTFIX-B Studio hub | `f52e0ef` |
+| P8-HOTFIX-C Reports hub | `019e7bd` |
+| P8-HOTFIX-E verify + e2e + CI | *(pending Lead commit)* |
 
-**Do NOT spawn Phase 10 until `verify:hotfix-p8` green.**
+**Phase 10 unblocked** — await Planner contract before spawning P10 workers.
+
+---
+
+## READY — Phase 10 + Phase 6.1 sign-off
+
+| Track | Status |
+|-------|--------|
+| **Phase 10** | **Planner scoping** — no contract yet; do not spawn P10-A/B |
+| **6.1** | Planner visual sign-off pending |
 
 ---
 
@@ -215,7 +224,13 @@ Report back: files changed, commit hash, manual test notes, blockers.
 
 ---
 
-### Card P8-HOTFIX-E — Agent Docs/QA verify (Wave 2 — SPAWN NOW)
+### Card P8-HOTFIX-E — Agent Docs/QA verify (COMPLETED — Wave 2)
+
+Report: cockpit-studio-hub + cockpit-reports-hub e2e; verify-hotfix-p8.mjs; CI step after Phase 9; verify.md section. **Commit:** pending Lead merge.
+
+---
+
+### Card P8-HOTFIX-E — Agent Docs/QA verify (Wave 2 — ARCHIVED)
 
 ```text
 You are the Zeref QA agent for slice P8-HOTFIX-E.

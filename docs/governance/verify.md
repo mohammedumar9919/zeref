@@ -443,3 +443,53 @@ After `verify:phase-8`:
 
 - `ZEREF_PHASE9_RESEARCH=1`, `ZEREF_JOB_ENQUEUE_MOCK=1`, `ZEREF_BFF_FIXTURE=1` (+ Phase 6–8 mock flags)
 - `npm run verify:phase-9`
+
+---
+
+## P8 hotfix (Studio/Reports hub surfaces)
+
+**Slices:** P8-HOTFIX-B @ `f52e0ef` (StudioHub), P8-HOTFIX-C @ `019e7bd` (ReportsHub + artifact detail) · **Pre-Phase-10 exit gate**
+
+Chains `verify:phase-8` (full prior-phase env), then **hard-enforces** hub Playwright specs. Independent of `verify:phase-9` chain — but CI runs Phase 9 **before** this gate so regression on research e2e is caught first.
+
+```powershell
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_WHISPER_MOCK='1'
+$env:ZEREF_TTS_MOCK='1'
+$env:ZEREF_LLM_MOCK='1'
+$env:ZEREF_MEMORY_MOCK='1'
+$env:ZEREF_JOB_ENQUEUE_MOCK='1'
+$env:ZEREF_PHASE6_VOICE='1'
+$env:ZEREF_PHASE7_BRAIN='1'
+$env:ZEREF_PHASE8_PRODUCT='1'
+npm run verify:hotfix-p8
+```
+
+### Env flags
+
+| Env | Default verify / CI | Enforcement |
+|-----|---------------------|-------------|
+| `ZEREF_PHASE8_PRODUCT` | **`1`** | required — hub e2e hard-fail on non-zero |
+| `ZEREF_BFF_FIXTURE` | **`1`** | required — fixture BFF; no Postgres for Playwright path |
+| `ZEREF_JOB_ENQUEUE_MOCK` | **`1`** | required (inherited from Phase 8) |
+| Phase 6–7 flags | same as `verify:phase-8` | inherited in chain |
+
+Does **not** require `ZEREF_PHASE9_RESEARCH` (hotfix gate chains Phase 8 only). **`verify:phase-9` must still pass** in CI and locally before Phase 10 — run it separately with full Phase 9 env.
+
+### What `verify:hotfix-p8` checks
+
+Script: `scripts/verify-hotfix-p8.mjs`
+
+- Chains `verify:phase-8` (phases 0–8 regression)
+- **P8-HOTFIX-B:** Playwright `cockpit-studio-hub` — `studio-hub` on `/cockpit/studio`
+- **P8-HOTFIX-C:** Playwright `cockpit-reports-hub` — `reports-hub` on `/cockpit/reports`, `report-artifact-detail` on `/cockpit/reports?artifact=550e8400-e29b-41d4-a716-446655440000`
+- Hard-fail on non-zero Playwright exit (no warn-only skip)
+
+### CI (pre-Phase-10 gate)
+
+After `verify:phase-9`:
+
+- `ZEREF_PHASE8_PRODUCT=1`, `ZEREF_BFF_FIXTURE=1`, `ZEREF_JOB_ENQUEUE_MOCK=1` (+ Phase 6–7 mock flags)
+- `npm run verify:hotfix-p8`
+
+**Phase 10 BLOCKED** until this gate is green.
