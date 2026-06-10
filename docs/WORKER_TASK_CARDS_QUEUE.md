@@ -72,17 +72,17 @@ Screenshot: `zeref-cockpit-research-hub.png` @ `552e788`
 
 ---
 
-## READY — P8 hotfix (BLOCKS Phase 10)
+## READY — P8 hotfix Wave 2 (BLOCKS Phase 10)
 
-**Planner approved** pre–Phase 10 hotfix wave (2026-06-08). Amendment K stands — **hub UX only**; no `GET /calendar/events/:id` work.
+**Wave 1 merged** @ `f52e0ef` (Studio hub) + `019e7bd` (Reports hub).
 
 | Wave | Slice | Spawn |
 |------|-------|-------|
-| **1** | **P8-HOTFIX-B** Studio hub | **SPAWN NOW** (parallel) |
-| **1** | **P8-HOTFIX-C** Reports hub | **SPAWN NOW** (parallel) |
-| **2** | **P8-HOTFIX-E** verify + e2e | After B + C reports |
+| ~~**1**~~ | ~~P8-HOTFIX-B~~ Studio hub | **DONE** @ `f52e0ef` |
+| ~~**1**~~ | ~~P8-HOTFIX-C~~ Reports hub | **DONE** @ `019e7bd` |
+| **2** | **P8-HOTFIX-E** verify + e2e | **SPAWN NOW** |
 
-**Do NOT spawn Phase 10 (P10-A/B) until `verify:hotfix-p8` green.**
+**Do NOT spawn Phase 10 until `verify:hotfix-p8` green.**
 
 ---
 
@@ -120,7 +120,19 @@ Preview: workspace mode (deep routes hide grid), unified header, hero globe ≥5
 
 ---
 
-### Card P8-HOTFIX-B — Agent UI Studio hub (Wave 1 — SPAWN NOW)
+### Card P8-HOTFIX-B — Agent UI Studio hub (COMPLETED — Wave 1)
+
+Report: StudioHub + /cockpit/studio hub pattern; data-testid studio-hub. **Commit:** `f52e0ef`
+
+---
+
+### Card P8-HOTFIX-C — Agent UI Reports hub (COMPLETED — Wave 1)
+
+Report: ReportsHub + ReportArtifactDetail; ?artifact= RSC via getReportArtifact; placeholder removed. **Commit:** `019e7bd`
+
+---
+
+### Card P8-HOTFIX-B — Agent UI Studio hub (Wave 1 — ARCHIVED)
 
 ```text
 You are the Zeref UI agent for slice P8-HOTFIX-B.
@@ -161,7 +173,7 @@ Report back: files changed, commit hash, manual test notes, blockers.
 
 ---
 
-### Card P8-HOTFIX-C — Agent UI Reports hub (Wave 1 — SPAWN NOW)
+### Card P8-HOTFIX-C — Agent UI Reports hub (Wave 1 — ARCHIVED)
 
 ```text
 You are the Zeref UI agent for slice P8-HOTFIX-C.
@@ -203,7 +215,7 @@ Report back: files changed, commit hash, manual test notes, blockers.
 
 ---
 
-### Card P8-HOTFIX-E — Agent Docs/QA verify (Wave 2 — after B + C)
+### Card P8-HOTFIX-E — Agent Docs/QA verify (Wave 2 — SPAWN NOW)
 
 ```text
 You are the Zeref QA agent for slice P8-HOTFIX-E.

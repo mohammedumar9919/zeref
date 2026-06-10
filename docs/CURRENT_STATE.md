@@ -26,11 +26,11 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
 | Phase 9 Research pipelines | **APPROVED** @ `9960c92` — CI Phase 0–9 green; research e2e 2/2 enforced |
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
-| **P8 hotfix (Studio/Reports hubs)** | **QUEUED** — Wave 1: P8-HOTFIX-B ∥ P8-HOTFIX-C; Wave 2: P8-HOTFIX-E |
+| **P8 hotfix (Studio/Reports hubs)** | **Wave 1 DONE** — B @ `f52e0ef`, C @ `019e7bd`; **Wave 2: P8-HOTFIX-E SPAWN NOW** |
 | Phase 6.2 Visual Tier 3 | **PLANNING** — contract draft @ `phase-6.2-contract.md`; **no workers** until hotfix green + Planner APPROVED |
 | Phase 10 | **BLOCKED** — until `verify:hotfix-p8` green |
 
-**Immediate goal:** Spawn **P8-HOTFIX-B** + **P8-HOTFIX-C** in parallel → **P8-HOTFIX-E** verify → then Phase 10 scoping. Phase 6.2 deferred until hotfix exit gate.
+**Immediate goal:** Spawn **P8-HOTFIX-E** (verify:hotfix-p8 + e2e + CI). Phase 10 **BLOCKED** until hotfix gate green.
 
 ### P8 hotfix root cause
 
