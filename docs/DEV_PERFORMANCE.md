@@ -24,6 +24,28 @@ npm run start -w @zeref/web
 
 ---
 
+## Operator UAT (Phase 10 — C121)
+
+When judging whether the cockpit feels **instant** or **slow**, use **production build**, not `next dev`:
+
+| Mode | Use for |
+|------|---------|
+| `next build && next start` | Operator UAT, perf smoke (C122), “does nav feel fast?” |
+| `next dev` / `dev:stack` | Feature work, pipeline + worker integration |
+
+**Do not** file Phase 10 perf regressions based on first-hit dev compile (~20–30s cold `/cockpit`). That is expected Turbopack/webpack behavior ([Expected behavior](#expected-behavior-not-bugs)).
+
+For full stack ops UAT (worker + honest pipeline SSE), prefer:
+
+```powershell
+cd c:\Projects\zeref
+npm run dev:stack   # db + worker + web; ZEREF_WORKER_AVAILABLE=1 on web (P10-A)
+```
+
+Web-only quick UI check remains valid with `npm run dev -w @zeref/web` — but no queue consumer and simulated pipeline only.
+
+---
+
 ## Corrupted `.next` (real incident pattern)
 
 **Symptoms:**
