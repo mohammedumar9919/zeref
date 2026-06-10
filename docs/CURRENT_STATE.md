@@ -59,7 +59,7 @@ collect → normalize → embed → analyze → report
 | analyze | `@zeref/worker`, `@zeref/analytics` | `analyze` | → report inline if `ZEREF_AUTO_REPORT` |
 | report | `@zeref/worker`, `@zeref/reports` | `report` | — |
 
-**Ops gap (Phase 10 target):** CLI `scripts/enqueue-*.mjs` sends to pg-boss but **`npm run dev` alone** has no queue consumer. Use **`npm run dev:stack`** (db + worker + web, `ZEREF_WORKER_AVAILABLE=1` on web). `GET /api/v1/ops/worker-health` + honest pipeline SSE from outbox drain — see [phase-10-contract.md](./governance/phase-10-contract.md).
+**Ops (Phase 10 — P10-A):** Default local entry **`npm run dev:stack`** (or root **`npm run dev`**) starts db + worker + web; web child gets **`ZEREF_WORKER_AVAILABLE=1`**. Web-only: **`npm run dev -w @zeref/web`** — no queue consumer, simulated pipeline only. Remaining Wave 1: **`GET /api/v1/ops/worker-health`** + honest pipeline SSE (P10-B) — see [phase-10-contract.md](./governance/phase-10-contract.md).
 
 ---
 

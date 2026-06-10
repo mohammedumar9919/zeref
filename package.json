@@ -12,6 +12,7 @@
   "scripts": {
     "build": "tsc -b tsconfig.build.json && npm run build -w @zeref/web",
     "lint": "tsc -b tsconfig.build.json --pretty false --noEmit",
+    "dev": "npm run dev:stack",
     "dev:worker": "node scripts/worker.mjs",
     "dev:stack": "node scripts/dev-stack.mjs",
     "dev:clean": "node scripts/dev-clean.mjs",

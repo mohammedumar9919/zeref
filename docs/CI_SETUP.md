@@ -18,6 +18,22 @@
 
 ---
 
+## Local dev entry points (Phase 10 — C112)
+
+| Command | Stack | Queue consumer | Web env |
+|---------|-------|----------------|---------|
+| `npm run dev:stack` | db + worker + web | yes (pg-boss) | `ZEREF_WORKER_AVAILABLE=1` |
+| `npm run dev` (root) | same as `dev:stack` | yes | `ZEREF_WORKER_AVAILABLE=1` |
+| `npm run dev -w @zeref/web` | web only | **no** | unset — simulated pipeline only |
+
+**Default local ops entry:** `npm run dev:stack` (or root `npm run dev`). Use this when testing enqueue → worker → honest pipeline SSE.
+
+**Web-only quick UI:** `npm run dev -w @zeref/web` — no pg-boss consumer; worker-health reports `consuming: false`.
+
+Requires Docker for db when using `dev:stack`. See [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md) § Operator UAT for perf testing (`next build && next start`, not dev compile).
+
+---
+
 ## Local full gate (authoritative)
 
 ```powershell

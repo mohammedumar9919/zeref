@@ -2,7 +2,8 @@
 /**
  * Start db + worker + web dev server (best-effort; worker/web run as child processes).
  *
- * Usage: npm run dev:stack
+ * Usage: npm run dev:stack  (or root `npm run dev` when aliased)
+ * Web child receives ZEREF_WORKER_AVAILABLE=1 (Phase 10 — C111).
  * Requires: docker compose, npm run build already run once
  */
 import { spawn } from "node:child_process";
@@ -12,7 +13,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const isWin = process.platform === "win32";
 
-function run(cmd, args, label) {
+function run(cmd, args, label, extraEnv = {}) {
   const child = spawn(cmd, args, {
     cwd: repoRoot,
     stdio: "inherit",
@@ -20,6 +21,7 @@ function run(cmd, args, label) {
     env: {
       ...process.env,
       DATABASE_URL: process.env.DATABASE_URL ?? "postgres://zeref:zeref@localhost:5432/zeref",
+      ...extraEnv,
     },
   });
   child.on("exit", (code) => {
@@ -45,7 +47,9 @@ compose.on("exit", (code) => {
 
   console.log("[dev:stack] starting worker + web (Ctrl+C stops all)");
   const worker = run("node", ["scripts/worker.mjs"], "worker");
-  const web = run("npm", ["run", "dev", "-w", "@zeref/web"], "web");
+  const web = run("npm", ["run", "dev", "-w", "@zeref/web"], "web", {
+    ZEREF_WORKER_AVAILABLE: "1",
+  });
 
   const shutdown = () => {
     worker.kill("SIGINT");

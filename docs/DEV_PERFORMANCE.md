@@ -13,7 +13,7 @@
 | Warm `/cockpit` | ~350–500ms | Normal |
 | Warm `/settings` cold | ~2–4s | Smaller graph |
 
-**Prod-like measurement** (not dev compile):
+**Prod-like measurement** (not dev compile) — use for Operator UAT and perf smoke (C121–C122):
 
 ```powershell
 cd c:\Projects\zeref
@@ -21,6 +21,8 @@ npm run build
 npm run start -w @zeref/web
 # then hit http://localhost:3000/cockpit
 ```
+
+Equivalent: `next build && next start` in `apps/web` (port 3000 by default).
 
 ---
 
