@@ -26,7 +26,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
 | Phase 9 Research pipelines | **APPROVED** @ `9960c92` — CI Phase 0–9 green; research e2e 2/2 enforced |
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
-| **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ pending merge — B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` **GREEN** (local) |
+| **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ `e7908d1` — B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` green |
 | Phase 6.2 Visual Tier 3 | **PLANNING** — contract draft; **no workers** until Planner APPROVED |
 | Phase 10 | **UNBLOCKED** — Planner contract + spawn cards required before P10-A/B |
 

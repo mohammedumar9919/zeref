@@ -80,7 +80,7 @@ Exit gate satisfied — `verify:hotfix-p8` green (local). CI step after Verify P
 |-------|--------|
 | P8-HOTFIX-B Studio hub | `f52e0ef` |
 | P8-HOTFIX-C Reports hub | `019e7bd` |
-| P8-HOTFIX-E verify + e2e + CI | *(pending Lead commit)* |
+| P8-HOTFIX-E verify + e2e + CI | `e7908d1` |
 
 **Phase 10 unblocked** — await Planner contract before spawning P10 workers.
 
