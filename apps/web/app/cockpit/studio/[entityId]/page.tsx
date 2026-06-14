@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import { StudioEditorForm } from "@/components/studio/StudioEditorForm";
-import { VoiceHudShell } from "@/components/hud/VoiceHudShell";
 import {
   StudioBffError,
   StudioEntityNotFoundError,
@@ -22,9 +21,7 @@ export default async function StudioEntityPage({
 
     return (
       <div data-testid="cockpit-studio-entity-page">
-        <VoiceHudShell>
-          <StudioEditorForm entity={entity} />
-        </VoiceHudShell>
+        <StudioEditorForm entity={entity} />
       </div>
     );
   } catch (err) {

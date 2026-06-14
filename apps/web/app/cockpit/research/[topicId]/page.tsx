@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import { ResearchTopicDetailView } from "@/components/research/ResearchTopicDetail";
-import { VoiceHudShell } from "@/components/hud/VoiceHudShell";
 import { CockpitBffError } from "@/lib/bff";
 import { getResearchTopic } from "@/lib/research-bff";
 
@@ -30,9 +29,7 @@ export default async function ResearchTopicPage({
 
   return (
     <div data-testid="cockpit-research-topic-page">
-      <VoiceHudShell>
-        <ResearchTopicDetailView detail={result.body} />
-      </VoiceHudShell>
+      <ResearchTopicDetailView detail={result.body} />
     </div>
   );
 }

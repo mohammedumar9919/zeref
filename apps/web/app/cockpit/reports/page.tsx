@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { CockpitGrid } from "@/components/cockpit/CockpitGrid";
 import { ReportArtifactDetail } from "@/components/reports/ReportArtifactDetail";
 import { ReportsHub } from "@/components/reports/ReportsHub";
-import { VoiceHudShell } from "@/components/hud/VoiceHudShell";
 import { CockpitBffError, getCockpitSlices } from "@/lib/bff";
 import { getReportArtifact } from "@/lib/cockpit-bff";
 
@@ -44,10 +43,8 @@ export default async function ReportsDeepLinkPage({
 
   return (
     <div data-testid="cockpit-reports-page">
-      <VoiceHudShell>
-        <CockpitGrid slices={slices} focus="reports" />
-        {belowGrid}
-      </VoiceHudShell>
+      <CockpitGrid slices={slices} focus="reports" />
+      {belowGrid}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { ResearchHub } from "@/components/research/ResearchHub";
 import { CockpitGrid } from "@/components/cockpit/CockpitGrid";
-import { VoiceHudShell } from "@/components/hud/VoiceHudShell";
 import { CockpitBffError, getCockpitSlices } from "@/lib/bff";
 import { listResearchTopics } from "@/lib/research-bff";
 
@@ -19,10 +18,8 @@ export default async function ResearchDeepLinkPage(): Promise<React.ReactElement
 
   return (
     <div data-testid="cockpit-research-page">
-      <VoiceHudShell>
-        <CockpitGrid slices={slices} focus="research" />
-        <ResearchHub topics={topicsResult.body.topics} />
-      </VoiceHudShell>
+      <CockpitGrid slices={slices} focus="research" />
+      <ResearchHub topics={topicsResult.body.topics} />
     </div>
   );
 }

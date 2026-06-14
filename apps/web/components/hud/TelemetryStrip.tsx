@@ -1,62 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { parseTelemetryEvent } from "@/lib/events";
-import {
-  parsePipelineEvent,
-  parseVoiceStateEvent,
-} from "@/lib/voice/parse-voice-events";
-
 import { useVoice } from "../voice/VoiceProvider";
 
 export function TelemetryStrip(): React.ReactElement {
-  const { telemetryLive: voiceTelemetryLive } = useVoice();
-  const [message, setMessage] = useState("Awaiting telemetry stream…");
-  const [simulated, setSimulated] = useState(true);
+  const {
+    telemetryLive: voiceTelemetryLive,
+    telemetryMessage,
+    telemetrySimulated,
+  } = useVoice();
 
-  useEffect(() => {
-    const source = new EventSource("/api/v1/events/stream");
-
-    source.addEventListener("telemetry", (event) => {
-      try {
-        const parsed = parseTelemetryEvent(JSON.parse(event.data));
-        setMessage(parsed.message);
-        setSimulated(parsed.simulated);
-      } catch {
-        setMessage("Telemetry parse error");
-      }
-    });
-
-    source.addEventListener("voice.state", (event) => {
-      try {
-        parseVoiceStateEvent(JSON.parse(event.data));
-        setSimulated(false);
-      } catch {
-        /* ignore */
-      }
-    });
-
-    source.addEventListener("pipeline", (event) => {
-      try {
-        const parsed = parsePipelineEvent(JSON.parse(event.data));
-        if (!parsed.simulated) setSimulated(false);
-      } catch {
-        /* ignore */
-      }
-    });
-
-    source.onerror = () => {
-      setMessage("Telemetry stream unavailable");
-      setSimulated(true);
-    };
-
-    return () => {
-      source.close();
-    };
-  }, []);
-
-  const showSimulated = simulated && !voiceTelemetryLive;
+  const showSimulated = telemetrySimulated && !voiceTelemetryLive;
 
   return (
     <div
@@ -72,7 +25,7 @@ export function TelemetryStrip(): React.ReactElement {
         aria-hidden
       />
       <p className="min-w-0 flex-1 truncate font-mono text-[10px] leading-tight tracking-wide text-hud-muted tabular-nums">
-        {message}
+        {telemetryMessage}
       </p>
       {showSimulated ? (
         <span

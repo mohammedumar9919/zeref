@@ -19,6 +19,7 @@ import {
   type BrainGlobeState,
 } from "@/components/brain/brain-state";
 import { parseMemoryBrainEvent } from "@/components/brain/parse-brain-events";
+import { parseTelemetryEvent } from "@/lib/events";
 import { decodeAudioBase64, playAudioBlob } from "@/lib/voice/audio-playback";
 import {
   parsePipelineEvent,
@@ -36,6 +37,19 @@ export type TranscriptLine = {
   turnId?: string;
 };
 
+export type StreamEventType =
+  | "telemetry"
+  | "voice.state"
+  | "voice.transcript"
+  | "voice.audio"
+  | "pipeline"
+  | "memory.saved"
+  | "memory.search"
+  | "memory.contradiction"
+  | "memory.entity_changed";
+
+export type StreamEventHandler = (eventType: StreamEventType, data: unknown) => void;
+
 type VoiceContextValue = {
   voiceState: VoiceGlobeState;
   brainState: BrainGlobeState;
@@ -43,8 +57,11 @@ type VoiceContextValue = {
   outputLevel: number;
   transcripts: TranscriptLine[];
   telemetryLive: boolean;
+  telemetryMessage: string;
+  telemetrySimulated: boolean;
   submitPttAudio: (blob: Blob) => Promise<void>;
   setListening: (active: boolean) => void;
+  subscribeStreamEvents: (handler: StreamEventHandler) => () => void;
 };
 
 const VoiceContext = createContext<VoiceContextValue | null>(null);
@@ -68,7 +85,12 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
   const [outputLevel, setOutputLevel] = useState(0);
   const [transcripts, setTranscripts] = useState<TranscriptLine[]>([]);
   const [telemetryLive, setTelemetryLive] = useState(false);
+  const [telemetryMessage, setTelemetryMessage] = useState(
+    "Awaiting telemetry stream…",
+  );
+  const [telemetrySimulated, setTelemetrySimulated] = useState(true);
 
+  const streamSubscribersRef = useRef<Set<StreamEventHandler>>(new Set());
   const playbackQueueRef = useRef<Promise<void>>(Promise.resolve());
   const activeTurnRef = useRef<string | null>(null);
   const receivedPhasesRef = useRef<Set<string>>(new Set());
@@ -246,14 +268,53 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
     }
   }, []);
 
+  const subscribeStreamEvents = useCallback((handler: StreamEventHandler) => {
+    streamSubscribersRef.current.add(handler);
+    return () => {
+      streamSubscribersRef.current.delete(handler);
+    };
+  }, []);
+
+  const emitStreamEvent = useCallback(
+    (eventType: StreamEventType, data: unknown) => {
+      for (const handler of streamSubscribersRef.current) {
+        handler(eventType, data);
+      }
+    },
+    [],
+  );
+
+  const handleTelemetryEvent = useCallback(
+    (data: unknown) => {
+      try {
+        const parsed = parseTelemetryEvent(data);
+        setTelemetryMessage(parsed.message);
+        setTelemetrySimulated(parsed.simulated);
+        emitStreamEvent("telemetry", parsed);
+      } catch {
+        setTelemetryMessage("Telemetry parse error");
+      }
+    },
+    [emitStreamEvent],
+  );
+
   useEffect(() => {
     const source = new EventSource("/api/v1/events/stream");
 
+    source.addEventListener("telemetry", (event) => {
+      handleTelemetryEvent(JSON.parse(event.data));
+    });
+
     source.addEventListener("voice.state", (event) => {
       try {
-        const parsed = parseVoiceStateEvent(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+        const parsed = parseVoiceStateEvent(data);
         setVoiceState(parsed.state);
-        if (parsed.simulated === false) setTelemetryLive(true);
+        if (parsed.simulated === false) {
+          setTelemetryLive(true);
+          setTelemetrySimulated(false);
+        }
+        emitStreamEvent("voice.state", parsed);
       } catch {
         /* ignore malformed */
       }
@@ -261,13 +322,15 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
 
     source.addEventListener("voice.transcript", (event) => {
       try {
-        const parsed = parseVoiceTranscriptEvent(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+        const parsed = parseVoiceTranscriptEvent(data);
         appendTranscript({
           role: parsed.role,
           text: parsed.text,
           turnId: parsed.turnId,
         });
         setTelemetryLive(true);
+        emitStreamEvent("voice.transcript", parsed);
       } catch {
         /* ignore */
       }
@@ -275,8 +338,11 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
 
     source.addEventListener("voice.audio", (event) => {
       try {
-        handleVoiceAudio(parseVoiceAudioEvent(JSON.parse(event.data)));
+        const data = JSON.parse(event.data);
+        const parsed = parseVoiceAudioEvent(data);
+        handleVoiceAudio(parsed);
         setTelemetryLive(true);
+        emitStreamEvent("voice.audio", parsed);
       } catch {
         /* ignore */
       }
@@ -284,28 +350,47 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
 
     source.addEventListener("pipeline", (event) => {
       try {
-        const parsed = parsePipelineEvent(JSON.parse(event.data));
-        if (!parsed.simulated) setTelemetryLive(true);
+        const data = JSON.parse(event.data);
+        const parsed = parsePipelineEvent(data);
+        if (!parsed.simulated) {
+          setTelemetryLive(true);
+          setTelemetrySimulated(false);
+        }
+        emitStreamEvent("pipeline", parsed);
       } catch {
         /* ignore */
       }
     });
 
     source.addEventListener("memory.saved", (event) => {
-      handleMemoryBrainEvent(JSON.parse(event.data));
+      const data = JSON.parse(event.data);
+      handleMemoryBrainEvent(data);
+      emitStreamEvent("memory.saved", data);
     });
 
     source.addEventListener("memory.search", (event) => {
-      handleMemoryBrainEvent(JSON.parse(event.data));
+      const data = JSON.parse(event.data);
+      handleMemoryBrainEvent(data);
+      emitStreamEvent("memory.search", data);
     });
 
     source.addEventListener("memory.contradiction", (event) => {
-      handleMemoryBrainEvent(JSON.parse(event.data));
+      const data = JSON.parse(event.data);
+      handleMemoryBrainEvent(data);
+      emitStreamEvent("memory.contradiction", data);
     });
 
     source.addEventListener("memory.entity_changed", (event) => {
-      handleMemoryBrainEvent(JSON.parse(event.data));
+      const data = JSON.parse(event.data);
+      handleMemoryBrainEvent(data);
+      emitStreamEvent("memory.entity_changed", data);
     });
+
+    source.onerror = () => {
+      setTelemetryMessage("Telemetry stream unavailable");
+      setTelemetrySimulated(true);
+      source.close();
+    };
 
     return () => {
       if (brainIdleTimerRef.current) {
@@ -313,7 +398,13 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       }
       source.close();
     };
-  }, [appendTranscript, handleMemoryBrainEvent, handleVoiceAudio]);
+  }, [
+    appendTranscript,
+    emitStreamEvent,
+    handleMemoryBrainEvent,
+    handleTelemetryEvent,
+    handleVoiceAudio,
+  ]);
 
   const value = useMemo(
     () => ({
@@ -323,8 +414,11 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       outputLevel,
       transcripts,
       telemetryLive,
+      telemetryMessage,
+      telemetrySimulated,
       submitPttAudio,
       setListening,
+      subscribeStreamEvents,
     }),
     [
       voiceState,
@@ -333,8 +427,11 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       outputLevel,
       transcripts,
       telemetryLive,
+      telemetryMessage,
+      telemetrySimulated,
       submitPttAudio,
       setListening,
+      subscribeStreamEvents,
     ],
   );
 
