@@ -90,15 +90,64 @@ Exit gate satisfied — `verify:hotfix-p8` green (local). CI step after Verify P
 
 **Governance:** [phase-10-contract.md](./governance/phase-10-contract.md) APPROVED · [ADR-036](./governance/adr/ADR-036-live-ops-pipeline-truth.md)
 
-**Prerequisites:** Phase 9 @ `9960c92` · P8 hotfix @ `e7908d1` · `verify:hotfix-p8` green on `main`
+**Prerequisites:** Phase 9 @ `9960c92` · P8 hotfix @ `e7908d1`
 
-| Wave | Slice | Status | Spawn |
-|------|-------|--------|-------|
-| **1** | **P10-A** Dev stack default | **READY** | **NOW** (Ops agent) |
-| **1** | **P10-B** Worker health + pipeline honesty | **READY** | **NOW** (BFF agent) |
-| **2** | **P10-E** Verify (+ optional P10-D perf) | **BLOCKED** | After P10-A + P10-B report |
+| Wave | Slice | Status | Commit |
+|------|-------|--------|--------|
+| **1** | **P10-A** Dev stack default | **DONE** | `45880e6` |
+| **1** | **P10-B** Worker health + pipeline honesty | **DONE** (uncommitted) | pending |
+| **2** | **P10-E** Verify (+ P10-D perf smoke) | **DONE** (uncommitted) | pending |
+| **3** | **P10-F** (optional) Wire C117 in `events/stream` | **OPEN** | — |
 
-**Parallel:** P6.2-A workspace shell **MAY** spawn with Wave 1 (Amendment Q). P6.2-B globe pulse **after** Phase 10 functional sign-off.
+**Blockers before Phase 10 APPROVED:**
+
+1. Commit + push P10-B and P10-E working tree
+2. Full `verify:phase-10` green — blocked by pre-existing **cockpit-brain-7 C69** latency flake inside nested hotfix chain (not P10 regression)
+3. Optional P10-F: gate outbox poll on `isOutboxDrainAllowed()` in `apps/web/app/api/v1/events/stream/route.ts`
+
+**Parallel:** P6.2-A workspace shell **MAY** still spawn (Amendment Q). P6.2-B after Phase 10 sign-off.
+
+---
+
+### Card P10-A — Agent Ops dev stack (COMPLETED — Wave 1)
+
+Report: `dev-stack.mjs` passes `ZEREF_WORKER_AVAILABLE=1` to web; root `dev` → `dev:stack`; CI_SETUP + DEV_PERFORMANCE + ops docs. **Commit:** `45880e6`
+
+---
+
+### Card P10-B — Agent BFF worker health (COMPLETED — Wave 1, uncommitted)
+
+Report: `GET /api/v1/ops/worker-health`; phase10 contracts + fixture; 10/10 unit tests (`phase-10-ops.test.mjs`); C124 env-only health handler. **Note:** `isOutboxDrainAllowed()` exported but not wired to `events/stream` — defer P10-F.
+
+---
+
+### Card P10-E — Agent QA verify (COMPLETED — Wave 2, uncommitted)
+
+Report: `verify-phase-10.mjs` chains hotfix-p8 → phase-9; `cockpit-ops-10.spec.ts` 1/1; CI step after P8 hotfix; `perf-smoke.mjs` advisory (44ms warm). Phase 10 scoped checks green; full chain fails on C69 flake. **Do not re-spawn.**
+
+---
+
+### Card P10-F — Agent BFF C117 stream gate (OPTIONAL — Wave 3)
+
+```text
+You are the Zeref BFF agent for Phase 10 slice P10-F (C117 completion).
+
+HARD RULE
+- Implement ONLY: apps/web/app/api/v1/events/stream/route.ts, apps/web/test/** (stream gate test if needed).
+- Do NOT edit scripts/**, packages/**, hud/**, worker/**.
+- STOP with report.
+
+Read first:
+1. apps/web/lib/cockpit/simulated-pipeline.ts — isOutboxDrainAllowed()
+2. apps/web/app/api/v1/events/stream/route.ts — current outbox poll
+3. docs/governance/phase-10-contract.md C117
+
+Deliverable: Gate outbox drain/poll on isOutboxDrainAllowed() so DB-present + worker-absent stays simulated-only.
+
+Acceptance: npm test -w @zeref/web; existing phase-10-ops tests still pass.
+
+Report: commit hash, test output.
+```
 
 ---
 
@@ -115,90 +164,6 @@ Exit gate satisfied — `verify:hotfix-p8` green (local). CI step after Verify P
 **Status:** Contract draft — [phase-6.2-contract.md](./governance/phase-6.2-contract.md) + [ADR-035](./governance/adr/ADR-035-globe-pulse-workspace-ux.md). P6.2-A may parallel P10 Wave 1.
 
 Preview: workspace mode (deep routes hide grid), unified header, hero globe ≥58vh, voice pulse + JARVIS sync rings, optional Luke widgets Wave 3.
-
----
-
-### Card P10-A — Agent Ops dev stack (Wave 1 — SPAWN NOW)
-
-```text
-You are the Zeref Ops agent for Phase 10 slice P10-A.
-
-HARD RULE
-- Implement ONLY: scripts/dev-stack.mjs, root package.json (scripts), docs/DEV_PERFORMANCE.md, docs/CI_SETUP.md, docs/CURRENT_STATE.md (ops section).
-- Do NOT edit apps/web/**, packages/**, apps/worker/**.
-- STOP with report.
-
-Read first:
-1. docs/governance/phase-10-contract.md (C111–C112, C121–C122 docs)
-2. docs/governance/phase-5.0.1-contract.md
-3. scripts/dev-stack.mjs
-
-Deliverables
-1. dev-stack.mjs passes ZEREF_WORKER_AVAILABLE=1 to web child env
-2. Document dev:stack as default local entry; npm run dev alone = web-only (no queue consumer)
-3. DEV_PERFORMANCE § Operator UAT — build+start for perf testing; dev cold compile expectations
-4. Optional root "dev" → dev:stack if non-breaking
-
-Acceptance
-- Manual: npm run dev:stack starts db+worker+web with ZEREF_WORKER_AVAILABLE=1 on web
-- verify:hotfix-p8 + verify:phase-9 still pass
-
-Report: commit hash, smoke steps.
-```
-
----
-
-### Card P10-B — Agent BFF worker health + pipeline honesty (Wave 1 — SPAWN NOW)
-
-```text
-You are the Zeref BFF agent for Phase 10 slice P10-B.
-
-HARD RULE
-- Implement ONLY: apps/web/lib/ops/**, apps/web/app/api/v1/ops/worker-health/**, packages/contracts/src/phase10/**, fixtures/phase-10/**, apps/web/lib/cockpit/simulated-pipeline.ts, apps/web/test/** (ops tests).
-- Do NOT edit apps/web/components/hud/**, apps/worker/**, scripts/**.
-- STOP with report.
-
-Read first:
-1. docs/governance/phase-10-contract.md (C113–C117, C124)
-2. apps/web/lib/cockpit/outbox-drain.ts (already exists)
-3. apps/web/lib/cockpit/simulated-pipeline.ts
-4. apps/worker/src/lib/cockpit-outbox.ts
-5. phase-8-contract Amendment J
-
-Deliverables
-1. GET /api/v1/ops/worker-health — { consuming, source }
-2. WorkerHealthResponseSchema in @zeref/contracts phase10 + fixture worker-health.valid.json
-3. Unit test: drainCockpitOutboxOnce emits pipeline simulated:false
-4. Unit test C117: no non-simulated pipeline when worker unavailable
-5. C124: outbox poll stays async; no sync DB on request handlers
-
-Acceptance
-- npm test -w @zeref/web (new tests)
-- npm run build -w @zeref/contracts
-- ZEREF_BFF_FIXTURE=1: health returns consuming:false honestly
-
-Report: commit hash, sample JSON, test output.
-```
-
----
-
-### Card P10-E — Agent QA verify (Wave 2 — after P10-A + P10-B)
-
-```text
-You are the Zeref QA agent for Phase 10 slice P10-E.
-
-HARD RULE: scripts/verify-phase-10.mjs, apps/web/e2e/cockpit-ops-10.spec.ts, package.json, .github/workflows/ci.yml (step after hotfix), docs/governance/verify.md ONLY.
-
-Deliverables
-1. verify:phase-10 chains verify:hotfix-p8 → verify:phase-9
-2. cockpit-ops-10.spec.ts with ZEREF_PHASE10_OPS=1
-3. CI step after Verify P8 hotfix
-4. Optional P10-D: scripts/perf-smoke.mjs advisory (warm next start timing); document C122 budget
-
-Acceptance: npm run verify:phase-10 green; verify:hotfix-p8 still green.
-
-STOP with report.
-```
 
 ---
 
