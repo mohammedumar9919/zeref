@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-14 (Phase 10 exit gate — C69 fix @ `0634f86`, verify:phase-10 green)  
+**Last updated:** 2026-06-14 (Phase 10.5 Wave 0 — governance; spawn P10.5-A/B/C)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -28,9 +28,10 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
 | **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ `e7908d1` — B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` green |
 | Phase 6.2 Visual Tier 3 | **PLANNING** — P6.2-A **MAY** parallel P10 Wave 1 (Amendment Q); P6.2-B after P10 sign-off |
-| Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `0634f86` — P10-A `45880e6`, P10-B `bd5da5f`, P10-F `780ac36`, P10-E `5a1c28f`; C69 tolerance `0634f86`; full `verify:phase-10` green 2026-06-14 |
+| Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `d8ce6c0` — full `verify:phase-10` green 2026-06-14 |
+| Phase 10.5 Stabilize & Instant | **IN PROGRESS** — Wave 0 governance; **Wave 1 = P10.5-A ∥ B ∥ C** |
 
-**Immediate goal:** Phase 10 Planner sign-off; optional P6.2 / P6.1 visual follow-ups.
+**Immediate goal:** User spawns **P10.5-A**, **P10.5-B**, **P10.5-C** in parallel → Wave 2 **P10.5-D** verify → user perf UAT (`next start`, nav &lt; 800ms).
 
 ### P8 hotfix root cause
 

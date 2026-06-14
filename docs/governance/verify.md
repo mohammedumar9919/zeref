@@ -565,3 +565,46 @@ node scripts/perf-smoke.mjs
 In `verify:phase-10`, C122 runs **before** the C119 Playwright spec against a shared warm `next start` (`ZEREF_PLAYWRIGHT_REUSE=1` for e2e) so perf-smoke is not skipped after webServer teardown.
 
 Standalone `perf-smoke.mjs` exits non-zero above advisory budget; `verify:phase-10` invokes `--advisory` mode and never fails on perf alone.
+
+---
+
+## Phase 10.5 (stabilize & instant)
+
+**Contract:** [phase-10.5-contract.md](./phase-10.5-contract.md) (C125–C140) · **ADR:** [037](./adr/ADR-037-sse-outbox-consolidation.md) · [038](./adr/ADR-038-worker-health-real-probe.md)
+
+Chains **`verify:phase-10`** (Phases 0–10 + hotfix preserved), then Phase 10.5 contract/unit/stability checks.
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_PHASE10_OPS='1'
+$env:ZEREF_PHASE105_STABILITY='1'
+npm run verify:phase-10.5
+```
+
+**User terminal only** for full gate + warm perf UAT (`next build && next start`; panel nav < 800ms).
+
+### What `verify:phase-10.5` checks (P10.5-D)
+
+Script: `scripts/verify-phase-10.5.mjs` (Wave 2)
+
+- **C140:** chains `verify:phase-10` first
+- `phase-10.5-contract.md`, ADR-037/038 present
+- `@zeref/web` unit tests (ops + voice + events suites)
+- Optional Playwright `cockpit-stability-10.5` — single EventSource / nav persistence (when `ZEREF_PHASE105_STABILITY=1`)
+- **No regression** on C113–C124 honesty gates
+
+### CI (after Wave 2)
+
+After **Verify Phase 10**:
+
+- `ZEREF_PHASE105_STABILITY=1` + inherited Phase 10 env
+- `npm run verify:phase-10.5`
+
+### Perf exit gates (operator UAT — not blocking CI by default)
+
+| Metric | Target |
+|--------|--------|
+| Warm panel nav | **800ms** between cockpit panels (`next start`) |
+| Button feedback | **100ms** optimistic enqueue/save/schedule |
+| C122 advisory | 500ms target / 2000ms advisory (carry-forward) |

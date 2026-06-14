@@ -86,7 +86,170 @@ Exit gate satisfied — `verify:hotfix-p8` green (local). CI step after Verify P
 
 ---
 
-## IN PROGRESS — Phase 10 Live Ops & Pipeline Truth (2026-06-10)
+## IN PROGRESS — Phase 10.5 Stabilize & Instant (2026-06-14)
+
+**Governance:** [phase-10.5-contract.md](./governance/phase-10.5-contract.md) APPROVED · [ADR-037](./governance/adr/ADR-037-sse-outbox-consolidation.md) · [ADR-038](./governance/adr/ADR-038-worker-health-real-probe.md)
+
+**Prerequisites:** Phase 10 @ `d8ce6c0` · `verify:phase-10` green
+
+| Wave | Slice | Status | Spawn |
+|------|-------|--------|-------|
+| **0** | Lead governance | **DONE** | — |
+| **1** | **P10.5-A** Cockpit shell / single SSE | **READY** | **NOW** |
+| **1** | **P10.5-B** Backend singletons + probe | **READY** | **NOW** |
+| **1** | **P10.5-C** Perf + nano drift | **READY** | **NOW** |
+| **2** | **P10.5-D** verify:phase-10.5 + CI | **BLOCKED** | After A+B+C report |
+
+**Council mandatory:** A → layout/SSE; B → stream/enqueue/health; C → cockpit-bff.
+
+---
+
+### Card P10.5-A — Cockpit shell / single SSE (Wave 1 — SPAWN NOW)
+
+```text
+You are the Zeref UI agent for Phase 10.5 slice P10.5-A.
+
+HARD RULE — ALLOWED ONLY:
+- apps/web/app/cockpit/layout.tsx
+- apps/web/app/cockpit/*/page.tsx (ONLY remove VoiceHudShell wrapper)
+- apps/web/components/voice/VoiceProvider.tsx
+- apps/web/components/hud/VoiceHudShell.tsx
+- apps/web/components/hud/TelemetryStrip.tsx
+
+FORBIDDEN: apps/web/app/api/**, lib/jobs/**, lib/ops/**, cockpit-bff.ts, bff.ts, HudHeader.tsx, loading.tsx, docs/**, scripts/**
+
+Read first:
+1. docs/governance/phase-10.5-contract.md (C125-C128)
+2. docs/governance/adr/ADR-037-sse-outbox-consolidation.md
+3. apps/web/app/cockpit/layout.tsx (currently passthrough)
+4. Any cockpit page using VoiceHudShell (research, calendar, studio, reports)
+
+TASK
+- Move VoiceProvider + VoiceHudShell into cockpit/layout.tsx (ONE provider + ONE SSE for whole cockpit)
+- Remove per-page VoiceHudShell from every cockpit/*/page.tsx
+- TelemetryStrip consumes shared voice/event stream — NO second EventSource; close on error (no reconnect storm)
+
+Acceptance
+- npm test -w @zeref/web (voice + cockpit suites green)
+- Manual: nav all panels — one EventSource in Network tab; voice state persists
+
+COUNCIL: council-review-slice REQUIRED before merge (layout + VoiceProvider).
+
+Report: commit hash, manual smoke, blockers. STOP with report.
+```
+
+---
+
+### Card P10.5-B — Backend singletons & honesty (Wave 1 — SPAWN NOW)
+
+```text
+You are the Zeref BFF/Ops agent for Phase 10.5 slice P10.5-B.
+
+HARD RULE — ALLOWED ONLY:
+- apps/web/lib/jobs/enqueue-job.ts
+- apps/web/app/api/v1/events/stream/route.ts
+- apps/web/lib/ops/worker-health.ts
+- apps/web/lib/cockpit/outbox-drain.ts (+ new poller under lib/cockpit/)
+- scripts/dev-stack.mjs
+- .env.example
+
+FORBIDDEN: apps/web/app/cockpit/**, components/**, cockpit-bff.ts, bff.ts, docs/**
+
+Read first:
+1. docs/governance/phase-10.5-contract.md (C129-C131, C139)
+2. ADR-037, ADR-038
+3. apps/web/lib/cockpit/simulated-pipeline.ts (isOutboxDrainAllowed)
+4. phase-10-contract C117/C124
+
+TASK
+- pg-boss singleton: module-level pool; no start/stop per enqueue click
+- ONE process-level outbox poller; events/stream subscribes (keep C117 gating)
+- worker-health: real probe (not env echo only) per ADR-038
+- dev-stack: Whisper sidecar OR ZEREF_WHISPER_MOCK; set ZEREF_PHASE8_PRODUCT + ZEREF_PHASE9_RESEARCH on web
+- .env.example: document all fixture/phase/mock flags
+
+Acceptance
+- npm test -w @zeref/web (ops + events green)
+- npm run verify:phase-10 must stay green (C113-C124)
+
+COUNCIL: council-review-slice REQUIRED (stream + enqueue + health).
+
+Report: commit hash, sample worker-health JSON, blockers. STOP with report.
+```
+
+---
+
+### Card P10.5-C — Perf + nano drift (Wave 1 — SPAWN NOW)
+
+```text
+You are the Zeref UI/BFF agent for Phase 10.5 slice P10.5-C.
+
+HARD RULE — ALLOWED ONLY:
+- apps/web/app/cockpit/**/loading.tsx (new)
+- apps/web/lib/cockpit-bff.ts
+- apps/web/lib/bff.ts
+- apps/web/components/hud/HudHeader.tsx
+- apps/web/app/settings/page.tsx
+- apps/web/components/calendar/CalendarScheduler.tsx
+- apps/web/lib/calendar/calendar-scheduler-utils.ts
+- docs/api-contracts.md
+
+FORBIDDEN: cockpit/layout.tsx, voice/**, VoiceHudShell.tsx, TelemetryStrip.tsx, app/api/**, lib/jobs/**, lib/ops/**, scripts/**
+
+Read first:
+1. docs/governance/phase-10.5-contract.md (C132-C138)
+2. DEV_PERFORMANCE.md § Operator UAT
+
+TASK
+- loading.tsx + Suspense on cockpit routes
+- Parallelize RSC in cockpit-bff (Promise.all not sequential)
+- Optimistic UI on enqueue/save/schedule (<100ms feedback)
+- CalendarScheduler: next/link not <a href> (~L548)
+- N1 HudHeader real phase chip; N2 version markers; N5 api-contracts CockpitBffError; N6 research job type in calendar UI
+
+Acceptance
+- npm test -w @zeref/web (calendar + cockpit green)
+- Manual warm nav target <800ms (document if dev compile skews)
+
+COUNCIL: council-review-slice REQUIRED for cockpit-bff.ts.
+
+Report: commit hash, files changed, blockers. STOP with report.
+```
+
+---
+
+### Card P10.5-D — Verify gate (Wave 2 — after A+B+C)
+
+```text
+You are the Zeref QA agent for Phase 10.5 slice P10.5-D.
+
+HARD RULE: scripts/verify-phase-10.5.mjs, apps/web/e2e/cockpit-stability-10.5.spec.ts (optional), package.json, .github/workflows/ci.yml, docs/governance/verify.md ONLY.
+
+Deliverables
+1. verify:phase-10.5 chains verify:phase-10
+2. Stability e2e with ZEREF_PHASE105_STABILITY=1 (single EventSource / nav)
+3. CI step after Verify Phase 10
+
+Acceptance: verify:phase-10.5 green; verify:phase-10 still green.
+
+STOP with report.
+```
+
+---
+
+## COMPLETED — Phase 10 Live Ops (2026-06-14)
+
+| Slice | Commit |
+|-------|--------|
+| Governance | `f15466b` |
+| P10-A | `45880e6` |
+| P10-F | `780ac36` |
+| P10-B | `bd5da5f` |
+| P10-E | `5a1c28f` |
+| C69 fix | `0634f86` |
+| Exit gate | `d8ce6c0` |
+
+---
 
 **Governance:** [phase-10-contract.md](./governance/phase-10-contract.md) APPROVED · [ADR-036](./governance/adr/ADR-036-live-ops-pipeline-truth.md)
 
