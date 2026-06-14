@@ -9,6 +9,7 @@ export const PHASE6_CONTRACT_VERSION = "6.0.0";
 export const PHASE7_CONTRACT_VERSION = "7.0.0";
 export const PHASE8_CONTRACT_VERSION = "8.0.0";
 export const PHASE9_CONTRACT_VERSION = "9.0.0";
+export const PHASE10_CONTRACT_VERSION = "10.0.0";
 
 export {
   PlatformSchema,
@@ -224,6 +225,11 @@ export {
   type CockpitSlicesV9,
   type CockpitResearchItemV9,
 } from "./phase9/index.js";
+
+export {
+  WorkerHealthResponseSchema,
+  type WorkerHealthResponse,
+} from "./phase10/index.js";
 
 export {
   NormalizedPostPayloadSchema,
