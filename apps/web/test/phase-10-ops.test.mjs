@@ -33,6 +33,9 @@ const cockpitBus = await import(
 const outboxDrain = await import(
   pathToFileURL(join(webRoot, "lib/cockpit/outbox-drain.ts")).href
 );
+const outboxPoller = await import(
+  pathToFileURL(join(webRoot, "lib/cockpit/outbox-poller.ts")).href
+);
 const dbModule = await import(pathToFileURL(join(webRoot, "lib/db.ts")).href);
 const eventsRoute = await import(
   pathToFileURL(join(webRoot, "app/api/v1/events/stream/route.ts")).href
@@ -56,6 +59,7 @@ describe("phase 10 ops (fixture mode)", () => {
 
   after(() => {
     clearPhase10Env();
+    outboxPoller.stopCockpitOutboxPollerForTests();
     cockpitBus.resetCockpitEventBusForTests();
     dbModule.resetDbPoolForTests();
   });
@@ -77,21 +81,26 @@ describe("phase 10 ops (fixture mode)", () => {
     assert.equal(body.source, "fixture");
   });
 
-  it("resolveWorkerHealth uses env source when worker absent without fixture", () => {
+  it("resolveWorkerHealth uses env fallback without DATABASE_URL (ADR-038)", () => {
     delete process.env.ZEREF_BFF_FIXTURE;
+    delete process.env.DATABASE_URL;
     delete process.env.ZEREF_WORKER_AVAILABLE;
+    dbModule.resetDbPoolForTests();
     const health = workerHealthLib.resolveWorkerHealth();
     contracts.WorkerHealthResponseSchema.parse(health);
     assert.equal(health.consuming, false);
     assert.equal(health.source, "env");
   });
 
-  it("resolveWorkerHealth reports pg-boss when ZEREF_WORKER_AVAILABLE=1", () => {
+  it("resolveWorkerHealth does not trust env alone when DB is configured (ADR-038)", () => {
     delete process.env.ZEREF_BFF_FIXTURE;
     process.env.ZEREF_WORKER_AVAILABLE = "1";
+    process.env.DATABASE_URL = "postgres://zeref:zeref@localhost:5434/zeref";
+    dbModule.resetDbPoolForTests();
     const health = workerHealthLib.resolveWorkerHealth();
-    assert.equal(health.consuming, true);
-    assert.equal(health.source, "pg-boss");
+    contracts.WorkerHealthResponseSchema.parse(health);
+    assert.equal(health.consuming, false);
+    assert.equal(health.source, "probe");
   });
 
   it("C117: isOutboxDrainAllowed is false when worker unavailable", () => {
@@ -149,22 +158,33 @@ describe("phase 10 ops (fixture mode)", () => {
   });
 
   it("C117: events/stream gates outbox drain on isOutboxDrainAllowed", async () => {
-    const source = readFileSync(
+    const streamSource = readFileSync(
       join(webRoot, "app/api/v1/events/stream/route.ts"),
       "utf8",
     );
-    assert.match(source, /isOutboxDrainAllowed\(\)/);
-    assert.match(source, /if \(getDb\(\) && isOutboxDrainAllowed\(\)\)/);
+    const pollerSource = readFileSync(
+      join(webRoot, "lib/cockpit/outbox-poller.ts"),
+      "utf8",
+    );
+    assert.match(streamSource, /ensureCockpitOutboxPollerRunning/);
+    assert.match(pollerSource, /isOutboxDrainAllowed\(\)/);
+    assert.match(pollerSource, /getDb\(\)/);
   });
 
-  it("C124: events/stream outbox poll is async (no await on drain in handler)", async () => {
-    const source = readFileSync(
+  it("C124: process-level outbox poller drains async (no per-connection setInterval)", async () => {
+    const streamSource = readFileSync(
       join(webRoot, "app/api/v1/events/stream/route.ts"),
       "utf8",
     );
-    assert.match(source, /void drainCockpitOutboxOnce\(\)/);
-    assert.match(source, /setInterval\(\(\) => \{\s*void drainCockpitOutboxOnce\(\)/s);
-    assert.doesNotMatch(source, /await drainCockpitOutboxOnce/);
+    const pollerSource = readFileSync(
+      join(webRoot, "lib/cockpit/outbox-poller.ts"),
+      "utf8",
+    );
+    assert.doesNotMatch(streamSource, /drainCockpitOutboxOnce/);
+    assert.match(streamSource, /ensureCockpitOutboxPollerRunning/);
+    assert.match(pollerSource, /setInterval/);
+    assert.match(pollerSource, /void drainCockpitOutboxOnce\(\)/);
+    assert.doesNotMatch(streamSource, /await drainCockpitOutboxOnce/);
   });
 });
 
@@ -217,6 +237,7 @@ describe(
 
     after(async () => {
       delete process.env.ZEREF_WORKER_AVAILABLE;
+      outboxPoller.stopCockpitOutboxPollerForTests();
       dbModule.resetDbPoolForTests();
       cockpitBus.resetCockpitEventBusForTests();
       if (pool) {

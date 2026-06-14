@@ -28,6 +28,39 @@ const ENQUEUE_RETRY_OPTIONS = {
   retryDelay: 30,
 } as const;
 
+let pgBossInstance: PgBoss | null = null;
+let pgBossStartPromise: Promise<PgBoss> | null = null;
+
+async function getPgBoss(): Promise<PgBoss> {
+  const connectionString = getDatabaseUrl();
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not configured for job enqueue");
+  }
+
+  if (pgBossInstance) {
+    return pgBossInstance;
+  }
+
+  pgBossStartPromise ??= (async () => {
+    const boss = new PgBoss({
+      connectionString,
+      supervise: false,
+      monitorStateIntervalSeconds: null,
+    });
+    await boss.start();
+    pgBossInstance = boss;
+    return boss;
+  })();
+
+  return pgBossStartPromise;
+}
+
+/** Test hook — clears cached pg-boss singleton between cases. */
+export function resetPgBossForTests(): void {
+  pgBossInstance = null;
+  pgBossStartPromise = null;
+}
+
 export type EnqueueJobResult = {
   jobId: string;
   queued: boolean;
@@ -123,29 +156,22 @@ export async function enqueueJob(rawBody: unknown): Promise<EnqueueJobResult> {
     };
   }
 
-  const connectionString = getDatabaseUrl();
-  if (!connectionString) {
+  if (!getDatabaseUrl()) {
     throw new Error("DATABASE_URL is not configured for job enqueue");
   }
 
   const payload = buildWorkerJobPayload(request);
-  const boss = new PgBoss(connectionString);
-  await boss.start();
-
-  try {
-    const jobId = await boss.send(request.jobType, payload, ENQUEUE_RETRY_OPTIONS);
-    if (!jobId) {
-      throw new Error("pg-boss did not return a job id");
-    }
-
-    return {
-      jobId,
-      queued: true,
-      workerConsuming,
-    };
-  } finally {
-    await boss.stop();
+  const boss = await getPgBoss();
+  const jobId = await boss.send(request.jobType, payload, ENQUEUE_RETRY_OPTIONS);
+  if (!jobId) {
+    throw new Error("pg-boss did not return a job id");
   }
+
+  return {
+    jobId,
+    queued: true,
+    workerConsuming,
+  };
 }
 
 /** Test hook — resets in-memory phase-8 fixture stores. */

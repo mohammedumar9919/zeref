@@ -4,15 +4,8 @@ import {
   TELEMETRY_HEARTBEAT_INTERVAL_MS,
 } from "@/lib/events";
 import { getCockpitEventBus } from "@/lib/cockpit/cockpit-event-bus";
-import {
-  COCKPIT_OUTBOX_POLL_MS,
-  drainCockpitOutboxOnce,
-} from "@/lib/cockpit/outbox-drain";
-import {
-  emitSimulatedPipelineIfWorkerAbsent,
-  isOutboxDrainAllowed,
-} from "@/lib/cockpit/simulated-pipeline";
-import { getDb } from "@/lib/db";
+import { ensureCockpitOutboxPollerRunning } from "@/lib/cockpit/outbox-poller";
+import { emitSimulatedPipelineIfWorkerAbsent } from "@/lib/cockpit/simulated-pipeline";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +13,6 @@ export const dynamic = "force-dynamic";
 export async function GET(): Promise<Response> {
   const encoder = new TextEncoder();
   let heartbeatTimer: ReturnType<typeof setInterval> | undefined;
-  let outboxTimer: ReturnType<typeof setInterval> | undefined;
   let unsubscribeCockpit: (() => void) | undefined;
 
   const stream = new ReadableStream({
@@ -36,13 +28,7 @@ export async function GET(): Promise<Response> {
       });
 
       emitSimulatedPipelineIfWorkerAbsent();
-
-      if (getDb() && isOutboxDrainAllowed()) {
-        void drainCockpitOutboxOnce();
-        outboxTimer = setInterval(() => {
-          void drainCockpitOutboxOnce();
-        }, COCKPIT_OUTBOX_POLL_MS);
-      }
+      ensureCockpitOutboxPollerRunning();
 
       heartbeatTimer = setInterval(() => {
         controller.enqueue(encoder.encode(formatSseEvent("heartbeat")));
@@ -51,9 +37,6 @@ export async function GET(): Promise<Response> {
     cancel() {
       if (heartbeatTimer !== undefined) {
         clearInterval(heartbeatTimer);
-      }
-      if (outboxTimer !== undefined) {
-        clearInterval(outboxTimer);
       }
       unsubscribeCockpit?.();
     },
