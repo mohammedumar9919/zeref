@@ -8,7 +8,10 @@ import {
   COCKPIT_OUTBOX_POLL_MS,
   drainCockpitOutboxOnce,
 } from "@/lib/cockpit/outbox-drain";
-import { emitSimulatedPipelineIfWorkerAbsent } from "@/lib/cockpit/simulated-pipeline";
+import {
+  emitSimulatedPipelineIfWorkerAbsent,
+  isOutboxDrainAllowed,
+} from "@/lib/cockpit/simulated-pipeline";
 import { getDb } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +37,7 @@ export async function GET(): Promise<Response> {
 
       emitSimulatedPipelineIfWorkerAbsent();
 
-      if (getDb()) {
+      if (getDb() && isOutboxDrainAllowed()) {
         void drainCockpitOutboxOnce();
         outboxTimer = setInterval(() => {
           void drainCockpitOutboxOnce();
