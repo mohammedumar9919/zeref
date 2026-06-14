@@ -95,10 +95,10 @@ Exit gate satisfied — `verify:hotfix-p8` green (local). CI step after Verify P
 | Wave | Slice | Status | Spawn |
 |------|-------|--------|-------|
 | **0** | Lead governance | **DONE** | — |
-| **1** | **P10.5-A** Cockpit shell / single SSE | **READY** | **NOW** |
-| **1** | **P10.5-B** Backend singletons + probe | **READY** | **NOW** |
-| **1** | **P10.5-C** Perf + nano drift | **READY** | **NOW** |
-| **2** | **P10.5-D** verify:phase-10.5 + CI | **BLOCKED** | After A+B+C report |
+| **1** | **P10.5-A** Cockpit shell / single SSE | **DONE** | `a938875` |
+| **1** | **P10.5-B** Backend singletons + probe | **DONE** | `0f69275` |
+| **1** | **P10.5-C** Perf + nano drift | **DONE** | `892d013` |
+| **2** | **P10.5-D** verify:phase-10.5 + CI | **DONE** | `e9ba6df` |
 
 **Council mandatory:** A → layout/SSE; B → stream/enqueue/health; C → cockpit-bff.
 
