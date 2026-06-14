@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
+import { useCallback, useMemo, useRef, useState } from "react";
 
-import type { CalendarEvent, CalendarEventStatus, UiJobType } from "@zeref/contracts";
+import type { CalendarEvent, CalendarEventStatus } from "@zeref/contracts";
 
 import {
   UI_JOB_TYPES,
@@ -11,6 +12,7 @@ import {
   groupEventsByWeek,
   isDueForManualEnqueue,
   toDatetimeLocalValue,
+  type CalendarUiJobType,
 } from "./calendar-scheduler-utils";
 
 type CalendarSchedulerProps = {
@@ -24,9 +26,10 @@ type FormMode = "create" | "edit";
 type EventFormState = {
   title: string;
   scheduledAtLocal: string;
-  jobType: UiJobType | "";
+  jobType: CalendarUiJobType | "";
   entityId: string;
   snapshotId: string;
+  topicId: string;
   status: CalendarEventStatus;
 };
 
@@ -42,6 +45,7 @@ function defaultFormState(): EventFormState {
     jobType: "",
     entityId: "",
     snapshotId: "",
+    topicId: "",
     status: "scheduled",
   };
 }
@@ -50,12 +54,16 @@ function formFromEvent(event: CalendarEvent): EventFormState {
   const payload = event.payload as Record<string, unknown>;
   const entityRaw = payload.normalizedEntityId ?? payload.entityId;
   const snapshotRaw = payload.snapshotId;
+  const topicRaw = payload.topicId;
   return {
     title: event.title,
     scheduledAtLocal: toDatetimeLocalValue(event.scheduledAt),
-    jobType: (event.jobType as UiJobType | undefined) ?? "",
+    jobType: UI_JOB_TYPES.includes(event.jobType as CalendarUiJobType)
+      ? (event.jobType as CalendarUiJobType)
+      : "",
     entityId: typeof entityRaw === "string" ? entityRaw : "",
     snapshotId: typeof snapshotRaw === "string" ? snapshotRaw : "",
+    topicId: typeof topicRaw === "string" ? topicRaw : "",
     status: event.status,
   };
 }
@@ -67,6 +75,9 @@ function buildPayloadFromForm(form: EventFormState): Record<string, unknown> {
   }
   if (form.snapshotId.trim()) {
     payload.snapshotId = form.snapshotId.trim();
+  }
+  if (form.topicId.trim()) {
+    payload.topicId = form.topicId.trim();
   }
   return payload;
 }
@@ -111,6 +122,7 @@ export function CalendarScheduler({
   const [enqueueState, setEnqueueState] = useState<EnqueueState>("idle");
   const [workerWarning, setWorkerWarning] = useState<string | null>(null);
   const [lastJobId, setLastJobId] = useState<string | null>(null);
+  const eventsSnapshotRef = useRef<CalendarEvent[] | null>(null);
 
   const selectedEvent = useMemo(
     () => events.find((e) => e.id === selectedId) ?? null,
@@ -144,12 +156,31 @@ export function CalendarScheduler({
     setEvents(data.events);
   }, []);
 
+  const buildOptimisticEvent = useCallback(
+    (id: string): CalendarEvent => ({
+      id,
+      title: form.title.trim(),
+      scheduledAt: fromDatetimeLocalValue(form.scheduledAtLocal),
+      ...(form.jobType ? { jobType: form.jobType } : {}),
+      payload: buildPayloadFromForm(form),
+      status: form.status,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }),
+    [form],
+  );
+
   const saveEvent = useCallback(async () => {
-    setSaveState("saving");
-    setSaveError(null);
+    eventsSnapshotRef.current = null;
 
     try {
       if (formMode === "create") {
+        const optimisticId = `optimistic-${Date.now()}`;
+        setEvents((prev) => {
+          eventsSnapshotRef.current = prev;
+          return [buildOptimisticEvent(optimisticId), ...prev];
+        });
+
         const response = await fetch("/api/v1/calendar/events", {
           method: "POST",
           headers: { "content-type": "application/json" },
@@ -160,9 +191,16 @@ export function CalendarScheduler({
           throw new Error(body.error ?? `create failed (${response.status})`);
         }
         const created = (await response.json()) as CalendarEvent;
-        setEvents((prev) => [created, ...prev]);
+        setEvents((prev) => [created, ...prev.filter((event) => event.id !== optimisticId)]);
         selectEvent(created);
       } else if (selectedId) {
+        setEvents((prev) => {
+          eventsSnapshotRef.current = prev;
+          return prev.map((event) =>
+            event.id === selectedId ? buildOptimisticEvent(selectedId) : event,
+          );
+        });
+
         const response = await fetch(`/api/v1/calendar/events/${selectedId}`, {
           method: "PATCH",
           headers: { "content-type": "application/json" },
@@ -178,10 +216,14 @@ export function CalendarScheduler({
       }
       setSaveState("saved");
     } catch (err) {
+      if (eventsSnapshotRef.current) {
+        setEvents(eventsSnapshotRef.current);
+        eventsSnapshotRef.current = null;
+      }
       setSaveState("error");
       setSaveError(err instanceof Error ? err.message : "save failed");
     }
-  }, [form, formMode, selectEvent, selectedId]);
+  }, [buildOptimisticEvent, form, formMode, selectEvent, selectedId]);
 
   const runManualEnqueue = useCallback(
     async (event: CalendarEvent) => {
@@ -191,10 +233,6 @@ export function CalendarScheduler({
         setWorkerWarning("Event missing allowlisted job type or required ids for enqueue.");
         return;
       }
-
-      setEnqueueState("enqueueing");
-      setWorkerWarning(null);
-      setLastJobId(null);
 
       try {
         const response = await fetch("/api/v1/jobs/enqueue", {
@@ -380,6 +418,8 @@ export function CalendarScheduler({
           className="flex flex-col gap-4 rounded border border-hud-border bg-hud-panel/50 p-4"
           onSubmit={(e) => {
             e.preventDefault();
+            setSaveState("saving");
+            setSaveError(null);
             void saveEvent();
           }}
         >
@@ -433,7 +473,7 @@ export function CalendarScheduler({
                 setSaveState("idle");
                 setForm((prev) => ({
                   ...prev,
-                  jobType: e.target.value as UiJobType | "",
+                  jobType: e.target.value as CalendarUiJobType | "",
                 }));
               }}
             >
@@ -480,6 +520,22 @@ export function CalendarScheduler({
 
           <label className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
+              Topic ID (research)
+            </span>
+            <input
+              data-testid="calendar-form-topic-id"
+              type="text"
+              className="rounded border border-hud-border bg-hud-panel/60 px-3 py-2 font-mono text-xs text-hud-primary outline-none ring-hud-cyan/30 focus:ring-1"
+              value={form.topicId}
+              onChange={(e) => {
+                setSaveState("idle");
+                setForm((prev) => ({ ...prev, topicId: e.target.value }));
+              }}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
               Status
             </span>
             <select
@@ -517,7 +573,12 @@ export function CalendarScheduler({
                 data-testid="calendar-form-enqueue"
                 className="cursor-pointer rounded border border-amber-400/50 bg-amber-400/10 px-4 py-2 font-mono text-xs uppercase tracking-widest text-amber-200/90 transition-colors hover:bg-amber-400/20 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={!canEnqueueSelected || enqueueState === "enqueueing"}
-                onClick={() => void runManualEnqueue(selectedEvent)}
+                onClick={() => {
+                  setEnqueueState("enqueueing");
+                  setWorkerWarning(null);
+                  setLastJobId(null);
+                  void runManualEnqueue(selectedEvent);
+                }}
               >
                 {enqueueState === "enqueueing" ? "Enqueueing…" : "Run job now"}
               </button>
@@ -545,9 +606,9 @@ export function CalendarScheduler({
           Refresh list
         </button>
         {" · "}
-        <a href="/cockpit" className="text-hud-cyan hover:underline">
+        <Link href="/cockpit" className="text-hud-cyan hover:underline">
           ← Cockpit
-        </a>
+        </Link>
       </p>
     </section>
   );

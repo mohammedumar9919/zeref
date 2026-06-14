@@ -1,5 +1,5 @@
 import { getWebPhaseMarker } from "@/lib/bff";
-import { PHASE5_CONTRACT_VERSION } from "@zeref/contracts";
+import { PHASE10_CONTRACT_VERSION } from "@zeref/contracts";
 
 export default function SettingsPage(): React.ReactElement {
   const marker = getWebPhaseMarker();
@@ -11,8 +11,8 @@ export default function SettingsPage(): React.ReactElement {
     >
       <h1 className="text-2xl font-semibold text-hud-primary">Settings</h1>
       <p className="mt-2 text-sm text-hud-muted">
-        Phase 5 health and version panel. Voice and TTS toggles arrive in Phase
-        6.
+        Phase 10 health and version panel. Voice and TTS toggles arrive in Phase
+        11.
       </p>
 
       <section className="hud-panel mt-6 space-y-3 p-4">
@@ -22,7 +22,7 @@ export default function SettingsPage(): React.ReactElement {
         <dl className="space-y-2 font-mono text-xs text-hud-muted">
           <div className="flex justify-between gap-4">
             <dt>Contract</dt>
-            <dd className="text-hud-primary">{PHASE5_CONTRACT_VERSION}</dd>
+            <dd className="text-hud-primary">{PHASE10_CONTRACT_VERSION}</dd>
           </div>
           <div className="flex justify-between gap-4">
             <dt>Web marker</dt>

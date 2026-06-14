@@ -1,11 +1,10 @@
-const STATUS_CHIPS = [
-  "Online",
-  "Secure",
-  "RSC",
-  "Phase 6.1",
-] as const;
+import { getActivePhaseLabel } from "@/lib/bff";
+
+const STATUS_CHIPS = ["Online", "Secure", "RSC"] as const;
 
 export function HudHeader(): React.ReactElement {
+  const phaseLabel = getActivePhaseLabel();
+
   return (
     <header
       data-testid="hud-header"
@@ -24,7 +23,7 @@ export function HudHeader(): React.ReactElement {
           className="flex flex-wrap items-center gap-1.5"
           aria-label="System status"
         >
-          {STATUS_CHIPS.map((label) => (
+          {[...STATUS_CHIPS, phaseLabel].map((label) => (
             <li
               key={label}
               className="status-chip inline-flex items-center gap-1.5 rounded border border-hud-cyan/35 bg-hud-cyan/[0.07] px-2 py-0.5 font-mono text-[10px] uppercase leading-none tracking-[0.18em] text-hud-cyan"

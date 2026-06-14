@@ -1,17 +1,24 @@
 import type {
   CalendarEvent,
-  JobEnqueueRequest,
+  JobEnqueueRequestV9,
   NormalizedEntityId,
   SnapshotId,
-  UiJobType,
 } from "@zeref/contracts";
 
-/** Allowlisted job types for cockpit UI (Amendment F — no collect). */
-export const UI_JOB_TYPES: readonly UiJobType[] = [
+/** Allowlisted job types for cockpit UI (Amendment F — no collect; N6 adds research). */
+export type CalendarUiJobType =
+  | "normalize"
+  | "embed"
+  | "analyze"
+  | "report"
+  | "research";
+
+export const UI_JOB_TYPES: readonly CalendarUiJobType[] = [
   "normalize",
   "embed",
   "analyze",
   "report",
+  "research",
 ] as const;
 
 /** True when manual enqueue is allowed (Q5 — scheduled time has passed). */
@@ -30,18 +37,23 @@ function payloadSnapshotId(payload: Record<string, unknown>): string | undefined
   return typeof raw === "string" && raw.length > 0 ? raw : undefined;
 }
 
+function payloadTopicId(payload: Record<string, unknown>): string | undefined {
+  const raw = payload.topicId;
+  return typeof raw === "string" && raw.length > 0 ? raw : undefined;
+}
+
 /** Map persisted calendar event → BFF enqueue body (allowlisted types only). */
 export function buildEnqueueRequestFromEvent(
   event: CalendarEvent,
-): JobEnqueueRequest | null {
+): JobEnqueueRequestV9 | null {
   const jobType = event.jobType;
-  if (!jobType || !UI_JOB_TYPES.includes(jobType as UiJobType)) {
+  if (!jobType || !UI_JOB_TYPES.includes(jobType as CalendarUiJobType)) {
     return null;
   }
 
   const payload = event.payload as Record<string, unknown>;
   const base = {
-    jobType: jobType as UiJobType,
+    jobType: jobType as CalendarUiJobType,
     calendarEventId: event.id,
   };
 
@@ -66,6 +78,11 @@ export function buildEnqueueRequestFromEvent(
         ...(entityId ? { entityId: entityId as NormalizedEntityId } : {}),
         ...(snapshotId ? { snapshotId: snapshotId as SnapshotId } : {}),
       };
+    }
+    case "research": {
+      const topicId = payloadTopicId(payload);
+      if (!topicId) return null;
+      return { ...base, topicId };
     }
     default:
       return null;

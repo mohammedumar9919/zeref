@@ -145,24 +145,47 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
     throw new Error("DATABASE_URL is not configured for cockpit BFF");
   }
 
-  const studioRows = await db
-    .select({
-      id: normalizedEntities.id,
-      snapshotId: normalizedEntities.snapshotId,
-      payloadJson: normalizedEntities.payloadJson,
-      createdAt: normalizedEntities.createdAt,
-    })
-    .from(normalizedEntities)
-    .orderBy(desc(normalizedEntities.createdAt))
-    .limit(10);
-
-  const draftRows = await db
-    .select({
-      entityId: studioDrafts.entityId,
-      caption: studioDrafts.caption,
-      updatedAt: studioDrafts.updatedAt,
-    })
-    .from(studioDrafts);
+  const [studioRows, draftRows, calendarRows, reportRows, researchPanel] =
+    await Promise.all([
+      db
+        .select({
+          id: normalizedEntities.id,
+          snapshotId: normalizedEntities.snapshotId,
+          payloadJson: normalizedEntities.payloadJson,
+          createdAt: normalizedEntities.createdAt,
+        })
+        .from(normalizedEntities)
+        .orderBy(desc(normalizedEntities.createdAt))
+        .limit(10),
+      db
+        .select({
+          entityId: studioDrafts.entityId,
+          caption: studioDrafts.caption,
+          updatedAt: studioDrafts.updatedAt,
+        })
+        .from(studioDrafts),
+      db
+        .select({
+          id: calendarEvents.id,
+          title: calendarEvents.title,
+          scheduledAt: calendarEvents.scheduledAt,
+          status: calendarEvents.status,
+        })
+        .from(calendarEvents)
+        .orderBy(desc(calendarEvents.scheduledAt))
+        .limit(20),
+      db
+        .select({
+          id: reportArtifacts.id,
+          payloadJson: reportArtifacts.payloadJson,
+          createdAt: reportArtifacts.createdAt,
+        })
+        .from(reportArtifacts)
+        .where(eq(reportArtifacts.artifactKind, "elite"))
+        .orderBy(desc(reportArtifacts.createdAt))
+        .limit(20),
+      loadResearchPanelFromDb(db),
+    ]);
 
   const draftsByEntity = new Map(
     draftRows.map((row) => [
@@ -170,28 +193,6 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
       { caption: row.caption, updatedAt: toIsoString(row.updatedAt) },
     ]),
   );
-
-  const calendarRows = await db
-    .select({
-      id: calendarEvents.id,
-      title: calendarEvents.title,
-      scheduledAt: calendarEvents.scheduledAt,
-      status: calendarEvents.status,
-    })
-    .from(calendarEvents)
-    .orderBy(desc(calendarEvents.scheduledAt))
-    .limit(20);
-
-  const reportRows = await db
-    .select({
-      id: reportArtifacts.id,
-      payloadJson: reportArtifacts.payloadJson,
-      createdAt: reportArtifacts.createdAt,
-    })
-    .from(reportArtifacts)
-    .where(eq(reportArtifacts.artifactKind, "elite"))
-    .orderBy(desc(reportArtifacts.createdAt))
-    .limit(20);
 
   const studioPanel = {
     items: studioRows.map((row) => {
@@ -229,8 +230,6 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
     })),
     insufficientData: reportRows.length === 0,
   };
-
-  const researchPanel = await loadResearchPanelFromDb(db);
 
   if (isPhase9ResearchActive()) {
     return CockpitSlicesSchemaV9.parse({

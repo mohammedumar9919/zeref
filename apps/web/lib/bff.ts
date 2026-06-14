@@ -1,7 +1,7 @@
 import {
   CockpitSlicesSchemaV8,
   CockpitSlicesSchemaV9,
-  PHASE8_CONTRACT_VERSION,
+  PHASE10_CONTRACT_VERSION,
   type CockpitSlicesV8,
   type CockpitSlicesV9,
 } from "@zeref/contracts";
@@ -44,6 +44,13 @@ export async function getCockpitSlices(): Promise<CockpitSlicesV8 | CockpitSlice
   }
 }
 
+/** HUD phase chip label derived from active contract version (N1). */
+export function getActivePhaseLabel(): string {
+  const major = PHASE10_CONTRACT_VERSION.split(".")[0] ?? PHASE10_CONTRACT_VERSION;
+  return `Phase ${major}`;
+}
+
+/** Settings + diagnostics marker aligned with contract version (N2). */
 export function getWebPhaseMarker(): string {
-  return `web@${PHASE8_CONTRACT_VERSION}`;
+  return `web@${PHASE10_CONTRACT_VERSION}`;
 }

@@ -1,6 +1,6 @@
 # Zeref — API and job contracts
 
-**Version:** Phase 5 (`PHASE5_CONTRACT_VERSION` in `@zeref/contracts`)  
+**Version:** Phase 10 (`PHASE10_CONTRACT_VERSION` in `@zeref/contracts`)  
 **BFF location:** `apps/web/app/api/v1/` (ADR-016 — not `apps/api`)
 
 Council Stage 2 required for changes to this file or underlying Zod schemas.
@@ -16,8 +16,9 @@ Council Stage 2 required for changes to this file or underlying Zod schemas.
 
 ### RSC fetch
 
-- `getCockpitSlices()` in `apps/web/lib/bff.ts` — server fetch + Zod parse
-- **Known gap:** returns `EMPTY_COCKPIT_SLICES` on error (should surface error — ZR-004)
+- `getCockpitSlices()` in `apps/web/lib/bff.ts` — direct server load via `loadCockpitSlices()` + Zod parse (no HTTP loopback)
+- On failure throws **`CockpitBffError`** with optional HTTP `status` — **no silent empty panels** (ZR-004 / C137)
+- Cockpit RSC pages propagate `CockpitBffError` to Next.js error boundaries (`cockpit/error.tsx`)
 
 ### Fixture mode
 
