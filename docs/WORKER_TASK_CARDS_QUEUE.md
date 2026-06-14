@@ -95,15 +95,15 @@ Exit gate satisfied — `verify:hotfix-p8` green (local). CI step after Verify P
 | Wave | Slice | Status | Commit |
 |------|-------|--------|--------|
 | **1** | **P10-A** Dev stack default | **DONE** | `45880e6` |
-| **1** | **P10-B** Worker health + pipeline honesty | **DONE** (uncommitted) | pending |
-| **2** | **P10-E** Verify (+ P10-D perf smoke) | **DONE** (uncommitted) | pending |
-| **3** | **P10-F** (optional) Wire C117 in `events/stream` | **OPEN** | — |
+| **1** | **P10-B** Worker health + pipeline honesty | **DONE** | `bd5da5f` |
+| **1** | **P10-F** C117 stream gate | **DONE** | `780ac36` |
+| **2** | **P10-E** Verify (+ P10-D perf smoke) | **DONE** | `5a1c28f` |
 
 **Blockers before Phase 10 APPROVED:**
 
-1. Commit + push P10-B and P10-E working tree
-2. Full `verify:phase-10` green — blocked by pre-existing **cockpit-brain-7 C69** latency flake inside nested hotfix chain (not P10 regression)
-3. Optional P10-F: gate outbox poll on `isOutboxDrainAllowed()` in `apps/web/app/api/v1/events/stream/route.ts`
+1. Push commits to `origin/main`
+2. Full `verify:phase-10` green — blocked by pre-existing **cockpit-brain-7 C69** latency flake inside nested hotfix chain
+3. Planner functional sign-off after CI green
 
 **Parallel:** P6.2-A workspace shell **MAY** still spawn (Amendment Q). P6.2-B after Phase 10 sign-off.
 

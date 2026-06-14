@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-14 (Phase 10 council merge — P10-A/B/E reported; commits pending B+E)  
+**Last updated:** 2026-06-14 (Phase 10 slices committed — verify gate pending full chain)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -28,9 +28,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
 | **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ `e7908d1` — B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` green |
 | Phase 6.2 Visual Tier 3 | **PLANNING** — P6.2-A **MAY** parallel P10 Wave 1 (Amendment Q); P6.2-B after P10 sign-off |
-| Phase 10 Live Ops & Pipeline Truth | **IN PROGRESS** — P10-A @ `45880e6`; P10-B + P10-E **reported, uncommitted**; `verify:phase-10` scoped checks green |
+| Phase 10 Live Ops & Pipeline Truth | **IN PROGRESS** — P10-A `45880e6`, P10-B `bd5da5f`, P10-F `780ac36`, P10-E `5a1c28f`; full `verify:phase-10` blocked on C69 flake |
 
-**Immediate goal:** Commit P10-B + P10-E working tree → push `main` → user runs full `verify:phase-10` on idle machine. Triage **cockpit-brain-7 C69** flake (pre-existing; blocks full hotfix chain). Optional **P10-F** wire `isOutboxDrainAllowed()` into `events/stream` for full C117.
+**Immediate goal:** Push `main` → user runs full `verify:phase-10` on idle machine. Triage **cockpit-brain-7 C69** flake for CI green. Planner sign-off after verify green.
 
 ### P8 hotfix root cause
 
@@ -64,9 +64,9 @@ collect → normalize → embed → analyze → report
 | Deliverable | Status |
 |-------------|--------|
 | `npm run dev:stack` / root `npm run dev` + `ZEREF_WORKER_AVAILABLE=1` on web | **DONE** @ `45880e6` (P10-A) |
-| `GET /api/v1/ops/worker-health` `{ consuming, source }` | **DONE** (P10-B, uncommitted) — fixture: `{ consuming: false, source: "fixture" }`; live: `{ consuming: true, source: "pg-boss" }` |
-| Pipeline SSE honesty (outbox drain → `simulated: false`) | **PARTIAL** — unit tests green; **`events/stream` not yet gated** on `isOutboxDrainAllowed()` (P10-F follow-up) |
-| `npm run verify:phase-10` | **LANDED** (P10-E, uncommitted) — Phase 10 checks pass; **full chain flaky** on nested `cockpit-brain-7` C69 (237–1066ms vs ≤150ms) |
+| `GET /api/v1/ops/worker-health` `{ consuming, source }` | **DONE** @ `bd5da5f` (P10-B) |
+| Pipeline SSE honesty (outbox drain → `simulated: false`) | **DONE** @ `780ac36` (P10-F) — `isOutboxDrainAllowed()` gates `events/stream` |
+| `npm run verify:phase-10` | **DONE** @ `5a1c28f` (P10-E) — scoped checks green; **full chain flaky** on nested `cockpit-brain-7` C69 |
 
 Web-only: **`npm run dev -w @zeref/web`** — no queue consumer, simulated pipeline only. See [phase-10-contract.md](./governance/phase-10-contract.md) · [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md) § Operator UAT.
 
