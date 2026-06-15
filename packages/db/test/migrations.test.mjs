@@ -136,6 +136,8 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
           "calendar_events",
           "cockpit_sse_outbox",
           "embedding_vectors",
+          "jarvis_agent_runs",
+          "jarvis_audit_log",
           "memory_entities",
           "memory_entries",
           "memory_observations",
@@ -151,7 +153,7 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
         ],
       ],
     );
-    assert.equal(tables.rowCount, 16);
+    assert.equal(tables.rowCount, 18);
 
     const ext = await pool.query(
       `SELECT 1 FROM pg_extension WHERE extname = 'vector'`,
