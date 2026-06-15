@@ -7,6 +7,7 @@ import type {
 } from "@zeref/contracts";
 import { MemorySavedEventSchema } from "@zeref/contracts";
 import {
+  buildAckText,
   createDefaultDeps,
   defaultTtsAdapter,
   processTurn,
@@ -14,6 +15,11 @@ import {
   type ProcessTurnHandle,
 } from "@zeref/jarvis-kernel";
 
+import {
+  isPhase11AgentEnabled,
+  runJarvisAgent,
+  type JarvisAgentRunOutput,
+} from "../jarvis/agent-runtime";
 import { isCiVoiceMockMode } from "./mock-flags";
 import { transcribeAudio } from "./whisper-client";
 import type {
@@ -25,6 +31,14 @@ import { emitMemoryBrainEventsFromToolCalls } from "../memory/emit-brain-events"
 import { getCockpitEventBus } from "../cockpit/cockpit-event-bus";
 
 const pendingTurns = new Set<Promise<void>>();
+
+type PendingVoiceConfirm = {
+  runId: string;
+  turnId: string;
+  transcript: string;
+};
+
+let pendingVoiceConfirm: PendingVoiceConfirm | null = null;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -52,6 +66,23 @@ function emitKernelEvents(
   for (const event of events) {
     emitVoiceEvent(event);
   }
+}
+
+function emitFastAck(turnId: string, ackText: string): void {
+  const ackTs = nowIso();
+  emitVoiceEvent({
+    type: "voice.transcript",
+    turnId,
+    role: "ack",
+    text: ackText,
+    ts: ackTs,
+  });
+  emitVoiceEvent({
+    type: "voice.state",
+    turnId,
+    state: "thinking",
+    ts: ackTs,
+  });
 }
 
 async function synthesizeAndEmitAudio(
@@ -90,6 +121,45 @@ function trackPendingTurn(work: Promise<void>): void {
   });
 }
 
+function isConfirmUtterance(transcript: string): boolean {
+  return /^(yes|yeah|yep|confirm|go ahead|proceed|do it|please do)\b/i.test(
+    transcript.trim(),
+  );
+}
+
+function resolveAgentTurnInput(
+  turnId: string,
+  transcript: string,
+): { turnId: string; transcript: string; confirmed?: boolean; runId?: string } {
+  if (pendingVoiceConfirm && isConfirmUtterance(transcript)) {
+    const pending = pendingVoiceConfirm;
+    pendingVoiceConfirm = null;
+    return {
+      turnId,
+      transcript: pending.transcript,
+      confirmed: true,
+      runId: pending.runId,
+    };
+  }
+
+  pendingVoiceConfirm = null;
+  return { turnId, transcript };
+}
+
+function storePendingConfirm(
+  turnId: string,
+  transcript: string,
+  output: JarvisAgentRunOutput,
+): void {
+  if (output.terminalReason === "awaiting_confirm") {
+    pendingVoiceConfirm = {
+      runId: output.runId,
+      turnId,
+      transcript,
+    };
+  }
+}
+
 async function completeTurnInBackground(
   turnId: string,
   handle: ProcessTurnHandle,
@@ -110,7 +180,29 @@ async function completeTurnInBackground(
   }
 }
 
-async function handleVoiceTurnSync(
+async function completeAgentTurnInBackground(
+  turnId: string,
+  transcript: string,
+): Promise<void> {
+  try {
+    const agentInput = resolveAgentTurnInput(turnId, transcript);
+    const result = await runJarvisAgent(agentInput);
+    storePendingConfirm(turnId, agentInput.transcript, result);
+    emitKernelEvents(result.events);
+    emitMemoryBrainEventsFromToolCalls(result.toolCalls);
+    await synthesizeAndEmitAudio(turnId, "result", result.resultText);
+  } catch (error) {
+    console.error("[voice/turn] agent background complete failed:", error);
+    emitVoiceEvent({
+      type: "voice.state",
+      turnId,
+      state: "idle",
+      ts: nowIso(),
+    });
+  }
+}
+
+async function handleVoiceTurnSyncLegacy(
   turnId: string,
   transcript: string,
 ): Promise<Response> {
@@ -126,8 +218,6 @@ async function handleVoiceTurnSync(
 
   emitMemoryBrainEventsFromToolCalls(output.toolCalls);
 
-  // Deterministic CI emission for Phase 7 brain SSE when the LLM mock transcript
-  // does not naturally route through memory_save (ADR-027, C66).
   if (
     process.env.ZEREF_PHASE7_BRAIN === "1" &&
     process.env.ZEREF_MEMORY_MOCK === "1" &&
@@ -167,7 +257,47 @@ async function handleVoiceTurnSync(
   return Response.json(body);
 }
 
-async function handleVoiceTurnLive(
+async function handleVoiceTurnSyncAgent(
+  turnId: string,
+  transcript: string,
+): Promise<Response> {
+  const agentInput = resolveAgentTurnInput(turnId, transcript);
+  const output = await runJarvisAgent(agentInput);
+  storePendingConfirm(turnId, agentInput.transcript, output);
+
+  const [ackAudio, resultAudio] = await Promise.all([
+    synthesizeAudioBlob(output.ackText, "ack"),
+    synthesizeAudioBlob(output.resultText, "result"),
+  ]);
+
+  emitMemoryBrainEventsFromToolCalls(output.toolCalls);
+
+  const body: VoiceTurnSyncResponse = {
+    mode: "sync-mock",
+    turnId,
+    transcript,
+    ackText: output.ackText,
+    resultText: output.resultText,
+    globeState: output.globeState,
+    toolCalls: output.toolCalls,
+    ackAudio,
+    resultAudio,
+  };
+
+  return Response.json(body);
+}
+
+async function handleVoiceTurnSync(
+  turnId: string,
+  transcript: string,
+): Promise<Response> {
+  if (isPhase11AgentEnabled()) {
+    return handleVoiceTurnSyncAgent(turnId, transcript);
+  }
+  return handleVoiceTurnSyncLegacy(turnId, transcript);
+}
+
+async function handleVoiceTurnLiveLegacy(
   turnId: string,
   transcript: string,
 ): Promise<Response> {
@@ -184,6 +314,32 @@ async function handleVoiceTurnLive(
 
   const body: VoiceTurnAcceptedResponse = { turnId, transcript };
   return Response.json(body, { status: 202 });
+}
+
+async function handleVoiceTurnLiveAgent(
+  turnId: string,
+  transcript: string,
+): Promise<Response> {
+  emitUserTranscript(turnId, transcript);
+
+  const ackText = buildAckText(transcript);
+  emitFastAck(turnId, ackText);
+  await synthesizeAndEmitAudio(turnId, "ack", ackText);
+
+  trackPendingTurn(completeAgentTurnInBackground(turnId, transcript));
+
+  const body: VoiceTurnAcceptedResponse = { turnId, transcript };
+  return Response.json(body, { status: 202 });
+}
+
+async function handleVoiceTurnLive(
+  turnId: string,
+  transcript: string,
+): Promise<Response> {
+  if (isPhase11AgentEnabled()) {
+    return handleVoiceTurnLiveAgent(turnId, transcript);
+  }
+  return handleVoiceTurnLiveLegacy(turnId, transcript);
 }
 
 /** Process PTT audio through STT → jarvis-kernel → TTS (Amendment A). */
@@ -207,4 +363,9 @@ export async function handleVoiceTurn(audio: Blob): Promise<Response> {
 /** Await in-flight background turns (tests only). */
 export async function waitForPendingVoiceTurns(): Promise<void> {
   await Promise.all([...pendingTurns]);
+}
+
+/** Test hook — clears conversational confirm state. */
+export function resetPendingVoiceConfirmForTests(): void {
+  pendingVoiceConfirm = null;
 }

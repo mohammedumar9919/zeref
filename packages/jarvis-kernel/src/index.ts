@@ -48,3 +48,19 @@ export type {
 } from "./types.js";
 
 export type { JarvisTurnInput } from "@zeref/contracts";
+
+export {
+  runAgentLoop,
+  type AgentRunInput,
+  type AgentRunResult,
+  type PendingConfirm,
+  type AgentStep,
+  type AuditBuffer,
+  type LlmPort,
+  type LlmPredictInput,
+  type LlmPredictResult,
+  type MemoryPort,
+  type ToolDescriptor,
+} from "./core/index.js";
+
+export * from "./zeref/index.js";
