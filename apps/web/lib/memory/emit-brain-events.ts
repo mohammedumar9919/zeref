@@ -1,6 +1,9 @@
+import { randomUUID } from "node:crypto";
+
 import {
   MemoryBrainEventSchema,
   MemoryContradictionEventSchema,
+  MemorySavedEventSchema,
   type MemoryBrainEvent,
 } from "@zeref/contracts";
 
@@ -89,4 +92,40 @@ export function emitMemoryBrainEventsFromToolCalls(
       emitContradictions(call.result, simulated);
     }
   }
+}
+
+/** Synthetic memory.saved when Phase 7 brain mock has no tool-produced event. */
+export function emitPhase7BrainMemoryFallbackIfNeeded(
+  turnId: string,
+  toolCalls: ToolCallLike[],
+): void {
+  if (process.env.ZEREF_PHASE7_BRAIN !== "1") {
+    return;
+  }
+  if (process.env.ZEREF_MEMORY_MOCK !== "1") {
+    return;
+  }
+  if (
+    toolCalls.some(
+      (c) =>
+        (c.name === "memory_save" || c.name === "memory_search") &&
+        c.result &&
+        typeof c.result === "object" &&
+        "brainEvent" in c.result &&
+        (c.result as { brainEvent?: { type?: unknown } }).brainEvent?.type ===
+          "memory.saved",
+    )
+  ) {
+    return;
+  }
+
+  const event = MemorySavedEventSchema.parse({
+    type: "memory.saved",
+    entryId: randomUUID(),
+    tier: "episodic",
+    ts: new Date().toISOString(),
+    turnId,
+    simulated: true,
+  });
+  getCockpitEventBus().emit(event.type, event);
 }

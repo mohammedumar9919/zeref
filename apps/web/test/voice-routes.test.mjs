@@ -77,6 +77,7 @@ function clearVoiceEnv() {
   delete process.env.ZEREF_TTS_MOCK;
   delete process.env.ZEREF_LLM_MOCK;
   delete process.env.ZEREF_BFF_FIXTURE;
+  delete process.env.ZEREF_PHASE11_AGENT;
   delete process.env.OPENROUTER_API_KEY;
   delete process.env.ELEVENLABS_API_KEY;
   delete process.env.OPENAI_API_KEY;
