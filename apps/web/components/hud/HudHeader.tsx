@@ -1,4 +1,4 @@
-import { getActivePhaseLabel } from "@/lib/bff";
+import { getActivePhaseLabel } from "@/lib/phase-marker";
 
 const STATUS_CHIPS = ["Online", "Secure", "RSC"] as const;
 

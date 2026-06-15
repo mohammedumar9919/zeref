@@ -45,7 +45,6 @@ async function getPgBoss(): Promise<PgBoss> {
     const boss = new PgBoss({
       connectionString,
       supervise: false,
-      monitorStateIntervalSeconds: null,
     });
     await boss.start();
     pgBossInstance = boss;

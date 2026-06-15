@@ -2,6 +2,7 @@ import type {
   CalendarEvent,
   JobEnqueueRequestV9,
   NormalizedEntityId,
+  ResearchTopicId,
   SnapshotId,
 } from "@zeref/contracts";
 
@@ -51,13 +52,14 @@ export function buildEnqueueRequestFromEvent(
     return null;
   }
 
+  const uiJobType = jobType as CalendarUiJobType;
   const payload = event.payload as Record<string, unknown>;
   const base = {
-    jobType: jobType as CalendarUiJobType,
+    jobType: uiJobType,
     calendarEventId: event.id,
   };
 
-  switch (jobType) {
+  switch (uiJobType) {
     case "normalize": {
       const snapshotId = payloadSnapshotId(payload);
       if (!snapshotId) return null;
@@ -82,7 +84,7 @@ export function buildEnqueueRequestFromEvent(
     case "research": {
       const topicId = payloadTopicId(payload);
       if (!topicId) return null;
-      return { ...base, topicId };
+      return { ...base, topicId: topicId as ResearchTopicId };
     }
     default:
       return null;

@@ -161,7 +161,7 @@ export function CalendarScheduler({
       id,
       title: form.title.trim(),
       scheduledAt: fromDatetimeLocalValue(form.scheduledAtLocal),
-      ...(form.jobType ? { jobType: form.jobType } : {}),
+      ...(form.jobType ? { jobType: form.jobType as CalendarEvent["jobType"] } : {}),
       payload: buildPayloadFromForm(form),
       status: form.status,
       createdAt: new Date().toISOString(),
