@@ -30,9 +30,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 6.2 Visual Tier 3 | **PLANNING** — P6.2-A **MAY** parallel P10 Wave 1 (Amendment Q); P6.2-B after P10 sign-off |
 | Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `d8ce6c0` — full `verify:phase-10` green 2026-06-14 |
 | Phase 10.5 Stabilize & Instant | **APPROVED** @ `a90af79` — build fix `8e07b8a`; `verify:phase-10.5` green 2026-06-15; warm UAT C122 **31ms**, panel nav **21–26ms** (800ms gate) |
-| Phase 11 Agentic JARVIS | **APPROVED** @ `31e8054` + verify fixes `d3b00d8` — `verify:phase-11` green 2026-06-15 (`verify-phase-11-run2.log`); eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
+| Phase 11 Agentic JARVIS | **APPROVED** @ `2798b02` — `verify:phase-11` green 2026-06-15 (`verify-phase-11-run2.log`); eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 
-**Immediate goal:** Push `main` (11 commits ahead of origin). Uncommitted verify/memory fixes remain in working tree — commit when ready.
+**Immediate goal:** Push `main` (**13 commits** ahead of origin). Planner: pick next milestone (Phase 11.x vector memory, Phase 6.2 visual Tier 3, or Phase 15 streaming TTS).
 
 ### P8 hotfix root cause
 
