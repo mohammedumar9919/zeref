@@ -8,6 +8,14 @@ export const JarvisToolNameSchema = z.enum([
   "get_cockpit_summary",
   "get_latest_report_headline",
   "get_pipeline_status",
+  "get_report_artifact",
+  "get_worker_health",
+  "memory_save",
+  "memory_search",
+  "enqueue_job",
+  "create_calendar_event",
+  "update_studio_draft",
+  "create_research_topic",
 ]);
 
 export const JarvisToolCallSchema = z

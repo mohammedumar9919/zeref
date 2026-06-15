@@ -83,12 +83,17 @@ test("PipelineEventSchema validates representative payload", () => {
   });
 });
 
-test("JarvisToolNameSchema locks Amendment B tool set", () => {
-  assert.deepEqual(JarvisToolNameSchema.options, [
+test("JarvisToolNameSchema includes Phase 6 read tools (C149 superset)", () => {
+  for (const name of [
     "get_cockpit_summary",
     "get_latest_report_headline",
     "get_pipeline_status",
-  ]);
+  ]) {
+    assert.ok(
+      JarvisToolNameSchema.options.includes(name),
+      `missing Phase 6 tool: ${name}`,
+    );
+  }
 });
 
 test("ack and result output schemas validate partial turn payloads", () => {

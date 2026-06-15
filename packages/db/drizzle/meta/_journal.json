@@ -36,6 +36,13 @@
       "when": 1748908800000,
       "tag": "0004_phase9_research",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1748995200000,
+      "tag": "0005_phase11_jarvis_agent",
+      "breakpoints": true
     }
   ]
 }

@@ -10,6 +10,7 @@ export const PHASE7_CONTRACT_VERSION = "7.0.0";
 export const PHASE8_CONTRACT_VERSION = "8.0.0";
 export const PHASE9_CONTRACT_VERSION = "9.0.0";
 export const PHASE10_CONTRACT_VERSION = "10.0.0";
+export const PHASE11_CONTRACT_VERSION = "11.0.0";
 
 export {
   PlatformSchema,
@@ -230,6 +231,28 @@ export {
   WorkerHealthResponseSchema,
   type WorkerHealthResponse,
 } from "./phase10/index.js";
+
+export {
+  JarvisRiskTierSchema,
+  AgentRunStatusSchema,
+  AgentRunSchema,
+  AgentStepPredictSchema,
+  AgentStepToolCallSchema,
+  AgentStepToolResultSchema,
+  AgentStepConfirmPromptSchema,
+  AgentStepCompletedSchema,
+  AgentStepBudgetExhaustedSchema,
+  AgentStepKilledSchema,
+  AgentStepSchema,
+  ConfirmRequestSchema,
+  JarvisAuditEntrySchema,
+  type JarvisRiskTier,
+  type AgentRunStatus,
+  type AgentRun,
+  type AgentStep,
+  type ConfirmRequest,
+  type JarvisAuditEntry,
+} from "./phase11/index.js";
 
 export {
   NormalizedPostPayloadSchema,

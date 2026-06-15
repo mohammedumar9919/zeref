@@ -1,0 +1,9 @@
+{
+  "id": "660e8400-e29b-41d4-a716-446655440001",
+  "status": "completed",
+  "startedAt": "2026-06-15T10:00:00.000Z",
+  "endedAt": "2026-06-15T10:00:05.000Z",
+  "turnId": "550e8400-e29b-41d4-a716-446655440001",
+  "transcriptSummary": "User asked for the latest report headline",
+  "iterationCount": 2
+}

@@ -18,6 +18,8 @@ export { calendarEvents } from "./calendar-events.js";
 export { studioDrafts } from "./studio-drafts.js";
 export { researchTopics } from "./research-topics.js";
 export { researchSignals } from "./research-signals.js";
+export { jarvisAgentRuns } from "./jarvis-agent-runs.js";
+export { jarvisAuditLog } from "./jarvis-audit-log.js";
 
 import { platformAccounts } from "./platform-accounts.js";
 import { snapshots } from "./snapshots.js";
@@ -35,6 +37,8 @@ import { calendarEvents } from "./calendar-events.js";
 import { studioDrafts } from "./studio-drafts.js";
 import { researchTopics } from "./research-topics.js";
 import { researchSignals } from "./research-signals.js";
+import { jarvisAgentRuns } from "./jarvis-agent-runs.js";
+import { jarvisAuditLog } from "./jarvis-audit-log.js";
 
 export const schema = {
   platformAccounts,
@@ -53,4 +57,6 @@ export const schema = {
   studioDrafts,
   researchTopics,
   researchSignals,
+  jarvisAgentRuns,
+  jarvisAuditLog,
 };

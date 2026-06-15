@@ -1,0 +1,11 @@
+{
+  "id": "770e8400-e29b-41d4-a716-446655440001",
+  "runId": "660e8400-e29b-41d4-a716-446655440001",
+  "stepIndex": 1,
+  "toolName": "get_latest_report_headline",
+  "argsHash": "a1b2c3d4e5f6789012345678901234567890abcd",
+  "riskTier": "read",
+  "resultSummary": "Headline retrieved: Night ride engagement up twelve percent",
+  "simulated": true,
+  "createdAt": "2026-06-15T10:00:01.500Z"
+}
