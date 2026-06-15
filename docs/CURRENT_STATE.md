@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-14 (Phase 10.5 Wave 1 done; Wave 2 P10.5-D landed)  
+**Last updated:** 2026-06-15 (Phase 10.5 APPROVED — verify green @ `a90af79`)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -29,9 +29,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ `e7908d1` — B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` green |
 | Phase 6.2 Visual Tier 3 | **PLANNING** — P6.2-A **MAY** parallel P10 Wave 1 (Amendment Q); P6.2-B after P10 sign-off |
 | Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `d8ce6c0` — full `verify:phase-10` green 2026-06-14 |
-| Phase 10.5 Stabilize & Instant | **IN PROGRESS** — Wave 1 **P10.5-A/B/C DONE** @ `892d013`; Wave 2 **P10.5-D** verify gate landed |
+| Phase 10.5 Stabilize & Instant | **APPROVED** @ `a90af79` — build fix `8e07b8a`; full `verify:phase-10.5` green 2026-06-15 (C128 + C140) |
 
-**Immediate goal:** User runs **`verify:phase-10.5`** + warm perf UAT (`next start`, nav &lt; 800ms) → Lead sign-off **APPROVED**.
+**Immediate goal:** Warm perf UAT (`next build && next start`, panel nav &lt; 800ms) → Phase 11 JARVIS planning.
 
 ### P8 hotfix root cause
 
@@ -68,7 +68,7 @@ collect → normalize → embed → analyze → report
 | `GET /api/v1/ops/worker-health` `{ consuming, source }` | **DONE** @ `bd5da5f` (P10-B) |
 | Pipeline SSE honesty (outbox drain → `simulated: false`) | **DONE** @ `780ac36` (P10-F) — `isOutboxDrainAllowed()` gates `events/stream` |
 | `npm run verify:phase-10` | **GREEN** @ `0634f86` (2026-06-14) — full chained gate OK; C69 SSE latency tolerance 500ms CI |
-| `npm run verify:phase-10.5` | **NEW** @ P10.5-D — chains `verify:phase-10` + stability e2e (`ZEREF_PHASE105_STABILITY=1`) |
+| `npm run verify:phase-10.5` | **GREEN** @ `a90af79` (2026-06-15) — chains `verify:phase-10` + C128 stability e2e |
 
 Web-only: **`npm run dev -w @zeref/web`** — no queue consumer, simulated pipeline only. See [phase-10-contract.md](./governance/phase-10-contract.md) · [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md) § Operator UAT.
 
