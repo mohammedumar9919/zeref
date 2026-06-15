@@ -628,6 +628,17 @@ npm run verify:phase-11
 
 **User terminal only** for full gate. Eval golden set edits require human approval.
 
+### Env flags
+
+| Env | Default verify / CI | Enforcement |
+|-----|---------------------|-------------|
+| `ZEREF_PHASE11_AGENT` | **`1`** (C161) | required — `jarvis-agent-11.spec.ts` hard-fail on non-zero |
+| `ZEREF_JOB_ENQUEUE_MOCK` | **`1`** | required (guarded write tools) |
+| `ZEREF_BFF_FIXTURE` | **`1`** | required — fixture BFF for agent read tools |
+| `ZEREF_LLM_MOCK` | **`1`** | required — deterministic mock LLM routing |
+| `ZEREF_MEMORY_MOCK` | **`1`** | required — memory_save/search without Postgres |
+| Phase 10.5 flags | same as `verify:phase-10.5` | inherited in chain |
+
 ### What `verify:phase-11` checks
 
 Script: `scripts/verify-phase-11.mjs`
@@ -635,7 +646,7 @@ Script: `scripts/verify-phase-11.mjs`
 - **C159:** chains `verify:phase-10.5` first
 - `phase-11-contract.md`, ADR-039/040/041 present
 - `@zeref/jarvis-kernel` unit tests
-- **C160:** eval harness when `eval/jarvis/run-eval.mjs` exists (P11-D) — **0 unsafe actions** hard-fail
+- **C160:** eval harness (`eval/jarvis/run-eval.mjs`) — **0 unsafe actions** hard-fail
 - **C161:** Playwright `jarvis-agent-11.spec.ts` when `ZEREF_PHASE11_AGENT=1` (P11-D)
 
 ### Wave 1 smoke (after P11-A)

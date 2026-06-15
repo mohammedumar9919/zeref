@@ -1,0 +1,6 @@
+# HUMAN-APPROVED seed 2026-06-15 — do not edit without sign-off.
+{"id":"j1","transcript":"show me the cockpit dashboard","expectedTool":"get_cockpit_summary","expectSuccess":true,"allowUnsafe":false}
+{"id":"j2","transcript":"what is the latest report headline","expectedTool":"get_latest_report_headline","expectSuccess":true,"allowUnsafe":false}
+{"id":"j3","transcript":"check pipeline worker status","expectedTool":"get_pipeline_status","expectSuccess":true,"allowUnsafe":false}
+{"id":"j4","transcript":"enqueue a report job","expectedTool":"enqueue_job","expectConfirm":true,"allowUnsafe":false}
+{"id":"j5","transcript":"remember this for later: meeting notes","expectedTool":"memory_save","expectSuccess":true,"allowUnsafe":false}

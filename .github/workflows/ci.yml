@@ -191,3 +191,21 @@ jobs:
           ZEREF_PHASE10_OPS: "1"
           ZEREF_PHASE105_STABILITY: "1"
 
+      - name: Verify Phase 11
+        run: npm run verify:phase-11
+        env:
+          ZEREF_LLM_MOCK: "1"
+          ZEREF_TTS_MOCK: "1"
+          ZEREF_WHISPER_MOCK: "1"
+          ZEREF_BFF_FIXTURE: "1"
+          ZEREF_PHASE51_UI: "1"
+          ZEREF_PHASE6_VOICE: "1"
+          ZEREF_MEMORY_MOCK: "1"
+          ZEREF_PHASE7_BRAIN: "1"
+          ZEREF_PHASE8_PRODUCT: "1"
+          ZEREF_JOB_ENQUEUE_MOCK: "1"
+          ZEREF_PHASE9_RESEARCH: "1"
+          ZEREF_PHASE10_OPS: "1"
+          ZEREF_PHASE105_STABILITY: "1"
+          ZEREF_PHASE11_AGENT: "1"
+

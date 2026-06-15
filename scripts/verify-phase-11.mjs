@@ -1,5 +1,5 @@
 ﻿import { spawn, spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -105,16 +105,30 @@ function runJarvisKernelTests() {
   run("npm", ["test", "-w", "@zeref/jarvis-kernel"], ciSafeEnv());
 }
 
+function assertPhase11E2eSpecDocumentsAgentGate(specPath) {
+  const source = readFileSync(join(repoRoot, specPath), "utf8");
+  if (!source.includes("ZEREF_PHASE11_AGENT")) {
+    fail(`${specPath} must document ZEREF_PHASE11_AGENT enforcement gate (C161)`);
+  }
+  if (!source.includes("/api/v1/jarvis/run")) {
+    fail(`${specPath} must assert POST /api/v1/jarvis/run agent flow`);
+  }
+  if (!source.includes("awaiting_confirm")) {
+    fail(`${specPath} must assert write-high confirm gate (awaiting_confirm)`);
+  }
+}
+
 function runJarvisEvalHarness() {
   if (!existsSync(join(repoRoot, PHASE11_EVAL))) {
-    console.log(
-      "[verify:phase-11] C160: eval/jarvis/run-eval.mjs not present - skipping eval (P11-D)",
-    );
-    return;
+    fail("C160: eval/jarvis/run-eval.mjs required (P11-D)");
   }
 
   console.log("[verify:phase-11] C160: running JARVIS eval harness (0 unsafe actions hard-fail) ...");
-  run("node", [PHASE11_EVAL], ciSafeEnv());
+  run(
+    "node",
+    ["--import", "tsx", PHASE11_EVAL],
+    ciSafeEnv({ ZEREF_PHASE11_AGENT: "1" }),
+  );
 }
 
 async function runPhase11AgentPlaywright() {
@@ -192,11 +206,11 @@ if (!Number.isFinite(major) || major < 22) {
 }
 
 if (process.env.ZEREF_JOB_ENQUEUE_MOCK !== "1") {
-  fail("C141: ZEREF_JOB_ENQUEUE_MOCK=1 required for verify:phase-11");
+  fail("C159: ZEREF_JOB_ENQUEUE_MOCK=1 required for verify:phase-11");
 }
 
 if (process.env.ZEREF_BFF_FIXTURE !== "1") {
-  fail("C141: ZEREF_BFF_FIXTURE=1 required for verify:phase-11");
+  fail("C159: ZEREF_BFF_FIXTURE=1 required for verify:phase-11");
 }
 
 assertExists("docs/governance/phase-11-contract.md", "Phase 11 contract");
@@ -209,6 +223,9 @@ assertExists(
   "ADR-040",
 );
 assertExists("docs/governance/adr/ADR-041-jarvis-eval-harness.md", "ADR-041");
+assertExists(PHASE11_EVAL, "C160 eval harness");
+assertExists(PHASE11_AGENT_E2E, "C161 jarvis-agent e2e");
+assertPhase11E2eSpecDocumentsAgentGate(PHASE11_AGENT_E2E);
 
 runPhase105Chain();
 runJarvisKernelTests();
@@ -220,13 +237,8 @@ if (!process.exitCode) {
   console.log(
     "[verify:phase-11] C159 chained verify:phase-10.5 (Phases 0-10.5 preserved).",
   );
-  if (existsSync(join(repoRoot, PHASE11_EVAL))) {
-    console.log("[verify:phase-11] C160 JARVIS eval harness enforced.");
-  }
-  if (
-    process.env.ZEREF_PHASE11_AGENT === "1" &&
-    existsSync(join(repoRoot, PHASE11_AGENT_E2E))
-  ) {
+  console.log("[verify:phase-11] C160 JARVIS eval harness enforced.");
+  if (process.env.ZEREF_PHASE11_AGENT === "1") {
     console.log(
       "[verify:phase-11] C161 Playwright jarvis-agent-11.spec.ts enforced (ZEREF_PHASE11_AGENT=1).",
     );
