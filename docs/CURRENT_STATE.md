@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-15 (Phase 11 PLANNING — governance Wave 0)  
+**Last updated:** 2026-06-15 (Phase 11 APPROVED — `verify:phase-11` green)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -30,9 +30,9 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 6.2 Visual Tier 3 | **PLANNING** — P6.2-A **MAY** parallel P10 Wave 1 (Amendment Q); P6.2-B after P10 sign-off |
 | Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `d8ce6c0` — full `verify:phase-10` green 2026-06-14 |
 | Phase 10.5 Stabilize & Instant | **APPROVED** @ `a90af79` — build fix `8e07b8a`; `verify:phase-10.5` green 2026-06-15; warm UAT C122 **31ms**, panel nav **21–26ms** (800ms gate) |
-| Phase 11 Agentic JARVIS | **PLANNING** — governance @ Wave 0 (C141–C162, ADR-039/040/041, `verify:phase-11` stub) |
+| Phase 11 Agentic JARVIS | **APPROVED** @ `31e8054` + verify fixes `d3b00d8` — `verify:phase-11` green 2026-06-15 (`verify-phase-11-run2.log`); eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 
-**Immediate goal:** Spawn **Wave 1** — **P11-A** (jarvis-core) ∥ **P11-B** (contracts + DB). First smoke: `npm test -w @zeref/jarvis-kernel`.
+**Immediate goal:** Push `main` (11 commits ahead of origin). Uncommitted verify/memory fixes remain in working tree — commit when ready.
 
 ### P8 hotfix root cause
 

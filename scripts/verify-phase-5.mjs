@@ -45,8 +45,10 @@ function isServerVoicePath(relPath) {
   return (
     normalized.includes("/apps/web/app/api/") ||
     normalized.includes("/apps/web/lib/voice/") ||
+    normalized.includes("/apps/web/lib/jarvis/") ||
     normalized.startsWith("apps/web/app/api/") ||
-    normalized.startsWith("apps/web/lib/voice/")
+    normalized.startsWith("apps/web/lib/voice/") ||
+    normalized.startsWith("apps/web/lib/jarvis/")
   );
 }
 
@@ -122,7 +124,7 @@ function assertNoVoiceOrInstagramInWeb() {
 
       if (C30_JARVIS_IMPORT.test(source)) {
         if (!isServerVoicePath(rel)) {
-          fail(`C30: ${rel} must not import @zeref/jarvis-kernel outside app/api/** or lib/voice/**`);
+          fail(`C30: ${rel} must not import @zeref/jarvis-kernel outside app/api/**, lib/voice/**, or lib/jarvis/**`);
         }
         if (isClientComponent(source)) {
           fail(`C30: ${rel} is a client component and must not import @zeref/jarvis-kernel`);

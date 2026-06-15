@@ -108,8 +108,10 @@ function isServerVoicePath(relPath) {
   return (
     normalized.includes("/apps/web/app/api/") ||
     normalized.includes("/apps/web/lib/voice/") ||
+    normalized.includes("/apps/web/lib/jarvis/") ||
     normalized.startsWith("apps/web/app/api/") ||
-    normalized.startsWith("apps/web/lib/voice/")
+    normalized.startsWith("apps/web/lib/voice/") ||
+    normalized.startsWith("apps/web/lib/jarvis/")
   );
 }
 
@@ -120,9 +122,11 @@ function isServerMemoryPath(relPath) {
     normalized.includes("/apps/web/app/api/") ||
     normalized.includes("/apps/web/lib/memory/") ||
     normalized.includes("/apps/web/lib/cockpit/") ||
+    normalized.includes("/apps/web/lib/jarvis/") ||
     normalized.startsWith("apps/web/app/api/") ||
     normalized.startsWith("apps/web/lib/memory/") ||
-    normalized.startsWith("apps/web/lib/cockpit/")
+    normalized.startsWith("apps/web/lib/cockpit/") ||
+    normalized.startsWith("apps/web/lib/jarvis/")
   );
 }
 
@@ -147,7 +151,7 @@ function assertC70WebImportGuard() {
 
       if (C30_JARVIS_IMPORT.test(source)) {
         if (!isServerVoicePath(rel)) {
-          fail(`C70: ${rel} must not import @zeref/jarvis-kernel outside app/api/** or lib/voice/**`);
+          fail(`C70: ${rel} must not import @zeref/jarvis-kernel outside app/api/**, lib/voice/**, or lib/jarvis/**`);
         }
         if (isClientComponent(source)) {
           fail(`C70: ${rel} is a client component and must not import @zeref/jarvis-kernel`);
@@ -157,7 +161,7 @@ function assertC70WebImportGuard() {
       if (C30_MEMORY_IMPORT.test(source)) {
         if (!isServerMemoryPath(rel)) {
           fail(
-            `C70: ${rel} must not import @zeref/zeref-memory outside app/api/**, lib/memory/**, or lib/cockpit/**`,
+            `C70: ${rel} must not import @zeref/zeref-memory outside app/api/**, lib/memory/**, lib/cockpit/**, or lib/jarvis/**`,
           );
         }
         if (isClientComponent(source)) {
