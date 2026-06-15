@@ -608,3 +608,46 @@ After **Verify Phase 10**:
 | Warm panel nav | **800ms** between cockpit panels (`next start`) |
 | Button feedback | **100ms** optimistic enqueue/save/schedule |
 | C122 advisory | 500ms target / 2000ms advisory (carry-forward) |
+
+---
+
+## Phase 11 (agentic JARVIS)
+
+**Contract:** [phase-11-contract.md](./phase-11-contract.md) (C141–C162) · **ADR:** [039](./adr/ADR-039-jarvis-core-extraction-mcp-tools.md) · [040](./adr/ADR-040-agent-loop-budgets-capability-audit.md) · [041](./adr/ADR-041-jarvis-eval-harness.md)
+
+Chains **`verify:phase-10.5`** (Phases 0–10.5 preserved), then JARVIS kernel tests + eval/e2e when P11-D lands.
+
+```powershell
+cd c:\Projects\zeref
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_PHASE10_OPS='1'
+$env:ZEREF_PHASE11_AGENT='1'
+$env:ZEREF_JOB_ENQUEUE_MOCK='1'
+npm run verify:phase-11
+```
+
+**User terminal only** for full gate. Eval golden set edits require human approval.
+
+### What `verify:phase-11` checks
+
+Script: `scripts/verify-phase-11.mjs`
+
+- **C159:** chains `verify:phase-10.5` first
+- `phase-11-contract.md`, ADR-039/040/041 present
+- `@zeref/jarvis-kernel` unit tests
+- **C160:** eval harness when `eval/jarvis/run-eval.mjs` exists (P11-D) — **0 unsafe actions** hard-fail
+- **C161:** Playwright `jarvis-agent-11.spec.ts` when `ZEREF_PHASE11_AGENT=1` (P11-D)
+
+### Wave 1 smoke (after P11-A)
+
+```powershell
+npm run build -w @zeref/jarvis-kernel
+npm test -w @zeref/jarvis-kernel
+```
+
+### CI (after Wave 3 P11-D)
+
+After **Verify Phase 10.5**:
+
+- `ZEREF_PHASE11_AGENT=1` + inherited Phase 10.5 env
+- `npm run verify:phase-11`
