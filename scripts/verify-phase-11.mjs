@@ -6,6 +6,32 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 
+function freePlaywrightPort(port) {
+  const portStr = String(port);
+  if (process.platform === "win32") {
+    const res = spawnSync("netstat", ["-ano"], {
+      encoding: "utf8",
+      shell: true,
+    });
+    if (res.status !== 0 || !res.stdout) return;
+    const pids = new Set();
+    for (const line of res.stdout.split(/\r?\n/)) {
+      if (!line.includes("LISTENING")) continue;
+      if (!new RegExp(`:${portStr}\\s`).test(line)) continue;
+      const parts = line.trim().split(/\s+/);
+      const pid = parts[parts.length - 1];
+      if (/^\d+$/.test(pid) && pid !== "0") pids.add(pid);
+    }
+    for (const pid of pids) {
+      spawnSync("taskkill", ["/pid", pid, "/f"], { shell: true, stdio: "ignore" });
+    }
+    return;
+  }
+  spawnSync("sh", ["-c", `command -v lsof >/dev/null 2>&1 && lsof -ti :${portStr} | xargs kill -9`], {
+    stdio: "ignore",
+  });
+}
+
 const PHASE11_AGENT_E2E = "apps/web/e2e/jarvis-agent-11.spec.ts";
 const PHASE11_EVAL = "eval/jarvis/run-eval.mjs";
 
@@ -204,6 +230,8 @@ const [major] = process.versions.node.split(".").map(Number);
 if (!Number.isFinite(major) || major < 22) {
   fail(`Node >=22 required, got ${process.versions.node}`);
 }
+
+freePlaywrightPort(process.env.PLAYWRIGHT_PORT ?? "3099");
 
 if (process.env.ZEREF_JOB_ENQUEUE_MOCK !== "1") {
   fail("C159: ZEREF_JOB_ENQUEUE_MOCK=1 required for verify:phase-11");

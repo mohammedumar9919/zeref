@@ -99,6 +99,7 @@ function runHotfixPlaywright() {
     ZEREF_PHASE8_PRODUCT: "1",
     ZEREF_PHASE7_BRAIN: "1",
     ZEREF_PHASE6_VOICE: "1",
+    ZEREF_PLAYWRIGHT_REUSE: "1",
   });
 
   run("npm", ["-w", "@zeref/web", "run", "test:e2e:install"], env);

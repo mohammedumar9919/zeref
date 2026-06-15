@@ -109,8 +109,10 @@ function isServerVoicePath(relPath) {
   return (
     normalized.includes("/apps/web/app/api/") ||
     normalized.includes("/apps/web/lib/voice/") ||
+    normalized.includes("/apps/web/lib/jarvis/") ||
     normalized.startsWith("apps/web/app/api/") ||
-    normalized.startsWith("apps/web/lib/voice/")
+    normalized.startsWith("apps/web/lib/voice/") ||
+    normalized.startsWith("apps/web/lib/jarvis/")
   );
 }
 
@@ -120,9 +122,11 @@ function isServerMemoryPath(relPath) {
     normalized.includes("/apps/web/app/api/") ||
     normalized.includes("/apps/web/lib/memory/") ||
     normalized.includes("/apps/web/lib/cockpit/") ||
+    normalized.includes("/apps/web/lib/jarvis/") ||
     normalized.startsWith("apps/web/app/api/") ||
     normalized.startsWith("apps/web/lib/memory/") ||
-    normalized.startsWith("apps/web/lib/cockpit/")
+    normalized.startsWith("apps/web/lib/cockpit/") ||
+    normalized.startsWith("apps/web/lib/jarvis/")
   );
 }
 
@@ -147,7 +151,7 @@ function assertC78WebImportGuard() {
 
       if (C30_JARVIS_IMPORT.test(source)) {
         if (!isServerVoicePath(rel)) {
-          fail(`C78: ${rel} must not import @zeref/jarvis-kernel outside app/api/** or lib/voice/**`);
+          fail(`C78: ${rel} must not import @zeref/jarvis-kernel outside app/api/**, lib/voice/**, or lib/jarvis/**`);
         }
         if (isClientComponent(source)) {
           fail(`C78: ${rel} is a client component and must not import @zeref/jarvis-kernel`);
@@ -157,7 +161,7 @@ function assertC78WebImportGuard() {
       if (C30_MEMORY_IMPORT.test(source)) {
         if (!isServerMemoryPath(rel)) {
           fail(
-            `C78: ${rel} must not import @zeref/zeref-memory outside app/api/**, lib/memory/**, or lib/cockpit/**`,
+            `C78: ${rel} must not import @zeref/zeref-memory outside app/api/**, lib/memory/**, lib/cockpit/**, or lib/jarvis/**`,
           );
         }
         if (isClientComponent(source)) {
@@ -207,6 +211,7 @@ function runPhase8ProductPlaywright() {
     ZEREF_PHASE8_PRODUCT: process.env.ZEREF_PHASE8_PRODUCT ?? "1",
     ZEREF_PHASE7_BRAIN: "1",
     ZEREF_PHASE6_VOICE: "1",
+    ZEREF_PLAYWRIGHT_REUSE: "1",
   });
 
   run("npm", ["-w", "@zeref/web", "run", "test:e2e:install"], env);
