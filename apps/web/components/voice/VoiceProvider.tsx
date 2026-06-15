@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 
 import type { VoiceTranscriptRole } from "@zeref/contracts";
 
@@ -79,6 +80,7 @@ type VoiceProviderProps = {
 };
 
 export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElement {
+  const pathname = usePathname();
   const [voiceState, setVoiceState] = useState<VoiceGlobeState>("idle");
   const [brainState, setBrainState] = useState<BrainGlobeState>("idle");
   const [micLevel, setMicLevel] = useState(0);
@@ -109,6 +111,16 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       }, BRAIN_STATE_IDLE_MS);
     }
   }, []);
+
+  const brainStateRef = useRef(brainState);
+  brainStateRef.current = brainState;
+
+  useEffect(() => {
+    const state = brainStateRef.current;
+    if (state !== "idle") {
+      applyBrainState(state);
+    }
+  }, [pathname, applyBrainState]);
 
   const handleMemoryBrainEvent = useCallback(
     (data: unknown) => {
