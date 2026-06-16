@@ -6,7 +6,7 @@ export const METRIC_VERSION = "phase3-v1";
 /** Comment weight in engagement raw signal (normalize stage). */
 export const ENGAGEMENT_COMMENT_WEIGHT = 3;
 
-/** Fields extracted from merged Instagram payload (Graph wins counts/caption). */
+/** Fields extracted from merged Instagram payload (Graph wins counts/caption; scrape wins media). */
 export type NormalizedPostFields = {
   shortcode: string;
   sources: CollectSource[];
@@ -14,6 +14,9 @@ export type NormalizedPostFields = {
   likes?: number;
   comments?: number;
   mediaType?: string;
+  thumbnailUrl?: string;
+  videoUrl?: string;
+  carouselUrls?: string[];
 };
 
 export type EngagementResult = {
@@ -57,11 +60,18 @@ export function fieldsFromMerged(
   const likes = graph?.like_count ?? scrape?.likes;
   const comments = graph?.comments_count ?? scrape?.comments;
   const caption = graph?.caption ?? scrape?.caption;
-  const mediaType = graph?.media_type ?? scrape?.videoUrl
-    ? "VIDEO"
-    : scrape?.carouselUrls?.length
-      ? "CAROUSEL_ALBUM"
-      : undefined;
+  const mediaType =
+    graph?.media_type ??
+    (scrape?.videoUrl
+      ? "VIDEO"
+      : scrape?.carouselUrls?.length
+        ? "CAROUSEL_ALBUM"
+        : undefined);
+
+  // ADR-004: scrape wins for media assets when both sources exist.
+  const thumbnailUrl = scrape?.thumbnailUrl;
+  const videoUrl = scrape?.videoUrl;
+  const carouselUrls = scrape?.carouselUrls;
 
   return {
     shortcode: merged.shortcode,
@@ -70,5 +80,8 @@ export function fieldsFromMerged(
     likes,
     comments,
     mediaType,
+    ...(thumbnailUrl ? { thumbnailUrl } : {}),
+    ...(videoUrl ? { videoUrl } : {}),
+    ...(carouselUrls?.length ? { carouselUrls } : {}),
   };
 }

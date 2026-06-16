@@ -12,12 +12,21 @@ import { isWorkerAvailable } from "../cockpit/simulated-pipeline";
 import { upsertStudioDraft } from "../studio-bff";
 import type { ZerefContext } from "@zeref/jarvis-kernel";
 import { createWebMemoryPort } from "./memory-port";
+import { aggregatePanelDataAgeState, type DataAgeState } from "../data-age";
 
 function unavailableMessage(toolName: string): string {
   return `${toolName} unavailable — database not configured and fixture mode is off (C158).`;
 }
 
 function summarizeCockpit(slices: Awaited<ReturnType<typeof loadCockpitSlices>>): unknown {
+  const panels = slices.panels;
+  const panelStates: Array<{ dataAgeState?: DataAgeState }> = [
+    panels.studio,
+    panels.calendar,
+    panels.reports,
+    panels.research,
+  ];
+
   return {
     available: true,
     schemaVersion: slices.schemaVersion,
@@ -25,19 +34,28 @@ function summarizeCockpit(slices: Awaited<ReturnType<typeof loadCockpitSlices>>)
       studio: {
         itemCount: slices.panels.studio.items.length,
         insufficientData: slices.panels.studio.insufficientData,
+        dataAgeState: "dataAgeState" in slices.panels.studio ? slices.panels.studio.dataAgeState : undefined,
       },
       calendar: {
         itemCount: slices.panels.calendar.items.length,
         insufficientData: slices.panels.calendar.insufficientData,
+        dataAgeState:
+          "dataAgeState" in slices.panels.calendar ? slices.panels.calendar.dataAgeState : undefined,
       },
       reports: {
         itemCount: slices.panels.reports.items.length,
         insufficientData: slices.panels.reports.insufficientData,
+        dataAgeState: "dataAgeState" in slices.panels.reports ? slices.panels.reports.dataAgeState : undefined,
       },
       research: {
         itemCount: slices.panels.research.items.length,
         insufficientData: slices.panels.research.insufficientData,
+        dataAgeState:
+          "dataAgeState" in slices.panels.research ? slices.panels.research.dataAgeState : undefined,
       },
+    },
+    freshness: {
+      overallDataAgeState: aggregatePanelDataAgeState(panelStates),
     },
   };
 }

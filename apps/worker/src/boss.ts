@@ -6,6 +6,7 @@ import { createEmbedHandler } from "./jobs/embed.js";
 import { createNormalizeHandler } from "./jobs/normalize.js";
 import { createReportHandler } from "./jobs/report.js";
 import { createResearchHandler } from "./jobs/research.js";
+import { createScheduleCollectHandler } from "./jobs/schedule-collect.js";
 import {
   ANALYZE_JOB_NAME,
   COLLECT_JOB_NAME,
@@ -13,8 +14,13 @@ import {
   NORMALIZE_JOB_NAME,
   REPORT_JOB_NAME,
   RESEARCH_JOB_NAME,
+  SCHEDULE_COLLECT_JOB_NAME,
   type WorkerJobName,
 } from "./jobs/registry.js";
+import {
+  collectIntervalCron,
+  parseCollectIntervalHours,
+} from "./jobs/schedule-collect.js";
 import { insertCockpitPipelineOutbox } from "./lib/cockpit-outbox.js";
 
 export type WorkerBossOptions = {
@@ -89,6 +95,15 @@ export async function registerWorkers(
     createResearchHandler(shared),
     options.pool,
   );
+
+  const scheduleHandler = createScheduleCollectHandler({ boss });
+  await boss.work(SCHEDULE_COLLECT_JOB_NAME, async (jobs) => {
+    const results = [];
+    for (const job of jobs) {
+      results.push(await scheduleHandler(job));
+    }
+    return results;
+  });
 }
 
 /** @deprecated Use registerWorkers */
@@ -102,5 +117,13 @@ export async function registerCollectWorker(
 export async function startWorker(options: WorkerBossOptions): Promise<PgBoss> {
   const boss = await createWorkerBoss(options);
   await registerWorkers(boss, options);
+
+  const intervalHours = parseCollectIntervalHours(process.env.ZEREF_COLLECT_INTERVAL_HOURS);
+  await boss.schedule(
+    SCHEDULE_COLLECT_JOB_NAME,
+    collectIntervalCron(intervalHours),
+    {},
+  );
+
   return boss;
 }

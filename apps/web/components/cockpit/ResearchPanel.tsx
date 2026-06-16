@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import type { CockpitResearchItem } from "@zeref/contracts";
+import type { DataAgeState } from "@/lib/data-age";
 
 import { CockpitPanel } from "./CockpitPanel";
 
@@ -8,15 +9,22 @@ type ResearchPanelProps = {
   items: CockpitResearchItem[];
   insufficientData: boolean;
   focused?: boolean;
+  dataAgeState?: DataAgeState;
 };
 
 export function ResearchPanel({
   items,
   insufficientData,
   focused,
+  dataAgeState,
 }: ResearchPanelProps): React.ReactElement {
   return (
-    <CockpitPanel title="Research" testId="panel-research" focused={focused}>
+    <CockpitPanel
+      title="Research"
+      testId="panel-research"
+      focused={focused}
+      dataAgeState={dataAgeState}
+    >
       {insufficientData ? (
         <p className="text-sm text-hud-muted">
           Insufficient trend data — enqueue a research job to compute signals.

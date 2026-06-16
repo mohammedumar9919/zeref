@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import type { CockpitCalendarItemV8 } from "@zeref/contracts";
+import type { DataAgeState } from "@/lib/data-age";
 
 import { CockpitPanel } from "./CockpitPanel";
 
@@ -8,15 +9,22 @@ type CalendarPanelProps = {
   items: CockpitCalendarItemV8[];
   insufficientData: boolean;
   focused?: boolean;
+  dataAgeState?: DataAgeState;
 };
 
 export function CalendarPanel({
   items,
   insufficientData,
   focused,
+  dataAgeState,
 }: CalendarPanelProps): React.ReactElement {
   return (
-    <CockpitPanel title="Calendar" testId="panel-calendar" focused={focused}>
+    <CockpitPanel
+      title="Calendar"
+      testId="panel-calendar"
+      focused={focused}
+      dataAgeState={dataAgeState}
+    >
       {items.length > 0 ? (
         <ul className="space-y-2 text-sm text-hud-primary">
           {items.map((item) => (

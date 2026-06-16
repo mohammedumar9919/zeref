@@ -1,0 +1,16 @@
+{
+  "shortcode": "CAR789xyz",
+  "platformAccountId": "22222222-2222-4222-8222-222222222222",
+  "sources": ["scrape", "graph"],
+  "caption": "Carousel night ride highlights.",
+  "likes": 842,
+  "comments": 19,
+  "mediaType": "CAROUSEL_ALBUM",
+  "thumbnailUrl": "https://scontent.cdninstagram.com/v/thumb-carousel.jpg",
+  "videoUrl": "https://scontent.cdninstagram.com/v/reel-preview.mp4",
+  "carouselUrls": [
+    "https://scontent.cdninstagram.com/v/carousel-1.jpg",
+    "https://scontent.cdninstagram.com/v/carousel-2.jpg"
+  ],
+  "schemaVersion": "phase3-v1"
+}

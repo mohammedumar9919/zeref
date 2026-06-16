@@ -45,7 +45,7 @@ function assertRejected(schema, name) {
 }
 
 test("exports PHASE3_CONTRACT_VERSION", () => {
-  assert.equal(PHASE3_CONTRACT_VERSION, "3.0.0");
+  assert.equal(PHASE3_CONTRACT_VERSION, "3.1.0");
 });
 
 test("PipelineStage and JobType include embed", () => {

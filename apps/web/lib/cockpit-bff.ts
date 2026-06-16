@@ -17,11 +17,17 @@ import {
   normalizedEntities,
   reportArtifacts,
   researchTopics,
+  snapshots,
   studioDrafts,
 } from "@zeref/db";
 import { and, desc, eq } from "drizzle-orm";
 
 import { getDb, isFixtureMode, resetDbPoolForTests } from "./db";
+import {
+  aggregatePanelDataAgeState,
+  computeDataAge,
+  type DataAgeState,
+} from "./data-age";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const phase8FixturePath = join(repoRoot, "fixtures/phase-8/cockpit-slices.valid.json");
@@ -45,9 +51,39 @@ export type BffResult<T> =
 function loadFixtureSlices(): CockpitSlicesV8 | CockpitSlicesV9 {
   const path = isPhase9ResearchActive() ? phase9FixturePath : phase8FixturePath;
   const raw = JSON.parse(readFileSync(path, "utf8")) as unknown;
-  return isPhase9ResearchActive()
+  const parsed = isPhase9ResearchActive()
     ? CockpitSlicesSchemaV9.parse(raw)
     : CockpitSlicesSchemaV8.parse(raw);
+
+  const fixtureState: DataAgeState = "fixture";
+  const panels = parsed.panels;
+
+  return {
+    ...parsed,
+    panels: {
+      ...panels,
+      studio: {
+        ...panels.studio,
+        dataAgeState: fixtureState,
+        items: panels.studio.items.map((item) => ({ ...item, dataAgeState: fixtureState })),
+      },
+      calendar: {
+        ...panels.calendar,
+        dataAgeState: fixtureState,
+        items: panels.calendar.items.map((item) => ({ ...item, dataAgeState: fixtureState })),
+      },
+      // CockpitReportItemSchema and CockpitResearchItemSchema are strict:
+      // data-age is panel-level only; do not spread onto items.
+      reports: {
+        ...panels.reports,
+        dataAgeState: fixtureState,
+      },
+      research: {
+        ...panels.research,
+        dataAgeState: fixtureState,
+      },
+    },
+  };
 }
 
 function draftPreview(caption: string): string | undefined {
@@ -114,6 +150,7 @@ async function loadResearchPanelFromDb(
     lastComputedAt?: string;
   }>;
   insufficientData: boolean;
+  panelDataAgeState: DataAgeState;
 }> {
   const researchRows = await db
     .select({
@@ -127,6 +164,15 @@ async function loadResearchPanelFromDb(
     .orderBy(desc(researchTopics.lastComputedAt))
     .limit(20);
 
+  const nowMs = Date.now();
+  // CockpitResearchItemSchema is strict — no data-age item extensions allowed.
+  // Compute panel-level aggregate from raw timestamps before Zod parsing.
+  const panelDataAgeState = aggregatePanelDataAgeState(
+    researchRows.map((row) =>
+      computeDataAge(row.lastComputedAt ? toIsoString(row.lastComputedAt) : undefined, nowMs, false),
+    ),
+  );
+
   return {
     items: researchRows.map((row) => ({
       id: row.id,
@@ -136,6 +182,7 @@ async function loadResearchPanelFromDb(
       lastComputedAt: row.lastComputedAt ? toIsoString(row.lastComputedAt) : undefined,
     })),
     insufficientData: researchRows.length === 0,
+    panelDataAgeState,
   };
 }
 
@@ -153,8 +200,10 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
           snapshotId: normalizedEntities.snapshotId,
           payloadJson: normalizedEntities.payloadJson,
           createdAt: normalizedEntities.createdAt,
+          collectedAt: snapshots.collectedAt,
         })
         .from(normalizedEntities)
+        .leftJoin(snapshots, eq(normalizedEntities.snapshotId, snapshots.id))
         .orderBy(desc(normalizedEntities.createdAt))
         .limit(10),
       db
@@ -194,10 +243,12 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
     ]),
   );
 
+  const nowMs = Date.now();
   const studioPanel = {
     items: studioRows.map((row) => {
       const draft = draftsByEntity.get(row.id);
       const preview = draft ? draftPreview(draft.caption) : undefined;
+      const age = computeDataAge(row.collectedAt ? toIsoString(row.collectedAt) : undefined, nowMs, false);
       return {
         entityId: row.id,
         title: studioTitle(row.payloadJson),
@@ -206,6 +257,7 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
         hasDraft: Boolean(draft),
         draftPreview: preview,
         status: draft ? ("draft" as const) : undefined,
+        ...age,
       };
     }),
     insufficientData: studioRows.length === 0,
@@ -217,10 +269,16 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
       title: row.title,
       scheduledAt: toIsoString(row.scheduledAt),
       status: row.status,
+      ...computeDataAge(toIsoString(row.scheduledAt), nowMs, false),
     })),
     insufficientData: calendarRows.length === 0,
   };
 
+  // CockpitReportItemSchema is strict and has no data-age item extensions —
+  // so we compute panel-level state from raw row timestamps before Zod parses.
+  const reportsPanelDataAgeState = aggregatePanelDataAgeState(
+    reportRows.map((row) => computeDataAge(toIsoString(row.createdAt), nowMs, false)),
+  );
   const reportsPanel = {
     items: reportRows.map((row) => ({
       artifactId: row.id,
@@ -235,10 +293,10 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
     return CockpitSlicesSchemaV9.parse({
       schemaVersion: "phase9-cockpit-v1",
       panels: {
-        studio: studioPanel,
-        calendar: calendarPanel,
-        reports: reportsPanel,
-        research: researchPanel,
+        studio: { ...studioPanel, dataAgeState: aggregatePanelDataAgeState(studioPanel.items) },
+        calendar: { ...calendarPanel, dataAgeState: aggregatePanelDataAgeState(calendarPanel.items) },
+        reports: { ...reportsPanel, dataAgeState: reportsPanelDataAgeState },
+        research: { items: researchPanel.items, insufficientData: researchPanel.insufficientData, dataAgeState: researchPanel.panelDataAgeState },
       },
     });
   }
@@ -246,12 +304,13 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
   return CockpitSlicesSchemaV8.parse({
     schemaVersion: "phase8-cockpit-v1",
     panels: {
-      studio: studioPanel,
-      calendar: calendarPanel,
-      reports: reportsPanel,
+      studio: { ...studioPanel, dataAgeState: aggregatePanelDataAgeState(studioPanel.items) },
+      calendar: { ...calendarPanel, dataAgeState: aggregatePanelDataAgeState(calendarPanel.items) },
+      reports: { ...reportsPanel, dataAgeState: reportsPanelDataAgeState },
       research: {
         items: [],
         insufficientData: true,
+        dataAgeState: "stale",
       },
     },
   });

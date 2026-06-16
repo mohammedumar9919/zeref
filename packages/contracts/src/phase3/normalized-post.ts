@@ -12,6 +12,9 @@ export const NormalizedPostPayloadSchema = z
     likes: z.number().int().nonnegative().optional(),
     comments: z.number().int().nonnegative().optional(),
     mediaType: z.string().optional(),
+    thumbnailUrl: z.string().url().optional(),
+    videoUrl: z.string().url().optional(),
+    carouselUrls: z.array(z.string().url()).optional(),
     schemaVersion: z.string().min(1),
   })
   .strict();

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import type { CockpitReportItem } from "@zeref/contracts";
+import type { DataAgeState } from "@/lib/data-age";
 
 import { CockpitPanel } from "./CockpitPanel";
 
@@ -8,15 +9,22 @@ type ReportsPanelProps = {
   items: CockpitReportItem[];
   insufficientData: boolean;
   focused?: boolean;
+  dataAgeState?: DataAgeState;
 };
 
 export function ReportsPanel({
   items,
   insufficientData,
   focused,
+  dataAgeState,
 }: ReportsPanelProps): React.ReactElement {
   return (
-    <CockpitPanel title="Reports" testId="panel-reports" focused={focused}>
+    <CockpitPanel
+      title="Reports"
+      testId="panel-reports"
+      focused={focused}
+      dataAgeState={dataAgeState}
+    >
       {items.length > 0 ? (
         <ul className="space-y-2 text-sm text-hud-primary">
           {items.map((item) => (

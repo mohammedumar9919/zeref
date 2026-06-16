@@ -1,12 +1,16 @@
 import { z } from "zod";
 import { ReportArtifactIdSchema } from "../ids.js";
 import { CalendarEventStatusSchema } from "../phase8/calendar.js";
+import { CockpitItemDataAgeSchema, DataAgeStateSchema } from "../phase12/data-age.js";
+
+const dataAgeItemExtensions = CockpitItemDataAgeSchema.partial().shape;
 
 /** Amendment G carry-forward + Phase 9 research fields (ADR-031). */
 const phase9ItemExtensions = {
   status: CalendarEventStatusSchema.optional(),
   draftPreview: z.string().min(1).optional(),
   hasDraft: z.boolean().optional(),
+  ...dataAgeItemExtensions,
 };
 
 export const CockpitStudioItemSchemaV9 = z
@@ -50,6 +54,7 @@ export const CockpitResearchItemSchemaV9 = z
 
 const panelBase = {
   insufficientData: z.boolean(),
+  dataAgeState: DataAgeStateSchema.optional(),
 };
 
 export const CockpitStudioPanelSchemaV9 = z

@@ -19,6 +19,16 @@ export {
 } from "./lib/collect-pipeline.js";
 export { findExistingSnapshot, insertSnapshot } from "./lib/snapshot-store.js";
 export { runCollect, createCollectHandler, type CollectHandlerDeps } from "./jobs/collect.js";
+export {
+  runScheduleCollect,
+  createScheduleCollectHandler,
+  buildScheduleCollectInput,
+  parseCollectShortcodes,
+  collectIntervalCron,
+  parseCollectIntervalHours,
+  type ScheduleCollectDeps,
+  type ScheduleCollectResult,
+} from "./jobs/schedule-collect.js";
 export { runNormalize, createNormalizeHandler, type NormalizeHandlerDeps } from "./jobs/normalize.js";
 export { runEmbed, createEmbedHandler, type EmbedHandlerDeps } from "./jobs/embed.js";
 export { runAnalyze, createAnalyzeHandler, type AnalyzeHandlerDeps } from "./jobs/analyze.js";
@@ -29,6 +39,9 @@ export {
   EMBED_JOB_NAME,
   ANALYZE_JOB_NAME,
   REPORT_JOB_NAME,
+  RESEARCH_JOB_NAME,
+  SCHEDULE_COLLECT_JOB_NAME,
+  PIPELINE_STAGE_JOB_NAMES,
   WORKER_JOB_NAMES,
   type WorkerJobName,
 } from "./jobs/registry.js";

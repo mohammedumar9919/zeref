@@ -1,7 +1,7 @@
 export const PHASE0_CONTRACT_VERSION = "0.1.0";
 export const PHASE1_CONTRACT_VERSION = "1.0.0";
 export const PHASE2_CONTRACT_VERSION = "2.0.0";
-export const PHASE3_CONTRACT_VERSION = "3.0.0";
+export const PHASE3_CONTRACT_VERSION = "3.1.0";
 export const PHASE4_CONTRACT_VERSION = "4.0.0";
 export const PHASE5_CONTRACT_VERSION = "5.0.0";
 export const PHASE5_1_CONTRACT_VERSION = "5.1.0";
@@ -11,6 +11,7 @@ export const PHASE8_CONTRACT_VERSION = "8.0.0";
 export const PHASE9_CONTRACT_VERSION = "9.0.0";
 export const PHASE10_CONTRACT_VERSION = "10.0.0";
 export const PHASE11_CONTRACT_VERSION = "11.0.0";
+export const PHASE12_CONTRACT_VERSION = "12.0.0";
 
 export {
   PlatformSchema,
@@ -231,6 +232,13 @@ export {
   WorkerHealthResponseSchema,
   type WorkerHealthResponse,
 } from "./phase10/index.js";
+
+export {
+  DataAgeStateSchema,
+  CockpitItemDataAgeSchema,
+  type DataAgeState,
+  type CockpitItemDataAge,
+} from "./phase12/index.js";
 
 export {
   JarvisRiskTierSchema,

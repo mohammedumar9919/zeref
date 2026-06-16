@@ -34,11 +34,13 @@ export function CockpitGrid({
           items={studio.items}
           insufficientData={studio.insufficientData}
           focused={focus === "studio"}
+          dataAgeState={"dataAgeState" in studio ? studio.dataAgeState : undefined}
         />
         <CalendarPanel
           items={calendar.items}
           insufficientData={calendar.insufficientData}
           focused={focus === "calendar"}
+          dataAgeState={"dataAgeState" in calendar ? calendar.dataAgeState : undefined}
         />
       </div>
 
@@ -51,11 +53,13 @@ export function CockpitGrid({
           items={reports.items}
           insufficientData={reports.insufficientData}
           focused={focus === "reports"}
+          dataAgeState={"dataAgeState" in reports ? reports.dataAgeState : undefined}
         />
         <ResearchPanel
           items={research.items}
           insufficientData={research.insufficientData}
           focused={focus === "research"}
+          dataAgeState={"dataAgeState" in research ? research.dataAgeState : undefined}
         />
       </div>
     </div>

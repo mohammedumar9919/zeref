@@ -1,0 +1,26 @@
+{
+  "shortcode": "CAR789xyz",
+  "sources": ["scrape", "graph"],
+  "graph": {
+    "id": "18123456789012399",
+    "caption": "Carousel night ride highlights.",
+    "media_type": "CAROUSEL_ALBUM",
+    "media_url": "https://scontent.cdninstagram.com/v/graph-only.jpg",
+    "permalink": "https://www.instagram.com/p/CAR789xyz/",
+    "timestamp": "2026-06-10T18:30:00+0000",
+    "like_count": 842,
+    "comments_count": 19
+  },
+  "scrape": {
+    "shortcode": "CAR789xyz",
+    "caption": "Carousel night ride highlights.",
+    "likes": 842,
+    "comments": 19,
+    "thumbnailUrl": "https://scontent.cdninstagram.com/v/thumb-carousel.jpg",
+    "videoUrl": "https://scontent.cdninstagram.com/v/reel-preview.mp4",
+    "carouselUrls": [
+      "https://scontent.cdninstagram.com/v/carousel-1.jpg",
+      "https://scontent.cdninstagram.com/v/carousel-2.jpg"
+    ]
+  }
+}

@@ -1,12 +1,16 @@
 import { z } from "zod";
 import { ReportArtifactIdSchema } from "../ids.js";
 import { CalendarEventStatusSchema } from "./calendar.js";
+import { CockpitItemDataAgeSchema, DataAgeStateSchema } from "../phase12/data-age.js";
+
+const dataAgeItemExtensions = CockpitItemDataAgeSchema.partial().shape;
 
 /** Amendment G — additive optional fields on panel items. */
 const phase8ItemExtensions = {
   status: CalendarEventStatusSchema.optional(),
   draftPreview: z.string().min(1).optional(),
   hasDraft: z.boolean().optional(),
+  ...dataAgeItemExtensions,
 };
 
 export const CockpitStudioItemSchemaV8 = z
@@ -48,6 +52,7 @@ export const CockpitResearchItemSchemaV8 = z
 
 const panelBase = {
   insufficientData: z.boolean(),
+  dataAgeState: DataAgeStateSchema.optional(),
 };
 
 export const CockpitStudioPanelSchemaV8 = z

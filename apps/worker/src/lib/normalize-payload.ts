@@ -24,6 +24,9 @@ export function buildNormalizedPostPayload(
     likes: fields.likes,
     comments: fields.comments,
     mediaType: fields.mediaType,
+    ...(fields.thumbnailUrl ? { thumbnailUrl: fields.thumbnailUrl } : {}),
+    ...(fields.videoUrl ? { videoUrl: fields.videoUrl } : {}),
+    ...(fields.carouselUrls?.length ? { carouselUrls: fields.carouselUrls } : {}),
     schemaVersion,
   });
 }
