@@ -1,7 +1,7 @@
 # Zeref — Phase 11 Contract (Agentic JARVIS)
 
 **Phase:** 11  
-**Status:** **PLANNING** (Lead orchestrator 2026-06-15)  
+**Status:** **APPROVED** @ `0072c18` (Lead orchestrator 2026-06-15)  
 **Theme:** Agentic JARVIS — portable ReAct core, MCP-style tools, live reads, guarded writes, audit, eval harness. **The kingpiece** before streaming voice polish (Phase 15).
 
 **Prerequisites:** Phase 10.5 **APPROVED** @ `a90af79`; `verify:phase-10.5` green on `main`. Phases 0–10.5 must **remain green**.

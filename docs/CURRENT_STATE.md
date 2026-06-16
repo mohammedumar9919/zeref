@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-15 (Phase 11 APPROVED — `verify:phase-11` green)  
+**Last updated:** 2026-06-16 (Phase 12 PLANNING — Wave 0 governance)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -25,14 +25,15 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
 | Phase 9 Research pipelines | **APPROVED** @ `9960c92` — CI Phase 0–9 green; research e2e 2/2 enforced |
-| Phase 6.1 Luke visual polish | **P6.1-E DONE** — `verify:phase-6.1` green; Planner visual sign-off pending |
+| Phase 6.1 Luke visual polish | **APPROVED** — `verify:phase-6.1` green; Planner visual sign-off 2026-06-16 |
 | **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ `e7908d1` — B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` green |
 | Phase 6.2 Visual Tier 3 | **PLANNING** — P6.2-A **MAY** parallel P10 Wave 1 (Amendment Q); P6.2-B after P10 sign-off |
 | Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `d8ce6c0` — full `verify:phase-10` green 2026-06-14 |
 | Phase 10.5 Stabilize & Instant | **APPROVED** @ `a90af79` — build fix `8e07b8a`; `verify:phase-10.5` green 2026-06-15; warm UAT C122 **31ms**, panel nav **21–26ms** (800ms gate) |
-| Phase 11 Agentic JARVIS | **APPROVED** @ `2798b02` — `verify:phase-11` green 2026-06-15 (`verify-phase-11-run2.log`); eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
+| Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
+| Phase 12 Real Data & Live Instagram | **PLANNING** — Wave 0 governance (contract + ADR-042 + housekeeping); Wave 1 workers pending |
 
-**Immediate goal:** Push `main` (**13 commits** ahead of origin). Planner: pick next milestone (Phase 11.x vector memory, Phase 6.2 visual Tier 3, or Phase 15 streaming TTS).
+**Immediate goal:** User runs `verify:phase-11` after Wave 0 merge; spawn **P12-A**, **P12-B**, **P12-C** (3 parallel worker chats). Optional parallel: Phase 6.2 visual Tier 3 (UI-only).
 
 ### P8 hotfix root cause
 
@@ -225,7 +226,7 @@ Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 
 | Doc | Path |
 |-----|------|
-| Phase contracts | `docs/governance/phase-{0-8}-contract.md` |
+| Phase contracts | `docs/governance/phase-{0-12}-contract.md` |
 | Verify | `docs/governance/verify.md` |
 | Legacy lessons | `docs/handoff/legacy-ios.md` |
 | Gap backlog | `docs/GAP_BACKLOG.md` |

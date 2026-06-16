@@ -6,6 +6,7 @@
  * Web child receives ZEREF_WORKER_AVAILABLE=1 (Phase 10 — C111).
  * Phase 10.5 (C139): Whisper sidecar when available, else ZEREF_WHISPER_MOCK=1;
  * ZEREF_PHASE8_PRODUCT + ZEREF_PHASE9_RESEARCH enabled for live cockpit slices.
+ * Phase 12 (C177): ZEREF_PHASE11_AGENT=1 on web child — agentic JARVIS default ON.
  * Requires: docker compose, npm run build already run once
  */
 import { spawn } from "node:child_process";
@@ -60,6 +61,7 @@ compose.on("exit", (code) => {
     ZEREF_WORKER_AVAILABLE: "1",
     ZEREF_PHASE8_PRODUCT: "1",
     ZEREF_PHASE9_RESEARCH: "1",
+    ZEREF_PHASE11_AGENT: "1",
   };
 
   let whisper = null;

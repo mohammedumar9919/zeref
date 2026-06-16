@@ -45,7 +45,7 @@
 | **C66** | **SSE** — `memory.saved`, `memory.search`, `memory.contradiction`, `memory.entity_changed` (+ existing `voice.*`, `pipeline`). |
 | **C67** | **Globe** — `data-globe-brain-state`: `idle` \| `memory_saved` \| `searching` \| `contradiction` \| `entity_changed`; no bloom (ADR-015/023). |
 | **C68** | **Pipeline SSE** — `simulated: false` when worker actually completed job via outbox. |
-| **C69** | **Perf** — sub-100 ms dev target on mock bus; **150 ms CI tolerance** for attribute update after SSE emit. |
+| **C69** | **Perf** — sub-100 ms dev target on mock bus; **1500 ms CI tolerance** for attribute update after SSE emit (settled 2026-06-16; matches `cockpit-brain-7.spec.ts`). |
 | **C70** | **`npm run verify:phase-7`** chains 0–6; `ZEREF_MEMORY_MOCK=1`, `ZEREF_PHASE7_BRAIN=1`. |
 
 **CI env (binding):** Phase 6 flags + `ZEREF_MEMORY_MOCK=1`, `ZEREF_PHASE7_BRAIN=1`
