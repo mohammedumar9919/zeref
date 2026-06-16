@@ -662,3 +662,58 @@ After **Verify Phase 10.5**:
 
 - `ZEREF_PHASE11_AGENT=1` + inherited Phase 10.5 env
 - `npm run verify:phase-11`
+
+---
+
+## Phase 12 (real data + data-age badges)
+
+**Contract:** [phase-12-contract.md](./phase-12-contract.md) (C163–C178) · **ADR:** [042](./adr/ADR-042-scheduled-collect-data-age.md)
+
+Chains **`verify:phase-11`** (Phases 0–11 preserved), then package tests + Playwright when `ZEREF_PHASE12_DATA=1`.
+
+```powershell
+cd c:\Projects\zeref
+# Kill port 3099 first (C178)
+Get-NetTCPConnection -LocalPort 3099 -ErrorAction SilentlyContinue |
+  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_PHASE11_AGENT='1'
+$env:ZEREF_PHASE12_DATA='1'
+$env:ZEREF_JOB_ENQUEUE_MOCK='1'
+npm run verify:phase-12
+```
+
+**User terminal only** for full gate (Playwright + server start).
+
+### Env flags
+
+| Env | Default verify / CI | Enforcement |
+|-----|---------------------|-------------|
+| `ZEREF_PHASE12_DATA` | **`1`** (C171) | required — `cockpit-data-age-12.spec.ts` hard-fail on non-zero |
+| `ZEREF_BFF_FIXTURE` | **`1`** | required — fixture BFF for badge tests |
+| `ZEREF_JOB_ENQUEUE_MOCK` | **`1`** | required |
+| `ZEREF_LIVE_INSTAGRAM` | **deleted** (C170) | never set in CI — deleted by verify script |
+| Phase 11 flags | same as `verify:phase-11` | inherited in chain |
+
+### What `verify:phase-12` checks
+
+Script: `scripts/verify-phase-12.mjs`
+
+- **C173:** chains `verify:phase-11` first
+- phase-12-contract.md + ADR-042 present
+- DataAgeBadge.tsx + data-age.ts + phase12 contracts present
+- schedule-collect.ts present
+- `@zeref/contracts` + `@zeref/worker` + `@zeref/web` unit tests
+- **C175:** Playwright `cockpit-data-age-12.spec.ts` when `ZEREF_PHASE12_DATA=1`
+- **C178:** port 3099 freed before Playwright server start
+
+### Port 3099 EADDRINUSE (C178)
+
+Before running verify:phase-12, always kill port 3099:
+
+```powershell
+Get-NetTCPConnection -LocalPort 3099 -ErrorAction SilentlyContinue |
+  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+```
+
+The verify script calls `freePlaywrightPort(3099)` at startup, but chained subscripts that start their own servers can still conflict if an external process holds the port.
