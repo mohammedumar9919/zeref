@@ -15,13 +15,21 @@ const EXPECTED_PHASE4_FIXTURES = [
 
 const EXPECTED_ELITE_GOLDENS = ["ride-log-elite.golden.json"];
 
-const EXPECTED_WORKER_JOBS = [
+const EXPECTED_PIPELINE_JOBS = [
   "collect",
   "normalize",
   "embed",
   "analyze",
   "report",
   "research",
+];
+
+/** Phase 12 C165 operator jobs (not pipeline SSE stages). */
+const EXPECTED_OPERATOR_JOBS = ["schedule-collect"];
+
+const EXPECTED_WORKER_JOBS = [
+  ...EXPECTED_PIPELINE_JOBS,
+  ...EXPECTED_OPERATOR_JOBS,
 ];
 
 /** Paths that must not import @zeref/instagram (C19). */

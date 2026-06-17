@@ -72,21 +72,20 @@ test.describe("cockpit stability phase 10.5 (C128)", () => {
     });
 
     await page.goto("/cockpit");
-    const globe = page.getByTestId("globe-island");
-    await expect(globe).toBeVisible();
-    await expect(globe).toHaveAttribute("data-globe-brain-state", "memory_saved", {
-      timeout: 5_000,
-    });
+    const globe = page.locator(
+      '[data-testid="globe-island"][data-globe-brain-state="memory_saved"]',
+    );
+    await expect(globe).toBeVisible({ timeout: 5_000 });
 
     await page.getByRole("link", { name: "Open studio →" }).click();
     await expect(page.getByTestId("cockpit-studio-page")).toBeVisible();
-    await expect(globe).toHaveAttribute("data-globe-brain-state", "memory_saved");
+    await expect(globe).toBeVisible();
 
     await page.getByRole("link", { name: "Open calendar →" }).click();
     await expect(page.getByTestId("calendar-scheduler")).toBeVisible({
       timeout: 10_000,
     });
-    await expect(globe).toHaveAttribute("data-globe-brain-state", "memory_saved");
+    await expect(globe).toBeVisible();
 
     const tracker = await page.evaluate(() => {
       const t = (
