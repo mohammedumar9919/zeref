@@ -31,7 +31,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `d8ce6c0` — full `verify:phase-10` green 2026-06-14 |
 | Phase 10.5 Stabilize & Instant | **APPROVED** @ `a90af79` — build fix `8e07b8a`; `verify:phase-10.5` green 2026-06-15; warm UAT C122 **31ms**, panel nav **21–26ms** (800ms gate) |
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
-| Phase 12 Real Data & Live Instagram | **APPROVED** @ `7f5caaf` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
+| Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
 **Immediate goal:** Phase 12 closed — next phase per master plan. Optional parallel: Phase 6.2 visual Tier 3 (UI-only).
 
