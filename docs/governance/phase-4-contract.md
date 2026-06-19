@@ -23,7 +23,7 @@
 | ID | Condition |
 |----|-----------|
 | **C17** | `AnalyzeJobOutput` + `ReportJobOutput` in `@zeref/contracts`; export **`PHASE4_CONTRACT_VERSION`**. |
-| **C18** | Worker registry: **`collect`**, **`normalize`**, **`embed`**, **`analyze`**, **`report`** only — no stub types. |
+| **C18** | Worker **pipeline-stage** registry: **`collect`**, **`normalize`**, **`embed`**, **`analyze`**, **`report`** (+ `research` from C83) — no stub types. **Amended (Phase 12 C165):** operator jobs (e.g. `schedule-collect`) form a separate **operator-job category** outside the frozen pipeline stages; `verify:phase-4` checks pipeline stages + known operator jobs, not a fixed total count. |
 | **C19** | **`analyze` and `report` must NOT import `@zeref/instagram`**; `verify:phase-4` enforces (C14-style). |
 | **C20** | Elite report golden JSON in **`fixtures/phase-4/elite/`**; narrative citations reference **`metric_facts`**. |
 | **C21** | CI runs **`npm run verify:phase-4`** after `verify:phase-3` (same implementation wave). |
@@ -110,7 +110,7 @@ Reference: legacy ios `jarvis_analyze` / report synthesis (`instagram-ops-studio
 | Check | Requirement |
 |-------|-------------|
 | C17 | PHASE4 exports + job I/O |
-| C18 | Registry = 5 jobs exactly |
+| C18 | Pipeline stages present (collect/normalize/embed/analyze/report + research) + known operator jobs (schedule-collect); see C18 amendment |
 | C19 | No `@zeref/instagram` in analyze/report paths |
 | C20 | Golden elite + citation lint |
 | C21 | Integration + LLM mock |

@@ -19,8 +19,14 @@ Planner **C8** requires a documented policy when the same `content_hash`, `platf
 ### pg-boss registration (C9)
 
 - Job name: `collect` (`COLLECT_JOB_NAME`).
-- `WORKER_JOB_NAMES` contains **only** `collect`.
+- `WORKER_JOB_NAMES` contains **only** `collect` (Phase 2 scope).
 - `startWorker` / `registerCollectWorker` wire a single handler; other job types are forbidden in this package until a later phase.
+
+> **Amendment (Phase 12 C165, 2026-06-17):** `WORKER_JOB_NAMES` now distinguishes two categories:
+> - **Pipeline stages** (`PIPELINE_STAGE_JOB_NAMES`): `collect`, `normalize`, `embed`, `analyze`, `report`, `research` — frozen set, emit cockpit SSE outbox events, drive `WorkerJobName`.
+> - **Operator jobs**: `schedule-collect` (recurring pg-boss cron, ADR-042) — does not emit pipeline SSE, not part of `WorkerJobName`.
+>
+> `verify:phase-4` (C18) validates pipeline stages + known operator jobs rather than a fixed total count. See [ADR-042](./ADR-042-scheduled-collect-data-age.md).
 
 ### Collect handler flow
 
