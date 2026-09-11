@@ -59,3 +59,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Planner merge of CLOUD-P62 despite red Verify Phase 6.1 (pre-existing C91 phase-label chip vs Phase 10; `apps/web/lib/` forbidden on P62). QUEUE CLOUD-P62 → DONE. Luke UAT deferred to laptop. Next was CLOUD-A2 PR #4 (rebase onto post-P62 main).
 - Not done / blocked: Laptop Luke screenshot vs `docs/design/reference/screenshots/zeref-cockpit-6.2-workspace.png`. C91/Phase 10 chip mismatch remains.
 - Next for Planner: Rebase `cloud/a2-product-surfaces` onto latest main; merge PR #4; set QUEUE CLOUD-A2 DONE. Do not start CLOUD-A3.
+
+### 2026-09-11 — CLOUD-A2 — agent:zeref-lead-cloud
+- Branch: cloud/a2-product-surfaces
+- Status: started
+- PR: n/a
+- Done: Lead assigned CLOUD-A2 only (P62 PR #3 still OPEN — proceeding; A2 can start if only blocked on visual UAT). Branched from latest main @ `cde3f27` (CLOUD-A0 DONE). QUEUE CLOUD-A2 → IN_PROGRESS.
+- Not done / blocked: Reports narrative+charts, Studio media preview, Calendar content slots, Research payload cards, fixture UAT, PR.
+- Next for Planner: Wait for this branch PR; do not mark DONE. Do not start CLOUD-A3.
