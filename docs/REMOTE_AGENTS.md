@@ -9,6 +9,18 @@ Then: [cloud/QUEUE.md](./cloud/QUEUE.md) → one phase card → [cloud/HANDOFF.m
 
 ---
 
+## Skills (Cloud Agents + Grok Bot)
+
+**In-repo (always available after clone):** `.cursor/skills/**` (council-*, gsd-*, ui-ux-pro-max, run-verify-gate), `.cursor/rules/**`, [SKILL_INVOCATION.md](./SKILL_INVOCATION.md).
+
+**Personal skills:** On the **laptop**, open Cursor → **Settings → Agents → Sync Skills for Cloud Agents → ON**. Only `~/.cursor/skills/` syncs. Then restart/new Cloud Agent.
+
+**Planner full prompt:** [cloud/PLANNER.md](./cloud/PLANNER.md)
+
+**Playbook:** Follow [SKILL_INVOCATION.md](./SKILL_INVOCATION.md). For HUD work use `ui-ux-pro-max`. For PR review use `council-review-slice`.
+
+---
+
 ## Secrets status
 
 Dashboard **My Secrets** for `mohammedumar9919/zeref` should include these 10 Runtime Secrets (all = `1`):

@@ -13,6 +13,8 @@
 
 **Secrets:** Confirmed OK when dashboard has all 10 fixture Runtime Secrets on `mohammedumar9919/zeref` (see [../REMOTE_AGENTS.md](../REMOTE_AGENTS.md)). `ZEREF_BFF_FIXTURE=1` is already in that set.
 
+**Skills:** In-repo `.cursor/skills/**` always load. On laptop enable **Settings → Agents → Sync Skills for Cloud Agents**. Full Planner prompt: [PLANNER.md](./PLANNER.md).
+
 **Fixture demo (CLOUD-A0):** Windows `.\scripts\demo-start.ps1` (no Docker). Cloud: Secrets already set — `npm run dev -w @zeref/web`. Studio entity id `550e8400-e29b-41d4-a716-446655440001` — [../CURRENT_STATE.md](../CURRENT_STATE.md) · [../../fixtures/README.md](../../fixtures/README.md).
 
 ---
