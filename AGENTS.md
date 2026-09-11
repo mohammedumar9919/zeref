@@ -64,3 +64,15 @@ Rules: `.cursor/rules/lead-orchestrator.mdc`, `council-governance.mdc`
 Skills: `council-propose-slice`, `run-verify-gate`, Superpowers TDD
 
 When spawning subagents, include ownership table and exact acceptance command.
+
+---
+
+## Cursor Cloud specific instructions
+
+Remote / phone agents (Cursor Cloud Agents, Grok Bot) **must** read [docs/REMOTE_AGENTS.md](docs/REMOTE_AGENTS.md) before coding.
+
+- Prefer **fixture mode**: `ZEREF_BFF_FIXTURE=1` + mock flags from Secrets (never commit secrets).
+- Work on a **branch** and open a **PR**. Never force-push `main`.
+- Do **not** assume laptop Docker Postgres or Whisper sidecar are available.
+- Track A only until college freeze: Phase **6.2** UI first; no Meta publish, no Next 16 upgrade, no Instagram scrape.
+- Environment: [`.cursor/environment.json`](.cursor/environment.json) + [`.cursor/Dockerfile`](.cursor/Dockerfile) (`npm ci` on Node 22).

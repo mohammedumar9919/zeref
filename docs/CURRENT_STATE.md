@@ -5,6 +5,8 @@
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
 
+**Phone / Cloud / Grok Bot:** also read [REMOTE_AGENTS.md](./REMOTE_AGENTS.md) (secrets, environment.json, copy-paste prompts).
+
 Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for agents.**
 
 ---
@@ -33,7 +35,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 | Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** Phase 12 closed — next phase per master plan. Optional parallel: Phase 6.2 visual Tier 3 (UI-only).
+**Immediate goal:** Phase 12 closed — next **Track A**: Phase **6.2** Visual Tier 3 (UI-only), then product-surface polish. Remote agents: [REMOTE_AGENTS.md](./REMOTE_AGENTS.md).
 
 ### P8 hotfix root cause
 

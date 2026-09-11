@@ -65,6 +65,11 @@ npm run dev:stack
 | `packages/db/` | Schema and migrations |
 | `scripts/verify-phase-*.mjs` | Phase gate automation |
 
+## Remote / phone agents
+
+Cursor Cloud Agents and Grok Bot: see [docs/REMOTE_AGENTS.md](docs/REMOTE_AGENTS.md)  
+Cloud VM config: `.cursor/environment.json` + `.cursor/Dockerfile`
+
 ## Quality
 
 - 14+ Playwright e2e specs
