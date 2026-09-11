@@ -7,7 +7,7 @@ export default async function StudioDeepLinkPage(): Promise<React.ReactElement> 
   const { items, insufficientData } = slices.panels.studio;
 
   return (
-    <div data-testid="cockpit-studio-page">
+    <div data-testid="cockpit-studio-page" className="cockpit-workspace">
       <CockpitGrid slices={slices} focus="studio" />
       <StudioHub items={items} insufficientData={insufficientData} />
     </div>

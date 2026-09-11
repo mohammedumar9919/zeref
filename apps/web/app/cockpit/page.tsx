@@ -5,7 +5,7 @@ export default async function CockpitPage(): Promise<React.ReactElement> {
   const slices = await getCockpitSlices();
 
   return (
-    <div data-testid="cockpit-page">
+    <div data-testid="cockpit-page" className="cockpit-hub">
       <CockpitGrid slices={slices} />
     </div>
   );

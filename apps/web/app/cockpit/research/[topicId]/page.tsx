@@ -28,7 +28,7 @@ export default async function ResearchTopicPage({
   }
 
   return (
-    <div data-testid="cockpit-research-topic-page">
+    <div data-testid="cockpit-research-topic-page" className="cockpit-workspace">
       <ResearchTopicDetailView detail={result.body} />
     </div>
   );

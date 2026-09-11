@@ -17,7 +17,7 @@ export default async function CalendarDeepLinkPage(): Promise<React.ReactElement
   }
 
   return (
-    <div data-testid="cockpit-calendar-page">
+    <div data-testid="cockpit-calendar-page" className="cockpit-workspace">
       <CockpitGrid slices={slices} focus="calendar" />
       <CalendarScheduler initialEvents={eventsResult.body.events} />
     </div>
