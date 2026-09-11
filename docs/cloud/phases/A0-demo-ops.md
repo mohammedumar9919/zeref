@@ -27,7 +27,7 @@ Make fixture demo deterministic for Cloud + laptop without requiring Docker pass
 - [x] Documented one-command fixture start for Windows + note for Cloud (`ZEREF_BFF_FIXTURE=1` already in Secrets)
 - [x] Fixture studio entity id documented (from CURRENT_STATE)
 - [x] GAP_BACKLOG stale “Phase 7 OPEN” corrected if you touch that file
-- [ ] AGENT_LOG entry + PR *(PR_READY on same branch; Planner marks DONE)*
+- [x] AGENT_LOG entry + PR — https://github.com/mohammedumar9919/zeref/pull/2 (Planner marks DONE)
 
 ### Windows (laptop)
 
