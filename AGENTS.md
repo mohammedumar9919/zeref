@@ -69,10 +69,13 @@ When spawning subagents, include ownership table and exact acceptance command.
 
 ## Cursor Cloud specific instructions
 
-Remote / phone agents (Cursor Cloud Agents, Grok Bot) **must** read [docs/REMOTE_AGENTS.md](docs/REMOTE_AGENTS.md) before coding.
+Remote / phone agents (Cursor Cloud Agents, Grok Bot) **must** boot from [docs/cloud/README.md](docs/cloud/README.md).
 
-- Prefer **fixture mode**: `ZEREF_BFF_FIXTURE=1` + mock flags from Secrets (never commit secrets).
-- Work on a **branch** and open a **PR**. Never force-push `main`.
-- Do **not** assume laptop Docker Postgres or Whisper sidecar are available.
-- Track A only until college freeze: Phase **6.2** UI first; no Meta publish, no Next 16 upgrade, no Instagram scrape.
-- Environment: [`.cursor/environment.json`](.cursor/environment.json) + [`.cursor/Dockerfile`](.cursor/Dockerfile) (`npm ci` on Node 22).
+- Work queue: [docs/cloud/QUEUE.md](docs/cloud/QUEUE.md) — **one OPEN item only**
+- Masterplan (cloud copy): [docs/cloud/MASTERPLAN.md](docs/cloud/MASTERPLAN.md)
+- Handoff + PR rules: [docs/cloud/HANDOFF.md](docs/cloud/HANDOFF.md)
+- Append work to [docs/cloud/AGENT_LOG.md](docs/cloud/AGENT_LOG.md) so the laptop Planner can review later
+- Prefer **fixture mode** Secrets; never commit secrets
+- Branch `cloud/<id>-slug` → open **PR** → stop
+- Track A only until college freeze: no Meta publish, no Next 16, no Instagram scrape
+- Environment: [`.cursor/environment.json`](.cursor/environment.json) + [`.cursor/Dockerfile`](.cursor/Dockerfile)

@@ -67,8 +67,8 @@ npm run dev:stack
 
 ## Remote / phone agents
 
-Cursor Cloud Agents and Grok Bot: see [docs/REMOTE_AGENTS.md](docs/REMOTE_AGENTS.md)  
-Cloud VM config: `.cursor/environment.json` + `.cursor/Dockerfile`
+**Cloud track (Grok Bot home):** [docs/cloud/README.md](docs/cloud/README.md)  
+Also: [docs/REMOTE_AGENTS.md](docs/REMOTE_AGENTS.md) · `.cursor/environment.json`
 
 ## Quality
 

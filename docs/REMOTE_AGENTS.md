@@ -1,125 +1,55 @@
 # Remote agents — Cloud Agents & Grok Bot
 
-Use this when working from a **phone** or any machine that is **not** the laptop with Docker.
+**Start here for phone work:** [cloud/README.md](./cloud/README.md)  
+Then: [cloud/QUEUE.md](./cloud/QUEUE.md) → one phase card → [cloud/HANDOFF.md](./cloud/HANDOFF.md).
 
 **Repo:** `https://github.com/mohammedumar9919/zeref`  
 **Runtime truth:** [CURRENT_STATE.md](./CURRENT_STATE.md)  
-**Track A (college flash):** Phase 6.2 → product surfaces → research-lite → streaming-lite → submission pack  
-**Do not start Track B** (Next 16, publish/App Review, multi-tenant auth, vector memory) until college freeze.
+**Masterplan (cloud copy):** [cloud/MASTERPLAN.md](./cloud/MASTERPLAN.md)
 
 ---
 
-## What remote agents can / cannot do
+## Secrets status
 
-| Can (preferred) | Cannot / avoid |
-|-----------------|----------------|
-| Edit code on a branch + open a **PR** | Rely on laptop Docker / local Postgres volume |
-| Fixture-mode tests (`ZEREF_BFF_FIXTURE=1`) | Commit `.env`, tokens, or keys |
-| Phase **6.2** UI, Reports/Studio polish, Research cards | Scrape personal Instagram / unofficial APIs |
-| Docs + contracts + verify scripts | Force-push `main` |
-| Read `docs/governance/phase-6.2-contract.md` | Mid-demo Next.js 16 upgrade |
+Dashboard **My Secrets** for `mohammedumar9919/zeref` should include these 10 Runtime Secrets (all = `1`):
 
-Voice PTT, Luke visual sign-off screenshots, and `dev:stack` remain **laptop UAT**.
+`ZEREF_BFF_FIXTURE`, `ZEREF_JOB_ENQUEUE_MOCK`, `ZEREF_LLM_MOCK`, `ZEREF_MEMORY_MOCK`, `ZEREF_PHASE8_PRODUCT`, `ZEREF_PHASE9_RESEARCH`, `ZEREF_PHASE11_AGENT`, `ZEREF_PHASE12_DATA`, `ZEREF_TTS_MOCK`, `ZEREF_WHISPER_MOCK`
+
+That set is **complete** for fixture Track A work. Optional later: `OPENROUTER_*` / `ELEVENLABS_*` (unset matching mocks).
+
+Do **not** add laptop `DATABASE_URL=localhost` or Instagram tokens for casual UI slices.
 
 ---
 
-## Boot sequence (every remote session)
+## Environment
 
-1. Read [CURRENT_STATE.md](./CURRENT_STATE.md)
-2. Read [failures-checklist.md](./failures-checklist.md)
-3. Read [AGENTS.md](../AGENTS.md) — ownership + Cloud section
-4. Relevant `docs/governance/phase-*-contract.md`
-5. One slice only → branch → PR
+- [`.cursor/environment.json`](../.cursor/environment.json) — `npm ci` on Node 22
+- [`.cursor/Dockerfile`](../.cursor/Dockerfile)
 
 ---
 
-## Required Cloud Secrets (dashboard — never git)
-
-Add at [cursor.com/dashboard](https://cursor.com/dashboard) → **Cloud Agents → Secrets** (or environment-scoped secrets).
-
-### Safe default (fixture / offline)
-
-| Name | Value |
-|------|--------|
-| `ZEREF_BFF_FIXTURE` | `1` |
-| `ZEREF_LLM_MOCK` | `1` |
-| `ZEREF_TTS_MOCK` | `1` |
-| `ZEREF_WHISPER_MOCK` | `1` |
-| `ZEREF_JOB_ENQUEUE_MOCK` | `1` |
-| `ZEREF_MEMORY_MOCK` | `1` |
-| `ZEREF_PHASE8_PRODUCT` | `1` |
-| `ZEREF_PHASE9_RESEARCH` | `1` |
-| `ZEREF_PHASE11_AGENT` | `1` |
-| `ZEREF_PHASE12_DATA` | `1` |
-
-### Optional live voice (only if you want real LLM/TTS in cloud)
-
-| Name | Notes |
-|------|--------|
-| `OPENROUTER_API_KEY` | Server-side only |
-| `OPENROUTER_MODEL` | e.g. `openai/gpt-4o-mini` or stronger planner |
-| `ELEVENLABS_API_KEY` | British JARVIS TTS |
-| `ELEVENLABS_VOICE_ID` | Your voice id |
-
-Unset the matching `*_MOCK` flags when using live keys. **Never paste keys into chat prompts.**
-
-### Do not put in Cloud Secrets unless you have a cloud DB
-
-- `DATABASE_URL` pointing at laptop `localhost`
-- `INSTAGRAM_ACCESS_TOKEN` for casual UI tasks (keep laptop-only until publish track)
-
----
-
-## Environment config (repo)
-
-- [`.cursor/environment.json`](../.cursor/environment.json) — Cloud Build install (`npm ci`)
-- [`.cursor/Dockerfile`](../.cursor/Dockerfile) — Node 22 base
-
-After first push of these files: open [cursor.com/agents](https://cursor.com/agents) → ensure GitHub repo `mohammedumar9919/zeref` is connected → run a **Build** / agent-led environment setup once so installs are cached.
-
----
-
-## Copy-paste prompts
-
-### Grok Bot / Cloud Agent — Phase 6.2 (next flash slice)
+## First prompt for Grok Bot (after cloud docs are on main)
 
 ```
-You are a Zeref UI worker (remote / Cloud).
-
-Read docs/CURRENT_STATE.md and docs/REMOTE_AGENTS.md first.
-Implement Phase 6.2 Visual Tier 3 per docs/governance/phase-6.2-contract.md (C99–C110).
-
-Allowed: apps/web/components/hud/**, apps/web/components/shell/TopNav.tsx,
-apps/web/components/cockpit/CockpitShell.tsx, CockpitGrid.tsx,
-apps/web/components/globe/GlobeHero.tsx (wrapper/CSS only — no WebGL mesh rewrite),
-apps/web/app/cockpit/**/page.tsx (layout classNames only),
-apps/web/app/globals.css, apps/web/tailwind.config.ts,
-scripts/verify-phase-6.2.mjs (if missing), apps/web/e2e/cockpit-workspace-6.2.spec.ts
-
-Forbidden: apps/web/lib/**, apps/web/app/api/**, packages/**, apps/worker/**, .env*
-
-Rules: one PR; no force-push; keep cyan/void HUD (no purple AI gradient, no green CTA swap);
-prefers-reduced-motion on pulse; ZEREF_BFF_FIXTURE=1 for any smoke.
-
-Done when: workspace routes hide grid; unified header; hero globe ≥58vh; pulse rings;
-PR description lists files + how to screenshot for Planner sign-off.
+You are Zeref Cloud worker.
+Read docs/cloud/README.md, docs/cloud/QUEUE.md, docs/cloud/MASTERPLAN.md, docs/CURRENT_STATE.md.
+Confirm secrets are fixture mode. Do not code yet.
+Reply with: top OPEN queue item, why, and the exact phase card path you will use next.
 ```
 
-### Smoke / orientation (first remote check)
+When ready to build:
 
 ```
-Repo: mohammedumar9919/zeref.
-Read docs/CURRENT_STATE.md and docs/REMOTE_AGENTS.md.
-Confirm Node 22 + npm ci works. Do not change product code.
-Reply with: phase status summary (0–12), next Track A slice, and any missing secrets.
+Claim the first OPEN item in docs/cloud/QUEUE.md.
+Follow docs/cloud/HANDOFF.md (branch + PR template + AGENT_LOG append).
+One slice only. Stop when PR is ready.
 ```
 
 ---
 
-## Phone checklist (you)
+## How the laptop Planner reads your work later
 
-1. Cursor account = same as Grok Bot (done)
-2. Dashboard → Integrations → **GitHub** connected with write access to `zeref`
-3. Add **fixture secrets** from the table above
-4. Start agent from [cursor.com/agents](https://cursor.com/agents) or Grok Bot with a **one-slice** prompt
-5. Review PR on phone; merge when ready (prefer laptop for visual UAT)
+1. GitHub PRs with prefix `cloud/`
+2. [cloud/AGENT_LOG.md](./cloud/AGENT_LOG.md)
+3. QUEUE status transitions
+4. Local UAT for visual/voice, then merge + CURRENT_STATE update

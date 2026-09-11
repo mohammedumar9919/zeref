@@ -5,7 +5,7 @@
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
 
-**Phone / Cloud / Grok Bot:** also read [REMOTE_AGENTS.md](./REMOTE_AGENTS.md) (secrets, environment.json, copy-paste prompts).
+**Phone / Cloud / Grok Bot:** start at [cloud/README.md](./cloud/README.md) (masterplan + QUEUE + phase cards + AGENT_LOG). Also [REMOTE_AGENTS.md](./REMOTE_AGENTS.md).
 
 Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for agents.**
 
