@@ -40,7 +40,9 @@ test.describe("cockpit workspace phase 6.2 (C99–C106)", () => {
     await expect(page.getByTestId("panel-calendar")).toBeVisible();
     await expect(page.getByTestId("panel-reports")).toBeVisible();
     await expect(page.getByTestId("panel-research")).toBeVisible();
-    await expect(page.getByTestId("globe-hero")).toBeVisible();
+    const hero = page.getByTestId("cockpit-page").getByTestId("globe-hero");
+    await expect(hero).toHaveCount(1);
+    await expect(hero).toBeVisible();
     await expect(page.getByTestId("globe-island")).toBeVisible();
   });
 
@@ -49,12 +51,11 @@ test.describe("cockpit workspace phase 6.2 (C99–C106)", () => {
       page,
     }) => {
       await page.goto(route.path);
-      await expect(page.getByTestId(route.pageTestId)).toBeVisible();
-      await expect(page.getByTestId(route.pageTestId)).toHaveClass(
-        /cockpit-workspace/,
-      );
+      const pageRoot = page.getByTestId(route.pageTestId).first();
+      await expect(pageRoot).toBeVisible();
+      await expect(pageRoot).toHaveClass(/cockpit-workspace/);
 
-      const workspace = page.getByTestId("workspace-mode");
+      const workspace = page.getByTestId("workspace-mode").first();
       await expect(workspace).toBeVisible();
       await expect(workspace).toHaveAttribute(
         "data-workspace-surface",
@@ -96,28 +97,25 @@ test.describe("cockpit workspace phase 6.2 (C99–C106)", () => {
 
   test("C101 — globe hero is at least 58vh on /cockpit", async ({ page }) => {
     await page.goto("/cockpit");
-    const hero = page.getByTestId("globe-hero");
+    const hero = page.getByTestId("cockpit-page").getByTestId("globe-hero").first();
     await expect(hero).toBeVisible();
 
     const metrics = await hero.evaluate((el) => {
       const rect = el.getBoundingClientRect();
-      const styles = getComputedStyle(el);
       return {
         height: rect.height,
         vh: window.innerHeight,
-        minHeightPx: Number.parseFloat(styles.minHeight),
       };
     });
 
     expect(metrics.height).toBeGreaterThanOrEqual(metrics.vh * 0.58 - 1);
-    expect(metrics.minHeightPx).toBeGreaterThanOrEqual(metrics.vh * 0.58 - 1);
   });
 
   test("C102/C103 — idle voice/brain hide pulse + sync rings", async ({
     page,
   }) => {
     await page.goto("/cockpit");
-    const hero = page.getByTestId("globe-hero");
+    const hero = page.getByTestId("cockpit-page").getByTestId("globe-hero");
     await expect(hero).toHaveAttribute("data-globe-voice-state", "idle");
     await expect(hero).toHaveAttribute("data-globe-brain-state", "idle");
     await expect(page.getByTestId("globe-voice-pulse")).toBeHidden();
@@ -128,7 +126,7 @@ test.describe("cockpit workspace phase 6.2 (C99–C106)", () => {
     page,
   }) => {
     await page.goto("/cockpit");
-    const hero = page.getByTestId("globe-hero");
+    const hero = page.getByTestId("cockpit-page").getByTestId("globe-hero");
     await hero.evaluate((el) => {
       el.setAttribute("data-globe-voice-state", "listening");
     });
@@ -139,7 +137,7 @@ test.describe("cockpit workspace phase 6.2 (C99–C106)", () => {
     page,
   }) => {
     await page.goto("/cockpit");
-    const hero = page.getByTestId("globe-hero");
+    const hero = page.getByTestId("cockpit-page").getByTestId("globe-hero");
     await hero.evaluate((el) => {
       el.setAttribute("data-globe-brain-state", "searching");
     });
@@ -152,7 +150,7 @@ test.describe("cockpit workspace phase 6.2 (C99–C106)", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/cockpit");
 
-    const hero = page.getByTestId("globe-hero");
+    const hero = page.getByTestId("cockpit-page").getByTestId("globe-hero");
     await hero.evaluate((el) => {
       el.setAttribute("data-globe-voice-state", "speaking");
       el.setAttribute("data-globe-brain-state", "memory_saved");

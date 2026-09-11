@@ -218,6 +218,11 @@
 
 /* Phase 6.2 — hero ≥58vh + honest pulse/sync rings (C101–C104). Unlayered so
    wrapper min-height wins over GlobeIsland utility mins without WebGL edits. */
+.cockpit-grid[hidden],
+.cockpit-grid--workspace {
+  display: none !important;
+}
+
 .globe-hero-tier3 {
   min-height: 58vh;
   position: relative;
@@ -242,7 +247,10 @@
 
 .globe-hero-tier3[data-globe-voice-state="listening"] .globe-voice-pulse-ring,
 .globe-hero-tier3[data-globe-voice-state="thinking"] .globe-voice-pulse-ring,
-.globe-hero-tier3[data-globe-voice-state="speaking"] .globe-voice-pulse-ring {
+.globe-hero-tier3[data-globe-voice-state="speaking"] .globe-voice-pulse-ring,
+.globe-hero-tier3:has([data-globe-voice-state="listening"]) .globe-voice-pulse-ring,
+.globe-hero-tier3:has([data-globe-voice-state="thinking"]) .globe-voice-pulse-ring,
+.globe-hero-tier3:has([data-globe-voice-state="speaking"]) .globe-voice-pulse-ring {
   display: block;
   border: 1px solid rgba(34, 211, 238, 0.45);
   box-shadow: 0 0 18px rgba(34, 211, 238, 0.18);
@@ -252,7 +260,11 @@
 .globe-hero-tier3[data-globe-brain-state="memory_saved"] .globe-jarvis-sync-rings,
 .globe-hero-tier3[data-globe-brain-state="searching"] .globe-jarvis-sync-rings,
 .globe-hero-tier3[data-globe-brain-state="contradiction"] .globe-jarvis-sync-rings,
-.globe-hero-tier3[data-globe-brain-state="entity_changed"] .globe-jarvis-sync-rings {
+.globe-hero-tier3[data-globe-brain-state="entity_changed"] .globe-jarvis-sync-rings,
+.globe-hero-tier3:has([data-globe-brain-state="memory_saved"]) .globe-jarvis-sync-rings,
+.globe-hero-tier3:has([data-globe-brain-state="searching"]) .globe-jarvis-sync-rings,
+.globe-hero-tier3:has([data-globe-brain-state="contradiction"]) .globe-jarvis-sync-rings,
+.globe-hero-tier3:has([data-globe-brain-state="entity_changed"]) .globe-jarvis-sync-rings {
   display: block;
   border: 1px solid rgba(34, 211, 238, 0.28);
   animation: globe-jarvis-sync 2.8s ease-out infinite;

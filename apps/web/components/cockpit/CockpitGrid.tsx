@@ -37,10 +37,14 @@ export function CockpitGrid({
         hidden={workspaceMode}
         aria-hidden={workspaceMode}
         className={cn(
-          "cockpit-grid mx-auto grid max-w-[1600px] gap-2 px-3 py-2 md:gap-2.5 md:px-5 md:py-3",
-          "grid-cols-1 lg:grid-cols-[minmax(0,0.72fr)_minmax(280px,1.45fr)_minmax(0,0.72fr)]",
-          "lg:grid-rows-[minmax(58vh,1fr)_auto]",
-          workspaceMode && "cockpit-grid--workspace",
+          "cockpit-grid mx-auto max-w-[1600px] gap-2 px-3 py-2 md:gap-2.5 md:px-5 md:py-3",
+          workspaceMode
+            ? "hidden cockpit-grid--workspace"
+            : [
+                "grid grid-cols-1",
+                "lg:grid-cols-[minmax(0,0.72fr)_minmax(280px,1.45fr)_minmax(0,0.72fr)]",
+                "lg:grid-rows-[minmax(58vh,1fr)_auto]",
+              ],
         )}
       >
         <div className="glass-column flex flex-col gap-2 lg:col-start-1 lg:row-span-2 lg:row-start-1">

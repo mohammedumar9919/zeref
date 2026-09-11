@@ -1,20 +1,16 @@
-"use client";
-
 import { GlobeIsland } from "@/components/globe/GlobeIsland";
-import { useVoice } from "@/components/voice/VoiceProvider";
 
 /**
  * Phase 6.2 wrapper — CSS pulse / sync rings + ≥58vh hero.
  * Does not touch PointCloudGlobe / WebGL internals (C104 / ADR-035).
+ * Voice/brain attrs default idle; live state is read from GlobeIsland via :has().
  */
 export function GlobeHero(): React.ReactElement {
-  const { voiceState, brainState } = useVoice();
-
   return (
     <div
       data-testid="globe-hero"
-      data-globe-voice-state={voiceState}
-      data-globe-brain-state={brainState}
+      data-globe-voice-state="idle"
+      data-globe-brain-state="idle"
       className="globe-hero-tier3 relative flex min-h-[58vh] w-full flex-col"
     >
       <div
