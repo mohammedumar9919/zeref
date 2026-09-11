@@ -8,6 +8,7 @@
 | [QUEUE.md](./QUEUE.md) | Ordered remote-ready work — **pick top OPEN item only** |
 | [HANDOFF.md](./HANDOFF.md) | PR rules, AGENT_LOG, how the laptop Planner reviews your work |
 | [AGENT_LOG.md](./AGENT_LOG.md) | Append-only work log (you write; Planner reads later) |
+| [PLANNER.md](./PLANNER.md) | Run a **Planner** Cloud Agent / Grok Bot from work (review/merge, not implement) |
 | [phases/](./phases/) | One card per remote-capable slice |
 
 **Secrets:** Confirmed OK when dashboard has all 10 fixture Runtime Secrets on `mohammedumar9919/zeref` (see [../REMOTE_AGENTS.md](../REMOTE_AGENTS.md)). `ZEREF_BFF_FIXTURE=1` is already in that set.
