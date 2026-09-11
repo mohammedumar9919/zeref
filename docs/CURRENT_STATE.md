@@ -1,11 +1,13 @@
 # Zeref — Current State
 
-**Last updated:** 2026-06-17 (Phase 12 APPROVED — verify gate green)  
+**Last updated:** 2026-09-11 (CLOUD-A0 fixture demo docs — Phase 12 still APPROVED)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
 
 **Phone / Cloud / Grok Bot:** start at [cloud/README.md](./cloud/README.md) (masterplan + QUEUE + phase cards + AGENT_LOG). Also [REMOTE_AGENTS.md](./REMOTE_AGENTS.md).
+
+**Fixture demo (CLOUD-A0, no Docker):** Windows `.\scripts\demo-start.ps1`. Cloud Secrets already include `ZEREF_BFF_FIXTURE=1` — run `npm run dev -w @zeref/web`. Studio entity id: `550e8400-e29b-41d4-a716-446655440001` ([fixtures/README.md](../fixtures/README.md)).
 
 Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for agents.**
 
@@ -181,11 +183,26 @@ Screenshot: `docs/design/reference/screenshots/zeref-cockpit-7-brain.png` @ `0e7
 
 Studio entity pages return **404** when `ZEREF_BFF_FIXTURE` is unset and Postgres has no matching `normalized_entities` row. In fixture mode only this entity resolves:
 
+| Field | Value |
+|-------|--------|
+| **Fixture studio entity id** | `550e8400-e29b-41d4-a716-446655440001` |
+
 | URL | Notes |
 |-----|--------|
 | `http://localhost:3000/cockpit` | Main cockpit (or your dev port) |
 | `http://localhost:3000/cockpit/studio/550e8400-e29b-41d4-a716-446655440001` | Studio editor (`studio-editor`) |
 | `http://localhost:3000/cockpit/calendar` | Calendar scheduler (`calendar-scheduler`) |
+
+**One-command Windows start** (sets fixture/mock flags, prints the entity URL, no Docker):
+
+```powershell
+cd c:\Projects\zeref
+.\scripts\demo-start.ps1
+```
+
+**Cloud Agents:** `ZEREF_BFF_FIXTURE=1` is already a Runtime Secret (see [REMOTE_AGENTS.md](./REMOTE_AGENTS.md)). Do not copy a laptop `.env`. Start web with `npm run dev -w @zeref/web`.
+
+Equivalent manual flags if you skip the script:
 
 ```powershell
 cd c:\Projects\zeref
@@ -194,7 +211,7 @@ $env:ZEREF_JOB_ENQUEUE_MOCK='1'
 npm run dev -w @zeref/web
 ```
 
-Restart dev after setting env vars. Link from `/cockpit` studio panel uses the same fixture entity id.
+Restart dev after setting env vars. Link from `/cockpit` studio panel uses the same fixture entity id. See [fixtures/README.md](../fixtures/README.md).
 
 Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 

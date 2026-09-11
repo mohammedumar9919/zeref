@@ -6,7 +6,7 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 
 | Order | ID | Title | Status | Branch prefix | Phase card |
 |------:|----|-------|--------|---------------|------------|
-| 1 | CLOUD-A0 | Demo fixtures + docs truth-up (no Docker) | OPEN | `cloud/a0-` | [phases/A0-demo-ops.md](./phases/A0-demo-ops.md) |
+| 1 | CLOUD-A0 | Demo fixtures + docs truth-up (no Docker) | PR_READY | `cloud/a0-` | [phases/A0-demo-ops.md](./phases/A0-demo-ops.md) |
 | 2 | CLOUD-P62 | Phase 6.2 Visual Tier 3 | OPEN | `cloud/p62-` | [phases/P62-visual-tier3.md](./phases/P62-visual-tier3.md) |
 | 3 | CLOUD-A2 | Product surfaces (Reports/Studio/Calendar/Research UI) | OPEN | `cloud/a2-` | [phases/A2-product-surfaces.md](./phases/A2-product-surfaces.md) |
 | 4 | CLOUD-A3 | Research intel lite (outliers + brief) | OPEN | `cloud/a3-` | [phases/A3-research-lite.md](./phases/A3-research-lite.md) |

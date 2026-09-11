@@ -29,7 +29,7 @@ Parallel tools, model tiers, vector memory, Next 16, Meta publish + App Review, 
 
 | ID | Name | Remote? | Notes |
 |----|------|---------|-------|
-| A0 | Demo ops | **Partial** | Scripts/docs/fixtures yes; live Docker DB reset = laptop |
+| A0 | Demo ops | **Partial** | `scripts/demo-start.ps1` + fixture entity `550e8400-e29b-41d4-a716-446655440001`; live Docker DB reset = laptop |
 | A1 / 6.2 | Visual Tier 3 | **Yes** | Highest flash ROI — UI only |
 | A2 | Reports/Studio/Calendar/Research polish | **Yes** | Charts + media preview + content slots |
 | A3 | Research intel lite | **Mostly yes** | Outlier math + briefs; Graph competitor optional |

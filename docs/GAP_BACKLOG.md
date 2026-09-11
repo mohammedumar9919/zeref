@@ -1,6 +1,6 @@
 # Zeref — Gap Backlog
 
-**Reconciled:** 2026-05-30 against repo + portable agent stack audit  
+**Reconciled:** 2026-09-11 (CLOUD-A0) — Phase 7–8 OPEN rows corrected against [CURRENT_STATE.md](./CURRENT_STATE.md)  
 **Source:** Phase contracts, legacy-ios handoff, Luke HUD reference, prior Planner audit
 
 ---
@@ -57,7 +57,7 @@
 | ZR-023 | Two-phase speak (ack then result) | **DONE** | Amendment A |
 | ZR-024 | Globe states idle/listening/thinking/speaking | **DONE** | ADR-023 |
 | ZR-025 | `ZEREF_TTS_MOCK=1` for CI | **DONE** | hotfix audible @ `9c5869f` |
-| ZR-026 | SSE `/api/v1/events` job + voice events | **PARTIAL** | BFF voice events; worker bridge Phase 7+ |
+| ZR-026 | SSE `/api/v1/events` job + voice events | **DONE** | Phase 7 outbox + Phase 10 pipeline SSE honesty (`simulated: false` when drain allowed) |
 
 ---
 
@@ -65,9 +65,9 @@
 
 | ID | Item | Status | Notes |
 |----|------|--------|-------|
-| ZR-030 | `packages/zeref-memory` 4-tier memory | **OPEN** | Phase 7 — unblocked after Phase 6 sign-off |
-| ZR-031 | Event→orb mapping sub-100ms | **OPEN** | Phase 7 |
-| ZR-032 | Contradiction detection | **OPEN** | Phase 7+ |
+| ZR-030 | `packages/zeref-memory` 4-tier memory | **DONE** | Phase 7 APPROVED @ `0e7f8d5` — episodic/semantic/project/procedural |
+| ZR-031 | Event→orb mapping sub-100ms | **DONE** | Phase 7 C67 — `data-globe-brain-state` on globe (`idle` / `memory_saved` / `searching` / `contradiction` / `entity_changed`) |
+| ZR-032 | Contradiction detection | **DONE** | Phase 7 rule-based MVP (same `entity_id` + valueKey). LLM semantic contradiction still deferred (Phase 7.1+) |
 
 ---
 
@@ -79,7 +79,7 @@
 | ZR-041 | `.planning/PROJECT.md` REQUIREMENTS ROADMAP | **PARTIAL** | STATE only existed |
 | ZR-042 | Multi-agent HARD RULE in repo governance | **PARTIAL** | Council rules pending |
 | ZR-043 | `packages/domain` stub or remove | **OPEN** | |
-| ZR-044 | HTTP API to enqueue jobs from UI | **OPEN** | CLI only since Phase 2 |
+| ZR-044 | HTTP API to enqueue jobs from UI | **DONE** | Phase 8 `POST /api/v1/jobs/enqueue` (ADR-030 allowlist). `collect` remains CLI-only (`scripts/enqueue-collect.mjs`) |
 
 ---
 

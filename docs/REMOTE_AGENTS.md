@@ -21,6 +21,30 @@ Do **not** add laptop `DATABASE_URL=localhost` or Instagram tokens for casual UI
 
 ---
 
+## Fixture demo (CLOUD-A0)
+
+**Windows laptop — one command, no Docker:**
+
+```powershell
+.\scripts\demo-start.ps1
+```
+
+The script sets `ZEREF_BFF_FIXTURE=1` plus the other fixture/mock flags and starts `npm run dev -w @zeref/web`.
+
+**Cloud Agents:** those flags are already Runtime Secrets (`ZEREF_BFF_FIXTURE=1` included). Do **not** run `demo-start.ps1` unless you need the printed URLs. Start with `npm run dev -w @zeref/web`. Never commit `.env` / tokens. Never wipe Docker volumes from a cloud session.
+
+**Fixture studio entity id** (only id that resolves in fixture mode):
+
+`550e8400-e29b-41d4-a716-446655440001`
+
+- Cockpit: `/cockpit`
+- Studio editor: `/cockpit/studio/550e8400-e29b-41d4-a716-446655440001`
+- Calendar: `/cockpit/calendar`
+
+Details: [CURRENT_STATE.md](./CURRENT_STATE.md) · [fixtures/README.md](../fixtures/README.md) · [cloud/phases/A0-demo-ops.md](./cloud/phases/A0-demo-ops.md)
+
+---
+
 ## Environment
 
 - [`.cursor/environment.json`](../.cursor/environment.json) — `npm ci` on Node 22
