@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import type { ResearchSignal, ResearchTopicDetail } from "@zeref/contracts";
 
+import { researchPayloadToCards } from "./research-payload-cards";
+
 type ResearchTopicDetailProps = {
   detail: ResearchTopicDetail;
 };
@@ -11,6 +13,8 @@ function formatScore(score: number): string {
 }
 
 function SignalRow({ signal }: { signal: ResearchSignal }): React.ReactElement {
+  const cards = researchPayloadToCards(signal.payloadJson ?? {});
+
   return (
     <li
       data-testid={`research-signal-${signal.id}`}
@@ -32,6 +36,25 @@ function SignalRow({ signal }: { signal: ResearchSignal }): React.ReactElement {
           ? ` · ${new Date(signal.computedAt).toLocaleString()}`
           : ""}
       </p>
+      {cards.length > 0 ? (
+        <ul
+          data-testid={`research-payload-cards-${signal.id}`}
+          className="mt-3 grid gap-2 sm:grid-cols-2"
+        >
+          {cards.map((card) => (
+            <li
+              key={`${signal.id}-${card.key}`}
+              data-testid={`research-payload-card-${card.key}`}
+              className="rounded border border-hud-border/70 bg-void/40 px-3 py-2"
+            >
+              <p className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
+                {card.label}
+              </p>
+              <p className="mt-1 text-sm text-hud-primary">{card.value}</p>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </li>
   );
 }
@@ -84,13 +107,14 @@ export function ResearchTopicDetailView({
           aggregate trend data.
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-testid="research-payload-cards">
           <h2 className="font-mono text-[10px] uppercase tracking-widest text-hud-muted">
             Signals ({signals.length})
           </h2>
           <ul
             className="flex flex-col gap-2"
             data-testid="research-topic-signals-list"
+            data-research-payload-cards="true"
           >
             {signals.map((signal) => (
               <SignalRow key={signal.id} signal={signal} />

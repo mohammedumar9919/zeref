@@ -4,6 +4,9 @@ import { useCallback, useState } from "react";
 
 import type { StudioDraft } from "@zeref/contracts";
 
+import { StudioHookAssist } from "./StudioHookAssist";
+import { StudioMediaPreview } from "./StudioMediaPreview";
+
 export type StudioEditorEntity = {
   entityId: string;
   snapshotId: string;
@@ -11,6 +14,10 @@ export type StudioEditorEntity = {
   payload: {
     shortcode: string;
     caption?: string;
+    thumbnailUrl?: string;
+    videoUrl?: string;
+    carouselUrls?: string[];
+    mediaType?: string;
   };
   draft: StudioDraft | null;
 };
@@ -98,6 +105,16 @@ export function StudioEditorForm({
           shortcode {entity.payload.shortcode} — normalized payload read-only (C78)
         </p>
       </header>
+
+      <StudioMediaPreview payload={entity.payload} entityId={entity.entityId} />
+
+      <StudioHookAssist
+        snapshotCaption={entity.payload.caption}
+        onApply={(hook) => {
+          setSaveState("idle");
+          setFields((prev) => ({ ...prev, caption: hook }));
+        }}
+      />
 
       <div className="space-y-4">
         <label className="flex flex-col gap-1.5">

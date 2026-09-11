@@ -6,6 +6,10 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { CalendarEvent, CalendarEventStatus } from "@zeref/contracts";
 
 import {
+  mergeCalendarContentPayload,
+  readCalendarContentSlot,
+} from "./calendar-content-slot";
+import {
   UI_JOB_TYPES,
   buildEnqueueRequestFromEvent,
   fromDatetimeLocalValue,
@@ -25,6 +29,8 @@ type FormMode = "create" | "edit";
 
 type EventFormState = {
   title: string;
+  caption: string;
+  mediaUrl: string;
   scheduledAtLocal: string;
   jobType: CalendarUiJobType | "";
   entityId: string;
@@ -41,6 +47,8 @@ function defaultFormState(): EventFormState {
   const inOneHour = new Date(Date.now() + 3600_000);
   return {
     title: "",
+    caption: "",
+    mediaUrl: "",
     scheduledAtLocal: toDatetimeLocalValue(inOneHour.toISOString()),
     jobType: "",
     entityId: "",
@@ -55,8 +63,14 @@ function formFromEvent(event: CalendarEvent): EventFormState {
   const entityRaw = payload.normalizedEntityId ?? payload.entityId;
   const snapshotRaw = payload.snapshotId;
   const topicRaw = payload.topicId;
+  const slot = readCalendarContentSlot({
+    scheduledAt: event.scheduledAt,
+    payload,
+  });
   return {
     title: event.title,
+    caption: slot.caption,
+    mediaUrl: slot.mediaUrl,
     scheduledAtLocal: toDatetimeLocalValue(event.scheduledAt),
     jobType: UI_JOB_TYPES.includes(event.jobType as CalendarUiJobType)
       ? (event.jobType as CalendarUiJobType)
@@ -79,7 +93,10 @@ function buildPayloadFromForm(form: EventFormState): Record<string, unknown> {
   if (form.topicId.trim()) {
     payload.topicId = form.topicId.trim();
   }
-  return payload;
+  return mergeCalendarContentPayload(payload, {
+    caption: form.caption,
+    mediaUrl: form.mediaUrl,
+  });
 }
 
 function buildCreateBody(form: EventFormState): Record<string, unknown> {
@@ -288,9 +305,9 @@ export function CalendarScheduler({
             <p className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/90">
               Calendar scheduler
             </p>
-            <h2 className="text-lg font-medium text-hud-primary">Pipeline schedule</h2>
+            <h2 className="text-lg font-medium text-hud-primary">Content calendar</h2>
             <p className="text-sm text-hud-muted">
-              Week/list view · create and edit events · manual run when due (Q5 MVP)
+              Caption + media + time slots first · job enqueue stays advanced
             </p>
           </div>
           <span
@@ -371,6 +388,12 @@ export function CalendarScheduler({
                     onClick={() => selectEvent(event)}
                   >
                     <span className="text-sm text-hud-primary">{event.title}</span>
+                    <p
+                      data-testid={`calendar-content-slot-${event.id}`}
+                      className="mt-1 text-xs text-hud-primary/90"
+                    >
+                      {readCalendarContentSlot(event).caption || "No caption yet"}
+                    </p>
                     <p className="font-mono text-[10px] text-hud-muted">
                       {new Date(event.scheduledAt).toLocaleString()} · {event.status}
                       {event.jobType ? ` · ${event.jobType}` : ""}
@@ -424,7 +447,7 @@ export function CalendarScheduler({
           }}
         >
           <p className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
-            {formMode === "create" ? "Create event" : "Edit event"}
+            {formMode === "create" ? "Create content slot" : "Edit content slot"}
           </p>
 
           <label className="flex flex-col gap-1.5">
@@ -444,9 +467,58 @@ export function CalendarScheduler({
             />
           </label>
 
+          <div data-testid="calendar-content-slot" className="flex flex-col gap-4">
           <label className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
-              Scheduled at
+              Caption
+            </span>
+            <textarea
+              data-testid="calendar-form-caption"
+              className="min-h-[88px] rounded border border-hud-border bg-hud-panel/60 px-3 py-2 text-sm text-hud-primary outline-none ring-hud-cyan/30 focus:ring-1"
+              value={form.caption}
+              onChange={(e) => {
+                setSaveState("idle");
+                setForm((prev) => ({ ...prev, caption: e.target.value }));
+              }}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
+              Media URL
+            </span>
+            <input
+              data-testid="calendar-form-media"
+              type="url"
+              className="rounded border border-hud-border bg-hud-panel/60 px-3 py-2 font-mono text-xs text-hud-primary outline-none ring-hud-cyan/30 focus:ring-1"
+              value={form.mediaUrl}
+              placeholder="https://"
+              onChange={(e) => {
+                setSaveState("idle");
+                setForm((prev) => ({ ...prev, mediaUrl: e.target.value }));
+              }}
+            />
+          </label>
+
+          {form.mediaUrl ? (
+            <div
+              data-testid="calendar-media-preview"
+              className="overflow-hidden rounded border border-hud-border bg-void"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={form.mediaUrl}
+                alt="Slot media preview"
+                width={640}
+                height={360}
+                className="max-h-40 w-full object-cover"
+              />
+            </div>
+          ) : null}
+
+          <label className="flex flex-col gap-1.5">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
+              Time
             </span>
             <input
               data-testid="calendar-form-scheduled-at"
@@ -460,7 +532,16 @@ export function CalendarScheduler({
               }}
             />
           </label>
+          </div>
 
+          <details
+            data-testid="calendar-advanced-enqueue"
+            className="rounded border border-hud-border/70 bg-hud-surface/10 px-3 py-2"
+          >
+            <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-hud-muted">
+              Advanced — pipeline job enqueue
+            </summary>
+            <div className="mt-3 flex flex-col gap-4">
           <label className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
               Job type (allowlisted — no collect)
@@ -556,6 +637,8 @@ export function CalendarScheduler({
               <option value="cancelled">cancelled</option>
             </select>
           </label>
+            </div>
+          </details>
 
           <div className="flex flex-wrap items-center gap-3">
             <button
