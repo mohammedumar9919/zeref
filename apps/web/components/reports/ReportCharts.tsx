@@ -27,12 +27,12 @@ function HudBarChart({ chart }: { chart: ReportChart }): React.ReactElement {
                 </span>
               </div>
               <div
-                className="h-1.5 overflow-hidden rounded-full bg-hud-cyan/10"
+                className="h-2.5 overflow-hidden rounded-full bg-hud-cyan/15"
                 role="img"
                 aria-label={`${bar.label} ${bar.value} of ${bar.max}`}
               >
                 <div
-                  className="h-full rounded-full bg-hud-cyan/80 transition-[width] duration-300"
+                  className="h-full rounded-full bg-hud-cyan shadow-hud-glow transition-[width] duration-300"
                   style={{ width: `${pct}%` }}
                 />
               </div>

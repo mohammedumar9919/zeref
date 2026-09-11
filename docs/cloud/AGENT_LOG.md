@@ -67,3 +67,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Lead assigned CLOUD-A2 only (P62 PR #3 still OPEN — proceeding; A2 can start if only blocked on visual UAT). Branched from latest main @ `cde3f27` (CLOUD-A0 DONE). QUEUE CLOUD-A2 → IN_PROGRESS.
 - Not done / blocked: Reports narrative+charts, Studio media preview, Calendar content slots, Research payload cards, fixture UAT, PR.
 - Next for Planner: Wait for this branch PR; do not mark DONE. Do not start CLOUD-A3.
+
+### 2026-09-11 — CLOUD-A2 — agent:zeref-lead-cloud
+- Branch: cloud/a2-product-surfaces
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/4
+- Done: Reports narrative + 3 HUD charts (raw JSON advanced); Studio media preview + hook assist via existing elite artifact API; Calendar caption/media/time first-class with job enqueue advanced; Research payloadJson cards. Fixture UAT on :3000 with ZEREF_BFF_FIXTURE=1. Unit 9/9; Playwright A2 e2e 4/4. P62 PR #3 was still OPEN — branched from main after A0.
+- Not done / blocked: Did not start CLOUD-A3. Did not mark QUEUE DONE. Laptop visual UAT vs Luke ref still open (P62).
+- Next for Planner: Review PR #4 + AGENT_LOG; rebase if P62 merges; merge; set QUEUE CLOUD-A2 DONE. Do not start A3 until then.
