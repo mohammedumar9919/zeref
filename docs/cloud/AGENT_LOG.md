@@ -83,3 +83,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Rebased `cloud/a2-product-surfaces` onto post-P62 `main` (`7d365eb`). Conflicts resolved in QUEUE + AGENT_LOG only (P62 DONE, A2 left PR_READY until merge). Force-with-lease push. A2 unit tests 9/9 after rebase. Merged PR #4. QUEUE CLOUD-A2 → DONE. Did not start CLOUD-A3.
 - Not done / blocked: Luke visual UAT still laptop. Phase 0–9 CI on the rebased PR was still in progress / likely same pre-existing C91 chip vs Phase 10 as P62.
 - Next for Planner / laptop: Luke UAT. Next OPEN queue row is CLOUD-A3 — do not start until user asks.
+
+### 2026-09-12 — CLOUD-A3 — agent:zeref-lead-cloud
+- Branch: cloud/a3-research-lite
+- Status: started
+- PR: n/a
+- Done: Claimed CLOUD-A3 only. Confirmed `main` @ `aa8cfae` (P62 + A2 merged). QUEUE CLOUD-A3 → IN_PROGRESS.
+- Not done / blocked: outlier helpers, caption hook scores, weekly brief, fixture UI, JARVIS tools + eval tasks, PR.
+- Next for Planner: Wait for this branch PR; do not mark DONE. Do not start CLOUD-A4.
