@@ -13,6 +13,8 @@ import {
   ZEREF_TOOL_DESCRIPTORS,
   createZerefToolExecutor,
   buildAckText,
+  createSentenceBuffer,
+  splitIntoSentences,
   type AgentRunResult,
   type AgentStep as CoreAgentStep,
   type PendingConfirm,
@@ -29,6 +31,11 @@ export type JarvisAgentRunInput = {
   transcript: string;
   confirmed?: boolean;
   runId?: string;
+  killSignal?: AbortSignal;
+  onSpeakableSentence?: (
+    sentence: string,
+    meta: { index: number },
+  ) => void | Promise<void>;
 };
 
 export type JarvisAgentRunOutput = {
@@ -41,6 +48,7 @@ export type JarvisAgentRunOutput = {
   terminalReason: AgentRunResult["terminalReason"];
   pendingConfirm?: PendingConfirm;
   contractSteps: ContractAgentStep[];
+  spokenSentenceCount: number;
 };
 
 function nowIso(): string {
@@ -115,6 +123,19 @@ export async function runJarvisAgent(
   const contractSteps: ContractAgentStep[] = [];
   let lastToolCallArgs: Record<string, unknown> | undefined;
 
+  const sentenceBuffer = createSentenceBuffer();
+  let spokenCount = 0;
+  let speakChain = Promise.resolve();
+
+  const enqueueSpeakable = (sentence: string) => {
+    speakChain = speakChain.then(async () => {
+      if (input.killSignal?.aborted) return;
+      const index = spokenCount;
+      spokenCount += 1;
+      await input.onSpeakableSentence?.(sentence, { index });
+    });
+  };
+
   const result = await runAgentLoop({
     runId,
     transcript: input.transcript,
@@ -122,6 +143,12 @@ export async function runJarvisAgent(
     toolExecutor,
     tools: ZEREF_TOOL_DESCRIPTORS,
     confirmed: input.confirmed,
+    killSignal: input.killSignal,
+    onToken: (delta) => {
+      for (const sentence of sentenceBuffer.push(delta)) {
+        enqueueSpeakable(sentence);
+      }
+    },
     onStep: (step) => {
       const ts = nowIso();
       if (step.type === "llm_predict" && step.toolCall) {
@@ -132,6 +159,21 @@ export async function runJarvisAgent(
       emitAgentSteps(runId, step, ts, lastToolCallArgs);
     },
   });
+
+  if (!input.killSignal?.aborted) {
+    const remainder = sentenceBuffer.flush();
+    if (remainder.length === 0 && spokenCount === 0 && result.finalText) {
+      for (const sentence of splitIntoSentences(result.finalText)) {
+        enqueueSpeakable(sentence);
+      }
+    } else {
+      for (const sentence of remainder) {
+        enqueueSpeakable(sentence);
+      }
+    }
+  }
+
+  await speakChain;
 
   const endedAt = nowIso();
   const toolCalls = extractToolCalls(result.steps);
@@ -178,6 +220,7 @@ export async function runJarvisAgent(
     terminalReason: result.terminalReason,
     pendingConfirm: result.pendingConfirm,
     contractSteps,
+    spokenSentenceCount: spokenCount,
   };
 }
 

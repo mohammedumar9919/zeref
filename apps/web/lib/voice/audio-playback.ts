@@ -11,6 +11,18 @@ export function decodeAudioBase64(
   return new Blob([bytes], { type: mimeType });
 }
 
+type PlaybackStopper = () => void;
+
+const activePlayback = new Set<PlaybackStopper>();
+
+/** Stop queued / in-flight `<audio>` playback (barge-in). */
+export function stopAllPlayback(): void {
+  for (const stop of [...activePlayback]) {
+    stop();
+  }
+  activePlayback.clear();
+}
+
 export type AudioLevelCallback = (level: number) => void;
 
 /** Play audio blob; invoke onLevel with 0–1 RMS during playback. */
@@ -49,12 +61,24 @@ export function playAudioBlob(
       rafId = requestAnimationFrame(tickLevel);
     };
 
+    const stop = (): void => {
+      audio.pause();
+      audio.removeAttribute("src");
+      cleanup();
+      onLevel?.(0);
+      activePlayback.delete(stop);
+      resolve();
+    };
+    activePlayback.add(stop);
+
     audio.onended = () => {
+      activePlayback.delete(stop);
       cleanup();
       onLevel?.(0);
       resolve();
     };
     audio.onerror = () => {
+      activePlayback.delete(stop);
       cleanup();
       onLevel?.(0);
       reject(new Error("audio playback failed"));

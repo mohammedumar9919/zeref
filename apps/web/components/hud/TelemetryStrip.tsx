@@ -7,6 +7,7 @@ export function TelemetryStrip(): React.ReactElement {
     telemetryLive: voiceTelemetryLive,
     telemetryMessage,
     telemetrySimulated,
+    agentStepLabel,
   } = useVoice();
 
   const showSimulated = telemetrySimulated && !voiceTelemetryLive;
@@ -27,6 +28,14 @@ export function TelemetryStrip(): React.ReactElement {
       <p className="min-w-0 flex-1 truncate font-mono text-[10px] leading-tight tracking-wide text-hud-muted tabular-nums">
         {telemetryMessage}
       </p>
+      {agentStepLabel ? (
+        <span
+          data-testid="agent-step-rail"
+          className="shrink-0 rounded border border-hud-cyan/35 bg-hud-cyan/[0.07] px-1.5 py-px font-mono text-[9px] uppercase leading-none tracking-[0.14em] text-hud-cyan"
+        >
+          {agentStepLabel}
+        </span>
+      ) : null}
       {showSimulated ? (
         <span
           data-testid="telemetry-simulated"

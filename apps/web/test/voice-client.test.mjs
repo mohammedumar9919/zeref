@@ -30,4 +30,16 @@ describe("parse-voice-events", () => {
     });
     assert.equal(parsed.phase, "ack");
   });
+
+  it("parses agent.step killed for HUD barge-in", () => {
+    const parsed = parseVoice.parseAgentStepEvent({
+      type: "killed",
+      runId: "550e8400-e29b-41d4-a716-446655440001",
+      stepIndex: 3,
+      ts: "2026-09-12T00:00:00.000Z",
+      reason: "agent run killed",
+    });
+    assert.equal(parsed.type, "killed");
+    assert.equal(parseVoice.agentStepHudLabel(parsed), "KILLED");
+  });
 });

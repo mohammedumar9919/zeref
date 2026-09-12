@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --import tsx --test test/**/*.test.mjs",
+    "test": "node --import tsx --test test/*.test.mjs test/jarvis/*.test.mjs",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium"
   },
