@@ -147,3 +147,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Flash abstract (MASTERPLAN title claim unchanged); 4-beat demo script with typed/click Research + fixture fail-safes; 10-slide outline; README demo section; `docs/submission/` pack. Did not mark QUEUE DONE. Did not record video. Did not add product code. Did not claim live Instagram publish or unlabeled live metrics.
 - Not done / blocked: Laptop 2–3 min video + mic UAT. Planner merge + CURRENT_STATE.
 - Next for Planner: Review PR #11 + AGENT_LOG; merge; set QUEUE CLOUD-A5 to DONE. Do not start TRACK-B.
+
+### 2026-09-12 — CLOUD-A5 — agent:cloud-planner
+- Branch: `main` (merged PR #11)
+- Status: done
+- PR: https://github.com/mohammedumar9919/zeref/pull/11 — **MERGED** @ `d87ee04`
+- Done: Rebased `cloud/a5-submission` onto post-A4 `main` (`8f27d7e`). Conflicts resolved in QUEUE + AGENT_LOG only (A0/P62/A2/A3/A4 DONE; A5 left PR_READY until merge). Force-with-lease push (`f101930`). Merged PR #11 (merge commit). QUEUE CLOUD-A5 → DONE. Track A cloud queue complete. Did not start TRACK-B.
+- Not done / blocked: LAPTOP_UAT leftovers — Luke screenshot sign-off, mic/first-audio UAT, eval j6/j7 human-approve, 2–3 min demo video, Postgres reset.
+- Next for Planner / laptop: LAPTOP-UAT only. Do not start TRACK-B until QUEUE unblocks it.
