@@ -295,6 +295,54 @@ After `verify:phase-5.1`:
 
 ---
 
+## Phase 6.2 (Luke Tier-3 workspace HUD)
+
+**Contract:** [phase-6.2-contract.md](./phase-6.2-contract.md) (C99–C110) · **ADR:** [035](./adr/ADR-035-globe-pulse-workspace-ux.md)
+
+Chains `verify:phase-6.1` (phases 0–6.1), then Tier-3 Playwright workspace testids. Independent of Phase 7–12 flags except the existing CI chain.
+
+```powershell
+$env:ZEREF_BFF_FIXTURE='1'
+$env:ZEREF_LLM_MOCK='1'
+$env:ZEREF_PHASE51_UI='1'
+$env:ZEREF_PHASE61_UI='1'
+$env:ZEREF_PHASE62_UI='1'
+npm run verify:phase-6.2
+```
+
+### Env flags
+
+| Env | Default verify / CI |
+|-----|---------------------|
+| `ZEREF_PHASE62_UI` | **`1`** — enforce `cockpit-workspace-6.2.spec.ts` (C99–C106) |
+| `ZEREF_PHASE61_UI` | **`1`** — inherited so 6.1 HUD tests stay green in the chain |
+| `ZEREF_PHASE51_UI` | **`1`** — required so C48 HUD tests are not skipped |
+| `ZEREF_BFF_FIXTURE` | **`1`** — fixture BFF; no Postgres for Playwright path |
+
+Does **not** require `ZEREF_PHASE6_VOICE`, `ZEREF_PHASE7_BRAIN`, or Phase 8–12 flags (C110).
+
+### What `verify:phase-6.2` checks
+
+Script: `scripts/verify-phase-6.2.mjs`
+
+- `phase-6.2-contract.md`, ADR-035
+- `GlobeHero.tsx` wrapper present (C104 — no WebGL internals)
+- `globals.css` 58vh hero + `prefers-reduced-motion` pulse/sync rings
+- Chains `verify:phase-6.1` (phases 0–6.1)
+- **C106:** Playwright `cockpit-workspace-6.2` when `ZEREF_PHASE62_UI=1`
+
+### CI (C110)
+
+After `verify:phase-6.1`:
+
+- `ZEREF_PHASE51_UI=1`, `ZEREF_PHASE61_UI=1`, `ZEREF_PHASE62_UI=1`, `ZEREF_BFF_FIXTURE=1`, `ZEREF_LLM_MOCK=1`
+- `ZEREF_SKIP_PRIOR_CHAIN=1` in CI only — 6.1 already ran in the previous step; standalone `verify:phase-6.2` still chains 6.1
+- `npm run verify:phase-6.2`
+
+Screenshot `zeref-cockpit-6.2-workspace.png` is laptop Planner sign-off (C107) — not required for the script to pass.
+
+---
+
 ## Phase 7 (zeref-memory + eventâ†’orb)
 
 **Contract:** [phase-7-contract.md](./phase-7-contract.md) (C61â€“C70, Amendments Aâ€“D) Â· **ADRs:** [025](./adr/ADR-025-memory-postgres-schema.md)â€“[027](./adr/ADR-027-sse-brain-events-outbox.md)

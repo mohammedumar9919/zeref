@@ -8,17 +8,22 @@ export function HudHeader(): React.ReactElement {
   return (
     <header
       data-testid="hud-header"
-      className="hud-header border-b border-hud-border/60 bg-void/80 px-4 py-2 backdrop-blur-md md:px-6"
+      data-unified-header="1"
+      className="hud-header unified-hud-rail border-b border-hud-border/60 bg-void/80 px-4 py-1.5 backdrop-blur-md md:px-6"
     >
-      <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-2 md:gap-3">
+      <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-x-3 gap-y-1">
         <div className="min-w-0">
           <p className="font-mono text-[10px] uppercase leading-none tracking-[0.35em] text-hud-cyan/80">
             Zeref operator
           </p>
-          <h1 className="mt-1.5 font-mono text-sm uppercase leading-tight tracking-[0.2em] text-hud-primary md:text-base">
+          <h1 className="mt-1 font-mono text-sm uppercase leading-tight tracking-[0.2em] text-hud-primary md:text-base">
             Command center HUD
           </h1>
         </div>
+        <p className="hud-header-objective hidden min-w-0 flex-1 font-mono text-[10px] uppercase leading-snug tracking-[0.16em] text-hud-muted lg:block">
+          <span className="mr-2 text-hud-cyan/70">Objective</span>
+          Instagram ops intelligence · Jarvis PTT
+        </p>
         <ul
           className="flex flex-wrap items-center gap-1.5"
           aria-label="System status"

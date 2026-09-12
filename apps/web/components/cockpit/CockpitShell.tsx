@@ -15,8 +15,10 @@ export function CockpitShell({
   focus = null,
   pageTestId = "cockpit-page",
 }: CockpitShellProps): React.ReactElement {
+  const workspaceClass = focus ? "cockpit-workspace" : undefined;
+
   return (
-    <div data-testid={pageTestId}>
+    <div data-testid={pageTestId} className={workspaceClass}>
       <VoiceHudShell>
         <CockpitGrid slices={slices} focus={focus} />
       </VoiceHudShell>

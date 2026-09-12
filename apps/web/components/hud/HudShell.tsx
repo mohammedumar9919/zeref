@@ -7,7 +7,7 @@ type HudShellProps = {
 
 export function HudShell({ children }: HudShellProps): React.ReactElement {
   return (
-    <div className="cockpit-hud flex min-h-[calc(100vh-3.5rem)] flex-col">
+    <div className="cockpit-hud cockpit-hud--tier3 flex min-h-[calc(100vh-3.25rem)] flex-col">
       <HudHeader />
       <div className="flex-1">{children}</div>
       <HudFooter />

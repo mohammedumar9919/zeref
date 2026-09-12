@@ -42,7 +42,7 @@ export default async function ReportsDeepLinkPage({
   }
 
   return (
-    <div data-testid="cockpit-reports-page">
+    <div data-testid="cockpit-reports-page" className="cockpit-workspace">
       <CockpitGrid slices={slices} focus="reports" />
       {belowGrid}
     </div>

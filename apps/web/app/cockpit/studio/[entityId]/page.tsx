@@ -20,7 +20,7 @@ export default async function StudioEntityPage({
     const entity = await getStudioEntityDetail(entityId);
 
     return (
-      <div data-testid="cockpit-studio-entity-page">
+      <div data-testid="cockpit-studio-entity-page" className="cockpit-workspace">
         <StudioEditorForm entity={entity} />
       </div>
     );

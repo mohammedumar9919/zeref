@@ -4,7 +4,7 @@ import { CalendarPanel } from "@/components/cockpit/CalendarPanel";
 import { ReportsPanel } from "@/components/cockpit/ReportsPanel";
 import { ResearchPanel } from "@/components/cockpit/ResearchPanel";
 import { StudioPanel } from "@/components/cockpit/StudioPanel";
-import { GlobeIsland } from "@/components/globe/GlobeIsland";
+import { GlobeHero } from "@/components/globe/GlobeHero";
 import { cn } from "@/lib/cn";
 
 export type CockpitFocus = "studio" | "calendar" | "reports" | "research" | null;
@@ -19,49 +19,72 @@ export function CockpitGrid({
   focus = null,
 }: CockpitGridProps): React.ReactElement {
   const { studio, calendar, reports, research } = slices.panels;
+  const workspaceMode = focus != null;
 
   return (
-    <div
-      data-testid="cockpit-grid"
-      className={cn(
-        "cockpit-grid mx-auto grid max-w-[1600px] gap-3 px-4 py-3 md:gap-4 md:px-6 md:py-5",
-        "grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(320px,1.1fr)_minmax(0,1fr)]",
-        "lg:grid-rows-[minmax(45vh,1fr)_auto]",
-      )}
-    >
-      <div className="glass-column flex flex-col gap-3 lg:col-start-1 lg:row-span-2 lg:row-start-1">
-        <StudioPanel
-          items={studio.items}
-          insufficientData={studio.insufficientData}
-          focused={focus === "studio"}
-          dataAgeState={"dataAgeState" in studio ? studio.dataAgeState : undefined}
-        />
-        <CalendarPanel
-          items={calendar.items}
-          insufficientData={calendar.insufficientData}
-          focused={focus === "calendar"}
-          dataAgeState={"dataAgeState" in calendar ? calendar.dataAgeState : undefined}
-        />
-      </div>
+    <>
+      {workspaceMode ? (
+        <div
+          data-testid="workspace-mode"
+          data-workspace-surface={focus}
+          className="cockpit-workspace-mode mx-auto max-w-[1600px] px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.28em] text-hud-cyan/75 md:px-6"
+        >
+          Workspace · {focus}
+        </div>
+      ) : null}
+      <div
+        data-testid="cockpit-grid"
+        hidden={workspaceMode}
+        aria-hidden={workspaceMode}
+        className={cn(
+          "cockpit-grid mx-auto max-w-[1600px] gap-2 px-3 py-2 md:gap-2.5 md:px-5 md:py-3",
+          workspaceMode
+            ? "hidden cockpit-grid--workspace"
+            : [
+                "grid grid-cols-1",
+                "lg:grid-cols-[minmax(0,0.72fr)_minmax(280px,1.45fr)_minmax(0,0.72fr)]",
+                "lg:grid-rows-[minmax(58vh,1fr)_auto]",
+              ],
+        )}
+      >
+        <div className="glass-column flex flex-col gap-2 lg:col-start-1 lg:row-span-2 lg:row-start-1">
+          <StudioPanel
+            items={studio.items}
+            insufficientData={studio.insufficientData}
+            focused={focus === "studio"}
+            dataAgeState={"dataAgeState" in studio ? studio.dataAgeState : undefined}
+          />
+          <CalendarPanel
+            items={calendar.items}
+            insufficientData={calendar.insufficientData}
+            focused={focus === "calendar"}
+            dataAgeState={
+              "dataAgeState" in calendar ? calendar.dataAgeState : undefined
+            }
+          />
+        </div>
 
-      <div className="order-first lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1">
-        <GlobeIsland />
-      </div>
+        <div className="order-first lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1">
+          {workspaceMode ? null : <GlobeHero />}
+        </div>
 
-      <div className="glass-column flex flex-col gap-3 lg:col-start-3 lg:row-span-2 lg:row-start-1">
-        <ReportsPanel
-          items={reports.items}
-          insufficientData={reports.insufficientData}
-          focused={focus === "reports"}
-          dataAgeState={"dataAgeState" in reports ? reports.dataAgeState : undefined}
-        />
-        <ResearchPanel
-          items={research.items}
-          insufficientData={research.insufficientData}
-          focused={focus === "research"}
-          dataAgeState={"dataAgeState" in research ? research.dataAgeState : undefined}
-        />
+        <div className="glass-column flex flex-col gap-2 lg:col-start-3 lg:row-span-2 lg:row-start-1">
+          <ReportsPanel
+            items={reports.items}
+            insufficientData={reports.insufficientData}
+            focused={focus === "reports"}
+            dataAgeState={"dataAgeState" in reports ? reports.dataAgeState : undefined}
+          />
+          <ResearchPanel
+            items={research.items}
+            insufficientData={research.insufficientData}
+            focused={focus === "research"}
+            dataAgeState={
+              "dataAgeState" in research ? research.dataAgeState : undefined
+            }
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -17,7 +17,7 @@ export default async function ResearchDeepLinkPage(): Promise<React.ReactElement
   }
 
   return (
-    <div data-testid="cockpit-research-page">
+    <div data-testid="cockpit-research-page" className="cockpit-workspace">
       <CockpitGrid slices={slices} focus="research" />
       <ResearchHub topics={topicsResult.body.topics} />
     </div>
