@@ -132,7 +132,9 @@ export function createZerefContext(turnId?: string): ZerefContext {
       async getResearchOutliers() {
         const result = await getResearchIntel();
         if (result.status !== 200) {
-          return { available: false, message: result.body.error };
+          const message =
+            "error" in result.body ? result.body.error : "research intel unavailable";
+          return { available: false, message };
         }
         return {
           available: true,
@@ -143,7 +145,9 @@ export function createZerefContext(turnId?: string): ZerefContext {
       async getWeeklyBrief() {
         const result = await getResearchIntel();
         if (result.status !== 200) {
-          return { available: false, message: result.body.error };
+          const message =
+            "error" in result.body ? result.body.error : "research intel unavailable";
+          return { available: false, message };
         }
         if (!result.body.weeklyBrief) {
           return { available: false, message: "no weekly brief computed" };

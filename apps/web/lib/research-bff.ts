@@ -346,6 +346,16 @@ export function deriveResearchIntelFromSignals(
   });
 }
 
+function bffError<T>(result: { status: number; body: unknown }): BffResult<T> {
+  const body = result.body;
+  const message =
+    body && typeof body === "object" && "error" in body && typeof body.error === "string"
+      ? body.error
+      : "request failed";
+  const status = result.status === 404 || result.status === 400 ? result.status : 500;
+  return { status, body: { error: message } };
+}
+
 function getResearchIntelFixture(topicId?: string): BffResult<ResearchIntel> {
   const intel = loadCloudA3IntelFixture();
   if (topicId) {
@@ -361,7 +371,7 @@ async function getResearchIntelFromDb(topicId?: string): Promise<BffResult<Resea
   if (!topicId) {
     const list = await listResearchTopicsFromDb();
     if (list.status !== 200) {
-      return { status: list.status, body: list.body };
+      return bffError<ResearchIntel>(list);
     }
     const first = list.body.topics[0];
     if (!first) {
@@ -375,7 +385,7 @@ async function getResearchIntelFromDb(topicId?: string): Promise<BffResult<Resea
 
   const detail = await getResearchTopicFromDb(topicId);
   if (detail.status !== 200) {
-    return { status: detail.status, body: detail.body };
+    return bffError<ResearchIntel>(detail);
   }
   return {
     status: 200,
