@@ -1,0 +1,33 @@
+{
+  "topicId": "770e8400-e29b-41d4-a716-446655440001",
+  "outliers": [
+    {
+      "factId": "990e8400-e29b-41d4-a716-446655440004",
+      "sourceEntityId": "550e8400-e29b-41d4-a716-446655440001",
+      "sourceSnapshotId": "550e8400-e29b-41d4-a716-446655440005",
+      "value": 600,
+      "median": 110,
+      "multiplier": 5.4545,
+      "shortcode": "HIT999",
+      "caption": "Night ride — 5am start, no edits."
+    }
+  ],
+  "hooks": [
+    {
+      "caption": "Night ride — 5am start, no edits.",
+      "score": 8,
+      "mocked": true,
+      "rationale": "Hook: tight first-line length; punch punctuation; specific scene words."
+    }
+  ],
+  "weeklyBrief": {
+    "text": "Weekly brief (mocked): HIT999 hit 5.5× own-account median (600 vs 110). Caption hook scores averaged 8.0/10. Repeat the opener that pulled the outlier instead of chasing a new format.",
+    "groundedIn": ["HIT999"],
+    "mocked": true
+  },
+  "competitor": {
+    "handle": "@ride_lab_pro",
+    "source": "fixture",
+    "skippedReason": "INSTAGRAM_ACCESS_TOKEN unavailable — fixture path only, no live Graph scrape"
+  }
+}

@@ -6,7 +6,11 @@ import {
 } from "@zeref/contracts";
 import {
   aggregateTrendScore,
+  buildResearchIntelCandidates,
   buildResearchSignalCandidates,
+  buildWeeklyBrief,
+  scanOwnAccountOutliers,
+  scoreCaptionHook,
 } from "@zeref/analytics";
 import {
   embeddingVectors,
@@ -62,6 +66,7 @@ export async function runResearch(
             snapshotId: metricFacts.snapshotId,
             engagementScore: metricFacts.engagementScore,
             insufficientData: metricFacts.insufficientData,
+            factsJson: metricFacts.factsJson,
           })
           .from(metricFacts)
           .where(eq(metricFacts.normalizedEntityId, scopeEntityId))
@@ -72,6 +77,7 @@ export async function runResearch(
             snapshotId: metricFacts.snapshotId,
             engagementScore: metricFacts.engagementScore,
             insufficientData: metricFacts.insufficientData,
+            factsJson: metricFacts.factsJson,
           })
           .from(metricFacts);
 
@@ -93,15 +99,22 @@ export async function runResearch(
             .where(inArray(embeddingVectors.normalizedEntityId, entityIds))
         : [];
 
-    const candidates = buildResearchSignalCandidates({
-      metricFacts: factRows.map((f) => ({
-        id: f.id,
-        normalizedEntityId: f.normalizedEntityId,
-        snapshotId: f.snapshotId,
-        engagementScore:
-          f.engagementScore != null ? Number(f.engagementScore) : null,
-        insufficientData: f.insufficientData,
-      })),
+    const mappedFacts = factRows.map((f) => ({
+      id: f.id,
+      normalizedEntityId: f.normalizedEntityId,
+      snapshotId: f.snapshotId,
+      engagementScore:
+        f.engagementScore != null ? Number(f.engagementScore) : null,
+      insufficientData: f.insufficientData,
+      factsJson: (f.factsJson ?? {}) as Record<string, unknown>,
+      caption:
+        typeof (f.factsJson as Record<string, unknown> | null)?.caption === "string"
+          ? String((f.factsJson as Record<string, unknown>).caption)
+          : undefined,
+    }));
+
+    const baseCandidates = buildResearchSignalCandidates({
+      metricFacts: mappedFacts,
       embeddings: embedRows.map((e) => ({
         id: e.id,
         normalizedEntityId: e.normalizedEntityId,
@@ -109,6 +122,29 @@ export async function runResearch(
       })),
       scopeEntityId,
     });
+
+    const { outliers } = scanOwnAccountOutliers(mappedFacts);
+    const hooks: Awaited<ReturnType<typeof scoreCaptionHook>>[] = [];
+    const seenCaptions = new Set<string>();
+    for (const fact of mappedFacts) {
+      const caption = fact.caption?.trim();
+      if (!caption || seenCaptions.has(caption)) {
+        continue;
+      }
+      seenCaptions.add(caption);
+      hooks.push(await scoreCaptionHook(caption));
+    }
+    const brief = await buildWeeklyBrief({
+      outliers,
+      hooks,
+      topicTitle: topic.title,
+    });
+    const intelCandidates = buildResearchIntelCandidates({
+      outliers,
+      hooks,
+      brief,
+    });
+    const candidates = [...baseCandidates, ...intelCandidates];
 
     await db
       .delete(researchSignals)

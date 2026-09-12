@@ -9,7 +9,7 @@ const repoRoot = join(testDir, "../../..");
 const metricsFixture = join(repoRoot, "fixtures/phase-3/metrics");
 
 const built = await import(pathToFileURL(join(testDir, "../dist/index.js")).href);
-const { buildResearchSignalCandidates, aggregateTrendScore } = built;
+const { buildResearchSignalCandidates, aggregateTrendScore, scanOwnAccountOutliers } = built;
 
 test("buildResearchSignalCandidates produces engagement + embedding signals", () => {
   const metricFacts = [
@@ -74,4 +74,15 @@ test("buildResearchSignalCandidates uses phase-3 ride-log metrics fixture", () =
   });
   assert.equal(candidates.length, 1);
   assert.equal(candidates[0].signalType, "engagement_delta");
+});
+
+test("scanOwnAccountOutliers uses cloud-a3 metric fact fixture", () => {
+  const facts = JSON.parse(
+    readFileSync(join(repoRoot, "fixtures/cloud-a3/metric-facts-outliers.valid.json"), "utf8"),
+  );
+  const { outliers, median } = scanOwnAccountOutliers(facts);
+  assert.equal(median, 110);
+  assert.equal(outliers.length, 1);
+  assert.equal(outliers[0].shortcode, "HIT999");
+  assert.ok(outliers[0].multiplier >= 5);
 });

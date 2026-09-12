@@ -32,6 +32,12 @@ function pickMockToolCall(
   if (/(cockpit|dashboard|panels?)/i.test(lower) && has("get_cockpit_summary")) {
     return { name: "get_cockpit_summary", args: {}, id: "mock-tc-cockpit" };
   }
+  if (/(outlier|overperform|5x|5×)/i.test(lower) && has("get_research_outliers")) {
+    return { name: "get_research_outliers", args: {}, id: "mock-tc-outliers" };
+  }
+  if (/(weekly brief|research brief|weekly research)/i.test(lower) && has("get_weekly_brief")) {
+    return { name: "get_weekly_brief", args: {}, id: "mock-tc-brief" };
+  }
   if (/(report|headline|elite)/i.test(lower) && has("get_latest_report_headline")) {
     return { name: "get_latest_report_headline", args: {}, id: "mock-tc-headline" };
   }
@@ -63,6 +69,10 @@ function buildMockFinishText(toolName: string | undefined, transcript: string): 
       return "Your latest elite report headline is on the reports panel.";
     case "get_pipeline_status":
       return "Pipeline status checked — see tool result for worker state.";
+    case "get_research_outliers":
+      return "Own-account outliers versus median are on the research hub.";
+    case "get_weekly_brief":
+      return "Weekly research brief is ready — grounded in the outlier posts.";
     case "enqueue_job":
       return "Job enqueued successfully.";
     case "create_calendar_event":

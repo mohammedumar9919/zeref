@@ -5,10 +5,12 @@ import { randomUUID } from "node:crypto";
 
 import {
   NormalizedEntityIdSchema,
+  ResearchIntelSchema,
   ResearchSignalSchema,
   ResearchTopicDetailSchema,
   ResearchTopicIdSchema,
   ResearchTopicSchema,
+  type ResearchIntel,
   type ResearchSignal,
   type ResearchTopic,
   type ResearchTopicDetail,
@@ -21,6 +23,7 @@ import { getDb, isFixtureMode } from "./db";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const phase9FixturesRoot = join(repoRoot, "fixtures/phase-9");
+const cloudA3FixturesRoot = join(repoRoot, "fixtures/cloud-a3");
 
 export const ResearchTopicCreateSchema = z
   .object({
@@ -261,4 +264,139 @@ export async function createResearchTopic(rawBody: unknown): Promise<BffResult<R
   }
 
   return createResearchTopicInDb(rawBody);
+}
+
+function loadCloudA3IntelFixture(): ResearchIntel {
+  return ResearchIntelSchema.parse(
+    JSON.parse(readFileSync(join(cloudA3FixturesRoot, "research-intel.valid.json"), "utf8")),
+  );
+}
+
+/** Derive intel DTO from persisted / fixture signals. */
+export function deriveResearchIntelFromSignals(
+  topicId: string | undefined,
+  signals: ResearchSignal[],
+): ResearchIntel {
+  const outliers = signals
+    .filter((signal) => signal.signalType === "engagement_outlier")
+    .map((signal) => {
+      const payload = signal.payloadJson ?? {};
+      return {
+        factId: typeof payload.metricFactId === "string" ? payload.metricFactId : signal.id,
+        sourceEntityId: signal.sourceEntityId,
+        sourceSnapshotId: signal.sourceSnapshotId,
+        value: typeof payload.value === "number" ? payload.value : signal.score,
+        median: typeof payload.median === "number" ? payload.median : 0,
+        multiplier: typeof payload.multiplier === "number" ? payload.multiplier : signal.score,
+        shortcode: typeof payload.shortcode === "string" ? payload.shortcode : undefined,
+        caption: typeof payload.caption === "string" ? payload.caption : undefined,
+      };
+    });
+
+  const hooks = signals
+    .filter((signal) => signal.signalType === "caption_hook")
+    .map((signal) => {
+      const payload = signal.payloadJson ?? {};
+      return {
+        caption: typeof payload.caption === "string" ? payload.caption : "",
+        score: typeof payload.hookScore === "number" ? payload.hookScore : signal.score,
+        mocked: payload.mocked === true,
+        rationale: typeof payload.rationale === "string" ? payload.rationale : undefined,
+      };
+    });
+
+  const briefSignal = signals.find((signal) => signal.signalType === "weekly_brief");
+  const weeklyBrief = briefSignal
+    ? {
+        text:
+          typeof briefSignal.payloadJson?.text === "string"
+            ? briefSignal.payloadJson.text
+            : "",
+        groundedIn: Array.isArray(briefSignal.payloadJson?.groundedIn)
+          ? briefSignal.payloadJson.groundedIn.filter(
+              (item): item is string => typeof item === "string",
+            )
+          : [],
+        mocked: briefSignal.payloadJson?.mocked === true,
+      }
+    : undefined;
+
+  const competitorSignal = signals.find((signal) => signal.signalType === "competitor_graph");
+  const competitor = competitorSignal
+    ? {
+        handle:
+          typeof competitorSignal.payloadJson?.handle === "string"
+            ? competitorSignal.payloadJson.handle
+            : "@unknown",
+        source:
+          competitorSignal.payloadJson?.source === "graph" ? ("graph" as const) : ("fixture" as const),
+        skippedReason:
+          typeof competitorSignal.payloadJson?.skippedReason === "string"
+            ? competitorSignal.payloadJson.skippedReason
+            : undefined,
+      }
+    : undefined;
+
+  return ResearchIntelSchema.parse({
+    topicId,
+    outliers,
+    hooks,
+    weeklyBrief: weeklyBrief?.text ? weeklyBrief : undefined,
+    competitor,
+  });
+}
+
+function bffError<T>(result: { status: number; body: unknown }): BffResult<T> {
+  const body = result.body;
+  const message =
+    body && typeof body === "object" && "error" in body && typeof body.error === "string"
+      ? body.error
+      : "request failed";
+  const status = result.status === 404 || result.status === 400 ? result.status : 500;
+  return { status, body: { error: message } };
+}
+
+function getResearchIntelFixture(topicId?: string): BffResult<ResearchIntel> {
+  const intel = loadCloudA3IntelFixture();
+  if (topicId) {
+    const parsedId = ResearchTopicIdSchema.safeParse(topicId);
+    if (!parsedId.success || (intel.topicId && intel.topicId !== parsedId.data)) {
+      return { status: 404, body: { error: "research intel not found" } };
+    }
+  }
+  return { status: 200, body: intel };
+}
+
+async function getResearchIntelFromDb(topicId?: string): Promise<BffResult<ResearchIntel>> {
+  if (!topicId) {
+    const list = await listResearchTopicsFromDb();
+    if (list.status !== 200) {
+      return bffError<ResearchIntel>(list);
+    }
+    const first = list.body.topics[0];
+    if (!first) {
+      return {
+        status: 200,
+        body: ResearchIntelSchema.parse({ outliers: [], hooks: [] }),
+      };
+    }
+    return getResearchIntelFromDb(first.id);
+  }
+
+  const detail = await getResearchTopicFromDb(topicId);
+  if (detail.status !== 200) {
+    return bffError<ResearchIntel>(detail);
+  }
+  return {
+    status: 200,
+    body: deriveResearchIntelFromSignals(detail.body.topic.id, detail.body.signals),
+  };
+}
+
+/** CLOUD-A3 — outliers + weekly brief (+ optional fixture competitor). */
+export async function getResearchIntel(topicId?: string): Promise<BffResult<ResearchIntel>> {
+  if (isFixtureMode()) {
+    return getResearchIntelFixture(topicId);
+  }
+  return getResearchIntelFromDb(topicId);
 }

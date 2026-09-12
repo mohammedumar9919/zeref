@@ -1,11 +1,12 @@
 import { ResearchHub } from "@/components/research/ResearchHub";
 import { CockpitGrid } from "@/components/cockpit/CockpitGrid";
 import { CockpitBffError, getCockpitSlices } from "@/lib/bff";
-import { listResearchTopics } from "@/lib/research-bff";
+import { getResearchIntel, listResearchTopics } from "@/lib/research-bff";
 
 export default async function ResearchDeepLinkPage(): Promise<React.ReactElement> {
   const slices = await getCockpitSlices();
   const topicsResult = await listResearchTopics();
+  const intelResult = await getResearchIntel();
 
   if (topicsResult.status !== 200) {
     throw new CockpitBffError(
@@ -19,7 +20,10 @@ export default async function ResearchDeepLinkPage(): Promise<React.ReactElement
   return (
     <div data-testid="cockpit-research-page" className="cockpit-workspace">
       <CockpitGrid slices={slices} focus="research" />
-      <ResearchHub topics={topicsResult.body.topics} />
+      <ResearchHub
+        topics={topicsResult.body.topics}
+        intel={intelResult.status === 200 ? intelResult.body : undefined}
+      />
     </div>
   );
 }

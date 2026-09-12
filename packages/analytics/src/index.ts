@@ -40,10 +40,29 @@ export {
 } from "./retrieval.js";
 export {
   buildResearchSignalCandidates,
+  buildResearchIntelCandidates,
+  scanOwnAccountOutliers,
   aggregateTrendScore,
   type ResearchMetricFactInput,
   type ResearchEmbeddingInput,
 } from "./research.js";
+export {
+  DEFAULT_OUTLIER_MULTIPLIER,
+  findEngagementOutliers,
+  median,
+  outlierValueFromFact,
+  type OutlierFact,
+  type EngagementOutlier,
+  type OutlierScanResult,
+} from "./outliers.js";
+export {
+  scoreCaptionHook,
+  mockCaptionHookScore,
+  buildWeeklyBrief,
+  type CaptionHookScore,
+  type WeeklyBrief,
+  type WeeklyBriefInput,
+} from "./hooks.js";
 
 /** Normalize-stage metric bundle for `metric_facts` persistence. */
 export function computeMetricFacts(input: {

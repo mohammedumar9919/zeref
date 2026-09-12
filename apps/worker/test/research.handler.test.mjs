@@ -69,4 +69,31 @@ describe("@zeref/worker research handler fixtures", () => {
       assert.equal(ResearchSignalSchema.safeParse(sig).success, true);
     }
   });
+
+  it("builds A3 intel candidates from own-account 5x outliers", async () => {
+    process.env.ZEREF_LLM_MOCK = "1";
+    delete process.env.OPENROUTER_API_KEY;
+    const factsRoot = join(repoRoot, "fixtures/cloud-a3");
+    const facts = JSON.parse(
+      readFileSync(join(factsRoot, "metric-facts-outliers.valid.json"), "utf8"),
+    );
+    const { scanOwnAccountOutliers, buildResearchIntelCandidates, scoreCaptionHook, buildWeeklyBrief } =
+      analytics;
+
+    const { outliers } = scanOwnAccountOutliers(facts);
+    assert.equal(outliers.length, 1);
+    assert.ok(outliers[0].multiplier >= 5);
+
+    const hooks = [await scoreCaptionHook(facts[3].factsJson.caption)];
+    const brief = await buildWeeklyBrief({
+      outliers,
+      hooks,
+      topicTitle: "Ride log engagement trends",
+    });
+    const intel = buildResearchIntelCandidates({ outliers, hooks, brief });
+    assert.ok(intel.some((c) => c.signalType === "engagement_outlier"));
+    assert.ok(intel.some((c) => c.signalType === "caption_hook"));
+    assert.ok(intel.some((c) => c.signalType === "weekly_brief"));
+    assert.match(brief.text, /HIT999/);
+  });
 });

@@ -83,3 +83,19 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Rebased `cloud/a2-product-surfaces` onto post-P62 `main` (`7d365eb`). Conflicts resolved in QUEUE + AGENT_LOG only (P62 DONE, A2 left PR_READY until merge). Force-with-lease push. A2 unit tests 9/9 after rebase. Merged PR #4. QUEUE CLOUD-A2 → DONE. Did not start CLOUD-A3.
 - Not done / blocked: Luke visual UAT still laptop. Phase 0–9 CI on the rebased PR was still in progress / likely same pre-existing C91 chip vs Phase 10 as P62.
 - Next for Planner / laptop: Luke UAT. Next OPEN queue row is CLOUD-A3 — do not start until user asks.
+
+### 2026-09-12 — CLOUD-A3 — agent:zeref-lead-cloud
+- Branch: cloud/a3-research-lite
+- Status: started
+- PR: n/a
+- Done: Claimed CLOUD-A3 only. Confirmed `main` @ `aa8cfae` (P62 + A2 merged). QUEUE CLOUD-A3 → IN_PROGRESS.
+- Not done / blocked: outlier helpers, caption hook scores, weekly brief, fixture UI, JARVIS tools + eval tasks, PR.
+- Next for Planner: Wait for this branch PR; do not mark DONE. Do not start CLOUD-A4.
+
+### 2026-09-12 — CLOUD-A3 — agent:zeref-lead-cloud
+- Branch: cloud/a3-research-lite
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/7
+- Done: Outlier 5× helpers + mockable caption hook scores + grounded weekly brief; fixture intel on research hub/detail (HIT999 5.5× + readable brief); JARVIS `get_research_outliers` / `get_weekly_brief`; eval j6/j7 (7/7, 0 unsafe). Live Graph competitor skipped (fixture `@ride_lab_pro` only). Did not start CLOUD-A4. Did not mark QUEUE DONE.
+- Not done / blocked: Live Graph competitor Wave 2 (tokens). Eval j6/j7 need Planner human-approve. Laptop Luke screenshot UAT.
+- Next for Planner: Review PR #7 + AGENT_LOG; merge; set QUEUE CLOUD-A3 to DONE. Do not start CLOUD-A4 until then.

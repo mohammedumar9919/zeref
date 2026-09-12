@@ -7,7 +7,7 @@ import { createCalendarEvent } from "../calendar-bff";
 import { getDb, isFixtureMode } from "../db";
 import { enqueueJob } from "../jobs/enqueue-job";
 import { probeWorkerHealth, resolveWorkerHealth } from "../ops/worker-health";
-import { createResearchTopic } from "../research-bff";
+import { createResearchTopic, getResearchIntel } from "../research-bff";
 import { isWorkerAvailable } from "../cockpit/simulated-pipeline";
 import { upsertStudioDraft } from "../studio-bff";
 import type { ZerefContext } from "@zeref/jarvis-kernel";
@@ -128,6 +128,31 @@ export function createZerefContext(turnId?: string): ZerefContext {
           entryId: saved.id,
           turnId: opts?.turnId ?? turnId,
         };
+      },
+      async getResearchOutliers() {
+        const result = await getResearchIntel();
+        if (result.status !== 200) {
+          const message =
+            "error" in result.body ? result.body.error : "research intel unavailable";
+          return { available: false, message };
+        }
+        return {
+          available: true,
+          outliers: result.body.outliers,
+          competitor: result.body.competitor,
+        };
+      },
+      async getWeeklyBrief() {
+        const result = await getResearchIntel();
+        if (result.status !== 200) {
+          const message =
+            "error" in result.body ? result.body.error : "research intel unavailable";
+          return { available: false, message };
+        }
+        if (!result.body.weeklyBrief) {
+          return { available: false, message: "no weekly brief computed" };
+        }
+        return { available: true, brief: result.body.weeklyBrief, hooks: result.body.hooks };
       },
     },
     write: {
