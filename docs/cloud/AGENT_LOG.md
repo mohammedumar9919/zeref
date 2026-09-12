@@ -123,3 +123,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Cascaded LLM tokens → sentence buffer → per-sentence TTS; barge-in aborts via `killSignal` + stops playback; HUD TelemetryStrip listens to existing `agent.step`; mock CI path still 200 sync-mock; Whisper sidecar kept; chat completions remain the tool brain (not Realtime). Kernel tests 32/32; web tests 97 pass / 1 skip. First-audio target 1.2s documented — not measured on cloud. Did not start CLOUD-A5. Did not mark QUEUE DONE.
 - Not done / blocked: Laptop mic / first-audio UAT (`apps/web/lib/voice/FIRST_AUDIO_UAT.md`). Luke screenshot of agent-step chip.
 - Next for Planner: Review PR #9 + AGENT_LOG; laptop latency UAT; merge; set QUEUE CLOUD-A4 to DONE. Do not start CLOUD-A5 until then.
+
+### 2026-09-12 — CLOUD-A4 — agent:zeref-lead-cloud
+- Branch: cloud/a4-voice-stream
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/9
+- Done: GitHub Phase 0–9 gate failed on **pre-existing C91** (`hud-header` chip text still expected `"Phase 6.1"`; `getActivePhaseLabel()` returns a later phase). Same red check Planner accepted on P62/A2/A3. A4 unit tests were green locally (kernel 32/32, web 97/1 skip). Did not patch `apps/web/lib/phase-marker.ts` or `e2e/cockpit-hud-6.1.spec.ts` (outside A4 allowlist). Did not start A5.
+- Not done / blocked: C91 still laptop/Planner. Mic first-audio UAT still laptop.
+- Next for Planner: Treat C91 as known; review A4 cascade/barge-in; merge or waive CI as before. Do not start CLOUD-A5.
