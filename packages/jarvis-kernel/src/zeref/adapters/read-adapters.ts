@@ -59,6 +59,22 @@ export async function readMemorySearch(
   return ctx.memorySearch(query, limit);
 }
 
+/** Own-account research outliers (CLOUD-A3). */
+export async function readResearchOutliers(ctx: ZerefReadContext): Promise<unknown> {
+  if (!ctx.canRead()) {
+    return degraded(ctx, "get_research_outliers");
+  }
+  return ctx.getResearchOutliers();
+}
+
+/** Grounded weekly research brief (CLOUD-A3). */
+export async function readWeeklyBrief(ctx: ZerefReadContext): Promise<unknown> {
+  if (!ctx.canRead()) {
+    return degraded(ctx, "get_weekly_brief");
+  }
+  return ctx.getWeeklyBrief();
+}
+
 /** Memory save via MemoryPort adapter (C153). */
 export async function readMemorySave(
   ctx: ZerefReadContext,

@@ -6,6 +6,8 @@ import {
   readMemorySearch,
   readPipelineStatus,
   readReportArtifact,
+  readResearchOutliers,
+  readWeeklyBrief,
   readWorkerHealth,
 } from "./adapters/read-adapters.js";
 import type { IdempotencyCache } from "./adapters/write-adapters.js";
@@ -82,6 +84,10 @@ export function createZerefToolExecutor(
             return ok(await writeUpdateStudioDraft(ctx.write, args, cache));
           case "create_research_topic":
             return ok(await writeCreateResearchTopic(ctx.write, args, cache));
+          case "get_research_outliers":
+            return ok(await readResearchOutliers(ctx.read));
+          case "get_weekly_brief":
+            return ok(await readWeeklyBrief(ctx.read));
           default:
             return fail(`unknown tool: ${name}`);
         }

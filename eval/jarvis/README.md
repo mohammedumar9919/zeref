@@ -4,6 +4,8 @@
 
 Golden tasks live in `golden-tasks.jsonl`. Changes require human approval (same rule as StudyPilot eval gates).
 
+CLOUD-A3 added `j6`/`j7` (research outliers + weekly brief) for Planner review — not yet human-signed.
+
 ## Run locally
 
 ```powershell

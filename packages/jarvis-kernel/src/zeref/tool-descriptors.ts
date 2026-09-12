@@ -86,6 +86,18 @@ export const ZEREF_TOOL_DESCRIPTORS: ToolDescriptor[] = [
     riskTier: "write-low",
     ...writeLowBase,
   },
+  {
+    name: "get_research_outliers",
+    description: "Own-account research outliers versus median engagement (5x+).",
+    riskTier: "read",
+    ...readBase,
+  },
+  {
+    name: "get_weekly_brief",
+    description: "Grounded weekly research brief from metric-fact outliers and caption hooks.",
+    riskTier: "read",
+    ...readBase,
+  },
 ];
 
 export function getZerefToolDescriptor(name: string): ToolDescriptor | undefined {

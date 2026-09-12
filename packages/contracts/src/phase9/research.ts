@@ -11,6 +11,10 @@ import {
 export const ResearchSignalTypeSchema = z.enum([
   "engagement_delta",
   "embedding_cluster",
+  "engagement_outlier",
+  "caption_hook",
+  "weekly_brief",
+  "competitor_graph",
 ]);
 export type ResearchSignalType = z.infer<typeof ResearchSignalTypeSchema>;
 
@@ -83,3 +87,58 @@ export const ResearchSignalCandidateSchema = z
   })
   .strict();
 export type ResearchSignalCandidate = z.infer<typeof ResearchSignalCandidateSchema>;
+
+/** Own-account outlier vs median (CLOUD-A3). */
+export const ResearchOutlierSchema = z
+  .object({
+    factId: z.string().min(1),
+    sourceEntityId: NormalizedEntityIdSchema.optional(),
+    sourceSnapshotId: SnapshotIdSchema.optional(),
+    value: z.number(),
+    median: z.number(),
+    multiplier: z.number(),
+    shortcode: z.string().optional(),
+    caption: z.string().optional(),
+  })
+  .strict();
+export type ResearchOutlier = z.infer<typeof ResearchOutlierSchema>;
+
+export const ResearchHookScoreSchema = z
+  .object({
+    caption: z.string(),
+    score: z.number().min(0).max(10),
+    mocked: z.boolean(),
+    rationale: z.string().optional(),
+  })
+  .strict();
+export type ResearchHookScore = z.infer<typeof ResearchHookScoreSchema>;
+
+export const ResearchWeeklyBriefSchema = z
+  .object({
+    text: z.string().min(1),
+    groundedIn: z.array(z.string()),
+    mocked: z.boolean(),
+  })
+  .strict();
+export type ResearchWeeklyBrief = z.infer<typeof ResearchWeeklyBriefSchema>;
+
+export const ResearchCompetitorSchema = z
+  .object({
+    handle: z.string().min(1),
+    source: z.enum(["fixture", "graph"]),
+    skippedReason: z.string().optional(),
+  })
+  .strict();
+export type ResearchCompetitor = z.infer<typeof ResearchCompetitorSchema>;
+
+/** Hub + JARVIS intel DTO (fixture or derived from signals). */
+export const ResearchIntelSchema = z
+  .object({
+    topicId: ResearchTopicIdSchema.optional(),
+    outliers: z.array(ResearchOutlierSchema),
+    hooks: z.array(ResearchHookScoreSchema),
+    weeklyBrief: ResearchWeeklyBriefSchema.optional(),
+    competitor: ResearchCompetitorSchema.optional(),
+  })
+  .strict();
+export type ResearchIntel = z.infer<typeof ResearchIntelSchema>;

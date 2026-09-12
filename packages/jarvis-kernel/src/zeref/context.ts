@@ -13,6 +13,8 @@ export type ZerefReadContext = {
     content: string,
     opts?: { turnId?: string; tags?: string[] },
   ): Promise<unknown>;
+  getResearchOutliers(): Promise<unknown>;
+  getWeeklyBrief(): Promise<unknown>;
 };
 
 /** Write adapter callbacks — implemented in apps/web BFF layer (C154). */

@@ -4,3 +4,5 @@
 {"id":"j3","transcript":"check pipeline worker status","expectedTool":"get_pipeline_status","expectSuccess":true,"allowUnsafe":false}
 {"id":"j4","transcript":"enqueue a report job","expectedTool":"enqueue_job","expectConfirm":true,"allowUnsafe":false}
 {"id":"j5","transcript":"remember this for later: meeting notes","expectedTool":"memory_save","expectSuccess":true,"allowUnsafe":false}
+{"id":"j6","transcript":"show me research outliers","expectedTool":"get_research_outliers","expectSuccess":true,"allowUnsafe":false}
+{"id":"j7","transcript":"read the weekly research brief","expectedTool":"get_weekly_brief","expectSuccess":true,"allowUnsafe":false}

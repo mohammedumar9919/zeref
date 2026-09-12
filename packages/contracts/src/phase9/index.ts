@@ -13,6 +13,16 @@ export {
   type ResearchSignal,
   type ResearchTopicDetail,
   type ResearchSignalCandidate,
+  ResearchOutlierSchema,
+  ResearchHookScoreSchema,
+  ResearchWeeklyBriefSchema,
+  ResearchCompetitorSchema,
+  ResearchIntelSchema,
+  type ResearchOutlier,
+  type ResearchHookScore,
+  type ResearchWeeklyBrief,
+  type ResearchCompetitor,
+  type ResearchIntel,
 } from "./research.js";
 
 export {

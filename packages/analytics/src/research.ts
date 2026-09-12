@@ -1,11 +1,21 @@
 import type { ResearchSignalCandidate, ResearchSignalType } from "@zeref/contracts";
 
+import type { CaptionHookScore, WeeklyBrief } from "./hooks.js";
+import {
+  findEngagementOutliers,
+  outlierValueFromFact,
+  type EngagementOutlier,
+  type OutlierFact,
+} from "./outliers.js";
+
 export type ResearchMetricFactInput = {
   id: string;
   normalizedEntityId: string;
   snapshotId: string;
   engagementScore: number | null;
   insufficientData: boolean;
+  factsJson?: Record<string, unknown>;
+  caption?: string;
 };
 
 export type ResearchEmbeddingInput = {
@@ -98,4 +108,105 @@ export function aggregateTrendScore(candidates: ResearchSignalCandidate[]): numb
   }
   const sum = candidates.reduce((acc, c) => acc + c.score, 0);
   return roundScore(sum / candidates.length);
+}
+
+function toOutlierFacts(metricFacts: ResearchMetricFactInput[]): OutlierFact[] {
+  const facts: OutlierFact[] = [];
+  for (const fact of metricFacts) {
+    if (fact.insufficientData) {
+      continue;
+    }
+    const value = outlierValueFromFact(fact);
+    if (value == null) {
+      continue;
+    }
+    const json = fact.factsJson ?? {};
+    const shortcode = typeof json.shortcode === "string" ? json.shortcode : undefined;
+    const caption =
+      fact.caption ?? (typeof json.caption === "string" ? json.caption : undefined);
+    facts.push({
+      id: fact.id,
+      normalizedEntityId: fact.normalizedEntityId,
+      snapshotId: fact.snapshotId,
+      value,
+      shortcode,
+      caption,
+    });
+  }
+  return facts;
+}
+
+/** Own-account 5× median outliers from metric_facts (CLOUD-A3). */
+export function scanOwnAccountOutliers(metricFacts: ResearchMetricFactInput[]): {
+  median: number | null;
+  outliers: EngagementOutlier[];
+} {
+  return findEngagementOutliers(toOutlierFacts(metricFacts));
+}
+
+/** Build A3 intel signal candidates (outlier, hook, weekly brief, optional fixture competitor). */
+export function buildResearchIntelCandidates(input: {
+  outliers: EngagementOutlier[];
+  hooks?: CaptionHookScore[];
+  brief?: WeeklyBrief;
+  competitor?: { handle: string; source: "fixture" | "graph"; skippedReason?: string };
+}): ResearchSignalCandidate[] {
+  const candidates: ResearchSignalCandidate[] = [];
+
+  for (const outlier of input.outliers) {
+    candidates.push({
+      sourceEntityId: outlier.normalizedEntityId as ResearchSignalCandidate["sourceEntityId"],
+      sourceSnapshotId: outlier.snapshotId as ResearchSignalCandidate["sourceSnapshotId"],
+      signalType: "engagement_outlier" as ResearchSignalType,
+      score: outlier.multiplier,
+      payloadJson: {
+        metricFactId: outlier.factId,
+        value: outlier.value,
+        median: outlier.median,
+        multiplier: outlier.multiplier,
+        shortcode: outlier.shortcode,
+        caption: outlier.caption,
+        insight: `${outlier.shortcode ?? outlier.factId} is ${outlier.multiplier.toFixed(1)}× own-account median.`,
+      },
+    });
+  }
+
+  for (const hook of input.hooks ?? []) {
+    candidates.push({
+      signalType: "caption_hook" as ResearchSignalType,
+      score: hook.score,
+      payloadJson: {
+        caption: hook.caption,
+        hookScore: hook.score,
+        mocked: hook.mocked,
+        rationale: hook.rationale,
+      },
+    });
+  }
+
+  if (input.brief) {
+    candidates.push({
+      signalType: "weekly_brief" as ResearchSignalType,
+      score: input.brief.mocked ? 1 : 1,
+      payloadJson: {
+        text: input.brief.text,
+        groundedIn: input.brief.groundedIn,
+        mocked: input.brief.mocked,
+      },
+    });
+  }
+
+  if (input.competitor) {
+    candidates.push({
+      signalType: "competitor_graph" as ResearchSignalType,
+      score: input.competitor.source === "graph" ? 1 : 0,
+      payloadJson: {
+        handle: input.competitor.handle,
+        source: input.competitor.source,
+        skippedReason: input.competitor.skippedReason,
+      },
+    });
+  }
+
+  return candidates;
 }

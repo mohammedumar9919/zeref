@@ -1,0 +1,50 @@
+[
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440001",
+    "normalizedEntityId": "550e8400-e29b-41d4-a716-446655440001",
+    "snapshotId": "550e8400-e29b-41d4-a716-446655440002",
+    "engagementScore": 0.12,
+    "insufficientData": false,
+    "factsJson": {
+      "shortcode": "BASE01",
+      "likes": 100,
+      "caption": "Tuesday commute recap."
+    }
+  },
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440002",
+    "normalizedEntityId": "550e8400-e29b-41d4-a716-446655440001",
+    "snapshotId": "550e8400-e29b-41d4-a716-446655440003",
+    "engagementScore": 0.14,
+    "insufficientData": false,
+    "factsJson": {
+      "shortcode": "BASE02",
+      "likes": 120,
+      "caption": "Parts bin, nothing fancy."
+    }
+  },
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440003",
+    "normalizedEntityId": "550e8400-e29b-41d4-a716-446655440001",
+    "snapshotId": "550e8400-e29b-41d4-a716-446655440004",
+    "engagementScore": 0.1,
+    "insufficientData": false,
+    "factsJson": {
+      "shortcode": "BASE03",
+      "likes": 80,
+      "caption": "Garage light, late oil change."
+    }
+  },
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440004",
+    "normalizedEntityId": "550e8400-e29b-41d4-a716-446655440001",
+    "snapshotId": "550e8400-e29b-41d4-a716-446655440005",
+    "engagementScore": 0.72,
+    "insufficientData": false,
+    "factsJson": {
+      "shortcode": "HIT999",
+      "likes": 600,
+      "caption": "Night ride — 5am start, no edits."
+    }
+  }
+]

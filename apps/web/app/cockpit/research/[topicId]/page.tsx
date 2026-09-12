@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { ResearchTopicDetailView } from "@/components/research/ResearchTopicDetail";
 import { CockpitBffError } from "@/lib/bff";
-import { getResearchTopic } from "@/lib/research-bff";
+import { getResearchIntel, getResearchTopic } from "@/lib/research-bff";
 
 type ResearchTopicPageProps = {
   params: Promise<{ topicId: string }>;
@@ -13,6 +13,7 @@ export default async function ResearchTopicPage({
 }: ResearchTopicPageProps): Promise<React.ReactElement> {
   const { topicId } = await params;
   const result = await getResearchTopic(topicId);
+  const intelResult = await getResearchIntel(topicId);
 
   if (result.status === 404) {
     notFound();
@@ -29,7 +30,10 @@ export default async function ResearchTopicPage({
 
   return (
     <div data-testid="cockpit-research-topic-page" className="cockpit-workspace">
-      <ResearchTopicDetailView detail={result.body} />
+      <ResearchTopicDetailView
+        detail={result.body}
+        intel={intelResult.status === 200 ? intelResult.body : undefined}
+      />
     </div>
   );
 }

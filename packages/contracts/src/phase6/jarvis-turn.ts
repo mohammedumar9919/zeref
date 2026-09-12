@@ -16,6 +16,8 @@ export const JarvisToolNameSchema = z.enum([
   "create_calendar_event",
   "update_studio_draft",
   "create_research_topic",
+  "get_research_outliers",
+  "get_weekly_brief",
 ]);
 
 export const JarvisToolCallSchema = z

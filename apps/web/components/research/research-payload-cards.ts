@@ -12,6 +12,12 @@ const LABEL_ALIASES: Record<string, string> = {
   insight: "Insight",
   window: "Window",
   sampleSize: "Sample size",
+  multiplier: "Multiplier",
+  median: "Median",
+  hookScore: "Hook score",
+  caption: "Caption",
+  groundedIn: "Grounded in",
+  skippedReason: "Skipped reason",
 };
 
 function humanizeKey(key: string): string {

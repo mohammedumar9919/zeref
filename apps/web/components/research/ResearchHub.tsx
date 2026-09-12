@@ -1,16 +1,19 @@
 import Link from "next/link";
 
-import type { ResearchTopic } from "@zeref/contracts";
+import type { ResearchIntel, ResearchTopic } from "@zeref/contracts";
+
+import { ResearchIntelPanel } from "./ResearchIntelPanel";
 
 type ResearchHubProps = {
   topics: ResearchTopic[];
+  intel?: ResearchIntel;
 };
 
 function formatTrendScore(score: number | undefined): string {
   return score !== undefined ? score.toFixed(2) : "—";
 }
 
-export function ResearchHub({ topics }: ResearchHubProps): React.ReactElement {
+export function ResearchHub({ topics, intel }: ResearchHubProps): React.ReactElement {
   return (
     <section
       data-testid="research-hub"
@@ -22,9 +25,11 @@ export function ResearchHub({ topics }: ResearchHubProps): React.ReactElement {
         </p>
         <h2 className="text-lg font-medium text-hud-primary">Trend topics</h2>
         <p className="text-sm text-hud-muted">
-          Worker-backed trend scores from metric facts and embeddings (Phase 9)
+          Worker-backed trend scores from metric facts, plus own-account outlier intel
         </p>
       </header>
+
+      {intel ? <ResearchIntelPanel intel={intel} /> : null}
 
       {topics.length === 0 ? (
         <p

@@ -24,6 +24,8 @@ Source of truth for that id: [docs/CURRENT_STATE.md](../docs/CURRENT_STATE.md) (
 - `fixtures/phase-8/job-enqueue.valid.json`
 - `fixtures/phase-8/calendar-event.valid.json`
 - `fixtures/phase-8/studio-entity.valid.json` (A2 media preview URL)
+- `fixtures/cloud-a3/research-intel.valid.json` (own-account 5× outlier + weekly brief)
+- `fixtures/cloud-a3/metric-facts-outliers.valid.json` (demo metric_facts spread)
 
 ## One-command start
 

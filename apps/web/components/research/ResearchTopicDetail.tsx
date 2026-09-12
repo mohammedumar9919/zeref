@@ -1,11 +1,13 @@
 import Link from "next/link";
 
-import type { ResearchSignal, ResearchTopicDetail } from "@zeref/contracts";
+import type { ResearchIntel, ResearchSignal, ResearchTopicDetail } from "@zeref/contracts";
 
+import { ResearchIntelPanel } from "./ResearchIntelPanel";
 import { researchPayloadToCards } from "./research-payload-cards";
 
 type ResearchTopicDetailProps = {
   detail: ResearchTopicDetail;
+  intel?: ResearchIntel;
 };
 
 function formatScore(score: number): string {
@@ -61,6 +63,7 @@ function SignalRow({ signal }: { signal: ResearchSignal }): React.ReactElement {
 
 export function ResearchTopicDetailView({
   detail,
+  intel,
 }: ResearchTopicDetailProps): React.ReactElement {
   const { topic, signals } = detail;
 
@@ -97,6 +100,8 @@ export function ResearchTopicDetailView({
           ) : null}
         </div>
       </header>
+
+      {intel ? <ResearchIntelPanel intel={intel} /> : null}
 
       {signals.length === 0 ? (
         <p

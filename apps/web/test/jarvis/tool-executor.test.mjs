@@ -24,6 +24,8 @@ function fakeReadContext(overrides = {}) {
     getWorkerHealth: async () => ({ available: true, consuming: false }),
     memorySearch: async () => ({ available: true, results: [] }),
     memorySave: async () => ({ available: true, entryId: "mem-1" }),
+    getResearchOutliers: async () => ({ available: true, outliers: [] }),
+    getWeeklyBrief: async () => ({ available: true, brief: { text: "ok", groundedIn: [], mocked: true } }),
     ...overrides,
   };
 }
