@@ -123,3 +123,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Cascaded LLM tokens → sentence buffer → per-sentence TTS; barge-in aborts via `killSignal` + stops playback; HUD TelemetryStrip listens to existing `agent.step`; mock CI path still 200 sync-mock; Whisper sidecar kept; chat completions remain the tool brain (not Realtime). Kernel tests 32/32; web tests 97 pass / 1 skip. First-audio target 1.2s documented — not measured on cloud. Did not start CLOUD-A5. Did not mark QUEUE DONE.
 - Not done / blocked: Laptop mic / first-audio UAT (`apps/web/lib/voice/FIRST_AUDIO_UAT.md`). Luke screenshot of agent-step chip.
 - Next for Planner: Review PR #9 + AGENT_LOG; laptop latency UAT; merge; set QUEUE CLOUD-A4 to DONE. Do not start CLOUD-A5 until then.
+
+### 2026-09-12 — CLOUD-A4 — agent:cloud-planner
+- Branch: `main` (merged PR #9)
+- Status: done
+- PR: https://github.com/mohammedumar9919/zeref/pull/9 — **MERGED** @ `5d23d80`
+- Done: Council APPROVED. PR #9 MERGED. QUEUE CLOUD-A4 → DONE. Next OPEN = CLOUD-A5. Did not claim A5.
+- Not done / blocked: Mic / first-audio UAT deferred to laptop (`apps/web/lib/voice/FIRST_AUDIO_UAT.md`). Luke screenshot of agent-step chip still leftover.
+- Next for Planner / laptop: Mic / first-audio UAT. Next OPEN queue row is CLOUD-A5 — do not start until user asks.
