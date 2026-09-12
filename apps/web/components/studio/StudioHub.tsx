@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import type { CockpitStudioItemV8 } from "@zeref/contracts";
 
+import { resolveStudioMedia } from "./studio-media";
+
 type StudioHubProps = {
   items: CockpitStudioItemV8[];
   insufficientData: boolean;
@@ -38,43 +40,60 @@ export function StudioHub({
         </p>
       ) : (
         <ul className="flex flex-col gap-3" data-testid="studio-hub-item-list">
-          {items.map((item) => (
-            <li key={item.entityId}>
-              <Link
-                href={`/cockpit/studio/${item.entityId}`}
-                data-testid={`studio-hub-item-${item.entityId}`}
-                className="block rounded border border-hud-border bg-hud-surface/20 px-4 py-3 transition-colors hover:border-hud-cyan/40 hover:bg-hud-cyan/5"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <span className="text-sm font-medium text-hud-primary">
-                    {item.title}
-                  </span>
-                  {item.status ? (
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
-                      {item.status}
-                    </span>
-                  ) : null}
-                </div>
-                {item.hasDraft && item.draftPreview ? (
-                  <p className="mt-1 font-mono text-[10px] text-amber-200/90">
-                    draft · {item.draftPreview}
-                  </p>
-                ) : item.hasDraft ? (
-                  <p className="mt-1 font-mono text-[10px] text-amber-200/90">
-                    draft saved
-                  </p>
-                ) : null}
-                <p className="mt-1 font-mono text-[10px] text-hud-muted">
-                  {item.snapshotId
-                    ? `snapshot ${item.snapshotId.slice(0, 8)}…`
-                    : "no snapshot"}
-                  {item.updatedAt
-                    ? ` · updated ${new Date(item.updatedAt).toLocaleString()}`
-                    : ""}
-                </p>
-              </Link>
-            </li>
-          ))}
+          {items.map((item) => {
+            const media = resolveStudioMedia({}, item.entityId);
+            return (
+              <li key={item.entityId}>
+                <Link
+                  href={`/cockpit/studio/${item.entityId}`}
+                  data-testid={`studio-hub-item-${item.entityId}`}
+                  className="block rounded border border-hud-border bg-hud-surface/20 px-4 py-3 transition-colors hover:border-hud-cyan/40 hover:bg-hud-cyan/5"
+                >
+                  <div className="flex gap-3">
+                    {media.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={media.thumbnailUrl}
+                        alt=""
+                        width={56}
+                        height={70}
+                        className="h-[70px] w-14 shrink-0 rounded border border-hud-border object-cover"
+                      />
+                    ) : null}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <span className="text-sm font-medium text-hud-primary">
+                          {item.title}
+                        </span>
+                        {item.status ? (
+                          <span className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/80">
+                            {item.status}
+                          </span>
+                        ) : null}
+                      </div>
+                      {item.hasDraft && item.draftPreview ? (
+                        <p className="mt-1 font-mono text-[10px] text-amber-200/90">
+                          draft · {item.draftPreview}
+                        </p>
+                      ) : item.hasDraft ? (
+                        <p className="mt-1 font-mono text-[10px] text-amber-200/90">
+                          draft saved
+                        </p>
+                      ) : null}
+                      <p className="mt-1 font-mono text-[10px] text-hud-muted">
+                        {item.snapshotId
+                          ? `snapshot ${item.snapshotId.slice(0, 8)}…`
+                          : "no snapshot"}
+                        {item.updatedAt
+                          ? ` · updated ${new Date(item.updatedAt).toLocaleString()}`
+                          : ""}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

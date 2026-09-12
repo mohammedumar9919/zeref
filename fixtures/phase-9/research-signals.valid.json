@@ -8,7 +8,9 @@
     "score": 0.68,
     "payloadJson": {
       "metricFactId": "990e8400-e29b-41d4-a716-446655440001",
-      "engagementScore": 0.68
+      "engagementScore": 0.68,
+      "insight": "Ride-log posts hold engagement versus account baseline.",
+      "window": "7d"
     },
     "computedAt": "2026-06-03T10:00:00.000Z"
   },
@@ -20,7 +22,8 @@
     "score": 0.62,
     "payloadJson": {
       "embeddingCount": 1,
-      "model": "text-embedding-3-small"
+      "model": "text-embedding-3-small",
+      "insight": "One embedding cluster around night-ride language."
     },
     "computedAt": "2026-06-03T10:00:00.000Z"
   }
