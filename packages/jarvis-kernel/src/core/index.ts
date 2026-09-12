@@ -58,7 +58,22 @@ export type {
   LlmPredictInput,
   LlmPredictResult,
   LlmRole,
+  LlmStreamHandlers,
 } from "./ports/llm-port.js";
+
+export {
+  createSentenceBuffer,
+  splitIntoSentences,
+  type SentenceBuffer,
+} from "./sentence-buffer.js";
+
+export {
+  FIRST_AUDIO_TARGET_MS,
+  runTokenToTtsCascade,
+  type CascadeChunk,
+  type TokenToTtsCascadeInput,
+  type TokenToTtsCascadeResult,
+} from "./stream-cascade.js";
 
 export type { MemoryPort, MemorySearchResult } from "./ports/memory-port.js";
 

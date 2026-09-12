@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "test": "node --test test/**/*.test.mjs"
+    "test": "node --test test/*.test.mjs test/core/*.test.mjs"
   },
   "dependencies": {
     "@zeref/contracts": "0.0.0",

@@ -59,6 +59,13 @@ export {
   type LlmPort,
   type LlmPredictInput,
   type LlmPredictResult,
+  type LlmStreamHandlers,
+  createSentenceBuffer,
+  splitIntoSentences,
+  FIRST_AUDIO_TARGET_MS,
+  runTokenToTtsCascade,
+  type SentenceBuffer,
+  type CascadeChunk,
   type MemoryPort,
   type ToolDescriptor,
 } from "./core/index.js";
