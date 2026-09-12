@@ -54,6 +54,34 @@ Dev stack:
 npm run dev:stack
 ```
 
+## Demo (college / fixture)
+
+**Title:** ZEREF — An Autonomous JARVIS Command Center for Instagram Growth
+
+College talk materials live in [docs/submission/](docs/submission/) (abstract, 4-beat script, slide outline). This section is how to **run** the same fixture demo the script uses. Video recording is laptop-only.
+
+Windows, no Docker, no live Instagram or LLM keys:
+
+```powershell
+.\scripts\demo-start.ps1
+```
+
+That sets `ZEREF_BFF_FIXTURE=1` plus mock flags and starts `npm run dev -w @zeref/web`. Then open:
+
+| Surface | URL |
+|---------|-----|
+| Command center | http://localhost:3000/cockpit |
+| Studio (LOG240 fixture) | http://localhost:3000/cockpit/studio/550e8400-e29b-41d4-a716-446655440001 |
+| Calendar | http://localhost:3000/cockpit/calendar |
+| Reports | http://localhost:3000/cockpit/reports?artifact=550e8400-e29b-41d4-a716-446655440000 |
+| Research intel | http://localhost:3000/cockpit/research |
+
+**What the demo shows:** JARVIS HUD, Studio / Calendar / Reports / Research, fixture outlier **HIT999** (5.5× own-account median), weekly brief, PTT if the mic works.
+
+**What it does not show:** live Instagram publish (not built), unlabeled live Graph metrics, or a typed JARVIS chat box. If PTT fails, click Research — same intel. Badges that say Fixture or SIMULATED are correct, not a bug.
+
+Manual equivalent: `$env:ZEREF_BFF_FIXTURE='1'; $env:ZEREF_JOB_ENQUEUE_MOCK='1'; npm run dev -w @zeref/web`. Cloud Agents already have fixture Secrets — do not copy a laptop `.env`. See [fixtures/README.md](fixtures/README.md).
+
 ## Repo layout
 
 | Path | Role |

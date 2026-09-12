@@ -17,6 +17,8 @@
 
 **Fixture demo (CLOUD-A0):** Windows `.\scripts\demo-start.ps1` (no Docker). Cloud: Secrets already set — `npm run dev -w @zeref/web`. Studio entity id `550e8400-e29b-41d4-a716-446655440001` — [../CURRENT_STATE.md](../CURRENT_STATE.md) · [../../fixtures/README.md](../../fixtures/README.md).
 
+**College submission pack (CLOUD-A5):** [../submission/](../submission/) — abstract, 4-beat script, slide outline. Title claim stays: *ZEREF — An Autonomous JARVIS Command Center for Instagram Growth*.
+
 ---
 
 ## Boot (every Grok Bot / Cloud session)

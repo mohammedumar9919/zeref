@@ -18,9 +18,19 @@ College submission materials: abstract, demo script (4 beats), PPT outline, READ
 - Claiming live Instagram publish if not built
 - Fake metrics theater
 
+## Deliverables (this PR)
+
+| Item | Path |
+|------|------|
+| Index | [../../submission/README.md](../../submission/README.md) |
+| Flash abstract | [../../submission/ABSTRACT.md](../../submission/ABSTRACT.md) |
+| 4-beat script + fail-safes | [../../submission/DEMO_SCRIPT.md](../../submission/DEMO_SCRIPT.md) |
+| 10-slide outline | [../../submission/SLIDES.md](../../submission/SLIDES.md) |
+| README demo section | [../../../README.md](../../../README.md) |
+
 ## Acceptance
 
-- [ ] Flash abstract finalized
-- [ ] 4-beat demo script with fail-safes (typed fallback, fixture mode)
-- [ ] Slide outline 8–12
+- [x] Flash abstract finalized (MASTERPLAN title claim unchanged)
+- [x] 4-beat demo script with fail-safes (typed / click Research fallback, fixture mode)
+- [x] Slide outline 8–12 (10 slides)
 - [ ] PR + AGENT_LOG; laptop records 2–3 min video

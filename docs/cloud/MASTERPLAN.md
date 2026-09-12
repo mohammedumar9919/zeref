@@ -10,8 +10,8 @@
 | Lens | Status |
 |------|--------|
 | Phases **0–12** | **APPROVED / frozen** — do not rebuild |
-| College demo readiness | ~55–60% — needs Tier-3 HUD + polished panels |
-| Next remote work | **Phase 6.2** (see [QUEUE.md](./QUEUE.md)) |
+| College demo readiness | Track A **code** through A4 on `main` @ `5d23d80` — HUD, surfaces, research-lite, voice code. Pack = A5. Video = laptop |
+| Next remote work | **CLOUD-A5** submission pack (see [QUEUE.md](./QUEUE.md)) |
 
 ---
 
@@ -34,7 +34,7 @@ Parallel tools, model tiers, vector memory, Next 16, Meta publish + App Review, 
 | A2 | Reports/Studio/Calendar/Research polish | **Yes** | Charts + media preview + content slots |
 | A3 | Research intel lite | **Mostly yes** | Outlier math + briefs; Graph competitor optional |
 | A4 | Streaming voice lite | **Code yes / UAT laptop** | Cascaded TTS from `agent.step`; mic test on laptop |
-| A5 | Submission pack | **Docs yes** | Abstract/script/PPT outline; video = laptop |
+| A5 | Submission pack | **Docs yes** | [../submission/](../submission/) abstract/script/PPT outline; video = laptop |
 
 ## Kill list (never do)
 
@@ -45,11 +45,15 @@ Parallel tools, model tiers, vector memory, Next 16, Meta publish + App Review, 
 - Purple AI gradients / green CTA HUD swap
 - Commit secrets
 
-## Abstract (flash — for submission pack)
+## Abstract (flash — finalized CLOUD-A5)
 
-**Title:** ZEREF — An Autonomous JARVIS Command Center for Instagram Growth  
+**Title:** ZEREF — An Autonomous JARVIS Command Center for Instagram Growth
 
-*(Full text in college submission docs when A5 opens; do not invent a different product claim.)*
+Full text: [../submission/ABSTRACT.md](../submission/ABSTRACT.md). Do not invent a different product claim.
+
+Zeref is a Luke-style JARVIS command center over an immutable Instagram ops pipeline (collect → normalize → embed → analyze → report). The cockpit is Studio, Calendar, Reports, and Research. JARVIS reads those surfaces and writes only after conversational confirm. College demo is fixture-honest (`Fixture` / `SIMULATED`). Meta publish is Track B and is **not** claimed.
+
+**One line:** A JARVIS command center for Instagram growth ops — honest data, human approval, no fake live publish.
 
 ---
 
