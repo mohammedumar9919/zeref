@@ -154,6 +154,58 @@ describe("@zeref/jarvis-kernel core react-loop", () => {
     assert.equal(resumed.audit.entries.length, 1);
   });
 
+  it("streams speakable tokens via predictStream", async () => {
+    const tokens = [];
+    const llm = {
+      async predict() {
+        return { text: "unused" };
+      },
+      async predictStream(_input, handlers) {
+        for (const part of ["Right then. ", "All sorted."]) {
+          handlers?.onToken?.(part);
+        }
+        return { text: "Right then. All sorted.", tokensUsed: 8 };
+      },
+    };
+
+    const result = await runAgentLoop({
+      runId: "run-stream",
+      transcript: "Hello",
+      llm,
+      toolExecutor: fakeExecutor(),
+      tools: [],
+      onToken: (delta) => tokens.push(delta),
+    });
+
+    assert.equal(result.terminalReason, "completed");
+    assert.deepEqual(tokens, ["Right then. ", "All sorted."]);
+    assert.equal(result.finalText, "Right then. All sorted.");
+  });
+
+  it("kills the run when predictStream throws AbortError", async () => {
+    const llm = {
+      async predict() {
+        return { text: "never" };
+      },
+      async predictStream() {
+        const err = new Error("aborted");
+        err.name = "AbortError";
+        throw err;
+      },
+    };
+
+    const result = await runAgentLoop({
+      runId: "run-stream-kill",
+      transcript: "stop",
+      llm,
+      toolExecutor: fakeExecutor(),
+      tools: [],
+      killSignal: new AbortController().signal,
+    });
+
+    assert.equal(result.terminalReason, "killed");
+  });
+
   it("aborts when kill signal is set", async () => {
     const controller = new AbortController();
     controller.abort();

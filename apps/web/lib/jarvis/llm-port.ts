@@ -2,6 +2,7 @@ import type {
   LlmPort,
   LlmPredictInput,
   LlmPredictResult,
+  LlmStreamHandlers,
   ToolDescriptor,
 } from "@zeref/jarvis-kernel";
 
@@ -91,12 +92,138 @@ type MockScriptState = {
   lastTool?: string;
 };
 
-/** LlmPort wrapping mock or OpenRouter (C144, ZEREF_LLM_MOCK). */
+function throwIfAborted(signal?: AbortSignal): void {
+  if (!signal?.aborted) return;
+  const err = new Error("aborted");
+  err.name = "AbortError";
+  throw err;
+}
+
+async function emitMockTokens(
+  text: string,
+  handlers?: LlmStreamHandlers,
+  signal?: AbortSignal,
+): Promise<void> {
+  const parts = text.split(/(\s+)/).filter((part) => part.length > 0);
+  for (const part of parts) {
+    throwIfAborted(signal);
+    handlers?.onToken?.(part);
+  }
+}
+
+async function predictOpenRouterStream(
+  input: LlmPredictInput,
+  handlers?: LlmStreamHandlers,
+  signal?: AbortSignal,
+): Promise<LlmPredictResult> {
+  throwIfAborted(signal);
+
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: process.env.OPENROUTER_MODEL ?? DEFAULT_OPENROUTER_MODEL,
+      stream: true,
+      messages: input.messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+      tools: input.tools.map((t) => ({
+        type: "function",
+        function: {
+          name: t.name,
+          description: t.description,
+          parameters: { type: "object", additionalProperties: true },
+        },
+      })),
+    }),
+    signal,
+  });
+
+  if (!response.ok || !response.body) {
+    throw new Error(`OpenRouter stream failed: ${response.status}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let carry = "";
+  let text = "";
+  let toolName: string | undefined;
+  let toolId: string | undefined;
+  let toolArgs = "";
+  let tokensUsed: number | undefined;
+
+  while (true) {
+    throwIfAborted(signal);
+    const { value, done } = await reader.read();
+    if (done) break;
+    carry += decoder.decode(value, { stream: true });
+    const lines = carry.split("\n");
+    carry = lines.pop() ?? "";
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) continue;
+      const payload = trimmed.slice(5).trim();
+      if (!payload || payload === "[DONE]") continue;
+      let json: {
+        choices?: Array<{
+          delta?: {
+            content?: string;
+            tool_calls?: Array<{
+              id?: string;
+              function?: { name?: string; arguments?: string };
+            }>;
+          };
+        }>;
+        usage?: { total_tokens?: number };
+      };
+      try {
+        json = JSON.parse(payload) as typeof json;
+      } catch {
+        continue;
+      }
+      const delta = json.choices?.[0]?.delta;
+      if (delta?.content) {
+        text += delta.content;
+        handlers?.onToken?.(delta.content);
+      }
+      const toolDelta = delta?.tool_calls?.[0];
+      if (toolDelta?.id) toolId = toolDelta.id;
+      if (toolDelta?.function?.name) toolName = toolDelta.function.name;
+      if (toolDelta?.function?.arguments) {
+        toolArgs += toolDelta.function.arguments;
+      }
+      if (json.usage?.total_tokens) {
+        tokensUsed = json.usage.total_tokens;
+      }
+    }
+  }
+
+  if (toolName) {
+    let args: Record<string, unknown> = {};
+    try {
+      args = JSON.parse(toolArgs || "{}") as Record<string, unknown>;
+    } catch {
+      args = {};
+    }
+    return { toolCall: { name: toolName, args, id: toolId }, tokensUsed };
+  }
+
+  const trimmed = text.trim();
+  if (!trimmed) {
+    throw new Error("OpenRouter stream returned empty content");
+  }
+  return { text: trimmed, tokensUsed };
+}
+
+/** LlmPort wrapping mock or OpenRouter chat completions (C144, ZEREF_LLM_MOCK). Not Realtime. */
 export function createJarvisLlmPort(scriptState?: MockScriptState): LlmPort {
   const state = scriptState ?? { pass: 0 };
 
-  return {
-    async predict(input: LlmPredictInput): Promise<LlmPredictResult> {
+  const predict = async (input: LlmPredictInput): Promise<LlmPredictResult> => {
       const mocked = isLlmMockEnabled() || !process.env.OPENROUTER_API_KEY;
       const userMessage = [...input.messages].reverse().find((m) => m.role === "user");
       const transcript = userMessage?.content ?? "";
@@ -202,6 +329,25 @@ export function createJarvisLlmPort(scriptState?: MockScriptState): LlmPort {
         throw new Error("OpenRouter returned empty content");
       }
       return { text, tokensUsed: payload.usage?.total_tokens };
+  };
+
+  return {
+    predict,
+    async predictStream(
+      input: LlmPredictInput,
+      handlers?: LlmStreamHandlers,
+      signal?: AbortSignal,
+    ): Promise<LlmPredictResult> {
+      throwIfAborted(signal);
+      const mocked = isLlmMockEnabled() || !process.env.OPENROUTER_API_KEY;
+      if (mocked) {
+        const result = await predict(input);
+        if (result.text && !result.toolCall) {
+          await emitMockTokens(result.text, handlers, signal);
+        }
+        return result;
+      }
+      return predictOpenRouterStream(input, handlers, signal);
     },
   };
 }

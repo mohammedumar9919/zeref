@@ -12,7 +12,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 
-import type { VoiceTranscriptRole } from "@zeref/contracts";
+import type { AgentStep, VoiceTranscriptRole } from "@zeref/contracts";
 
 import {
   BRAIN_STATE_IDLE_MS,
@@ -21,8 +21,11 @@ import {
 } from "@/components/brain/brain-state";
 import { parseMemoryBrainEvent } from "@/components/brain/parse-brain-events";
 import { parseTelemetryEvent } from "@/lib/events";
-import { decodeAudioBase64, playAudioBlob } from "@/lib/voice/audio-playback";
+import { decodeAudioBase64, playAudioBlob, stopAllPlayback } from "@/lib/voice/audio-playback";
+import { BARGE_IN_MIME, createBargeInBlob } from "@/lib/voice/barge-in";
 import {
+  agentStepHudLabel,
+  parseAgentStepEvent,
   parsePipelineEvent,
   parseVoiceAudioEvent,
   parseVoiceStateEvent,
@@ -47,7 +50,8 @@ export type StreamEventType =
   | "memory.saved"
   | "memory.search"
   | "memory.contradiction"
-  | "memory.entity_changed";
+  | "memory.entity_changed"
+  | "agent.step";
 
 export type StreamEventHandler = (eventType: StreamEventType, data: unknown) => void;
 
@@ -62,6 +66,8 @@ type VoiceContextValue = {
   telemetrySimulated: boolean;
   submitPttAudio: (blob: Blob) => Promise<void>;
   setListening: (active: boolean) => void;
+  bargeIn: () => Promise<void>;
+  agentStepLabel: string | null;
   subscribeStreamEvents: (handler: StreamEventHandler) => () => void;
 };
 
@@ -91,11 +97,13 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
     "Awaiting telemetry stream…",
   );
   const [telemetrySimulated, setTelemetrySimulated] = useState(true);
+  const [agentStepLabel, setAgentStepLabel] = useState<string | null>(null);
 
   const streamSubscribersRef = useRef<Set<StreamEventHandler>>(new Set());
   const playbackQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const playbackGenerationRef = useRef(0);
   const activeTurnRef = useRef<string | null>(null);
-  const receivedPhasesRef = useRef<Set<string>>(new Set());
+  const receivedAckRef = useRef<Set<string>>(new Set());
   const brainIdleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const applyBrainState = useCallback((next: BrainGlobeState) => {
@@ -149,8 +157,10 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
 
   const enqueuePlayback = useCallback(
     (audioBase64: string, mimeType: string) => {
+      const generation = playbackGenerationRef.current;
       playbackQueueRef.current = playbackQueueRef.current
         .then(async () => {
+          if (generation !== playbackGenerationRef.current) return;
           setVoiceState("speaking");
           const blob = decodeAudioBase64(audioBase64, mimeType);
           await playAudioBlob(blob, setOutputLevel);
@@ -159,6 +169,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
           setOutputLevel(0);
         })
         .finally(() => {
+          if (generation !== playbackGenerationRef.current) return;
           setOutputLevel(0);
           setVoiceState("idle");
         });
@@ -175,12 +186,10 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
         return;
       }
 
-      const phaseKey = `${event.turnId}:${event.phase}`;
-      if (receivedPhasesRef.current.has(phaseKey)) return;
-      receivedPhasesRef.current.add(phaseKey);
-
-      if (event.phase === "result") {
-        setVoiceState("thinking");
+      if (event.phase === "ack") {
+        const ackKey = `${event.turnId}:ack`;
+        if (receivedAckRef.current.has(ackKey)) return;
+        receivedAckRef.current.add(ackKey);
       }
 
       enqueuePlayback(event.audioBase64, event.mimeType);
@@ -205,7 +214,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
   const handleSyncMockTurn = useCallback(
     (body: VoiceTurnSyncResponse) => {
       activeTurnRef.current = body.turnId;
-      receivedPhasesRef.current.clear();
+      receivedAckRef.current.clear();
 
       applyBrainEventsFromToolCalls(body.toolCalls);
 
@@ -255,7 +264,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       if (res.status === 202) {
         const body = (await res.json()) as { turnId: string; transcript: string };
         activeTurnRef.current = body.turnId;
-        receivedPhasesRef.current.clear();
+        receivedAckRef.current.clear();
         appendTranscript({
           role: "user",
           text: body.transcript,
@@ -280,6 +289,26 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
     }
   }, []);
 
+  const bargeIn = useCallback(async () => {
+    playbackGenerationRef.current += 1;
+    stopAllPlayback();
+    playbackQueueRef.current = Promise.resolve();
+    setOutputLevel(0);
+    setVoiceState("idle");
+    setAgentStepLabel("KILLED");
+    try {
+      const form = new FormData();
+      form.append("audio", createBargeInBlob(), "barge-in");
+      await fetch("/api/v1/voice/turn", {
+        method: "POST",
+        body: form,
+        headers: { "X-Zeref-Barge-In": BARGE_IN_MIME },
+      });
+    } catch {
+      /* playback already stopped */
+    }
+  }, []);
+
   const subscribeStreamEvents = useCallback((handler: StreamEventHandler) => {
     streamSubscribersRef.current.add(handler);
     return () => {
@@ -294,6 +323,24 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       }
     },
     [],
+  );
+
+  const handleAgentStep = useCallback(
+    (data: unknown) => {
+      try {
+        const parsed: AgentStep = parseAgentStepEvent(data);
+        setAgentStepLabel(agentStepHudLabel(parsed));
+        if (parsed.type === "killed") {
+          playbackGenerationRef.current += 1;
+          stopAllPlayback();
+          setOutputLevel(0);
+        }
+        emitStreamEvent("agent.step", parsed);
+      } catch {
+        /* ignore malformed */
+      }
+    },
+    [emitStreamEvent],
   );
 
   const handleTelemetryEvent = useCallback(
@@ -398,6 +445,14 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       emitStreamEvent("memory.entity_changed", data);
     });
 
+    source.addEventListener("agent.step", (event) => {
+      try {
+        handleAgentStep(JSON.parse(event.data));
+      } catch {
+        /* ignore */
+      }
+    });
+
     source.onerror = () => {
       setTelemetryMessage("Telemetry stream unavailable");
       setTelemetrySimulated(true);
@@ -413,6 +468,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
   }, [
     appendTranscript,
     emitStreamEvent,
+    handleAgentStep,
     handleMemoryBrainEvent,
     handleTelemetryEvent,
     handleVoiceAudio,
@@ -430,6 +486,8 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       telemetrySimulated,
       submitPttAudio,
       setListening,
+      bargeIn,
+      agentStepLabel,
       subscribeStreamEvents,
     }),
     [
@@ -443,6 +501,8 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       telemetrySimulated,
       submitPttAudio,
       setListening,
+      bargeIn,
+      agentStepLabel,
       subscribeStreamEvents,
     ],
   );

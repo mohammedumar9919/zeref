@@ -30,6 +30,8 @@ export type AgentRunInput = {
   confirmed?: boolean;
   killSignal?: AbortSignal;
   onStep?: (step: AgentStep) => void;
+  /** Speakable token deltas from predictStream (final text only; tool JSON is not emitted). */
+  onToken?: (delta: string) => void;
   now?: () => string;
 };
 
@@ -109,10 +111,37 @@ export async function runAgentLoop(
       return finish("budget_exhausted");
     }
 
-    const predict = await input.llm.predict({
-      messages,
-      tools: input.tools,
-    });
+    if (input.killSignal?.aborted) {
+      emit({ type: "terminal", stepIndex: stepIndex++, reason: "killed" });
+      return finish("killed");
+    }
+
+    let predict;
+    try {
+      if (typeof input.llm.predictStream === "function") {
+        predict = await input.llm.predictStream(
+          { messages, tools: input.tools },
+          {
+            onToken: (delta) => {
+              if (input.killSignal?.aborted) return;
+              input.onToken?.(delta);
+            },
+          },
+          input.killSignal,
+        );
+      } else {
+        predict = await input.llm.predict({
+          messages,
+          tools: input.tools,
+        });
+      }
+    } catch (error) {
+      if (input.killSignal?.aborted || isAbortError(error)) {
+        emit({ type: "terminal", stepIndex: stepIndex++, reason: "killed" });
+        return finish("killed");
+      }
+      throw error;
+    }
     tokensUsed += predict.tokensUsed ?? 0;
 
     emit({
@@ -193,4 +222,13 @@ export async function runAgentLoop(
 
     iteration += 1;
   }
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "name" in error &&
+    (error as { name?: string }).name === "AbortError"
+  );
 }

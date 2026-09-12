@@ -107,3 +107,19 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Council APPROVED. PR #7 MERGED. QUEUE CLOUD-A3 → DONE. Next OPEN = CLOUD-A4. Did not claim A4.
 - Not done / blocked: Eval j6/j7 human sign-off deferred to laptop. Luke visual UAT still laptop.
 - Next for Planner / laptop: Human-approve eval j6/j7. Next OPEN queue row is CLOUD-A4 — do not start until user asks.
+
+### 2026-09-12 — CLOUD-A4 — agent:zeref-lead-cloud
+- Branch: cloud/a4-voice-stream
+- Status: started
+- PR: n/a
+- Done: Claimed CLOUD-A4 only. Branched from latest `main` @ `3bbddf9` (includes A3 @ `292de87`). QUEUE CLOUD-A4 → IN_PROGRESS.
+- Not done / blocked: cascaded streaming (LLM tokens → sentence buffer → TTS chunks), barge-in `killSignal`, HUD `agent.step` listener, mock CI path, PR.
+- Next for Planner: Wait for this branch PR; do not mark DONE. Do not start CLOUD-A5.
+
+### 2026-09-12 — CLOUD-A4 — agent:zeref-lead-cloud
+- Branch: cloud/a4-voice-stream
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/9
+- Done: Cascaded LLM tokens → sentence buffer → per-sentence TTS; barge-in aborts via `killSignal` + stops playback; HUD TelemetryStrip listens to existing `agent.step`; mock CI path still 200 sync-mock; Whisper sidecar kept; chat completions remain the tool brain (not Realtime). Kernel tests 32/32; web tests 97 pass / 1 skip. First-audio target 1.2s documented — not measured on cloud. Did not start CLOUD-A5. Did not mark QUEUE DONE.
+- Not done / blocked: Laptop mic / first-audio UAT (`apps/web/lib/voice/FIRST_AUDIO_UAT.md`). Luke screenshot of agent-step chip.
+- Next for Planner: Review PR #9 + AGENT_LOG; laptop latency UAT; merge; set QUEUE CLOUD-A4 to DONE. Do not start CLOUD-A5 until then.

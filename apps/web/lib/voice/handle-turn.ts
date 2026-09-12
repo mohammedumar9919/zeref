@@ -11,6 +11,7 @@ import {
   defaultTtsAdapter,
   processTurn,
   processTurnSync,
+  splitIntoSentences,
   type ProcessTurnHandle,
 } from "@zeref/jarvis-kernel";
 
@@ -19,6 +20,7 @@ import {
   runJarvisAgent,
   type JarvisAgentRunOutput,
 } from "../jarvis/agent-runtime";
+import { isBargeInRequest } from "./barge-in";
 import { isCiVoiceMockMode } from "./mock-flags";
 import { transcribeAudio } from "./whisper-client";
 import type {
@@ -41,6 +43,25 @@ type PendingVoiceConfirm = {
 };
 
 let pendingVoiceConfirm: PendingVoiceConfirm | null = null;
+let activeVoiceAbort: AbortController | null = null;
+
+/** Abort the in-flight live agent / TTS cascade (barge-in). */
+export function abortActiveVoiceTurn(): boolean {
+  if (!activeVoiceAbort || activeVoiceAbort.signal.aborted) {
+    activeVoiceAbort = null;
+    return false;
+  }
+  activeVoiceAbort.abort();
+  activeVoiceAbort = null;
+  return true;
+}
+
+function beginLiveTurnAbort(): AbortSignal {
+  abortActiveVoiceTurn();
+  const controller = new AbortController();
+  activeVoiceAbort = controller;
+  return controller.signal;
+}
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -165,12 +186,17 @@ function storePendingConfirm(
 async function completeTurnInBackground(
   turnId: string,
   handle: ProcessTurnHandle,
+  killSignal: AbortSignal,
 ): Promise<void> {
   try {
     const result = await handle.complete;
+    if (killSignal.aborted) return;
     emitKernelEvents(result.events);
     emitMemoryBrainEventsFromToolCalls(result.toolCalls);
-    await synthesizeAndEmitAudio(turnId, "result", result.resultText);
+    for (const sentence of splitIntoSentences(result.resultText)) {
+      if (killSignal.aborted) return;
+      await synthesizeAndEmitAudio(turnId, "result", sentence);
+    }
   } catch (error) {
     console.error("[voice/turn] background complete failed:", error);
     emitVoiceEvent({
@@ -185,15 +211,43 @@ async function completeTurnInBackground(
 async function completeAgentTurnInBackground(
   turnId: string,
   transcript: string,
+  killSignal: AbortSignal,
 ): Promise<void> {
   try {
     const agentInput = resolveAgentTurnInput(turnId, transcript);
-    const result = await runJarvisAgent(agentInput);
+    const result = await runJarvisAgent({
+      ...agentInput,
+      killSignal,
+      onSpeakableSentence: async (sentence) => {
+        if (killSignal.aborted) return;
+        await synthesizeAndEmitAudio(turnId, "result", sentence);
+      },
+    });
+    if (killSignal.aborted || result.terminalReason === "killed") {
+      emitVoiceEvent({
+        type: "voice.state",
+        turnId,
+        state: "idle",
+        ts: nowIso(),
+      });
+      return;
+    }
     storePendingConfirm(turnId, agentInput.transcript, result);
     emitKernelEvents(result.events);
     emitMemoryBrainEventsFromToolCalls(result.toolCalls);
-    await synthesizeAndEmitAudio(turnId, "result", result.resultText);
+    if (result.spokenSentenceCount === 0) {
+      await synthesizeAndEmitAudio(turnId, "result", result.resultText);
+    }
   } catch (error) {
+    if (killSignal.aborted) {
+      emitVoiceEvent({
+        type: "voice.state",
+        turnId,
+        state: "idle",
+        ts: nowIso(),
+      });
+      return;
+    }
     console.error("[voice/turn] agent background complete failed:", error);
     emitVoiceEvent({
       type: "voice.state",
@@ -281,6 +335,7 @@ async function handleVoiceTurnLiveLegacy(
   turnId: string,
   transcript: string,
 ): Promise<Response> {
+  const killSignal = beginLiveTurnAbort();
   emitUserTranscript(turnId, transcript);
 
   const handle = processTurn(
@@ -290,7 +345,7 @@ async function handleVoiceTurnLiveLegacy(
   emitKernelEvents(handle.ack.events);
   await synthesizeAndEmitAudio(turnId, "ack", handle.ack.ackText);
 
-  trackPendingTurn(completeTurnInBackground(turnId, handle));
+  trackPendingTurn(completeTurnInBackground(turnId, handle, killSignal));
 
   const body: VoiceTurnAcceptedResponse = { turnId, transcript };
   return Response.json(body, { status: 202 });
@@ -300,13 +355,14 @@ async function handleVoiceTurnLiveAgent(
   turnId: string,
   transcript: string,
 ): Promise<Response> {
+  const killSignal = beginLiveTurnAbort();
   emitUserTranscript(turnId, transcript);
 
   const ackText = buildAckText(transcript);
   emitFastAck(turnId, ackText);
   await synthesizeAndEmitAudio(turnId, "ack", ackText);
 
-  trackPendingTurn(completeAgentTurnInBackground(turnId, transcript));
+  trackPendingTurn(completeAgentTurnInBackground(turnId, transcript, killSignal));
 
   const body: VoiceTurnAcceptedResponse = { turnId, transcript };
   return Response.json(body, { status: 202 });
@@ -324,6 +380,16 @@ async function handleVoiceTurnLive(
 
 /** Process PTT audio through STT → jarvis-kernel → TTS (Amendment A). */
 export async function handleVoiceTurn(audio: Blob): Promise<Response> {
+  if (isBargeInRequest(audio)) {
+    abortActiveVoiceTurn();
+    emitVoiceEvent({
+      type: "voice.state",
+      state: "idle",
+      ts: nowIso(),
+    });
+    return Response.json({ mode: "barge-in", aborted: true });
+  }
+
   const transcribed = await transcribeAudio(audio);
   const transcript = transcribed.text.trim();
 
@@ -348,4 +414,5 @@ export async function waitForPendingVoiceTurns(): Promise<void> {
 /** Test hook — clears conversational confirm state. */
 export function resetPendingVoiceConfirmForTests(): void {
   pendingVoiceConfirm = null;
+  abortActiveVoiceTurn();
 }

@@ -24,7 +24,12 @@ export {
 export {
   handleVoiceTurn,
   waitForPendingVoiceTurns,
+  abortActiveVoiceTurn,
 } from "./handle-turn";
+
+export { BARGE_IN_MIME, createBargeInBlob, isBargeInRequest } from "./barge-in";
+
+export { stopAllPlayback } from "./audio-playback";
 
 export type {
   VoiceTurnAcceptedResponse,

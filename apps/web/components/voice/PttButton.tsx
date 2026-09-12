@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 import { useVoice } from "./VoiceProvider";
 
 export function PttButton(): React.ReactElement {
-  const { submitPttAudio, setListening } = useVoice();
+  const { submitPttAudio, setListening, bargeIn, voiceState } = useVoice();
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -18,6 +18,9 @@ export function PttButton(): React.ReactElement {
   }, []);
 
   const handlePointerDown = useCallback(async () => {
+    if (voiceState === "speaking" || voiceState === "thinking") {
+      await bargeIn();
+    }
     setListening(true);
     chunksRef.current = [];
 
@@ -35,7 +38,7 @@ export function PttButton(): React.ReactElement {
     } catch {
       setListening(false);
     }
-  }, [setListening]);
+  }, [bargeIn, setListening, voiceState]);
 
   const handlePointerUp = useCallback(async () => {
     setListening(false);
