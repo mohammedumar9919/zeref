@@ -107,3 +107,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Council APPROVED. PR #7 MERGED. QUEUE CLOUD-A3 → DONE. Next OPEN = CLOUD-A4. Did not claim A4.
 - Not done / blocked: Eval j6/j7 human sign-off deferred to laptop. Luke visual UAT still laptop.
 - Next for Planner / laptop: Human-approve eval j6/j7. Next OPEN queue row is CLOUD-A4 — do not start until user asks.
+
+### 2026-09-12 — CLOUD-A4 — agent:zeref-lead-cloud
+- Branch: cloud/a4-voice-stream
+- Status: started
+- PR: n/a
+- Done: Claimed CLOUD-A4 only. Branched from latest `main` @ `3bbddf9` (includes A3 @ `292de87`). QUEUE CLOUD-A4 → IN_PROGRESS.
+- Not done / blocked: cascaded streaming (LLM tokens → sentence buffer → TTS chunks), barge-in `killSignal`, HUD `agent.step` listener, mock CI path, PR.
+- Next for Planner: Wait for this branch PR; do not mark DONE. Do not start CLOUD-A5.
