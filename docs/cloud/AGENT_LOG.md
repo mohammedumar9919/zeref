@@ -75,3 +75,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Reports narrative + 3 HUD charts (raw JSON advanced); Studio media preview + hook assist via existing elite artifact API; Calendar caption/media/time first-class with job enqueue advanced; Research payloadJson cards. Fixture UAT on :3000 with ZEREF_BFF_FIXTURE=1. Unit 9/9; Playwright A2 e2e 4/4. P62 PR #3 was still OPEN — branched from main after A0.
 - Not done / blocked: Did not start CLOUD-A3. Did not mark QUEUE DONE. Laptop visual UAT vs Luke ref still open (P62).
 - Next for Planner: Review PR #4 + AGENT_LOG; rebase if P62 merges; merge; set QUEUE CLOUD-A2 DONE. Do not start A3 until then.
+
+### 2026-09-12 — CLOUD-A2 — agent:cloud-planner
+- Branch: `main` (merged PR #4)
+- Status: done
+- PR: https://github.com/mohammedumar9919/zeref/pull/4 — **MERGED** @ `2c6a5a8`
+- Done: Rebased `cloud/a2-product-surfaces` onto post-P62 `main` (`7d365eb`). Conflicts resolved in QUEUE + AGENT_LOG only (P62 DONE, A2 left PR_READY until merge). Force-with-lease push. A2 unit tests 9/9 after rebase. Merged PR #4. QUEUE CLOUD-A2 → DONE. Did not start CLOUD-A3.
+- Not done / blocked: Luke visual UAT still laptop. Phase 0–9 CI on the rebased PR was still in progress / likely same pre-existing C91 chip vs Phase 10 as P62.
+- Next for Planner / laptop: Luke UAT. Next OPEN queue row is CLOUD-A3 — do not start until user asks.
