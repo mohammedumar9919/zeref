@@ -139,3 +139,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Lead assigned CLOUD-A5 only. Branched from latest `main` @ `5d23d80` (A4 merge). QUEUE CLOUD-A5 → IN_PROGRESS. Did not mark A4 DONE (Planner).
 - Not done / blocked: flash abstract, 4-beat demo script, 8–12 slide outline, README demo section, PR.
 - Next for Planner: Wait for this branch PR; do not mark DONE. Laptop leftover: 2–3 min demo video.
+
+### 2026-09-12 — CLOUD-A5 — agent:zeref-lead-cloud
+- Branch: cloud/a5-submission
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/11
+- Done: Flash abstract (MASTERPLAN title claim unchanged); 4-beat demo script with typed/click Research + fixture fail-safes; 10-slide outline; README demo section; `docs/submission/` pack. Did not mark QUEUE DONE. Did not record video. Did not add product code. Did not claim live Instagram publish or unlabeled live metrics.
+- Not done / blocked: Laptop 2–3 min video + mic UAT. Planner merge + CURRENT_STATE.
+- Next for Planner: Review PR #11 + AGENT_LOG; merge; set QUEUE CLOUD-A5 to DONE. Do not start TRACK-B.

@@ -33,4 +33,5 @@ College submission materials: abstract, demo script (4 beats), PPT outline, READ
 - [x] Flash abstract finalized (MASTERPLAN title claim unchanged)
 - [x] 4-beat demo script with fail-safes (typed / click Research fallback, fixture mode)
 - [x] Slide outline 8–12 (10 slides)
-- [ ] PR + AGENT_LOG; laptop records 2–3 min video
+- [x] PR + AGENT_LOG (https://github.com/mohammedumar9919/zeref/pull/11)
+- [ ] Laptop records 2–3 min video
