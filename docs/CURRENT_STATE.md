@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-09-14 (Track B — B3 reviewed ACCEPT; CLOUD-B4 OPEN for live FB UAT glue)  
+**Last updated:** 2026-09-14 (Track B — CLOUD-B4 IN_PROGRESS on `cloud/b4-competitor-uat`; live FB UAT glue)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -37,7 +37,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 | Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** **CLOUD-B4 OPEN** — live Facebook competitor UAT glue ([cloud/phases/B4-competitor-uat.md](./cloud/phases/B4-competitor-uat.md)). B3 ACCEPT (PR #14). Human: set `FACEBOOK_*` per [LIVE_COMPETITOR_SETUP.md](./LIVE_COMPETITOR_SETUP.md). College demo: `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER.
+**Immediate goal:** **CLOUD-B4 IN_PROGRESS** — live Facebook competitor UAT glue (`cloud/b4-competitor-uat`, [cloud/phases/B4-competitor-uat.md](./cloud/phases/B4-competitor-uat.md)). B3 ACCEPT (PR #14). Human: set `FACEBOOK_*` per [LIVE_COMPETITOR_SETUP.md](./LIVE_COMPETITOR_SETUP.md) after merge; do not mark live UAT done without curl. College demo: `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER.
 
 ### P8 hotfix root cause
 
