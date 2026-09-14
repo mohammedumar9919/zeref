@@ -19,3 +19,12 @@ export {
   type InstagramInsightValue,
   type MediaInsightsResult,
 } from "./insights.js";
+
+export {
+  DEFAULT_FACEBOOK_GRAPH_BASE,
+  fetchCompetitorDiscovery,
+  redactFacebookSecrets,
+  type CompetitorDiscoveryRequest,
+  type CompetitorDiscoveryResult,
+  type FacebookGraphClientOptions,
+} from "./business-discovery.js";
