@@ -265,3 +265,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Claimed CLOUD-B4 only. QUEUE row set to IN_PROGRESS. Reading B4 card + B3 BD client / facebook-health / uat-collect patterns.
 - Not done / blocked: uat-competitor.mjs, live-competitor-check.ps1, LIVE_COMPETITOR_SETUP UAT section, facebook-health businessDiscovery tests, PR.
 - Next for Planner: Wait for this branch PR; do not mark DONE. Do not start TRACK-B-DEFER.
+
+### 2026-09-14 — CLOUD-B4 — agent:jarvis-lite
+- Branch: cloud/b4-competitor-uat
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/17
+- Done: `scripts/uat-competitor.mjs --username` redacted summary + soft-fail hint when FACEBOOK_* missing; optional `scripts/live-competitor-check.ps1`; LIVE_COMPETITOR_SETUP UAT section; facebook-health always returns `businessDiscovery` boolean; mock tests 12/12. QUEUE set PR_READY. Did not mark DONE. Did not start TRACK-B-DEFER. Did not claim live Graph success.
+- Not done / blocked: Live FACEBOOK_* UAT is laptop after merge (human curl §6). Worker must not mark QUEUE DONE.
+- Next for Planner: Review PR #17 + AGENT_LOG vs B4 card; merge; set QUEUE CLOUD-B4 DONE only after human curl if calling live UAT complete.

@@ -17,7 +17,7 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 | 8 | CLOUD-B1 | Live data operator path + IG health probe | DONE | `cloud/b1-` | [phases/B1-live-data-ops.md](./phases/B1-live-data-ops.md) |
 | 9 | CLOUD-B2 | Live Graph collect UAT glue (needs human tokens) | DONE | `cloud/b2-` | [phases/B2-live-graph-uat.md](./phases/B2-live-graph-uat.md) |
 | 10 | CLOUD-B3 | Competitor Business Discovery + reel ideas (FB Login token) | DONE | `cloud/b3-` | [phases/B3-competitor-discovery.md](./phases/B3-competitor-discovery.md) |
-| 11 | CLOUD-B4 | Live Facebook competitor UAT glue | IN_PROGRESS | `cloud/b4-` | [phases/B4-competitor-uat.md](./phases/B4-competitor-uat.md) |
+| 11 | CLOUD-B4 | Live Facebook competitor UAT glue | PR_READY | `cloud/b4-` | [phases/B4-competitor-uat.md](./phases/B4-competitor-uat.md) |
 | — | TRACK-B-DEFER | Next 16, Meta publish/App Review, auth product, vector memory | BLOCKED | — | After B4+ (not for Grok now) |
 
 ### How to claim a row
@@ -32,10 +32,10 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 ### Track status (authoritative)
 
 - **Track A (college):** DONE (A0–A5).
-- **Track B (live Graph + competitor):** B0–B3 **DONE**. CLOUD-B4 **IN_PROGRESS** on `cloud/b4-competitor-uat`.
-- **First OPEN for workers right now:** none while CLOUD-B4 is IN_PROGRESS. Do not start another row.
+- **Track B (live Graph + competitor):** B0–B3 **DONE**. CLOUD-B4 **PR_READY** on `cloud/b4-competitor-uat`.
+- **First OPEN for workers right now:** none while CLOUD-B4 is PR_READY. Do not start another row.
 - **TRACK-B-DEFER** stays BLOCKED — Next 16 / publish / auth / vector.
 
-**Track B note (2026-09-14):** CLOUD-B4 claimed by agent:jarvis-lite on `cloud/b4-competitor-uat`. Live FB UAT still needs human `FACEBOOK_*` + curl after merge. TRACK-B-DEFER still BLOCKED.
+**Track B note (2026-09-14):** CLOUD-B4 PR_READY (agent:jarvis-lite) — https://github.com/mohammedumar9919/zeref/pull/17. Fixture CI stays mock-safe; live FB UAT needs human `FACEBOOK_*` + curl after merge. TRACK-B-DEFER still BLOCKED.
 
 **Grok / Cloud worker rule:** QUEUE wins over stale AGENT_LOG lines.
