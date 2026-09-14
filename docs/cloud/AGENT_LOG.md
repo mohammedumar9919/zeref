@@ -225,3 +225,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Claimed CLOUD-B3 only. QUEUE row set to IN_PROGRESS. Reading B3 card + Instagram Graph/Insights patterns; two hosts / two tokens.
 - Not done / blocked: Facebook BD client, LIVE_COMPETITOR_SETUP.md, facebook-health, Jarvis tools, persona, PR.
 - Next for Planner: Wait for this branch PR; do not mark DONE. Do not start TRACK-B-DEFER.
+
+### 2026-09-14 — CLOUD-B3 — agent:jarvis-lite
+- Branch: cloud/b3-competitor-discovery
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/14
+- Done: Facebook Graph BD client + mock tests; LIVE_COMPETITOR_SETUP.md + FACEBOOK_* env comments; GET /api/v1/ops/facebook-health soft-fail; Jarvis `discover_competitor` + `suggest_reel_ideas` (contracts/kernel/zeref-context/persona/mock routing). Instagram Login Insights left intact. QUEUE set PR_READY. Did not mark DONE. Did not start TRACK-B-DEFER.
+- Not done / blocked: Live FACEBOOK_* UAT is laptop after merge. Worker must not mark QUEUE DONE.
+- Next for Planner: Review PR #14 + AGENT_LOG vs B3 card; merge; set QUEUE CLOUD-B3 DONE. Human live BD curl after merge.
