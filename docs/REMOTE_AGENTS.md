@@ -69,7 +69,7 @@ Details: [CURRENT_STATE.md](./CURRENT_STATE.md) · [fixtures/README.md](../fixtu
 ```
 You are Zeref Cloud worker.
 Read docs/cloud/README.md, docs/cloud/QUEUE.md, docs/cloud/MASTERPLAN.md, docs/CURRENT_STATE.md.
-Track B is ACTIVE. First OPEN is CLOUD-B3 (not TRACK-B-DEFER).
+Track B B3 is DONE. There is no OPEN queue row (TRACK-B-DEFER stays BLOCKED).
 Confirm secrets are fixture mode for CI. Do not code yet.
 Reply with: top OPEN queue item, why, and the exact phase card path you will use next.
 ```
@@ -77,8 +77,8 @@ Reply with: top OPEN queue item, why, and the exact phase card path you will use
 When ready to build:
 
 ```
-Claim the first OPEN item in docs/cloud/QUEUE.md (CLOUD-B3).
-Follow docs/cloud/phases/B3-competitor-discovery.md exactly.
+Claim the first OPEN item in docs/cloud/QUEUE.md (none — CLOUD-B3 DONE; do not start TRACK-B-DEFER).
+If a new OPEN row exists, follow that phase card exactly.
 Follow docs/cloud/HANDOFF.md (branch + PR template + AGENT_LOG append).
 QUEUE wins over any old AGENT_LOG “do not start TRACK-B” lines.
 One slice only. Stop when PR is ready.

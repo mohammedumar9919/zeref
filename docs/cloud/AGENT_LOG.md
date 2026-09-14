@@ -241,3 +241,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Council APPROVED. PR #14 MERGED. QUEUE B3 → DONE. Live FB UAT leftover (`FACEBOOK_*` + curl + `facebook-health`). IG Insights still required green. TRACK-B-DEFER still BLOCKED — do not start Next 16/publish/auth/vector.
 - Not done / blocked: Human FACEBOOK_* live BD UAT. TRACK-B-DEFER (Next 16 / publish / auth / vector).
 - Next for Planner / laptop: FACEBOOK_* tokens + curl + `facebook-health`. No OPEN queue row for Grok.
+
+### 2026-09-14 — CLOUD-B3 leftover notes — agent:cloud-planner
+- Branch: `cursor/cloud-b3-queue-done-679d` (onto main after PR #15 @ `9b5082e`)
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/16
+- Done: PR #14 MERGED @ `e148c8e`. QUEUE B3 already DONE via PR #15. Cleared leftover Track B notes that still said first OPEN / PR_READY for B3 (`README`, `MASTERPLAN`, `PLANNER`, `REMOTE_AGENTS`). Live FB UAT leftover (`FACEBOOK_*` + `LIVE_COMPETITOR_SETUP.md`). IG Insights still required. TRACK-B-DEFER still BLOCKED — do not start Next 16 / publish / auth / vector.
+- Not done / blocked: Laptop live FB UAT. TRACK-B-DEFER remains BLOCKED.
+- Next for Planner / laptop: Live FB UAT leftover. Do not start Next 16 / publish / auth / vector.
