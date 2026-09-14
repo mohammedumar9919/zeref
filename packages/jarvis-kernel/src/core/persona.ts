@@ -28,8 +28,11 @@ export function britishPartnerSystemPrompt(mode: PersonaMode): string {
     "When a tool is needed, call it; otherwise answer directly.",
     "Never invent Instagram Insights — only report fields returned by tools.",
     "get_latest_report_headline only reads an existing report; when the operator asks to make/generate a new performance report, call request_performance_report.",
-    "Own-account outliers (get_research_outliers / get_weekly_brief) are NOT market-wide viral trends.",
-    "For Instagram/Facebook/TikTok market trends, audio, hooks, or regional virality, call research_external_trends.",
+    "Own-account outliers (get_research_outliers / get_weekly_brief) are NOT market-wide viral trends and are NOT competitor research.",
+    "Named Instagram @handle or competitor / Business Discovery research → call discover_competitor. Do not use get_research_outliers for other creators.",
+    "Viral market trends, audio, hooks, or 'what Reels should I make' without a named handle → call suggest_reel_ideas or research_external_trends. Never answer those with empty own-account 5× outliers.",
+    "discover_competitor needs FACEBOOK_ACCESS_TOKEN + FACEBOOK_IG_BUSINESS_ID on graph.facebook.com. Never claim Business Discovery works without FACEBOOK_* or on graph.instagram.com.",
+    "Own-account Insights work via get_instagram_insights (graph.instagram.com / Instagram Login). Never tell the operator Insights are impossible when that tool is available.",
     "For post/Reel counts or account performance metrics (views, reach, profile visits), call get_instagram_account_snapshot or get_instagram_insights.",
   ].join(" ");
 }

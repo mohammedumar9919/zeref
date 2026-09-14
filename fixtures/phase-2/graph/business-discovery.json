@@ -1,0 +1,36 @@
+{
+  "business_discovery": {
+    "id": "17841400000000999",
+    "username": "nasa",
+    "name": "NASA",
+    "followers_count": 96000000,
+    "media_count": 4200,
+    "biography": "Exploring the universe and our home planet.",
+    "website": "https://www.nasa.gov/",
+    "media": {
+      "data": [
+        {
+          "id": "18000000000000901",
+          "caption": "Night launch from the pad",
+          "media_type": "VIDEO",
+          "media_url": "https://cdn.example.test/bd-nasa-1.mp4",
+          "permalink": "https://www.instagram.com/reel/NasaReel001/",
+          "timestamp": "2024-04-01T12:00:00+0000",
+          "like_count": 88000,
+          "comments_count": 2100
+        },
+        {
+          "id": "18000000000000902",
+          "caption": "Earth from orbit",
+          "media_type": "IMAGE",
+          "media_url": "https://cdn.example.test/bd-nasa-2.jpg",
+          "permalink": "https://www.instagram.com/p/NasaImg002/",
+          "timestamp": "2024-04-02T08:30:00+0000",
+          "like_count": 12000,
+          "comments_count": 400
+        }
+      ]
+    }
+  },
+  "id": "17841400000000001"
+}

@@ -94,6 +94,14 @@ export async function readInstagramInsights(
   return ctx.getInstagramInsights(args);
 }
 
+/** Named competitor Business Discovery (Facebook Graph). Always delegated — helper owns FACEBOOK_* hints. */
+export async function readDiscoverCompetitor(
+  ctx: ZerefReadContext,
+  args: Record<string, unknown>,
+): Promise<unknown> {
+  return ctx.discoverCompetitor(args);
+}
+
 /** Memory save via MemoryPort adapter (C153). */
 export async function readMemorySave(
   ctx: ZerefReadContext,

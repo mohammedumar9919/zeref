@@ -112,6 +112,24 @@ export async function writeResearchExternalTrends(
   return result;
 }
 
+/** Reel-idea briefs (web-intel + optional Business Discovery). */
+export async function writeSuggestReelIdeas(
+  ctx: ZerefWriteContext,
+  args: Record<string, unknown>,
+  cache?: IdempotencyCache,
+): Promise<unknown> {
+  const idempotencyKey = readIdempotencyKey(args);
+  if (idempotencyKey && cache?.has(cacheKey("suggest_reel_ideas", idempotencyKey))) {
+    return cache.get(cacheKey("suggest_reel_ideas", idempotencyKey));
+  }
+
+  const result = await ctx.suggestReelIdeas(stripIdempotencyKey(args));
+  if (idempotencyKey && cache) {
+    cache.set(cacheKey("suggest_reel_ideas", idempotencyKey), result);
+  }
+  return result;
+}
+
 /** Queue a fresh performance report (write-low voice path). */
 export async function writeRequestPerformanceReport(
   ctx: ZerefWriteContext,

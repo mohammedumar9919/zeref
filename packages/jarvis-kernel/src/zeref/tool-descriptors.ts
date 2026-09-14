@@ -117,9 +117,23 @@ export const ZEREF_TOOL_DESCRIPTORS: ToolDescriptor[] = [
     ...readBase,
   },
   {
+    name: "discover_competitor",
+    description:
+      "Named Instagram professional competitor via Facebook Graph Business Discovery (graph.facebook.com). Args: { username: string, mediaLimit?: number }. Requires FACEBOOK_ACCESS_TOKEN + FACEBOOK_IG_BUSINESS_ID. Not Instagram Login Insights and not own-account 5× outliers.",
+    riskTier: "read",
+    ...readBase,
+  },
+  {
     name: "research_external_trends",
     description:
       "External social trend research across Instagram, Facebook, TikTok, YouTube, etc. Args: { query: string, platforms?: string[], regions?: string[], lookbackDays?: number }. Returns web-intel (not Meta Graph Insights). Always disclose source.",
+    riskTier: "write-low",
+    ...writeLowBase,
+  },
+  {
+    name: "suggest_reel_ideas",
+    description:
+      "Reel-making briefs from web-intel plus optional competitor Business Discovery. Args: { query: string, competitorUsernames?: string[], regions?: string[], limit?: number }. Viral/market asks without a named handle. Label sources graph-business-discovery vs web-intel. Not empty own-account outliers.",
     riskTier: "write-low",
     ...writeLowBase,
   },

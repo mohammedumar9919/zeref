@@ -19,6 +19,12 @@ export type ExternalResearchResult = {
     exampleHooks?: string[];
     confidence: "low" | "medium" | "high";
   }>;
+  reelIdeas: Array<{
+    title: string;
+    hook: string;
+    format?: string;
+    why?: string;
+  }>;
   limitations: string[];
   message?: string;
 };
@@ -27,6 +33,27 @@ function asStringArray(value: unknown, fallback: string[]): string[] {
   if (!Array.isArray(value)) return fallback;
   const items = value.filter((v): v is string => typeof v === "string" && v.trim().length > 0);
   return items.length > 0 ? items : fallback;
+}
+
+function reelIdeasFromTrends(
+  trends: ExternalResearchResult["trends"],
+): ExternalResearchResult["reelIdeas"] {
+  const ideas: ExternalResearchResult["reelIdeas"] = [];
+  for (const trend of trends) {
+    const hooks =
+      Array.isArray(trend.exampleHooks) && trend.exampleHooks.length > 0
+        ? trend.exampleHooks
+        : [trend.title];
+    for (const hook of hooks) {
+      ideas.push({
+        title: trend.title,
+        hook,
+        format: "reel",
+        why: trend.whyItMatters,
+      });
+    }
+  }
+  return ideas;
 }
 
 function coerceQuery(args: Record<string, unknown>): string {
@@ -69,6 +96,20 @@ function fixtureResult(query: string, platforms: string[], regions: string[], lo
       "Fixture mode — not live web crawl.",
       "Meta Graph does not expose city-level viral discovery on Instagram Login collect tokens.",
     ],
+    reelIdeas: [
+      {
+        title: "Exhaust-note POV reels",
+        hook: "Wait for the downshift…",
+        format: "reel",
+        why: "High retention first 1.5s from audio identity.",
+      },
+      {
+        title: "Garage build diary carousels",
+        hook: "Day 14 of the ZX6R refresh",
+        format: "carousel",
+        why: "Saves + shares from process content beat polished ads.",
+      },
+    ],
   };
 }
 
@@ -106,6 +147,7 @@ export async function runExternalSocialResearch(
       summary: "",
       trends: [],
       limitations: ["query is required"],
+      reelIdeas: [],
       message: "query is required for research_external_trends",
     };
   }
@@ -126,6 +168,7 @@ export async function runExternalSocialResearch(
       summary: "",
       trends: [],
       limitations: ["OPENROUTER_API_KEY missing"],
+      reelIdeas: [],
       message: "OPENROUTER_API_KEY required for external research",
     };
   }
@@ -138,7 +181,7 @@ export async function runExternalSocialResearch(
   const system = [
     "You are a social media trend analyst.",
     "Return ONLY valid JSON matching:",
-    '{"summary":string,"trends":[{"title":string,"platforms":string[],"regions":string[],"whyItMatters":string,"exampleHooks":string[],"confidence":"low"|"medium"|"high"}]}',
+    '{"summary":string,"trends":[{"title":string,"platforms":string[],"regions":string[],"whyItMatters":string,"exampleHooks":string[],"confidence":"low"|"medium"|"high"}],"reelIdeas":[{"title":string,"hook":string,"format":string,"why":string}]}',
     "Focus on Instagram, Facebook, TikTok, YouTube as requested.",
     "Be concrete about formats, audio/hooks, and regional angles when asked.",
     "If live platform APIs are unavailable, still give best-effort public-web style intel and keep confidence honest.",
@@ -185,6 +228,7 @@ export async function runExternalSocialResearch(
         summary: "",
         trends: [],
         limitations: [`OpenRouter ${response.status}`],
+        reelIdeas: [],
         message: text.slice(0, 300),
       };
     }
@@ -195,19 +239,7 @@ export async function runExternalSocialResearch(
     const content = payload.choices?.[0]?.message?.content ?? "";
     const parsed = parseModelJson(content);
     const trends = Array.isArray(parsed?.trends) ? parsed.trends : [];
-
-    return {
-      available: true,
-      source: "web-intel",
-      query,
-      platforms,
-      regions,
-      lookbackDays,
-      summary:
-        typeof parsed?.summary === "string" && parsed.summary.trim()
-          ? parsed.summary.trim()
-          : content.slice(0, 600),
-      trends: trends
+    const mappedTrends = trends
         .filter((t): t is ExternalResearchResult["trends"][number] => Boolean(t && typeof t === "object"))
         .slice(0, 10)
         .map((t) => ({
@@ -227,7 +259,35 @@ export async function runExternalSocialResearch(
             t.confidence === "high" || t.confidence === "medium" || t.confidence === "low"
               ? t.confidence
               : "low",
-        })),
+        }));
+    const parsedReelIdeas = Array.isArray(parsed?.reelIdeas)
+      ? parsed.reelIdeas
+          .filter((idea): idea is NonNullable<ExternalResearchResult["reelIdeas"]>[number] =>
+            Boolean(idea && typeof idea === "object"),
+          )
+          .map((idea) => ({
+            title: typeof idea.title === "string" ? idea.title : "Untitled idea",
+            hook: typeof idea.hook === "string" ? idea.hook : "",
+            format: typeof idea.format === "string" ? idea.format : "reel",
+            why: typeof idea.why === "string" ? idea.why : undefined,
+          }))
+          .filter((idea) => idea.hook.length > 0)
+      : [];
+
+    return {
+      available: true,
+      source: "web-intel",
+      query,
+      platforms,
+      regions,
+      lookbackDays,
+      summary:
+        typeof parsed?.summary === "string" && parsed.summary.trim()
+          ? parsed.summary.trim()
+          : content.slice(0, 600),
+      trends: mappedTrends,
+      reelIdeas:
+        parsedReelIdeas.length > 0 ? parsedReelIdeas : reelIdeasFromTrends(mappedTrends),
       limitations: [
         "Source is web-intel via LLM — not Meta Graph Insights, Business Discovery, or official trending APIs.",
         "Instagram Login collect tokens cannot query city-level viral audio charts.",
@@ -247,6 +307,7 @@ export async function runExternalSocialResearch(
       summary: "",
       trends: [],
       limitations: ["request failed"],
+      reelIdeas: [],
       message,
     };
   }

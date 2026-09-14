@@ -92,6 +92,29 @@ function pickMockToolCall(
   if (/(enqueue|queue|report job|normalize job)/i.test(lower) && has("enqueue_job")) {
     return { name: "enqueue_job", args: { jobType: "report" }, id: "mock-tc-enqueue" };
   }
+  const handleMatch = transcript.match(/@([A-Za-z0-9._]{1,30})/);
+  if (
+    (handleMatch || /\b(competitor|business discovery|other creator)\b/i.test(lower)) &&
+    has("discover_competitor")
+  ) {
+    return {
+      name: "discover_competitor",
+      args: { username: handleMatch?.[1] ?? "nasa" },
+      id: "mock-tc-discover-competitor",
+    };
+  }
+  if (
+    /(what reels should i make|reel ideas|viral|external trend|market trend|tiktok|facebook trend)/i.test(
+      lower,
+    ) &&
+    has("suggest_reel_ideas")
+  ) {
+    return {
+      name: "suggest_reel_ideas",
+      args: { query: transcript },
+      id: "mock-tc-reel-ideas",
+    };
+  }
   if (/(viral|external trend|market trend|tiktok|facebook trend)/i.test(lower) && has("research_external_trends")) {
     return {
       name: "research_external_trends",
@@ -157,6 +180,10 @@ function buildMockFinishText(toolName: string | undefined, transcript: string): 
       return "Fresh performance report job queued.";
     case "research_external_trends":
       return "External social trend research is ready — web-intel, not Graph Insights.";
+    case "discover_competitor":
+      return "Competitor Business Discovery is ready — Facebook Graph, not Instagram Login.";
+    case "suggest_reel_ideas":
+      return "Reel ideas are ready — sources labeled web-intel and/or graph-business-discovery.";
     case "get_instagram_account_snapshot":
       return "Instagram account snapshot loaded from Graph media.";
     case "get_instagram_insights":

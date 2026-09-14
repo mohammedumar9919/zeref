@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-09-14 (Track B ACTIVE for Grok — CLOUD-B3 OPEN; IG Insights live on laptop; competitor BD pending B3)  
+**Last updated:** 2026-09-14 (Track B ACTIVE — CLOUD-B3 PR_READY https://github.com/mohammedumar9919/zeref/pull/14; IG Insights live on laptop; live FB BD UAT after merge)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -37,7 +37,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 | Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** **Track B ACTIVE** — Grok/Cloud claim **CLOUD-B3** ([cloud/phases/B3-competitor-discovery.md](./cloud/phases/B3-competitor-discovery.md)). B0–B2 DONE. Instagram Login Insights live on laptop. College Track A remains demo-ready via `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER (Next 16 / publish / auth / vector).
+**Immediate goal:** **Track B ACTIVE** — **CLOUD-B3** PR_READY ([PR #14](https://github.com/mohammedumar9919/zeref/pull/14), `cloud/b3-competitor-discovery`). B0–B2 DONE. Instagram Login Insights stay on `graph.instagram.com`. Live Facebook Business Discovery UAT needs human `FACEBOOK_*` after merge. College Track A remains demo-ready via `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER (Next 16 / publish / auth / vector).
 
 ### P8 hotfix root cause
 

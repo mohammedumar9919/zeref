@@ -70,7 +70,7 @@ Grant both in the Meta app, add your IG account as tester, then **re-issue / re-
 |------------|-----------------------------------------|
 | Own media list + likes/comments | Yes (`instagram_business_basic`) |
 | Own Insights (views, reach, saves, profile visits) | Yes (`instagram_business_manage_insights`) |
-| Competitor Business Discovery | **No** — field not on Instagram Login |
+| Competitor Business Discovery | **No** — field not on Instagram Login. Use Facebook Login + `graph.facebook.com` — [LIVE_COMPETITOR_SETUP.md](./LIVE_COMPETITOR_SETUP.md) |
 | Facebook Page Insights | **No** — needs Facebook Page token / Facebook Login product |
 
 Do not chase publish scopes for this setup.
@@ -210,3 +210,4 @@ Live voice ([LIVE_VOICE_SETUP.md](./LIVE_VOICE_SETUP.md)) can stay fixture-backe
 - Queue / Track B: [cloud/QUEUE.md](./cloud/QUEUE.md) · [cloud/phases/B0-meta-graph-prep.md](./cloud/phases/B0-meta-graph-prep.md)
 - Live operator start (B1): `scripts/live-data-start.ps1`
 - Ops probe: `GET /api/v1/ops/instagram-health` (`configured` / `reachable`)
+- Competitor Business Discovery (separate Facebook User token): [LIVE_COMPETITOR_SETUP.md](./LIVE_COMPETITOR_SETUP.md)

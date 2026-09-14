@@ -15,6 +15,7 @@ import { createWebMemoryPort } from "./memory-port";
 import { aggregatePanelDataAgeState, type DataAgeState } from "../data-age";
 import { loadInstagramAccountSnapshot, loadInstagramInsights } from "./instagram-snapshot";
 import { runExternalSocialResearch } from "./external-research";
+import { loadCompetitorDiscovery, loadReelIdeas } from "./competitor-discovery";
 
 function unavailableMessage(toolName: string): string {
   return `${toolName} unavailable — database not configured and fixture mode is off (C158).`;
@@ -76,7 +77,7 @@ export function createZerefContext(turnId?: string): ZerefContext {
   return {
     read: {
       canRead(): boolean {
-        return isFixtureMode() || Boolean(getDb()) || Boolean(process.env.INSTAGRAM_ACCESS_TOKEN);
+        return isFixtureMode() || Boolean(getDb()) || Boolean(process.env.INSTAGRAM_ACCESS_TOKEN) || Boolean(process.env.FACEBOOK_ACCESS_TOKEN);
       },
       unavailableMessage,
       async loadCockpitSummary() {
@@ -173,6 +174,9 @@ export function createZerefContext(turnId?: string): ZerefContext {
       async getInstagramInsights(args) {
         return loadInstagramInsights(args);
       },
+      async discoverCompetitor(args) {
+        return loadCompetitorDiscovery(args);
+      },
     },
     write: {
       async enqueueJob(body, _idempotencyKey) {
@@ -201,6 +205,9 @@ export function createZerefContext(turnId?: string): ZerefContext {
       },
       async researchExternalTrends(args) {
         return runExternalSocialResearch(args);
+      },
+      async suggestReelIdeas(args) {
+        return loadReelIdeas(args);
       },
       async requestPerformanceReport(args) {
         const entityId =

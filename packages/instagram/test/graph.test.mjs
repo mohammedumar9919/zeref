@@ -14,6 +14,7 @@ const {
   fetchInstagramMedia,
   fetchMediaInsights,
   fetchAccountInsights,
+  fetchCompetitorDiscovery,
   mapGraphMediaItem,
   shortcodeFromPermalink,
 } = built;
@@ -146,4 +147,104 @@ test("fetchAccountInsights maps total_value metrics", async () => {
   assert.equal(result.userId, "ig-user-1");
   assert.equal(result.metrics[0].totalValue, 1847);
   assert.equal(result.metrics[1].totalValue, 1203);
+});
+
+test("fetchCompetitorDiscovery maps Facebook Graph Business Discovery fixture", async () => {
+  assert.equal(typeof fetchCompetitorDiscovery, "function");
+  const bdFixture = loadJson("business-discovery.json");
+  const seen = [];
+  const fetchImpl = async (input) => {
+    const url = new URL(String(input));
+    seen.push(url);
+    assert.equal(url.hostname, "graph.facebook.com");
+    assert.match(url.pathname, /\/v21\.0\/17841400000000001$/);
+    assert.match(url.searchParams.get("fields") ?? "", /business_discovery\.username\(nasa\)/);
+    assert.equal(url.searchParams.get("access_token"), "fb-test-token");
+    return new Response(JSON.stringify(bdFixture), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+
+  const result = await fetchCompetitorDiscovery({
+    accessToken: "fb-test-token",
+    igBusinessId: "17841400000000001",
+    username: "@nasa",
+    mediaLimit: 2,
+    fetchImpl,
+  });
+
+  assert.equal(seen.length, 1);
+  assert.equal(result.username, "nasa");
+  assert.equal(result.name, "NASA");
+  assert.equal(result.followersCount, 96000000);
+  assert.equal(result.mediaCount, 4200);
+  assert.equal(result.media.length, 2);
+  assert.equal(result.media[0].like_count, 88000);
+  assert.equal(result.sourceHost, "graph.facebook.com");
+});
+
+test("fetchCompetitorDiscovery uses graph.facebook.com not graph.instagram.com", async () => {
+  const bdFixture = loadJson("business-discovery.json");
+  const fetchImpl = async (input) => {
+    const url = new URL(String(input));
+    assert.notEqual(url.hostname, "graph.instagram.com");
+    assert.equal(url.hostname, "graph.facebook.com");
+    return new Response(JSON.stringify(bdFixture), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+  await fetchCompetitorDiscovery({
+    accessToken: "fb-test-token",
+    igBusinessId: "17841400000000001",
+    username: "nasa",
+    fetchImpl,
+  });
+});
+
+test("fetchCompetitorDiscovery redacts tokens from Meta errors", async () => {
+  const fetchImpl = async () =>
+    new Response(
+      JSON.stringify({
+        error: {
+          message: "Invalid OAuth access token fb-secret-token-value",
+          type: "OAuthException",
+          code: 190,
+        },
+      }),
+      { status: 400, headers: { "content-type": "application/json" } },
+    );
+
+  await assert.rejects(
+    () =>
+      fetchCompetitorDiscovery({
+        accessToken: "fb-secret-token-value",
+        igBusinessId: "17841400000000001",
+        username: "nasa",
+        fetchImpl,
+        baseUrl: "https://graph.facebook.com/v21.0/",
+      }),
+    (err) => {
+      assert.ok(err instanceof Error);
+      assert.doesNotMatch(err.message, /fb-secret-token-value/);
+      assert.match(err.message, /Invalid OAuth|190|400/);
+      return true;
+    },
+  );
+});
+
+test("fetchCompetitorDiscovery rejects invalid competitor username", async () => {
+  await assert.rejects(
+    () =>
+      fetchCompetitorDiscovery({
+        accessToken: "fb-test-token",
+        igBusinessId: "17841400000000001",
+        username: "nasa{id}",
+        fetchImpl: async () => {
+          throw new Error("network should not be called");
+        },
+      }),
+    /Invalid Instagram username/,
+  );
 });

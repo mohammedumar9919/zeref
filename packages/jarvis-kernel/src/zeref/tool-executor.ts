@@ -1,6 +1,7 @@
 import type { ToolExecutionResult, ToolExecutorPort } from "../core/ports/tool-executor-port.js";
 import {
   readCockpitSummary,
+  readDiscoverCompetitor,
   readInstagramAccountSnapshot,
   readInstagramInsights,
   readLatestReportHeadline,
@@ -19,6 +20,7 @@ import {
   writeEnqueueJob,
   writeRequestPerformanceReport,
   writeResearchExternalTrends,
+  writeSuggestReelIdeas,
   writeUpdateStudioDraft,
 } from "./adapters/write-adapters.js";
 import type { ZerefContext } from "./context.js";
@@ -96,8 +98,12 @@ export function createZerefToolExecutor(
             return ok(await readInstagramAccountSnapshot(ctx.read));
           case "get_instagram_insights":
             return ok(await readInstagramInsights(ctx.read, args));
+          case "discover_competitor":
+            return ok(await readDiscoverCompetitor(ctx.read, args));
           case "research_external_trends":
             return ok(await writeResearchExternalTrends(ctx.write, args, cache));
+          case "suggest_reel_ideas":
+            return ok(await writeSuggestReelIdeas(ctx.write, args, cache));
           case "request_performance_report":
             return ok(await writeRequestPerformanceReport(ctx.write, args, cache));
           default:
