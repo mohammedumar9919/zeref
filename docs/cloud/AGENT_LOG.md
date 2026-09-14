@@ -233,3 +233,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Facebook Graph BD client + mock tests; LIVE_COMPETITOR_SETUP.md + FACEBOOK_* env comments; GET /api/v1/ops/facebook-health soft-fail; Jarvis `discover_competitor` + `suggest_reel_ideas` (contracts/kernel/zeref-context/persona/mock routing). Instagram Login Insights left intact. QUEUE set PR_READY. Did not mark DONE. Did not start TRACK-B-DEFER.
 - Not done / blocked: Live FACEBOOK_* UAT is laptop after merge. Worker must not mark QUEUE DONE.
 - Next for Planner: Review PR #14 + AGENT_LOG vs B3 card; merge; set QUEUE CLOUD-B3 DONE. Human live BD curl after merge.
+
+### 2026-09-14 — CLOUD-B3 — agent:cloud-planner
+- Branch: `main` (merged PR #14)
+- Status: done
+- PR: https://github.com/mohammedumar9919/zeref/pull/14 — **MERGED** @ `e148c8e`
+- Done: PR #14 MERGED @ `e148c8e`. QUEUE B3 → DONE. Live FB UAT leftover (`FACEBOOK_*` + `LIVE_COMPETITOR_SETUP.md`). IG Insights still required. TRACK-B-DEFER still BLOCKED — do not start Next 16 / publish / auth / vector.
+- Not done / blocked: Laptop live FB UAT (`FACEBOOK_*` + `docs/LIVE_COMPETITOR_SETUP.md`). Confirm Instagram Login Insights still green. TRACK-B-DEFER remains BLOCKED.
+- Next for Planner / laptop: Live FB UAT leftover. Do not start Next 16 / publish / auth / vector.
