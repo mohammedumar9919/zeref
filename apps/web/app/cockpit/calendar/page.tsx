@@ -4,8 +4,10 @@ import { CockpitBffError, getCockpitSlices } from "@/lib/bff";
 import { listCalendarEvents } from "@/lib/calendar-bff";
 
 export default async function CalendarDeepLinkPage(): Promise<React.ReactElement> {
-  const slices = await getCockpitSlices();
-  const eventsResult = await listCalendarEvents();
+  const [slices, eventsResult] = await Promise.all([
+    getCockpitSlices(),
+    listCalendarEvents(),
+  ]);
 
   if (eventsResult.status !== 200) {
     throw new CockpitBffError(

@@ -49,6 +49,7 @@ function PointCloudEarth({
   );
 
   useFrame(({ clock }, delta) => {
+    if (typeof document !== "undefined" && document.hidden) return;
     if (!pointsRef.current) return;
 
     const material = pointsRef.current.material as PointsMaterial;
@@ -116,6 +117,7 @@ function CompassRings({
   const groupRef = useRef<Group>(null);
 
   useFrame(({ clock }, delta) => {
+    if (typeof document !== "undefined" && document.hidden) return;
     if (!groupRef.current) return;
     const t = clock.elapsedTime;
     const speed =
@@ -180,7 +182,7 @@ export function GlobeCanvas({
       data-globe-brain-state={brainState}
       gl={{ antialias: true, alpha: true }}
       camera={{ position: [0, 0, 4.6], fov: 40 }}
-      dpr={[1, 2]}
+      dpr={[1, 1]}
     >
       <ambientLight intensity={0.4} />
       <pointLight position={[3, 4, 5]} intensity={0.85} color="#22d3ee" />

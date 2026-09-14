@@ -37,6 +37,16 @@ function run(cmd, args, label, extraEnv = {}, options = {}) {
   return child;
 }
 
+function whisperPythonCmd() {
+  const venvPy = isWin
+    ? join(whisperDir, ".venv", "Scripts", "python.exe")
+    : join(whisperDir, ".venv", "bin", "python");
+  if (existsSync(venvPy)) {
+    return venvPy;
+  }
+  return isWin ? "python" : "python3";
+}
+
 function whisperSidecarAvailable() {
   if (process.env.ZEREF_WHISPER_MOCK === "1") {
     return false;
@@ -64,11 +74,31 @@ compose.on("exit", (code) => {
     ZEREF_PHASE11_AGENT: "1",
   };
 
+  // Never inherit demo AI mocks into the web child unless operator explicitly set them.
+  const clearUnlessForced = (key) => {
+    if (process.env[key] === "1") {
+      webEnv[key] = "1";
+    } else {
+      // Explicit empty so Next does not pick stale parent env via spread alone.
+      delete process.env[key];
+    }
+  };
+  clearUnlessForced("ZEREF_LLM_MOCK");
+  clearUnlessForced("ZEREF_TTS_MOCK");
+  clearUnlessForced("ZEREF_WHISPER_MOCK");
+  if (process.env.ZEREF_BFF_FIXTURE !== "1") {
+    delete process.env.ZEREF_BFF_FIXTURE;
+  }
+  if (process.env.ZEREF_JOB_ENQUEUE_MOCK !== "1") {
+    delete process.env.ZEREF_JOB_ENQUEUE_MOCK;
+  }
+
   let whisper = null;
   if (whisperSidecarAvailable()) {
-    console.log("[dev:stack] starting whisper sidecar @ 127.0.0.1:8765");
+    const py = whisperPythonCmd();
+    console.log(`[dev:stack] starting whisper sidecar @ 127.0.0.1:8765 (${py})`);
     whisper = run(
-      "python",
+      py,
       ["-m", "whisper_sidecar.main"],
       "whisper",
       {
@@ -84,7 +114,14 @@ compose.on("exit", (code) => {
 
   console.log("[dev:stack] starting worker + web (Ctrl+C stops all)");
   const worker = run("node", ["scripts/worker.mjs"], "worker");
-  const web = run("npm", ["run", "dev", "-w", "@zeref/web"], "web", webEnv);
+  // Strip mock flags from child env when not forced (spread still copies process.env).
+  const webChildEnv = { ...webEnv };
+  for (const key of ["ZEREF_LLM_MOCK", "ZEREF_TTS_MOCK", "ZEREF_WHISPER_MOCK", "ZEREF_BFF_FIXTURE", "ZEREF_JOB_ENQUEUE_MOCK", "ZEREF_MEMORY_MOCK"]) {
+    if (webChildEnv[key] !== "1" && process.env[key] !== "1") {
+      webChildEnv[key] = "";
+    }
+  }
+  const web = run("npm", ["run", "dev", "-w", "@zeref/web"], "web", webChildEnv);
 
   const shutdown = () => {
     worker.kill("SIGINT");

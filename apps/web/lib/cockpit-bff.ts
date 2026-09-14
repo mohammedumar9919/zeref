@@ -48,17 +48,33 @@ export type BffResult<T> =
   | { status: 404; body: { error: string } }
   | { status: 500; body: { error: string } };
 
+/** Process-local fixture cache — cockpit slices are immutable JSON in fixture mode. */
+let fixtureSlicesCache: {
+  phase9: boolean;
+  slices: CockpitSlicesV8 | CockpitSlicesV9;
+} | null = null;
+
+/** Test helper — clears memoized fixture slices between cases. */
+export function resetFixtureSlicesCacheForTests(): void {
+  fixtureSlicesCache = null;
+}
+
 function loadFixtureSlices(): CockpitSlicesV8 | CockpitSlicesV9 {
-  const path = isPhase9ResearchActive() ? phase9FixturePath : phase8FixturePath;
+  const phase9 = isPhase9ResearchActive();
+  if (fixtureSlicesCache && fixtureSlicesCache.phase9 === phase9) {
+    return fixtureSlicesCache.slices;
+  }
+
+  const path = phase9 ? phase9FixturePath : phase8FixturePath;
   const raw = JSON.parse(readFileSync(path, "utf8")) as unknown;
-  const parsed = isPhase9ResearchActive()
+  const parsed = phase9
     ? CockpitSlicesSchemaV9.parse(raw)
     : CockpitSlicesSchemaV8.parse(raw);
 
   const fixtureState: DataAgeState = "fixture";
   const panels = parsed.panels;
 
-  return {
+  const withAge = {
     ...parsed,
     panels: {
       ...panels,
@@ -83,7 +99,10 @@ function loadFixtureSlices(): CockpitSlicesV8 | CockpitSlicesV9 {
         dataAgeState: fixtureState,
       },
     },
-  };
+  } as CockpitSlicesV8 | CockpitSlicesV9;
+
+  fixtureSlicesCache = { phase9, slices: withAge };
+  return withAge;
 }
 
 function draftPreview(caption: string): string | undefined {
@@ -219,6 +238,7 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
           title: calendarEvents.title,
           scheduledAt: calendarEvents.scheduledAt,
           status: calendarEvents.status,
+          updatedAt: calendarEvents.updatedAt,
         })
         .from(calendarEvents)
         .orderBy(desc(calendarEvents.scheduledAt))
@@ -269,7 +289,8 @@ async function loadCockpitSlicesFromDb(): Promise<CockpitSlicesV8 | CockpitSlice
       title: row.title,
       scheduledAt: toIsoString(row.scheduledAt),
       status: row.status,
-      ...computeDataAge(toIsoString(row.scheduledAt), nowMs, false),
+      // Age from row freshness (updatedAt), not scheduled slot — future/past slots otherwise look stale/live wrongly.
+      ...computeDataAge(toIsoString(row.updatedAt), nowMs, false),
     })),
     insufficientData: calendarRows.length === 0,
   };

@@ -12,6 +12,8 @@ const built = await import(pathToFileURL(join(testDir, "../dist/index.js")).href
 const {
   fetchInstagramUser,
   fetchInstagramMedia,
+  fetchMediaInsights,
+  fetchAccountInsights,
   mapGraphMediaItem,
   shortcodeFromPermalink,
 } = built;
@@ -86,4 +88,62 @@ test("fetchInstagramMedia uses mock HTTP", async () => {
   });
   assert.equal(media.length, 2);
   assert.equal(media[0].permalink, "https://www.instagram.com/p/ABC123xyz/");
+});
+
+test("fetchMediaInsights maps lifetime values", async () => {
+  const fetchImpl = mockFetch({
+    "media-1/insights": {
+      data: [
+        {
+          name: "reach",
+          period: "lifetime",
+          title: "Accounts reached",
+          values: [{ value: 1189 }],
+        },
+        {
+          name: "views",
+          period: "lifetime",
+          values: [{ value: 1513 }],
+        },
+      ],
+    },
+  });
+  const result = await fetchMediaInsights({
+    accessToken: "test-token",
+    mediaId: "media-1",
+    fetchImpl,
+    baseUrl: "https://graph.test/",
+  });
+  assert.equal(result.mediaId, "media-1");
+  assert.equal(result.metrics.length, 2);
+  assert.equal(result.metrics[0].values?.[0]?.value, 1189);
+});
+
+test("fetchAccountInsights maps total_value metrics", async () => {
+  const fetchImpl = mockFetch({
+    "ig-user-1/insights": {
+      data: [
+        {
+          name: "views",
+          period: "day",
+          title: "Views",
+          total_value: { value: 1847 },
+        },
+        {
+          name: "reach",
+          period: "day",
+          total_value: { value: 1203 },
+        },
+      ],
+    },
+  });
+  const result = await fetchAccountInsights({
+    accessToken: "test-token",
+    userId: "ig-user-1",
+    fetchImpl,
+    baseUrl: "https://graph.test/",
+  });
+  assert.equal(result.userId, "ig-user-1");
+  assert.equal(result.metrics[0].totalValue, 1847);
+  assert.equal(result.metrics[1].totalValue, 1203);
 });

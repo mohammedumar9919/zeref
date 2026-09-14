@@ -1,13 +1,13 @@
 # Zeref — Current State
 
-**Last updated:** 2026-09-11 (CLOUD-A0 fixture demo docs — Phase 12 still APPROVED)  
+**Last updated:** 2026-09-14 (Track B ACTIVE for Grok — CLOUD-B3 OPEN; IG Insights live on laptop; competitor BD pending B3)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
 
 **Phone / Cloud / Grok Bot:** start at [cloud/README.md](./cloud/README.md) (masterplan + QUEUE + phase cards + AGENT_LOG). Also [REMOTE_AGENTS.md](./REMOTE_AGENTS.md).
 
-**Fixture demo (CLOUD-A0, no Docker):** Windows `.\scripts\demo-start.ps1`. Cloud Secrets already include `ZEREF_BFF_FIXTURE=1` — run `npm run dev -w @zeref/web`. Studio entity id: `550e8400-e29b-41d4-a716-446655440001` ([fixtures/README.md](../fixtures/README.md)).
+**Fixture demo (CLOUD-A0, no Docker):** Windows `.\scripts\demo-start.ps1` (**build + `next start`** for instant nav — see [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md)). Coding: `.\scripts\demo-start-dev.ps1`. Live voice: [LIVE_VOICE_SETUP.md](./LIVE_VOICE_SETUP.md) + `.\scripts\live-voice-start.ps1`. **Live data (CLOUD-B1, fixture OFF):** `.\scripts\live-data-start.ps1` + `GET /api/v1/ops/instagram-health`. Studio entity id: `550e8400-e29b-41d4-a716-446655440001` ([fixtures/README.md](../fixtures/README.md)).
 
 Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for agents.**
 
@@ -37,7 +37,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 | Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** Phase 12 closed — next **Track A**: Phase **6.2** Visual Tier 3 (UI-only), then product-surface polish. Remote agents: [REMOTE_AGENTS.md](./REMOTE_AGENTS.md).
+**Immediate goal:** **Track B ACTIVE** — Grok/Cloud claim **CLOUD-B3** ([cloud/phases/B3-competitor-discovery.md](./cloud/phases/B3-competitor-discovery.md)). B0–B2 DONE. Instagram Login Insights live on laptop. College Track A remains demo-ready via `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER (Next 16 / publish / auth / vector).
 
 ### P8 hotfix root cause
 

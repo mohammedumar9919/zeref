@@ -153,7 +153,8 @@ export async function runAgentLoop(
     });
 
     if (predict.toolCall) {
-      const { name, args, id } = predict.toolCall;
+      const { name, args } = predict.toolCall;
+      const id = predict.toolCall.id ?? `call_${name}_${stepIndex}`;
       const descriptor = input.tools.find((t) => t.name === name);
       const riskTier = descriptor?.riskTier ?? "read";
 

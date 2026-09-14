@@ -358,112 +358,135 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
   );
 
   useEffect(() => {
-    const source = new EventSource("/api/v1/events/stream");
+    let cancelled = false;
+    let source: EventSource | null = null;
+    let idleHandle: number | undefined;
+    let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
 
-    source.addEventListener("telemetry", (event) => {
-      handleTelemetryEvent(JSON.parse(event.data));
-    });
+    const connect = (): void => {
+      if (cancelled) return;
 
-    source.addEventListener("voice.state", (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        const parsed = parseVoiceStateEvent(data);
-        setVoiceState(parsed.state);
-        if (parsed.simulated === false) {
-          setTelemetryLive(true);
-          setTelemetrySimulated(false);
+      source = new EventSource("/api/v1/events/stream");
+
+      source.addEventListener("telemetry", (event) => {
+        handleTelemetryEvent(JSON.parse(event.data));
+      });
+
+      source.addEventListener("voice.state", (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          const parsed = parseVoiceStateEvent(data);
+          setVoiceState(parsed.state);
+          if (parsed.simulated === false) {
+            setTelemetryLive(true);
+            setTelemetrySimulated(false);
+          }
+          emitStreamEvent("voice.state", parsed);
+        } catch {
+          /* ignore malformed */
         }
-        emitStreamEvent("voice.state", parsed);
-      } catch {
-        /* ignore malformed */
-      }
-    });
+      });
 
-    source.addEventListener("voice.transcript", (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        const parsed = parseVoiceTranscriptEvent(data);
-        appendTranscript({
-          role: parsed.role,
-          text: parsed.text,
-          turnId: parsed.turnId,
-        });
-        setTelemetryLive(true);
-        emitStreamEvent("voice.transcript", parsed);
-      } catch {
-        /* ignore */
-      }
-    });
-
-    source.addEventListener("voice.audio", (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        const parsed = parseVoiceAudioEvent(data);
-        handleVoiceAudio(parsed);
-        setTelemetryLive(true);
-        emitStreamEvent("voice.audio", parsed);
-      } catch {
-        /* ignore */
-      }
-    });
-
-    source.addEventListener("pipeline", (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        const parsed = parsePipelineEvent(data);
-        if (!parsed.simulated) {
+      source.addEventListener("voice.transcript", (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          const parsed = parseVoiceTranscriptEvent(data);
+          appendTranscript({
+            role: parsed.role,
+            text: parsed.text,
+            turnId: parsed.turnId,
+          });
           setTelemetryLive(true);
-          setTelemetrySimulated(false);
+          emitStreamEvent("voice.transcript", parsed);
+        } catch {
+          /* ignore */
         }
-        emitStreamEvent("pipeline", parsed);
-      } catch {
-        /* ignore */
-      }
-    });
+      });
 
-    source.addEventListener("memory.saved", (event) => {
-      const data = JSON.parse(event.data);
-      handleMemoryBrainEvent(data);
-      emitStreamEvent("memory.saved", data);
-    });
+      source.addEventListener("voice.audio", (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          const parsed = parseVoiceAudioEvent(data);
+          handleVoiceAudio(parsed);
+          setTelemetryLive(true);
+          emitStreamEvent("voice.audio", parsed);
+        } catch {
+          /* ignore */
+        }
+      });
 
-    source.addEventListener("memory.search", (event) => {
-      const data = JSON.parse(event.data);
-      handleMemoryBrainEvent(data);
-      emitStreamEvent("memory.search", data);
-    });
+      source.addEventListener("pipeline", (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          const parsed = parsePipelineEvent(data);
+          if (!parsed.simulated) {
+            setTelemetryLive(true);
+            setTelemetrySimulated(false);
+          }
+          emitStreamEvent("pipeline", parsed);
+        } catch {
+          /* ignore */
+        }
+      });
 
-    source.addEventListener("memory.contradiction", (event) => {
-      const data = JSON.parse(event.data);
-      handleMemoryBrainEvent(data);
-      emitStreamEvent("memory.contradiction", data);
-    });
+      source.addEventListener("memory.saved", (event) => {
+        const data = JSON.parse(event.data);
+        handleMemoryBrainEvent(data);
+        emitStreamEvent("memory.saved", data);
+      });
 
-    source.addEventListener("memory.entity_changed", (event) => {
-      const data = JSON.parse(event.data);
-      handleMemoryBrainEvent(data);
-      emitStreamEvent("memory.entity_changed", data);
-    });
+      source.addEventListener("memory.search", (event) => {
+        const data = JSON.parse(event.data);
+        handleMemoryBrainEvent(data);
+        emitStreamEvent("memory.search", data);
+      });
 
-    source.addEventListener("agent.step", (event) => {
-      try {
-        handleAgentStep(JSON.parse(event.data));
-      } catch {
-        /* ignore */
-      }
-    });
+      source.addEventListener("memory.contradiction", (event) => {
+        const data = JSON.parse(event.data);
+        handleMemoryBrainEvent(data);
+        emitStreamEvent("memory.contradiction", data);
+      });
 
-    source.onerror = () => {
-      setTelemetryMessage("Telemetry stream unavailable");
-      setTelemetrySimulated(true);
-      source.close();
+      source.addEventListener("memory.entity_changed", (event) => {
+        const data = JSON.parse(event.data);
+        handleMemoryBrainEvent(data);
+        emitStreamEvent("memory.entity_changed", data);
+      });
+
+      source.addEventListener("agent.step", (event) => {
+        try {
+          handleAgentStep(JSON.parse(event.data));
+        } catch {
+          /* ignore */
+        }
+      });
+
+      source.onerror = () => {
+        setTelemetryMessage("Telemetry stream unavailable");
+        setTelemetrySimulated(true);
+        source?.close();
+      };
     };
 
+    // Defer SSE until after first paint so cockpit chrome is interactive first.
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      idleHandle = window.requestIdleCallback(connect, { timeout: 1200 });
+    } else {
+      timeoutHandle = setTimeout(connect, 0);
+    }
+
     return () => {
+      cancelled = true;
+      if (idleHandle !== undefined && typeof window !== "undefined" && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleHandle);
+      }
+      if (timeoutHandle !== undefined) {
+        clearTimeout(timeoutHandle);
+      }
       if (brainIdleTimerRef.current) {
         clearTimeout(brainIdleTimerRef.current);
       }
-      source.close();
+      source?.close();
     };
   }, [
     appendTranscript,

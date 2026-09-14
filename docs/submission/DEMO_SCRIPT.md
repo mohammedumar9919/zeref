@@ -4,11 +4,13 @@
 **Mode:** fixture / mock. Do **not** switch to live Graph mid-talk.  
 **Title line (say once):** “Zeref — an autonomous JARVIS command center for Instagram growth.”
 
-Start from repo root on Windows (no Docker, no live keys):
+Start from repo root on Windows (no Docker, no live keys) — **prod start for instant feel**:
 
 ```powershell
 .\scripts\demo-start.ps1
 ```
+
+Hot-reload coding: `.\scripts\demo-start-dev.ps1`. Live voice keys: [docs/LIVE_VOICE_SETUP.md](../LIVE_VOICE_SETUP.md).
 
 Then open:
 
