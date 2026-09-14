@@ -120,4 +120,32 @@ describe("jarvis agent runtime (P11-C)", () => {
       "expected enqueue_job in toolCalls",
     );
   });
+
+  it("routes named competitor to discover_competitor (not own outliers)", async () => {
+    const turnId = randomUUID();
+    const result = await runJarvisAgent({
+      turnId,
+      transcript: "Research competitor @nasa",
+    });
+    assert.equal(result.terminalReason, "completed");
+    assert.ok(
+      result.toolCalls.some((c) => c.name === "discover_competitor"),
+      "expected discover_competitor",
+    );
+    assert.ok(!result.toolCalls.some((c) => c.name === "get_research_outliers"));
+  });
+
+  it("routes viral reel asks to suggest_reel_ideas", async () => {
+    const turnId = randomUUID();
+    const result = await runJarvisAgent({
+      turnId,
+      transcript: "What Reels should I make for viral market trends?",
+    });
+    assert.equal(result.terminalReason, "completed");
+    assert.ok(
+      result.toolCalls.some((c) => c.name === "suggest_reel_ideas"),
+      "expected suggest_reel_ideas",
+    );
+    assert.ok(!result.toolCalls.some((c) => c.name === "get_research_outliers"));
+  });
 });

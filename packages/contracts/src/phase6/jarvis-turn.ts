@@ -20,7 +20,9 @@ export const JarvisToolNameSchema = z.enum([
   "get_weekly_brief",
   "get_instagram_account_snapshot",
   "get_instagram_insights",
+  "discover_competitor",
   "research_external_trends",
+  "suggest_reel_ideas",
   "request_performance_report",
 ]);
 

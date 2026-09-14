@@ -28,6 +28,12 @@ function fakeReadContext(overrides = {}) {
     getWeeklyBrief: async () => ({ available: true, brief: { text: "ok", groundedIn: [], mocked: true } }),
     getInstagramAccountSnapshot: async () => ({ available: true, source: "fixture", mediaFetched: 0 }),
     getInstagramInsights: async () => ({ available: true, source: "fixture", scope: "account", account: {} }),
+    discoverCompetitor: async () => ({
+      available: false,
+      source: "unavailable",
+      host: "graph.facebook.com",
+      hint: "set FACEBOOK_* — see LIVE_COMPETITOR_SETUP.md",
+    }),
     ...overrides,
   };
 }
@@ -55,7 +61,11 @@ function fakeWriteContext() {
       },
       researchExternalTrends: async (body) => {
         calls.push({ tool: "research_external_trends", body });
-        return { available: true, source: "fixture", trends: [] };
+        return { available: true, source: "fixture", trends: [], reelIdeas: [] };
+      },
+      suggestReelIdeas: async (body) => {
+        calls.push({ tool: "suggest_reel_ideas", body });
+        return { available: true, ideas: [], sources: ["fixture"] };
       },
       requestPerformanceReport: async (body) => {
         calls.push({ tool: "request_performance_report", body });
@@ -113,5 +123,43 @@ describe("zeref tool executor (P11-C)", () => {
     await executor.execute("enqueue_job", args);
     await executor.execute("enqueue_job", args);
     assert.equal(write.calls.length, 1);
+  });
+
+  it("executes discover_competitor through read adapter", async () => {
+    const executor = createZerefToolExecutor({
+      read: fakeReadContext({
+        discoverCompetitor: async (args) => ({
+          available: true,
+          source: "graph-business-discovery",
+          host: "graph.facebook.com",
+          username: args.username,
+        }),
+      }),
+      write: fakeWriteContext().ctx,
+    });
+    const result = await executor.execute("discover_competitor", { username: "nasa" });
+    assert.equal(result.ok, true);
+    assert.equal(result.data.username, "nasa");
+    assert.equal(result.data.host, "graph.facebook.com");
+  });
+
+  it("executes suggest_reel_ideas through write adapter", async () => {
+    const write = fakeWriteContext();
+    const executor = createZerefToolExecutor({
+      read: fakeReadContext(),
+      write: write.ctx,
+    });
+    const result = await executor.execute("suggest_reel_ideas", { query: "viral reels" });
+    assert.equal(result.ok, true);
+    assert.equal(write.calls.at(-1).tool, "suggest_reel_ideas");
+  });
+
+  it("lists discover_competitor and suggest_reel_ideas descriptors", () => {
+    const names = ZEREF_TOOL_DESCRIPTORS.map((t) => t.name);
+    assert.ok(names.includes("discover_competitor"));
+    assert.ok(names.includes("suggest_reel_ideas"));
+    assert.equal(ZEREF_TOOL_DESCRIPTORS.find((t) => t.name === "discover_competitor")?.riskTier, "read");
+    assert.equal(ZEREF_TOOL_DESCRIPTORS.find((t) => t.name === "suggest_reel_ideas")?.riskTier, "write-low");
+    assert.ok(names.includes("get_instagram_insights"));
   });
 });
