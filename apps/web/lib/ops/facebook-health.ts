@@ -13,7 +13,7 @@ export type FacebookHealthResponse = {
   igBusinessId?: string;
   sampleUsername?: typeof SAMPLE_USERNAME | null;
   error?: string;
-  businessDiscovery?: boolean;
+  businessDiscovery: boolean;
 };
 
 export type FacebookHealthOptions = {
@@ -68,13 +68,14 @@ export async function getFacebookHealthResponse(
       : options.igBusinessId?.trim() || undefined;
 
   if (!token) {
-    return { configured: false, reachable: false };
+    return { configured: false, reachable: false, businessDiscovery: false };
   }
 
   if (!igBusinessId) {
     return {
       configured: false,
       reachable: false,
+      businessDiscovery: false,
       error: "FACEBOOK_IG_BUSINESS_ID missing",
     };
   }

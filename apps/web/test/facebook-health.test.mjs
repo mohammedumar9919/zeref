@@ -32,19 +32,23 @@ afterEach(() => {
   }
 });
 
-describe("facebook-health ops probe (CLOUD-B3)", () => {
+describe("facebook-health ops probe (CLOUD-B3/B4)", () => {
   it("returns configured:false when token missing", async () => {
     delete process.env.FACEBOOK_ACCESS_TOKEN;
     delete process.env.FACEBOOK_IG_BUSINESS_ID;
     const body = await getFacebookHealthResponse({ accessToken: null, igBusinessId: null });
-    assert.deepEqual(body, { configured: false, reachable: false });
+    assert.equal(body.configured, false);
+    assert.equal(body.reachable, false);
+    assert.equal(body.businessDiscovery, false);
   });
 
   it("returns configured:false when env token empty", async () => {
     process.env.FACEBOOK_ACCESS_TOKEN = "   ";
     process.env.FACEBOOK_IG_BUSINESS_ID = "17841400000000001";
     const body = await getFacebookHealthResponse();
-    assert.deepEqual(body, { configured: false, reachable: false });
+    assert.equal(body.configured, false);
+    assert.equal(body.reachable, false);
+    assert.equal(body.businessDiscovery, false);
   });
 
   it("returns configured:false when ig business id missing", async () => {
@@ -54,6 +58,7 @@ describe("facebook-health ops probe (CLOUD-B3)", () => {
     });
     assert.equal(body.configured, false);
     assert.equal(body.reachable, false);
+    assert.equal(body.businessDiscovery, false);
     assert.match(body.error ?? "", /FACEBOOK_IG_BUSINESS_ID/);
   });
 
@@ -116,6 +121,7 @@ describe("facebook-health ops probe (CLOUD-B3)", () => {
     assert.equal(body.businessDiscovery, true);
     assert.equal(body.sampleUsername, "nasa");
     assert.equal(body.error, undefined);
+    assert.equal(typeof body.businessDiscovery, "boolean");
   });
 
   it("returns reachable:false with short error on mocked Graph failure", async () => {
@@ -140,5 +146,129 @@ describe("facebook-health ops probe (CLOUD-B3)", () => {
     assert.equal(body.businessDiscovery, false);
     assert.ok(typeof body.error === "string" && body.error.length > 0);
     assert.doesNotMatch(body.error, /fb-secret-token-value/);
+  });
+});
+
+const { parseCompetitorUatArgs, runCompetitorUat, summarizeCompetitorDiscovery } = await import(
+  pathToFileURL(join(webRoot, "../../scripts/uat-competitor.mjs")).href
+);
+
+describe("uat-competitor (CLOUD-B4)", () => {
+  it("parses --username from argv", () => {
+    const args = parseCompetitorUatArgs(["node", "uat-competitor.mjs", "--username", "nasa"]);
+    assert.equal(args.username, "nasa");
+  });
+
+  it("soft-fails with FACEBOOK_* hint when env missing (exit 0, no token)", async () => {
+    const logs = [];
+    const result = await runCompetitorUat({
+      argv: ["node", "uat-competitor.mjs", "--username", "nasa"],
+      env: {},
+      log: (line) => logs.push(String(line)),
+    });
+    assert.equal(result.exitCode, 0);
+    assert.equal(result.ok, false);
+    assert.equal(result.available, false);
+    assert.match(result.hint ?? "", /FACEBOOK_\*/);
+    assert.match(result.hint ?? "", /LIVE_COMPETITOR_SETUP/);
+    const dumped = JSON.stringify({ result, logs });
+    assert.doesNotMatch(dumped, /access_token=/i);
+    assert.doesNotMatch(dumped, /EAA[A-Za-z0-9]+/);
+  });
+
+  it("skips live Graph when ZEREF_BFF_FIXTURE=1 even if FACEBOOK_* present", async () => {
+    let called = 0;
+    const result = await runCompetitorUat({
+      argv: ["node", "uat-competitor.mjs", "--username", "nasa"],
+      env: {
+        FACEBOOK_ACCESS_TOKEN: "fb-secret-token-value",
+        FACEBOOK_IG_BUSINESS_ID: "17841400000000001",
+        ZEREF_BFF_FIXTURE: "1",
+      },
+      log: () => {},
+      discover: async () => {
+        called += 1;
+        throw new Error("network should not be called");
+      },
+    });
+    assert.equal(called, 0);
+    assert.equal(result.exitCode, 0);
+    assert.equal(result.available, false);
+    assert.match(result.message ?? "", /ZEREF_BFF_FIXTURE/);
+  });
+
+  it("prints redacted summary on mocked BD success", async () => {
+    const logs = [];
+    const result = await runCompetitorUat({
+      argv: ["node", "uat-competitor.mjs", "--username", "nasa"],
+      env: {
+        FACEBOOK_ACCESS_TOKEN: "fb-secret-token-value",
+        FACEBOOK_IG_BUSINESS_ID: "17841400000000001",
+      },
+      log: (line) => logs.push(String(line)),
+      discover: async () => ({
+        username: "nasa",
+        name: "NASA",
+        followersCount: 96000000,
+        mediaCount: 4200,
+        sourceHost: "graph.facebook.com",
+        media: [
+          { id: "18000000000000901", like_count: 88000, comments_count: 2100, media_type: "VIDEO" },
+          { id: "18000000000000902", like_count: 12000, comments_count: 400, media_type: "IMAGE" },
+        ],
+      }),
+    });
+    assert.equal(result.exitCode, 0);
+    assert.equal(result.ok, true);
+    assert.equal(result.summary.username, "nasa");
+    assert.equal(result.summary.followersCount, 96000000);
+    assert.equal(result.summary.mediaCount, 4200);
+    assert.equal(result.summary.topLikes[0].likes, 88000);
+    const dumped = JSON.stringify({ result, logs });
+    assert.doesNotMatch(dumped, /fb-secret-token-value/);
+    assert.doesNotMatch(dumped, /access_token=/i);
+  });
+
+  it("redacts token from mocked Graph errors", async () => {
+    const logs = [];
+    const result = await runCompetitorUat({
+      argv: ["node", "uat-competitor.mjs", "--username", "nasa"],
+      env: {
+        FACEBOOK_ACCESS_TOKEN: "fb-secret-token-value",
+        FACEBOOK_IG_BUSINESS_ID: "17841400000000001",
+      },
+      log: (line) => logs.push(String(line)),
+      discover: async () => {
+        throw new Error("Invalid OAuth access token fb-secret-token-value");
+      },
+    });
+    assert.equal(result.ok, false);
+    assert.equal(result.exitCode, 1);
+    assert.doesNotMatch(result.error ?? "", /fb-secret-token-value/);
+    assert.doesNotMatch(JSON.stringify(logs), /fb-secret-token-value/);
+  });
+
+  it("ranks top likes without echoing media URLs in the summary", () => {
+    const summary = summarizeCompetitorDiscovery(
+      {
+        username: "nasa",
+        followersCount: 10,
+        mediaCount: 2,
+        sourceHost: "graph.facebook.com",
+        media: [
+          {
+            id: "a",
+            like_count: 5,
+            comments_count: 1,
+            media_url: "https://cdn.example.test/secret.mp4",
+          },
+          { id: "b", like_count: 50, comments_count: 2 },
+        ],
+      },
+      { topN: 2 },
+    );
+    assert.equal(summary.topLikes[0].id, "b");
+    assert.equal(summary.topLikes[0].likes, 50);
+    assert.equal(JSON.stringify(summary).includes("cdn.example.test"), false);
   });
 });

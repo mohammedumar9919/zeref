@@ -142,7 +142,7 @@ FACEBOOK_IG_BUSINESS_ID=YOUR_IG_BUSINESS_ACCOUNT_ID
 GET http://localhost:3000/api/v1/ops/facebook-health
 ```
 
-Expect `{ "configured": false, "reachable": false }` when tokens are absent (HTTP 200). Instagram Insights stay on `GET /api/v1/ops/instagram-health`.
+Expect `{ "configured": false, "reachable": false, "businessDiscovery": false }` when tokens are absent (HTTP 200). Instagram Insights stay on `GET /api/v1/ops/instagram-health`.
 
 ### Live Business Discovery (operator laptop)
 
@@ -156,7 +156,9 @@ Expect `{ "configured": false, "reachable": false }` when tokens are absent (HTT
 GET http://localhost:3000/api/v1/ops/facebook-health
 ```
 
-Expect `configured:true`. When the light `nasa` BD probe succeeds: `reachable:true`, `businessDiscovery:true`.
+Expect `configured:true`. When the light `nasa` BD probe succeeds: `reachable:true`, `businessDiscovery:true` (boolean).
+
+Then run the UAT script in §10.
 
 Jarvis:
 
@@ -173,6 +175,7 @@ Jarvis:
 - [ ] Facebook User token scopes as in §3
 - [ ] `FACEBOOK_IG_BUSINESS_ID` is **your** querying id
 - [ ] Curl on **`graph.facebook.com`** succeeds
+- [ ] `node scripts/uat-competitor.mjs --username nasa` (or `.\scripts\live-competitor-check.ps1`) after curl — laptop only
 - [ ] Vars in **both** root `.env` and `apps/web/.env.local`
 - [ ] Tokens never committed
 - [ ] College demo still uses `demo-start.ps1` + fixture ON
@@ -181,10 +184,31 @@ Jarvis:
 
 ---
 
+## 10. UAT script (CLOUD-B4)
+
+Laptop-only after curl in §6 succeeds. **DATABASE_URL is not required.** CI / Cloud Agents stay mock-safe (missing `FACEBOOK_*` is a soft-fail, not a live Graph claim).
+
+```powershell
+node scripts/uat-competitor.mjs --username nasa
+# Windows helper (loads FACEBOOK_* from .env / .env.local without printing values):
+.\scripts\live-competitor-check.ps1 -Username nasa
+```
+
+| Result | Meaning |
+|--------|---------|
+| `available:false` + hint | `FACEBOOK_*` missing — set vars per this doc; exit 0 (soft-fail) |
+| Redacted summary (`followersCount`, `mediaCount`, `topLikes`) | Live BD returned a profile. Token is never printed |
+| Graph error JSON (`error` redacted) | Tokens present but Meta rejected the probe — fix scopes/Page link; do not paste tokens |
+
+Do **not** mark live UAT done until a human records curl success from §6.
+
+---
+
 ## Related
 
 - Client: `packages/instagram/src/graph/business-discovery.ts` (`DEFAULT_FACEBOOK_GRAPH_BASE = https://graph.facebook.com/v21.0`)
 - Instagram Login (own Insights): [LIVE_INSTAGRAM_SETUP.md](./LIVE_INSTAGRAM_SETUP.md)
 - Env comments: root `.env.example` (`FACEBOOK_*`)
-- Ops probe: `GET /api/v1/ops/facebook-health`
-- Queue: [cloud/QUEUE.md](./cloud/QUEUE.md) · [cloud/phases/B3-competitor-discovery.md](./cloud/phases/B3-competitor-discovery.md)
+- Ops probe: `GET /api/v1/ops/facebook-health` (`businessDiscovery: true` when the live probe succeeds)
+- Laptop UAT: `scripts/uat-competitor.mjs` · `scripts/live-competitor-check.ps1`
+- Queue: [cloud/QUEUE.md](./cloud/QUEUE.md) · [cloud/phases/B4-competitor-uat.md](./cloud/phases/B4-competitor-uat.md)
