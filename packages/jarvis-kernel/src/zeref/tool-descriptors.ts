@@ -28,7 +28,8 @@ export const ZEREF_TOOL_DESCRIPTORS: ToolDescriptor[] = [
   },
   {
     name: "get_latest_report_headline",
-    description: "Headline from the most recent elite report artifact.",
+    description:
+      "Read the headline of an ALREADY-SAVED elite report. Do NOT use this when the operator asks to make, generate, or refresh a report — use request_performance_report instead.",
     riskTier: "read",
     ...readBase,
   },
@@ -82,21 +83,52 @@ export const ZEREF_TOOL_DESCRIPTORS: ToolDescriptor[] = [
   },
   {
     name: "create_research_topic",
-    description: "Seed a new research topic for trend analysis.",
+    description:
+      "Seed a new OWN-ACCOUNT research topic. Args: { title: string, scopeEntityId?: uuid }. Not for market-wide viral discovery.",
     riskTier: "write-low",
     ...writeLowBase,
   },
   {
     name: "get_research_outliers",
-    description: "Own-account research outliers versus median engagement (5x+).",
+    description:
+      "Own-account posts at 5× median engagement only. Empty when few posts exist. Not market viral trends.",
     riskTier: "read",
     ...readBase,
   },
   {
     name: "get_weekly_brief",
-    description: "Grounded weekly research brief from metric-fact outliers and caption hooks.",
+    description:
+      "Grounded weekly brief from own-account outliers/hooks. Not external Instagram/Facebook trend research.",
     riskTier: "read",
     ...readBase,
+  },
+  {
+    name: "get_instagram_account_snapshot",
+    description:
+      "Live connected Instagram account snapshot via Graph: username, media counts by type, recent posts, and Insights when the token has instagram_business_manage_insights (views/reach/interactions). Not competitor Business Discovery.",
+    riskTier: "read",
+    ...readBase,
+  },
+  {
+    name: "get_instagram_insights",
+    description:
+      "Own-account Meta Insights via Instagram Login. Args: { includeAccount?: boolean, mediaIds?: string[] }. Returns views/reach/profile_views/interactions. Requires instagram_business_manage_insights. Not Facebook Page Insights and not other creators.",
+    riskTier: "read",
+    ...readBase,
+  },
+  {
+    name: "research_external_trends",
+    description:
+      "External social trend research across Instagram, Facebook, TikTok, YouTube, etc. Args: { query: string, platforms?: string[], regions?: string[], lookbackDays?: number }. Returns web-intel (not Meta Graph Insights). Always disclose source.",
+    riskTier: "write-low",
+    ...writeLowBase,
+  },
+  {
+    name: "request_performance_report",
+    description:
+      "Queue a NEW elite performance report for the latest studio entity (or args.entityId). Use when the operator asks to make/generate a report on current account performance. Does not reuse an old headline.",
+    riskTier: "write-low",
+    ...writeLowBase,
   },
 ];
 

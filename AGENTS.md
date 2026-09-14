@@ -77,5 +77,5 @@ Remote / phone agents (Cursor Cloud Agents, Grok Bot) **must** boot from [docs/c
 - Append work to [docs/cloud/AGENT_LOG.md](docs/cloud/AGENT_LOG.md) so the laptop Planner can review later
 - Prefer **fixture mode** Secrets; never commit secrets
 - Branch `cloud/<id>-slug` → open **PR** → stop
-- Track A only until college freeze: no Meta publish, no Next 16, no Instagram scrape
+- Track B **ACTIVE** — claim first OPEN (CLOUD-B3). Still forbidden without QUEUE: Meta publish, Next 16, Instagram scrape, auth product, vector memory (`TRACK-B-DEFER`)
 - Environment: [`.cursor/environment.json`](.cursor/environment.json) + [`.cursor/Dockerfile`](.cursor/Dockerfile)

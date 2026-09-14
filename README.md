@@ -60,13 +60,17 @@ npm run dev:stack
 
 College talk materials live in [docs/submission/](docs/submission/) (abstract, 4-beat script, slide outline). This section is how to **run** the same fixture demo the script uses. Video recording is laptop-only.
 
-Windows, no Docker, no live Instagram or LLM keys:
+Windows, no Docker, no live Instagram or LLM keys — **production start** (instant nav):
 
 ```powershell
 .\scripts\demo-start.ps1
 ```
 
-That sets `ZEREF_BFF_FIXTURE=1` plus mock flags and starts `npm run dev -w @zeref/web`. Then open:
+That builds once, then `next start` with fixture mocks. For hot-reload coding use `.\scripts\demo-start-dev.ps1` (turbopack; first compile still slower).
+
+**Live AI voice** (fixture panels stay honest): put keys in `apps/web/.env.local`, then see [docs/LIVE_VOICE_SETUP.md](docs/LIVE_VOICE_SETUP.md) and run `.\scripts\live-voice-start.ps1`.
+
+Then open:
 
 | Surface | URL |
 |---------|-----|
@@ -81,6 +85,10 @@ That sets `ZEREF_BFF_FIXTURE=1` plus mock flags and starts `npm run dev -w @zere
 **What it does not show:** live Instagram publish (not built), unlabeled live Graph metrics, or a typed JARVIS chat box. If PTT fails, click Research — same intel. Badges that say Fixture or SIMULATED are correct, not a bug.
 
 Manual equivalent: `$env:ZEREF_BFF_FIXTURE='1'; $env:ZEREF_JOB_ENQUEUE_MOCK='1'; npm run dev -w @zeref/web`. Cloud Agents already have fixture Secrets — do not copy a laptop `.env`. See [fixtures/README.md](fixtures/README.md).
+
+## Live Graph (operator laptop)
+
+Meta Developer + Instagram Login token steps: [docs/LIVE_INSTAGRAM_SETUP.md](docs/LIVE_INSTAGRAM_SETUP.md). Client host is `https://graph.instagram.com`. Put `INSTAGRAM_ACCESS_TOKEN` + `INSTAGRAM_GRAPH_USER_ID` in root `.env` **and** `apps/web/.env.local`. Live mode: fixture OFF + Postgres + `.\scripts\live-data-start.ps1` (CLOUD-B1). College talks stay on `demo-start.ps1` — never commit tokens; publish is not claimed.
 
 ## Repo layout
 

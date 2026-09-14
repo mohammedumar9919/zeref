@@ -93,3 +93,39 @@ export async function writeCreateResearchTopic(
   }
   return result;
 }
+
+/** External multi-platform trend research (web-intel). */
+export async function writeResearchExternalTrends(
+  ctx: ZerefWriteContext,
+  args: Record<string, unknown>,
+  cache?: IdempotencyCache,
+): Promise<unknown> {
+  const idempotencyKey = readIdempotencyKey(args);
+  if (idempotencyKey && cache?.has(cacheKey("research_external_trends", idempotencyKey))) {
+    return cache.get(cacheKey("research_external_trends", idempotencyKey));
+  }
+
+  const result = await ctx.researchExternalTrends(stripIdempotencyKey(args));
+  if (idempotencyKey && cache) {
+    cache.set(cacheKey("research_external_trends", idempotencyKey), result);
+  }
+  return result;
+}
+
+/** Queue a fresh performance report (write-low voice path). */
+export async function writeRequestPerformanceReport(
+  ctx: ZerefWriteContext,
+  args: Record<string, unknown>,
+  cache?: IdempotencyCache,
+): Promise<unknown> {
+  const idempotencyKey = readIdempotencyKey(args);
+  if (idempotencyKey && cache?.has(cacheKey("request_performance_report", idempotencyKey))) {
+    return cache.get(cacheKey("request_performance_report", idempotencyKey));
+  }
+
+  const result = await ctx.requestPerformanceReport(stripIdempotencyKey(args));
+  if (idempotencyKey && cache) {
+    cache.set(cacheKey("request_performance_report", idempotencyKey), result);
+  }
+  return result;
+}

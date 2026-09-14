@@ -10,18 +10,18 @@
 | Lens | Status |
 |------|--------|
 | Phases **0–12** | **APPROVED / frozen** — do not rebuild |
-| College demo readiness | Track A **code** through A4 on `main` @ `5d23d80` — HUD, surfaces, research-lite, voice code. Pack = A5. Video = laptop |
-| Next remote work | **CLOUD-A5** submission pack (see [QUEUE.md](./QUEUE.md)) |
+| College demo readiness | Track A **DONE** (A0–A5) |
+| Next remote work | **Track B ACTIVE** — first OPEN = **CLOUD-B3** ([QUEUE.md](./QUEUE.md)) |
 
 ---
 
 ## Dual track
 
-**Track A — College flash (do this)**  
-6.2 HUD → product surfaces → research-lite → streaming-lite → submission pack. Freeze last 10–14 days before deadline (no new features).
+**Track A — College flash (DONE)**  
+6.2 HUD → product surfaces → research-lite → streaming-lite → submission pack.
 
-**Track B — After freeze (do not start remotely unless QUEUE says so)**  
-Parallel tools, model tiers, vector memory, Next 16, Meta publish + App Review, auth.
+**Track B — ACTIVE (2026-09-14)**  
+B0–B2 DONE (Instagram Login collect + Insights). **CLOUD-B3 OPEN** — Facebook Login Business Discovery + reel ideas for Grok Bot. Deferred (BLOCKED): Next 16, Meta publish + App Review, auth product, vector memory (`TRACK-B-DEFER`).
 
 ---
 

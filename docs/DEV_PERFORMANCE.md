@@ -4,6 +4,16 @@
 
 ---
 
+## Fixture demo scripts (2026-09-13)
+
+| Script | Mode | Use for |
+|--------|------|---------|
+| `.\scripts\demo-start.ps1` | `next build` + `next start` + all mocks | College / Operator UAT (instant) |
+| `.\scripts\demo-start-dev.ps1` | `next dev --turbopack` + all mocks | Coding |
+| `.\scripts\live-voice-start.ps1` | prod or `-Dev`; BFF fixture; LLM live | Mic / OpenRouter UAT — [LIVE_VOICE_SETUP.md](./LIVE_VOICE_SETUP.md) |
+
+---
+
 ## Expected behavior (not bugs)
 
 | Scenario | Typical time | Cause |

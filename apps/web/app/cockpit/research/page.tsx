@@ -4,9 +4,11 @@ import { CockpitBffError, getCockpitSlices } from "@/lib/bff";
 import { getResearchIntel, listResearchTopics } from "@/lib/research-bff";
 
 export default async function ResearchDeepLinkPage(): Promise<React.ReactElement> {
-  const slices = await getCockpitSlices();
-  const topicsResult = await listResearchTopics();
-  const intelResult = await getResearchIntel();
+  const [slices, topicsResult, intelResult] = await Promise.all([
+    getCockpitSlices(),
+    listResearchTopics(),
+    getResearchIntel(),
+  ]);
 
   if (topicsResult.status !== 200) {
     throw new CockpitBffError(

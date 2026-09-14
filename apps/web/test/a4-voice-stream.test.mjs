@@ -68,6 +68,28 @@ describe("CLOUD-A4 streaming voice lite", () => {
     assert.equal(kernel.FIRST_AUDIO_TARGET_MS, 1200);
   });
 
+  it("maps assistant tool JSON + tool role into OpenRouter tool_calls protocol", () => {
+    const mapped = llmPort.toOpenRouterMessages([
+      { role: "system", content: "sys" },
+      { role: "user", content: "headline?" },
+      {
+        role: "assistant",
+        content: JSON.stringify({
+          toolCall: { name: "get_latest_report_headline", args: {}, id: "call_1" },
+        }),
+      },
+      {
+        role: "tool",
+        content: JSON.stringify({ ok: true }),
+        toolCallId: "call_1",
+      },
+    ]);
+    assert.equal(mapped[2].role, "assistant");
+    assert.ok(mapped[2].tool_calls?.[0]?.id === "call_1");
+    assert.equal(mapped[3].role, "tool");
+    assert.equal(mapped[3].tool_call_id, "call_1");
+  });
+
   it("cascades tokens into per-sentence mock TTS chunks", async () => {
     const synthesized = [];
     const result = await kernel.runTokenToTtsCascade({

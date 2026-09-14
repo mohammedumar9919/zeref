@@ -10,6 +10,75 @@ import { isLlmMockEnabled } from "../voice/mock-flags";
 
 const DEFAULT_OPENROUTER_MODEL = "openai/gpt-4o-mini";
 
+type OpenRouterChatMessage =
+  | { role: "system" | "user"; content: string }
+  | {
+      role: "assistant";
+      content: string | null;
+      tool_calls?: Array<{
+        id: string;
+        type: "function";
+        function: { name: string; arguments: string };
+      }>;
+    }
+  | { role: "tool"; content: string; tool_call_id: string };
+
+/** Map kernel LlmMessage[] into OpenAI/OpenRouter chat tool protocol. */
+export function toOpenRouterMessages(
+  messages: LlmPredictInput["messages"],
+): OpenRouterChatMessage[] {
+  return messages.map((m): OpenRouterChatMessage => {
+    if (m.role === "tool") {
+      return {
+        role: "tool",
+        content: m.content,
+        tool_call_id: m.toolCallId ?? "call_missing",
+      };
+    }
+
+    if (m.role === "assistant") {
+      try {
+        const parsed = JSON.parse(m.content) as {
+          toolCall?: { name?: string; args?: Record<string, unknown>; id?: string };
+        };
+        if (parsed.toolCall?.name) {
+          const id = parsed.toolCall.id ?? m.toolCallId ?? `call_${parsed.toolCall.name}`;
+          return {
+            role: "assistant",
+            content: null,
+            tool_calls: [
+              {
+                id,
+                type: "function",
+                function: {
+                  name: parsed.toolCall.name,
+                  arguments: JSON.stringify(parsed.toolCall.args ?? {}),
+                },
+              },
+            ],
+          };
+        }
+      } catch {
+        /* plain assistant text */
+      }
+      return { role: "assistant", content: m.content };
+    }
+
+    return { role: m.role, content: m.content };
+  });
+}
+
+function openRouterToolParams(tools: ToolDescriptor[]) {
+  return tools.map((t) => ({
+    type: "function" as const,
+    function: {
+      name: t.name,
+      description: t.description,
+      parameters: { type: "object", properties: {}, additionalProperties: true },
+    },
+  }));
+}
+
 function pickMockToolCall(
   transcript: string,
   tools: ToolDescriptor[],
@@ -17,8 +86,24 @@ function pickMockToolCall(
   const lower = transcript.toLowerCase();
   const has = (name: string) => tools.some((t) => t.name === name);
 
+  if (/(make a report|generate a report|new report|performance report)/i.test(lower) && has("request_performance_report")) {
+    return { name: "request_performance_report", args: {}, id: "mock-tc-perf-report" };
+  }
   if (/(enqueue|queue|report job|normalize job)/i.test(lower) && has("enqueue_job")) {
     return { name: "enqueue_job", args: { jobType: "report" }, id: "mock-tc-enqueue" };
+  }
+  if (/(viral|external trend|market trend|tiktok|facebook trend)/i.test(lower) && has("research_external_trends")) {
+    return {
+      name: "research_external_trends",
+      args: { query: transcript },
+      id: "mock-tc-ext-research",
+    };
+  }
+  if (/(insight|reach|views|profile visit)/i.test(lower) && has("get_instagram_insights")) {
+    return { name: "get_instagram_insights", args: {}, id: "mock-tc-ig-insights" };
+  }
+  if (/(how many (reels|posts)|account snapshot|instagram account)/i.test(lower) && has("get_instagram_account_snapshot")) {
+    return { name: "get_instagram_account_snapshot", args: {}, id: "mock-tc-ig-snap" };
   }
   if (/(schedule|calendar|book)/i.test(lower) && has("create_calendar_event")) {
     return {
@@ -68,6 +153,14 @@ function buildMockFinishText(toolName: string | undefined, transcript: string): 
       return "Cockpit summary is ready — studio, calendar, reports, and research panels are available.";
     case "get_latest_report_headline":
       return "Your latest elite report headline is on the reports panel.";
+    case "request_performance_report":
+      return "Fresh performance report job queued.";
+    case "research_external_trends":
+      return "External social trend research is ready — web-intel, not Graph Insights.";
+    case "get_instagram_account_snapshot":
+      return "Instagram account snapshot loaded from Graph media.";
+    case "get_instagram_insights":
+      return "Instagram Insights loaded from Graph.";
     case "get_pipeline_status":
       return "Pipeline status checked — see tool result for worker state.";
     case "get_research_outliers":
@@ -127,24 +220,17 @@ async function predictOpenRouterStream(
     body: JSON.stringify({
       model: process.env.OPENROUTER_MODEL ?? DEFAULT_OPENROUTER_MODEL,
       stream: true,
-      messages: input.messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
-      tools: input.tools.map((t) => ({
-        type: "function",
-        function: {
-          name: t.name,
-          description: t.description,
-          parameters: { type: "object", additionalProperties: true },
-        },
-      })),
+      messages: toOpenRouterMessages(input.messages),
+      tools: openRouterToolParams(input.tools),
     }),
     signal,
   });
 
   if (!response.ok || !response.body) {
-    throw new Error(`OpenRouter stream failed: ${response.status}`);
+    const detail = await response.text().catch(() => "");
+    throw new Error(
+      `OpenRouter stream failed: ${response.status}${detail ? ` — ${detail.slice(0, 400)}` : ""}`,
+    );
   }
 
   const reader = response.body.getReader();
@@ -209,7 +295,7 @@ async function predictOpenRouterStream(
     } catch {
       args = {};
     }
-    return { toolCall: { name: toolName, args, id: toolId }, tokensUsed };
+    return { toolCall: { name: toolName, args, id: toolId ?? `call_${toolName}` }, tokensUsed };
   }
 
   const trimmed = text.trim();
@@ -273,23 +359,16 @@ export function createJarvisLlmPort(scriptState?: MockScriptState): LlmPort {
         },
         body: JSON.stringify({
           model: process.env.OPENROUTER_MODEL ?? DEFAULT_OPENROUTER_MODEL,
-          messages: input.messages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-          tools: input.tools.map((t) => ({
-            type: "function",
-            function: {
-              name: t.name,
-              description: t.description,
-              parameters: { type: "object", additionalProperties: true },
-            },
-          })),
+          messages: toOpenRouterMessages(input.messages),
+          tools: openRouterToolParams(input.tools),
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`OpenRouter request failed: ${response.status}`);
+        const detail = await response.text().catch(() => "");
+        throw new Error(
+          `OpenRouter request failed: ${response.status}${detail ? ` — ${detail.slice(0, 400)}` : ""}`,
+        );
       }
 
       const payload = (await response.json()) as {

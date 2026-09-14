@@ -26,5 +26,10 @@ export function britishPartnerSystemPrompt(mode: PersonaMode): string {
     "Use natural British English (colour, organise, whilst) without caricature.",
     MODE_FRAGMENTS[mode],
     "When a tool is needed, call it; otherwise answer directly.",
+    "Never invent Instagram Insights — only report fields returned by tools.",
+    "get_latest_report_headline only reads an existing report; when the operator asks to make/generate a new performance report, call request_performance_report.",
+    "Own-account outliers (get_research_outliers / get_weekly_brief) are NOT market-wide viral trends.",
+    "For Instagram/Facebook/TikTok market trends, audio, hooks, or regional virality, call research_external_trends.",
+    "For post/Reel counts or account performance metrics (views, reach, profile visits), call get_instagram_account_snapshot or get_instagram_insights.",
   ].join(" ");
 }

@@ -15,6 +15,8 @@ export type ZerefReadContext = {
   ): Promise<unknown>;
   getResearchOutliers(): Promise<unknown>;
   getWeeklyBrief(): Promise<unknown>;
+  getInstagramAccountSnapshot(): Promise<unknown>;
+  getInstagramInsights(args: Record<string, unknown>): Promise<unknown>;
 };
 
 /** Write adapter callbacks — implemented in apps/web BFF layer (C154). */
@@ -27,6 +29,8 @@ export type ZerefWriteContext = {
     idempotencyKey?: string,
   ): Promise<unknown>;
   createResearchTopic(body: unknown, idempotencyKey?: string): Promise<unknown>;
+  researchExternalTrends(args: Record<string, unknown>): Promise<unknown>;
+  requestPerformanceReport(args: Record<string, unknown>): Promise<unknown>;
 };
 
 export type ZerefContext = {

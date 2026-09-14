@@ -1,11 +1,9 @@
 import {
-  CockpitSlicesSchemaV8,
-  CockpitSlicesSchemaV9,
   type CockpitSlicesV8,
   type CockpitSlicesV9,
 } from "@zeref/contracts";
 
-import { isPhase9ResearchActive, loadCockpitSlices } from "./cockpit-bff";
+import { loadCockpitSlices } from "./cockpit-bff";
 import { EMPTY_COCKPIT_SLICES } from "./cockpit-slices-empty";
 
 /** Thrown when cockpit BFF load or parse fails (ZR-004 — no silent empty). */
@@ -28,11 +26,8 @@ export { EMPTY_COCKPIT_SLICES };
  */
 export async function getCockpitSlices(): Promise<CockpitSlicesV8 | CockpitSlicesV9> {
   try {
-    const slices = await loadCockpitSlices();
-    if (isPhase9ResearchActive()) {
-      return CockpitSlicesSchemaV9.parse(slices);
-    }
-    return CockpitSlicesSchemaV8.parse(slices);
+    // loadCockpitSlices already Zod-validates fixture + DB paths — no second parse.
+    return await loadCockpitSlices();
   } catch (err) {
     if (err instanceof CockpitBffError) {
       throw err;

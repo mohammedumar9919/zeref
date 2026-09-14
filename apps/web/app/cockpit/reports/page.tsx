@@ -13,8 +13,10 @@ type ReportsPageProps = {
 export default async function ReportsDeepLinkPage({
   searchParams,
 }: ReportsPageProps): Promise<React.ReactElement> {
-  const slices = await getCockpitSlices();
-  const { artifact } = await searchParams;
+  const [slices, { artifact }] = await Promise.all([
+    getCockpitSlices(),
+    searchParams,
+  ]);
   const { items, insufficientData } = slices.panels.reports;
 
   let belowGrid: React.ReactElement;

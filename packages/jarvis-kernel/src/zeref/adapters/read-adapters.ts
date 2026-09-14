@@ -75,6 +75,25 @@ export async function readWeeklyBrief(ctx: ZerefReadContext): Promise<unknown> {
   return ctx.getWeeklyBrief();
 }
 
+/** Live Instagram Graph account snapshot (media counts + Insights when permitted). */
+export async function readInstagramAccountSnapshot(ctx: ZerefReadContext): Promise<unknown> {
+  if (!ctx.canRead()) {
+    return degraded(ctx, "get_instagram_account_snapshot");
+  }
+  return ctx.getInstagramAccountSnapshot();
+}
+
+/** Own-account Meta Insights (Instagram Login). */
+export async function readInstagramInsights(
+  ctx: ZerefReadContext,
+  args: Record<string, unknown>,
+): Promise<unknown> {
+  if (!ctx.canRead()) {
+    return degraded(ctx, "get_instagram_insights");
+  }
+  return ctx.getInstagramInsights(args);
+}
+
 /** Memory save via MemoryPort adapter (C153). */
 export async function readMemorySave(
   ctx: ZerefReadContext,

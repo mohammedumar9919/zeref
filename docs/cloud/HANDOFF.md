@@ -11,7 +11,7 @@ So the laptop Planner (and you later) can **read and continue** remote work with
 | Branch | `cloud/p62-workspace-hud` |
 | PR title | `cloud(p62): workspace routes + unified HUD header` |
 | PR body must include | Queue ID, phase card path, files touched, how to test with fixtures, screenshot TODO for laptop |
-| Labels (if available) | `cloud`, `track-a` |
+| Labels (if available) | `cloud`, `track-b` (Track A labels obsolete for new work) |
 | Base | `main` |
 | Never | force-push `main`, commit `.env`, merge your own PR without Planner note unless emergency |
 

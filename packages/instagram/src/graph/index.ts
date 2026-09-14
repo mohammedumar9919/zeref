@@ -7,3 +7,15 @@ export {
   type GraphClientOptions,
   type GraphFetch,
 } from "./client.js";
+
+export {
+  DEFAULT_ACCOUNT_INSIGHT_METRICS,
+  DEFAULT_MEDIA_INSIGHT_METRICS,
+  fetchAccountInsights,
+  fetchMediaInsights,
+  probeInsightsAvailable,
+  type AccountInsightsResult,
+  type InstagramInsightMetric,
+  type InstagramInsightValue,
+  type MediaInsightsResult,
+} from "./insights.js";

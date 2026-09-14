@@ -33,6 +33,10 @@ const EXPECTED_TOOLS = [
   "create_research_topic",
   "get_research_outliers",
   "get_weekly_brief",
+  "get_instagram_account_snapshot",
+  "get_instagram_insights",
+  "research_external_trends",
+  "request_performance_report",
 ];
 
 function loadFixture(name) {

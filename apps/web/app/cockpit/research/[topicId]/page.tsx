@@ -12,8 +12,10 @@ export default async function ResearchTopicPage({
   params,
 }: ResearchTopicPageProps): Promise<React.ReactElement> {
   const { topicId } = await params;
-  const result = await getResearchTopic(topicId);
-  const intelResult = await getResearchIntel(topicId);
+  const [result, intelResult] = await Promise.all([
+    getResearchTopic(topicId),
+    getResearchIntel(topicId),
+  ]);
 
   if (result.status === 404) {
     notFound();

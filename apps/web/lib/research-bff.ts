@@ -32,6 +32,31 @@ export const ResearchTopicCreateSchema = z
   })
   .strict();
 
+/** Coerce LLM tool args that send query/topic/prompt instead of title. */
+export function coerceResearchTopicCreateBody(rawBody: unknown): unknown {
+  if (!rawBody || typeof rawBody !== "object" || Array.isArray(rawBody)) {
+    return rawBody;
+  }
+  const body = { ...(rawBody as Record<string, unknown>) };
+  if (typeof body.title !== "string" || body.title.trim().length === 0) {
+    for (const key of ["query", "topic", "prompt", "name", "summary"]) {
+      const value = body[key];
+      if (typeof value === "string" && value.trim().length > 0) {
+        body.title = value.trim().slice(0, 200);
+        break;
+      }
+    }
+  }
+  if (typeof body.title === "string") {
+    body.title = body.title.trim().slice(0, 200);
+  }
+  // Drop unknown keys that break .strict() before parse — keep only allowlisted fields.
+  return {
+    title: body.title,
+    ...(typeof body.scopeEntityId === "string" ? { scopeEntityId: body.scopeEntityId } : {}),
+  };
+}
+
 export type BffResult<T> =
   | { status: 200; body: T }
   | { status: 201; body: T }
@@ -207,7 +232,7 @@ export async function getResearchTopic(topicId: string): Promise<BffResult<Resea
 }
 
 function createResearchTopicFixture(rawBody: unknown): BffResult<ResearchTopic> {
-  const parsed = ResearchTopicCreateSchema.safeParse(rawBody);
+  const parsed = ResearchTopicCreateSchema.safeParse(coerceResearchTopicCreateBody(rawBody));
   if (!parsed.success) {
     return { status: 400, body: { error: "invalid research topic body" } };
   }
@@ -227,7 +252,7 @@ function createResearchTopicFixture(rawBody: unknown): BffResult<ResearchTopic> 
 }
 
 async function createResearchTopicInDb(rawBody: unknown): Promise<BffResult<ResearchTopic>> {
-  const parsed = ResearchTopicCreateSchema.safeParse(rawBody);
+  const parsed = ResearchTopicCreateSchema.safeParse(coerceResearchTopicCreateBody(rawBody));
   if (!parsed.success) {
     return { status: 400, body: { error: "invalid research topic body" } };
   }

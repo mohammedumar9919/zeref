@@ -26,6 +26,8 @@ function fakeReadContext(overrides = {}) {
     memorySave: async () => ({ available: true, entryId: "mem-1" }),
     getResearchOutliers: async () => ({ available: true, outliers: [] }),
     getWeeklyBrief: async () => ({ available: true, brief: { text: "ok", groundedIn: [], mocked: true } }),
+    getInstagramAccountSnapshot: async () => ({ available: true, source: "fixture", mediaFetched: 0 }),
+    getInstagramInsights: async () => ({ available: true, source: "fixture", scope: "account", account: {} }),
     ...overrides,
   };
 }
@@ -50,6 +52,14 @@ function fakeWriteContext() {
       createResearchTopic: async (body) => {
         calls.push({ tool: "create_research_topic", body });
         return { id: "topic-1" };
+      },
+      researchExternalTrends: async (body) => {
+        calls.push({ tool: "research_external_trends", body });
+        return { available: true, source: "fixture", trends: [] };
+      },
+      requestPerformanceReport: async (body) => {
+        calls.push({ tool: "request_performance_report", body });
+        return { available: true, queued: true, jobId: "job-report-1" };
       },
     },
   };

@@ -16,21 +16,15 @@ function graphKey(item: GraphMediaFields): string | undefined {
 
 function graphToScrapeShape(item: GraphMediaFields): ScrapePostFields {
   const shortcode = graphKey(item);
-  const mediaType =
-    item.media_type === "VIDEO"
-      ? ("reel" as const)
-      : item.media_type === "CAROUSEL_ALBUM"
-        ? ("carousel" as const)
-        : ("image" as const);
+  const isVideo = item.media_type === "VIDEO";
   return {
     shortcode: shortcode ?? item.id,
     caption: item.caption?.slice(0, 500),
     likes: item.like_count,
     comments: item.comments_count,
-    url: item.permalink,
-    mediaType,
-    thumbnailUrl: item.media_url,
-    postedAt: item.timestamp,
+    // Contract ScrapePostFieldsSchema.strict() — no url/postedAt/mediaType
+    thumbnailUrl: isVideo ? undefined : item.media_url,
+    videoUrl: isVideo ? item.media_url : undefined,
   };
 }
 
@@ -73,16 +67,13 @@ export function mergeByShortcode(input: {
     const prevScrape = existing?.scrape;
     const mergedScrape: ScrapePostFields | undefined = prevScrape
       ? {
-          ...prevScrape,
-          ...graphScrape,
+          shortcode: key,
+          caption: graphScrape.caption ?? prevScrape.caption,
+          likes: graphScrape.likes ?? prevScrape.likes,
+          comments: graphScrape.comments ?? prevScrape.comments,
           thumbnailUrl: prevScrape.thumbnailUrl ?? graphScrape.thumbnailUrl,
           videoUrl: prevScrape.videoUrl ?? graphScrape.videoUrl,
           carouselUrls: prevScrape.carouselUrls ?? graphScrape.carouselUrls,
-          likes: graphScrape.likes ?? prevScrape.likes,
-          comments: graphScrape.comments ?? prevScrape.comments,
-          caption: graphScrape.caption ?? prevScrape.caption,
-          url: graphScrape.url ?? prevScrape.url,
-          mediaType: graphScrape.mediaType ?? prevScrape.mediaType,
         }
       : graphScrape;
 

@@ -1,6 +1,8 @@
 import type { ToolExecutionResult, ToolExecutorPort } from "../core/ports/tool-executor-port.js";
 import {
   readCockpitSummary,
+  readInstagramAccountSnapshot,
+  readInstagramInsights,
   readLatestReportHeadline,
   readMemorySave,
   readMemorySearch,
@@ -15,6 +17,8 @@ import {
   writeCreateCalendarEvent,
   writeCreateResearchTopic,
   writeEnqueueJob,
+  writeRequestPerformanceReport,
+  writeResearchExternalTrends,
   writeUpdateStudioDraft,
 } from "./adapters/write-adapters.js";
 import type { ZerefContext } from "./context.js";
@@ -88,6 +92,14 @@ export function createZerefToolExecutor(
             return ok(await readResearchOutliers(ctx.read));
           case "get_weekly_brief":
             return ok(await readWeeklyBrief(ctx.read));
+          case "get_instagram_account_snapshot":
+            return ok(await readInstagramAccountSnapshot(ctx.read));
+          case "get_instagram_insights":
+            return ok(await readInstagramInsights(ctx.read, args));
+          case "research_external_trends":
+            return ok(await writeResearchExternalTrends(ctx.write, args, cache));
+          case "request_performance_report":
+            return ok(await writeRequestPerformanceReport(ctx.write, args, cache));
           default:
             return fail(`unknown tool: ${name}`);
         }

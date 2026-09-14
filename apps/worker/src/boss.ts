@@ -15,6 +15,7 @@ import {
   REPORT_JOB_NAME,
   RESEARCH_JOB_NAME,
   SCHEDULE_COLLECT_JOB_NAME,
+  WORKER_JOB_NAMES,
   type WorkerJobName,
 } from "./jobs/registry.js";
 import {
@@ -58,6 +59,11 @@ export async function registerWorkers(
   options: WorkerBossOptions,
 ): Promise<void> {
   const shared = { pool: options.pool, repoRoot: options.repoRoot };
+
+  const queueNames = [...WORKER_JOB_NAMES];
+  for (const name of queueNames) {
+    await boss.createQueue(name);
+  }
 
   await registerJobHandler(
     boss,
