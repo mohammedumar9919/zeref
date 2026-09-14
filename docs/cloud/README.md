@@ -5,15 +5,15 @@
 | File | Purpose |
 |------|---------|
 | [MASTERPLAN.md](./MASTERPLAN.md) | College Track A (DONE) + partner Track B (**ACTIVE**) |
-| [QUEUE.md](./QUEUE.md) | Ordered remote-ready work — **pick top OPEN item only** (none; CLOUD-B3 DONE) |
+| [QUEUE.md](./QUEUE.md) | Ordered remote-ready work — **pick top OPEN item only** (CLOUD-B4) |
 | [HANDOFF.md](./HANDOFF.md) | PR rules, AGENT_LOG, how the laptop Planner reviews your work |
 | [AGENT_LOG.md](./AGENT_LOG.md) | Append-only work log (you write; Planner reads later) |
 | [PLANNER.md](./PLANNER.md) | Run a **Planner** Cloud Agent / Grok Bot from work (review/merge, not implement) |
 | [phases/](./phases/) | One card per remote-capable slice |
 
-**Track B:** CLOUD-B3 **DONE** (PR #14 @ `e148c8e`). No OPEN cloud row. TRACK-B-DEFER stays BLOCKED. Stale log lines that still say first OPEN / PR_READY for B3 are obsolete — **QUEUE wins**.
+**Track B:** B3 **DONE** (PR #14). First OPEN = **CLOUD-B4** ([phases/B4-competitor-uat.md](./phases/B4-competitor-uat.md)). TRACK-B-DEFER stays BLOCKED. **QUEUE wins.**
 
-**Secrets:** Confirmed OK when dashboard has all 10 fixture Runtime Secrets on `mohammedumar9919/zeref` (see [../REMOTE_AGENTS.md](../REMOTE_AGENTS.md)). `ZEREF_BFF_FIXTURE=1` is already in that set. B3 must remain fixture-safe in CI; live `FACEBOOK_*` is laptop-only after merge.
+**Secrets:** Confirmed OK when dashboard has all 10 fixture Runtime Secrets on `mohammedumar9919/zeref` (see [../REMOTE_AGENTS.md](../REMOTE_AGENTS.md)). `ZEREF_BFF_FIXTURE=1` is already in that set. Live `FACEBOOK_*` is laptop-only.
 
 **Skills:** In-repo `.cursor/skills/**` always load. On laptop enable **Settings → Agents → Sync Skills for Cloud Agents**. Full Planner prompt: [PLANNER.md](./PLANNER.md).
 

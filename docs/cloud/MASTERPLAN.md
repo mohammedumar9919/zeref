@@ -11,7 +11,7 @@
 |------|--------|
 | Phases **0–12** | **APPROVED / frozen** — do not rebuild |
 | College demo readiness | Track A **DONE** (A0–A5) |
-| Next remote work | **Track B** — CLOUD-B3 **DONE** (PR #14). No OPEN row; TRACK-B-DEFER BLOCKED ([QUEUE.md](./QUEUE.md)) |
+| Next remote work | **Track B** — first OPEN = **CLOUD-B4** ([QUEUE.md](./QUEUE.md)) |
 
 ---
 
@@ -21,7 +21,7 @@
 6.2 HUD → product surfaces → research-lite → streaming-lite → submission pack.
 
 **Track B — ACTIVE (2026-09-14)**  
-B0–B3 DONE (Instagram Login collect + Insights; Facebook BD + reel ideas @ `e148c8e`). No OPEN cloud row. Deferred (BLOCKED): Next 16, Meta publish + App Review, auth product, vector memory (`TRACK-B-DEFER`). Live FB UAT leftover (`FACEBOOK_*` + [LIVE_COMPETITOR_SETUP.md](../LIVE_COMPETITOR_SETUP.md)).
+B0–B3 DONE. **CLOUD-B4 OPEN** — live Facebook competitor UAT glue. Deferred (BLOCKED): Next 16, Meta publish + App Review, auth product, vector memory (`TRACK-B-DEFER`). Human `FACEBOOK_*`: [LIVE_COMPETITOR_SETUP.md](../LIVE_COMPETITOR_SETUP.md).
 
 ---
 

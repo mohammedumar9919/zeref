@@ -218,7 +218,7 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Not done / blocked: TRACK-B-DEFER; human FACEBOOK_* for live BD UAT after B3 lands.
 - Next for Workers: Claim CLOUD-B3 now.
 
-### 2026-09-14 — CLOUD-B3 — agent:jarvis-lite
+### 2026-09-14 ? CLOUD-B3 ? agent:jarvis-lite
 - Branch: cloud/b3-competitor-discovery
 - Status: started
 - PR: n/a
@@ -226,7 +226,7 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Not done / blocked: Facebook BD client, LIVE_COMPETITOR_SETUP.md, facebook-health, Jarvis tools, persona, PR.
 - Next for Planner: Wait for this branch PR; do not mark DONE. Do not start TRACK-B-DEFER.
 
-### 2026-09-14 — CLOUD-B3 — agent:jarvis-lite
+### 2026-09-14 ? CLOUD-B3 ? agent:jarvis-lite
 - Branch: cloud/b3-competitor-discovery
 - Status: pr_ready
 - PR: https://github.com/mohammedumar9919/zeref/pull/14
@@ -234,18 +234,26 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Not done / blocked: Live FACEBOOK_* UAT is laptop after merge. Worker must not mark QUEUE DONE.
 - Next for Planner: Review PR #14 + AGENT_LOG vs B3 card; merge; set QUEUE CLOUD-B3 DONE. Human live BD curl after merge.
 
-### 2026-09-14 — CLOUD-B3 — agent:cloud-planner
+### 2026-09-14 ? CLOUD-B3 ? agent:cloud-planner
 - Branch: `main` (merged PR #14) + follow-up `cursor/cloud-b3-queue-done-5cf9`
 - Status: done
-- PR: https://github.com/mohammedumar9919/zeref/pull/14 — **MERGED** @ `e148c8e`
-- Done: Council APPROVED. PR #14 MERGED. QUEUE B3 → DONE. Live FB UAT leftover (`FACEBOOK_*` + curl + `facebook-health`). IG Insights still required green. TRACK-B-DEFER still BLOCKED — do not start Next 16/publish/auth/vector.
+- PR: https://github.com/mohammedumar9919/zeref/pull/14 ? **MERGED** @ `e148c8e`
+- Done: Council APPROVED. PR #14 MERGED. QUEUE B3 ? DONE. Live FB UAT leftover (`FACEBOOK_*` + curl + `facebook-health`). IG Insights still required green. TRACK-B-DEFER still BLOCKED ? do not start Next 16/publish/auth/vector.
 - Not done / blocked: Human FACEBOOK_* live BD UAT. TRACK-B-DEFER (Next 16 / publish / auth / vector).
 - Next for Planner / laptop: FACEBOOK_* tokens + curl + `facebook-health`. No OPEN queue row for Grok.
 
-### 2026-09-14 — CLOUD-B3 leftover notes — agent:cloud-planner
+### 2026-09-14 ? CLOUD-B3 leftover notes ? agent:cloud-planner
 - Branch: `cursor/cloud-b3-queue-done-679d` (onto main after PR #15 @ `9b5082e`)
 - Status: pr_ready
 - PR: https://github.com/mohammedumar9919/zeref/pull/16
-- Done: PR #14 MERGED @ `e148c8e`. QUEUE B3 already DONE via PR #15. Cleared leftover Track B notes that still said first OPEN / PR_READY for B3 (`README`, `MASTERPLAN`, `PLANNER`, `REMOTE_AGENTS`). Live FB UAT leftover (`FACEBOOK_*` + `LIVE_COMPETITOR_SETUP.md`). IG Insights still required. TRACK-B-DEFER still BLOCKED — do not start Next 16 / publish / auth / vector.
+- Done: PR #14 MERGED @ `e148c8e`. QUEUE B3 already DONE via PR #15. Cleared leftover Track B notes that still said first OPEN / PR_READY for B3 (`README`, `MASTERPLAN`, `PLANNER`, `REMOTE_AGENTS`). Live FB UAT leftover (`FACEBOOK_*` + `LIVE_COMPETITOR_SETUP.md`). IG Insights still required. TRACK-B-DEFER still BLOCKED ? do not start Next 16 / publish / auth / vector.
 - Not done / blocked: Laptop live FB UAT. TRACK-B-DEFER remains BLOCKED.
 - Next for Planner / laptop: Live FB UAT leftover. Do not start Next 16 / publish / auth / vector.
+
+### 2026-09-14 ? B3 REVIEW + CLOUD-B4 OPEN ? agent:laptop-planner
+- Branch: `main`
+- Status: done (planner)
+- PR: https://github.com/mohammedumar9919/zeref/pull/14 (B3) ? reviewed ACCEPT after sync
+- Done: Verified B3 deliverables on main (BD client, facebook-health, discover_competitor, suggest_reel_ideas, LIVE_COMPETITOR_SETUP, persona tests). `npm run test -w @zeref/web` green (120 pass / 3 skip). Opened CLOUD-B4 phase card + QUEUE OPEN for live FB UAT glue. TRACK-B-DEFER still BLOCKED.
+- Not done / blocked: Human FACEBOOK_* tokens for live BD. B4 implementation.
+- Next for Workers: Claim CLOUD-B4 ? docs/cloud/phases/B4-competitor-uat.md
