@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-09-14 (Track B — CLOUD-B3 DONE PR #14 @ `e148c8e`; live FB UAT leftover FACEBOOK_* + LIVE_COMPETITOR_SETUP.md; IG Insights still required; TRACK-B-DEFER BLOCKED)  
+**Last updated:** 2026-09-14 (Track B — CLOUD-B3 DONE @ `e148c8e` PR #14; live FB UAT leftover FACEBOOK_*; TRACK-B-DEFER BLOCKED)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -37,7 +37,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 | Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** **CLOUD-B3 DONE** ([PR #14](https://github.com/mohammedumar9919/zeref/pull/14) MERGED @ `e148c8e`). B0–B3 DONE. Instagram Login Insights stay on `graph.instagram.com` and are still required. Live Facebook Business Discovery UAT leftover: human `FACEBOOK_*` + [LIVE_COMPETITOR_SETUP.md](./LIVE_COMPETITOR_SETUP.md). College Track A remains demo-ready via `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER (Next 16 / publish / auth / vector).
+**Immediate goal:** **Track B** — CLOUD-B3 **DONE** ([PR #14](https://github.com/mohammedumar9919/zeref/pull/14) @ `e148c8e`). Live FB UAT leftover (`FACEBOOK_*` + curl + `facebook-health`). IG Insights still required green. College Track A remains demo-ready via `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER (Next 16 / publish / auth / vector).
 
 ### P8 hotfix root cause
 

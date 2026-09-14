@@ -31,11 +31,11 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 ### Track status (authoritative)
 
 - **Track A (college):** DONE (A0–A5).
-- **Track B (live Graph + competitor):** **ACTIVE** for Grok Bot / Cloud workers.
-- **First OPEN for workers right now:** none. CLOUD-B3 is DONE (PR #14 MERGED @ `e148c8e`). Do not start another row.
-- **TRACK-B-DEFER** (formerly TRACK-B-REST) stays BLOCKED on purpose — Next 16 / publish / auth / vector. **Do not treat that row as “all Track B blocked.”**
+- **Track B (live Graph + competitor):** B0–B3 **DONE**. No OPEN worker row.
+- **First OPEN for workers right now:** none. Do **not** start TRACK-B-DEFER.
+- **TRACK-B-DEFER** (formerly TRACK-B-REST) stays BLOCKED on purpose — Next 16 / publish / auth / vector.
 
-**Track B note (2026-09-14):** PR #14 MERGED @ `e148c8e`. QUEUE CLOUD-B3 → DONE. Live FB UAT leftover (`FACEBOOK_*` + [LIVE_COMPETITOR_SETUP.md](../LIVE_COMPETITOR_SETUP.md)). IG Insights still required. TRACK-B-DEFER still BLOCKED — do not start Next 16 / publish / auth / vector.
+**Track B note (2026-09-14):** PR #14 MERGED @ `e148c8e`. QUEUE CLOUD-B3 → DONE. Live FB UAT leftover (`FACEBOOK_*` + curl + `facebook-health`). IG Insights still required green. TRACK-B-DEFER still BLOCKED — do not start Next 16 / publish / auth / vector.
 
 **Grok / Cloud worker rule:** Ignore stale AGENT_LOG lines that say “do not start TRACK-B.” QUEUE above wins.
 
