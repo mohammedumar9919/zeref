@@ -233,3 +233,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Facebook Graph BD client + mock tests; LIVE_COMPETITOR_SETUP.md + FACEBOOK_* env comments; GET /api/v1/ops/facebook-health soft-fail; Jarvis `discover_competitor` + `suggest_reel_ideas` (contracts/kernel/zeref-context/persona/mock routing). Instagram Login Insights left intact. QUEUE set PR_READY. Did not mark DONE. Did not start TRACK-B-DEFER.
 - Not done / blocked: Live FACEBOOK_* UAT is laptop after merge. Worker must not mark QUEUE DONE.
 - Next for Planner: Review PR #14 + AGENT_LOG vs B3 card; merge; set QUEUE CLOUD-B3 DONE. Human live BD curl after merge.
+
+### 2026-09-14 — CLOUD-B3 — agent:cloud-planner
+- Branch: `main` (merged PR #14) + follow-up `cursor/cloud-b3-queue-done-5cf9`
+- Status: done
+- PR: https://github.com/mohammedumar9919/zeref/pull/14 — **MERGED** @ `e148c8e`
+- Done: Council APPROVED. PR #14 MERGED. QUEUE B3 → DONE. Live FB UAT leftover (`FACEBOOK_*` + curl + `facebook-health`). IG Insights still required green. TRACK-B-DEFER still BLOCKED — do not start Next 16/publish/auth/vector.
+- Not done / blocked: Human FACEBOOK_* live BD UAT. TRACK-B-DEFER (Next 16 / publish / auth / vector).
+- Next for Planner / laptop: FACEBOOK_* tokens + curl + `facebook-health`. No OPEN queue row for Grok.
