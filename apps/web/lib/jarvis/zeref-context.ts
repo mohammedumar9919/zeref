@@ -16,6 +16,8 @@ import { aggregatePanelDataAgeState, type DataAgeState } from "../data-age";
 import { loadInstagramAccountSnapshot, loadInstagramInsights } from "./instagram-snapshot";
 import { runExternalSocialResearch } from "./external-research";
 import { loadCompetitorDiscovery, loadReelIdeas } from "./competitor-discovery";
+import { analysisOutputs } from "@zeref/db";
+import { desc, eq } from "drizzle-orm";
 
 function unavailableMessage(toolName: string): string {
   return `${toolName} unavailable — database not configured and fixture mode is off (C158).`;
@@ -68,6 +70,28 @@ function summarizeCockpit(slices: Awaited<ReturnType<typeof loadCockpitSlices>>)
 async function resolveLatestStudioEntityId(): Promise<string | undefined> {
   const slices = await loadCockpitSlices();
   return slices.panels.studio.items[0]?.entityId;
+}
+
+async function resolveLatestAnalysisForEntity(
+  entityId: string,
+): Promise<{ analysisOutputId: string; snapshotId?: string } | null> {
+  const db = getDb();
+  if (!db) return null;
+  const rows = await db
+    .select({
+      id: analysisOutputs.id,
+      snapshotId: analysisOutputs.snapshotId,
+    })
+    .from(analysisOutputs)
+    .where(eq(analysisOutputs.normalizedEntityId, entityId))
+    .orderBy(desc(analysisOutputs.createdAt))
+    .limit(1);
+  const row = rows[0];
+  if (!row?.id) return null;
+  return {
+    analysisOutputId: row.id,
+    snapshotId: row.snapshotId ?? undefined,
+  };
 }
 
 /** Wires kernel ZerefContext to live BFF functions (C153–C154). */
@@ -222,9 +246,20 @@ export function createZerefContext(turnId?: string): ZerefContext {
               "No studio entity available to report on — collect Instagram media into the pipeline first.",
           };
         }
+        const analysis = await resolveLatestAnalysisForEntity(entityId);
+        if (!analysis && !isFixtureMode()) {
+          return {
+            available: false,
+            queued: false,
+            entityId,
+            message:
+              "No analysis_outputs row for this entity yet — run analyze on the studio post before requesting a performance report.",
+          };
+        }
         const enqueued = await enqueueJob({
           jobType: "report",
           entityId,
+          ...(analysis?.snapshotId ? { snapshotId: analysis.snapshotId } : {}),
         });
         return {
           available: true,
@@ -232,6 +267,7 @@ export function createZerefContext(turnId?: string): ZerefContext {
           jobId: enqueued.jobId,
           workerConsuming: enqueued.workerConsuming,
           entityId,
+          analysisOutputId: analysis?.analysisOutputId,
           message:
             "Fresh performance report job queued. Existing headlines stay until the worker finishes the new artifact.",
         };

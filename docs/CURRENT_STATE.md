@@ -1,6 +1,6 @@
 # Zeref — Current State
 
-**Last updated:** 2026-09-14 (Track B — CLOUD-B4 DONE/merged https://github.com/mohammedumar9919/zeref/pull/17 @ `78389f23`; live FB UAT leftover)  
+**Last updated:** 2026-09-17 (CLOUD-B5 IN_PROGRESS — bulk Graph collect; Jarvis TTS Windows SAPI + report/persona hotfixes local; FB BD UAT passed)  
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -37,7 +37,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 | Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** **CLOUD-B4 DONE** ([PR #17](https://github.com/mohammedumar9919/zeref/pull/17) MERGED @ `78389f23`). Human live Facebook Business Discovery UAT remains leftover (`FACEBOOK_*` + curl + `scripts/uat-competitor.mjs` per [LIVE_COMPETITOR_SETUP.md](./LIVE_COMPETITOR_SETUP.md)). College demo: `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER.
+**Immediate goal:** **CLOUD-B5 IN_PROGRESS** (`cloud/b5-pipeline-freshness`) — `scripts/uat-collect-recent.mjs` / `live-collect-recent.ps1` (laptop UAT collected 5 newest unseen posts → 6 studio entities). Prior: CLOUD-B4 DONE; FB BD live. ElevenLabs quota exhausted → Windows SAPI TTS. College demo: `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER. Also LAPTOP-UAT (screenshot / demo video) remains.
 
 ### P8 hotfix root cause
 

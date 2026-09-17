@@ -187,6 +187,20 @@ GET http://localhost:3000/api/v1/ops/instagram-health
 
 Live voice ([LIVE_VOICE_SETUP.md](./LIVE_VOICE_SETUP.md)) can stay fixture-backed for cockpit data; live Graph is a separate mode — do not mix unlabeled fixture metrics with “live” claims.
 
+### Bulk recent collect (CLOUD-B5 — refresh cockpit)
+
+When Graph shows many posts but Studio only has one stale entity, pull the newest unseen media into the pipeline:
+
+```powershell
+# default --limit 5
+.\scripts\live-collect-recent.ps1
+.\scripts\live-collect-recent.ps1 -Limit 8
+# or
+node scripts/uat-collect-recent.mjs --limit 5
+```
+
+Requires live `INSTAGRAM_*` + `DATABASE_URL`. Skips media ids already present in `snapshots`. Never prints tokens. Phase card: [cloud/phases/B5-pipeline-freshness.md](./cloud/phases/B5-pipeline-freshness.md).
+
 ---
 
 ## 10. Safety checklist

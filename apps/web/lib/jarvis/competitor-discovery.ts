@@ -162,7 +162,18 @@ export async function loadCompetitorDiscovery(
 ): Promise<DiscoverCompetitorResult> {
   const username = coerceUsername(args);
   if (!username) {
-    return unavailableBd("username is required for discover_competitor");
+    return {
+      available: false,
+      source: "unavailable",
+      host: "graph.facebook.com",
+      message:
+        "username is required for discover_competitor — ask the operator for a public Instagram Business/Creator @handle.",
+      hint: FACEBOOK_HINT,
+      limitations: [
+        "Business Discovery requires a named username on graph.facebook.com.",
+        "Do not invent competitor handles.",
+      ],
+    };
   }
 
   const token = readFacebookToken(options);

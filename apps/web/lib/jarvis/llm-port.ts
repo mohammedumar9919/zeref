@@ -93,14 +93,32 @@ function pickMockToolCall(
     return { name: "enqueue_job", args: { jobType: "report" }, id: "mock-tc-enqueue" };
   }
   const handleMatch = transcript.match(/@([A-Za-z0-9._]{1,30})/);
-  if (
-    (handleMatch || /\b(competitor|business discovery|other creator)\b/i.test(lower)) &&
-    has("discover_competitor")
-  ) {
+  if (handleMatch && has("discover_competitor")) {
     return {
       name: "discover_competitor",
-      args: { username: handleMatch?.[1] ?? "nasa" },
+      args: { username: handleMatch[1] },
       id: "mock-tc-discover-competitor",
+    };
+  }
+  // Vague "my competitors" without @handle — do not invent a username; use reel/market tools instead.
+  if (
+    /\b(competitor|business discovery|other creator)s?\b/i.test(lower) &&
+    has("suggest_reel_ideas")
+  ) {
+    return {
+      name: "suggest_reel_ideas",
+      args: { query: transcript },
+      id: "mock-tc-competitor-vague",
+    };
+  }
+  if (
+    /(go viral|will .+ viral|viral prediction|posted today)/i.test(lower) &&
+    has("get_instagram_account_snapshot")
+  ) {
+    return {
+      name: "get_instagram_account_snapshot",
+      args: {},
+      id: "mock-tc-viral-honesty",
     };
   }
   if (

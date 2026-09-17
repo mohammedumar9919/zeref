@@ -281,3 +281,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Council APPROVE + merge. QUEUE CLOUD-B4 → DONE. Live Facebook Business Discovery UAT remains human leftover (curl + scripts/uat-competitor.mjs with FACEBOOK_*). Did not start TRACK-B-DEFER.
 - Not done / blocked: Human live FB UAT per docs/LIVE_COMPETITOR_SETUP.md; LAPTOP-UAT leftovers from Track A; TRACK-B-DEFER still BLOCKED.
 - Next for Planner / laptop: Human live competitor UAT when tokens ready. Do not unlock TRACK-B-DEFER until Lead says so.
+
+### 2026-09-17 — CLOUD-B5 — agent:laptop-planner
+- Branch: cloud/b5-pipeline-freshness
+- Status: started / implementing
+- PR: n/a yet
+- Done: Opened CLOUD-B5 phase card + QUEUE IN_PROGRESS. Added `scripts/uat-collect-recent.mjs` + `scripts/live-collect-recent.ps1`; LIVE_INSTAGRAM_SETUP bulk section. Laptop live UAT: collected 5 newest unseen Graph media (skipped 1 known) → 6 normalized entities / 7 report artifacts; Studio shows 6 items with live age badges. Jarvis hotfixes (TTS Windows SAPI, report analysis lookup, persona/competitor steer) also on this branch (uncommitted prior work).
+- Not done / blocked: PR not opened yet. TRACK-B-DEFER still BLOCKED. LAPTOP-UAT (Luke screenshot / demo video) still outstanding.
+- Next for Planner: Commit + open PR when user asks; merge; set QUEUE CLOUD-B5 DONE. Then choose LAPTOP-UAT college leftovers or unlock one TRACK-B-DEFER slice.

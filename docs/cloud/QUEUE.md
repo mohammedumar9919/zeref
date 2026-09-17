@@ -18,7 +18,8 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 | 9 | CLOUD-B2 | Live Graph collect UAT glue (needs human tokens) | DONE | `cloud/b2-` | [phases/B2-live-graph-uat.md](./phases/B2-live-graph-uat.md) |
 | 10 | CLOUD-B3 | Competitor Business Discovery + reel ideas (FB Login token) | DONE | `cloud/b3-` | [phases/B3-competitor-discovery.md](./phases/B3-competitor-discovery.md) |
 | 11 | CLOUD-B4 | Live Facebook competitor UAT glue | DONE | `cloud/b4-` | [phases/B4-competitor-uat.md](./phases/B4-competitor-uat.md) |
-| — | TRACK-B-DEFER | Next 16, Meta publish/App Review, auth product, vector memory | BLOCKED | — | After B4+ (not for Grok now) |
+| 12 | CLOUD-B5 | Live pipeline freshness (bulk Graph collect) | PR_READY | `cloud/b5-` | [phases/B5-pipeline-freshness.md](./phases/B5-pipeline-freshness.md) |
+| — | TRACK-B-DEFER | Next 16, Meta publish/App Review, auth product, vector memory | BLOCKED | — | After B5+ (not for Grok now) |
 
 ### How to claim a row
 
@@ -32,10 +33,9 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 ### Track status (authoritative)
 
 - **Track A (college):** DONE (A0–A5).
-- **Track B (live Graph + competitor):** B0–B4 **DONE**. No OPEN worker row.
-- **First OPEN for workers right now:** none. Do **not** start TRACK-B-DEFER.
+- **Track B (live Graph + competitor):** B0–B4 **DONE**. **CLOUD-B5 IN_PROGRESS** (`cloud/b5-pipeline-freshness`).
 - **TRACK-B-DEFER** stays BLOCKED — Next 16 / publish / auth / vector.
 
-**Track B note (2026-09-14):** PR #17 MERGED @ `78389f23`. QUEUE CLOUD-B4 → DONE. Live FB UAT leftover (curl + `scripts/uat-competitor.mjs` with `FACEBOOK_*`). TRACK-B-DEFER still BLOCKED.
+**Track B note (2026-09-17):** Live FB BD UAT passed on laptop. Jarvis hotfixes (TTS Windows SAPI, report entity→analysis, persona) local. Opened **CLOUD-B5** for bulk Graph collect freshness. TRACK-B-DEFER still BLOCKED.
 
 **Grok / Cloud worker rule:** QUEUE wins over stale AGENT_LOG lines.

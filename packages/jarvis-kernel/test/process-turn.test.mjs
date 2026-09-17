@@ -146,4 +146,23 @@ describe("@zeref/jarvis-kernel TTS", () => {
       "mock TTS fixture must be audible (non-zero PCM RMS)",
     );
   });
+
+  it("falls back to Windows SAPI (or mock) when cloud TTS credentials are missing", async () => {
+    delete process.env.ZEREF_TTS_MOCK;
+    delete process.env.ELEVENLABS_API_KEY;
+    delete process.env.ELEVENLABS_VOICE_ID;
+    delete process.env.OPENAI_API_KEY;
+    delete process.env.ZEREF_TTS_DISABLE_SAPI;
+
+    const result = await defaultTtsAdapter("Understood, one moment please.");
+    assert.ok(result.audio.length > 44);
+    if (process.platform === "win32") {
+      assert.equal(result.provider, "windows-sapi");
+      assert.equal(result.mocked, false);
+      assert.equal(result.mimeType, "audio/wav");
+    } else {
+      assert.equal(result.mocked, true);
+      assert.equal(result.provider, "mock");
+    }
+  });
 });
