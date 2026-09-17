@@ -305,3 +305,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Claimed LAPTOP-UAT IN_PROGRESS. Checklist card linked from QUEUE.
 - Not done / blocked: demo-start fixture cold start, mic optional, Luke screenshot, 2–3 min video, slides deck.
 - Next: Run `.\scripts\demo-start.ps1`; follow DEMO_SCRIPT beats; capture screenshot + video off-repo.
+
+### 2026-09-17 — LAPTOP-UAT — agent:laptop-planner
+- Branch: cloud/b5-pipeline-freshness
+- Status: in_progress (human leftovers remain)
+- PR: https://github.com/mohammedumar9919/zeref/pull/18 (B5 docs ride along)
+- Done: Rebuilt stale `.next`; fixture `next start` healthy on :3000; all DEMO_SCRIPT URLs 200 + fixture markers; shipped `docs/submission/slides.html` (10 slides from SLIDES.md). Opened cockpit + slides locally.
+- Not done / blocked: Luke screenshot file under docs/design/reference/screenshots/; 2–3 min demo video (off-repo); optional mic PTT UAT; PPTX export if judges require it.
+- Next for human: Follow DEMO_SCRIPT beats on http://localhost:3000/cockpit (Fixture only). Capture screenshot + record video. Do not use live-data-start for graded video.
