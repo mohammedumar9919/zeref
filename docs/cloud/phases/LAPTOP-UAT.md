@@ -48,9 +48,15 @@ Suggested name: `zeref-cockpit-laptop-uat.png` (or overwrite the 6.2 workspace r
 
 ### 5. Slides
 
-Build PPT from [../../submission/SLIDES.md](../../submission/SLIDES.md) (8–12 slides).
+Build PPT from [../../submission/SLIDES.md](../../submission/SLIDES.md) (8–12 slides), or open the ready HTML deck:
 
-- [ ] Deck drafted
+```powershell
+start docs\submission\slides.html
+```
+
+Keys: ← → / space · `F` fullscreen. Cyan/void · JetBrains Mono. Export to PPT later if judges require `.pptx`.
+
+- [x] Deck drafted (`docs/submission/slides.html` from SLIDES.md)
 
 ## After this row
 
