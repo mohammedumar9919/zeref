@@ -289,3 +289,19 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Opened CLOUD-B5 phase card + QUEUE IN_PROGRESS. Added `scripts/uat-collect-recent.mjs` + `scripts/live-collect-recent.ps1`; LIVE_INSTAGRAM_SETUP bulk section. Laptop live UAT: collected 5 newest unseen Graph media (skipped 1 known) → 6 normalized entities / 7 report artifacts; Studio shows 6 items with live age badges. Jarvis hotfixes (TTS Windows SAPI, report analysis lookup, persona/competitor steer) also on this branch (uncommitted prior work).
 - Not done / blocked: PR not opened yet. TRACK-B-DEFER still BLOCKED. LAPTOP-UAT (Luke screenshot / demo video) still outstanding.
 - Next for Planner: Commit + open PR when user asks; merge; set QUEUE CLOUD-B5 DONE. Then choose LAPTOP-UAT college leftovers or unlock one TRACK-B-DEFER slice.
+
+### 2026-09-17 — CLOUD-B5 — agent:laptop-planner
+- Branch: cloud/b5-pipeline-freshness
+- Status: pr_ready
+- PR: https://github.com/mohammedumar9919/zeref/pull/18
+- Done: Pushed B5 + Jarvis hotfixes. Bulk collect scripts; conversation-session multi-turn; Windows SAPI TTS; report/analysis lookup; research coerce; persona steers. QUEUE PR_READY. Opened LAPTOP-UAT phase card. Did not mark B5 DONE. Did not unlock TRACK-B-DEFER.
+- Not done / blocked: Planner merge of PR #18. Human LAPTOP-UAT (demo video / Luke screenshot / slides).
+- Next for Planner: Review/merge PR #18 → QUEUE CLOUD-B5 DONE. Continue LAPTOP-UAT checklist (fixture `demo-start.ps1`).
+
+### 2026-09-17 — LAPTOP-UAT — agent:laptop-planner
+- Branch: cloud/b5-pipeline-freshness (docs) / main after merge
+- Status: started
+- PR: n/a (human leftovers)
+- Done: Claimed LAPTOP-UAT IN_PROGRESS. Checklist card linked from QUEUE.
+- Not done / blocked: demo-start fixture cold start, mic optional, Luke screenshot, 2–3 min video, slides deck.
+- Next: Run `.\scripts\demo-start.ps1`; follow DEMO_SCRIPT beats; capture screenshot + video off-repo.

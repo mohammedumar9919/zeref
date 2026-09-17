@@ -12,7 +12,7 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 | 4 | CLOUD-A3 | Research intel lite (outliers + brief) | DONE | `cloud/a3-` | [phases/A3-research-lite.md](./phases/A3-research-lite.md) |
 | 5 | CLOUD-A4 | Streaming voice lite (code only) | DONE | `cloud/a4-` | [phases/A4-voice-stream.md](./phases/A4-voice-stream.md) |
 | 6 | CLOUD-A5 | Submission pack docs | DONE | `cloud/a5-` | [phases/A5-submission.md](./phases/A5-submission.md) |
-| — | LAPTOP-UAT | Mic / Luke screenshot / demo video / Postgres reset | LAPTOP_ONLY | — | — |
+| — | LAPTOP-UAT | Mic / Luke screenshot / demo video / Postgres reset | IN_PROGRESS | — | [phases/LAPTOP-UAT.md](./phases/LAPTOP-UAT.md) |
 | 7 | CLOUD-B0 | Live Instagram Graph setup docs | DONE | `cloud/b0-` | [phases/B0-meta-graph-prep.md](./phases/B0-meta-graph-prep.md) |
 | 8 | CLOUD-B1 | Live data operator path + IG health probe | DONE | `cloud/b1-` | [phases/B1-live-data-ops.md](./phases/B1-live-data-ops.md) |
 | 9 | CLOUD-B2 | Live Graph collect UAT glue (needs human tokens) | DONE | `cloud/b2-` | [phases/B2-live-graph-uat.md](./phases/B2-live-graph-uat.md) |
@@ -32,10 +32,10 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 
 ### Track status (authoritative)
 
-- **Track A (college):** DONE (A0–A5).
-- **Track B (live Graph + competitor):** B0–B4 **DONE**. **CLOUD-B5 IN_PROGRESS** (`cloud/b5-pipeline-freshness`).
+- **Track A (college):** DONE (A0–A5). **LAPTOP-UAT IN_PROGRESS** (fixture demo video / Luke screenshot / slides).
+- **Track B (live Graph + competitor):** B0–B4 **DONE**. **CLOUD-B5 PR_READY** — https://github.com/mohammedumar9919/zeref/pull/18 (`cloud/b5-pipeline-freshness`).
 - **TRACK-B-DEFER** stays BLOCKED — Next 16 / publish / auth / vector.
 
-**Track B note (2026-09-17):** Live FB BD UAT passed on laptop. Jarvis hotfixes (TTS Windows SAPI, report entity→analysis, persona) local. Opened **CLOUD-B5** for bulk Graph collect freshness. TRACK-B-DEFER still BLOCKED.
+**Track B note (2026-09-17):** B5 PR #18 open (bulk collect + voice continuity + Jarvis TTS/report hotfixes). Live FB BD already passed. Next human track: **LAPTOP-UAT**. TRACK-B-DEFER still BLOCKED.
 
 **Grok / Cloud worker rule:** QUEUE wins over stale AGENT_LOG lines.
