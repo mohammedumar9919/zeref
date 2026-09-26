@@ -112,29 +112,44 @@ async function synthesizeAndEmitAudio(
   turnId: string,
   phase: "ack" | "result",
   text: string,
-): Promise<VoiceTurnAudioBlob> {
-  const tts = await defaultTtsAdapter(text, { phase });
-  const event: VoiceAudioEvent = {
-    type: "voice.audio",
-    turnId,
-    phase,
-    audioBase64: tts.audio.toString("base64"),
-    mimeType: tts.mimeType,
-    ts: nowIso(),
-  };
-  emitVoiceEvent(event);
-  return { audioBase64: event.audioBase64, mimeType: event.mimeType };
+): Promise<VoiceTurnAudioBlob | null> {
+  try {
+    const tts = await defaultTtsAdapter(text, { phase });
+    // Mock 440 Hz beep for ack+result sounds like "two beeps" — skip ack tone.
+    if (tts.mocked && phase === "ack") {
+      return null;
+    }
+    const event: VoiceAudioEvent = {
+      type: "voice.audio",
+      turnId,
+      phase,
+      audioBase64: tts.audio.toString("base64"),
+      mimeType: tts.mimeType,
+      ts: nowIso(),
+    };
+    emitVoiceEvent(event);
+    return { audioBase64: event.audioBase64, mimeType: event.mimeType };
+  } catch (error) {
+    // Text events must still reach the HUD even when every TTS provider fails.
+    console.error(`[voice/turn] ${phase} TTS failed (text still emitted):`, error);
+    return null;
+  }
 }
 
 async function synthesizeAudioBlob(
   text: string,
   phase: "ack" | "result",
 ): Promise<VoiceTurnAudioBlob> {
-  const tts = await defaultTtsAdapter(text, { phase });
-  return {
-    audioBase64: tts.audio.toString("base64"),
-    mimeType: tts.mimeType,
-  };
+  try {
+    const tts = await defaultTtsAdapter(text, { phase });
+    return {
+      audioBase64: tts.audio.toString("base64"),
+      mimeType: tts.mimeType,
+    };
+  } catch (error) {
+    console.error(`[voice/turn] sync ${phase} TTS failed, using empty audio:`, error);
+    return { audioBase64: "", mimeType: "audio/wav" };
+  }
 }
 
 function trackPendingTurn(work: Promise<void>): void {

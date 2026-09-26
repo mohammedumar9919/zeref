@@ -34,12 +34,23 @@ export const ResearchTopicCreateSchema = z
 
 /** Coerce LLM tool args that send query/topic/prompt instead of title. */
 export function coerceResearchTopicCreateBody(rawBody: unknown): unknown {
-  if (!rawBody || typeof rawBody !== "object" || Array.isArray(rawBody)) {
-    return rawBody;
-  }
-  const body = { ...(rawBody as Record<string, unknown>) };
+  const body =
+    rawBody && typeof rawBody === "object" && !Array.isArray(rawBody)
+      ? { ...(rawBody as Record<string, unknown>) }
+      : ({} as Record<string, unknown>);
+
   if (typeof body.title !== "string" || body.title.trim().length === 0) {
-    for (const key of ["query", "topic", "prompt", "name", "summary"]) {
+    for (const key of [
+      "query",
+      "topic",
+      "prompt",
+      "name",
+      "summary",
+      "text",
+      "description",
+      "subject",
+      "focus",
+    ]) {
       const value = body[key];
       if (typeof value === "string" && value.trim().length > 0) {
         body.title = value.trim().slice(0, 200);
@@ -47,9 +58,14 @@ export function coerceResearchTopicCreateBody(rawBody: unknown): unknown {
       }
     }
   }
-  if (typeof body.title === "string") {
+
+  // Empty `{}` from the LLM used to 400 — seed a usable title instead.
+  if (typeof body.title !== "string" || body.title.trim().length === 0) {
+    body.title = "Jarvis research topic";
+  } else {
     body.title = body.title.trim().slice(0, 200);
   }
+
   // Drop unknown keys that break .strict() before parse — keep only allowlisted fields.
   return {
     title: body.title,

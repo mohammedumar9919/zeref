@@ -143,4 +143,16 @@ describe("CLOUD-B3 competitor Jarvis helpers", () => {
     assert.equal(result.toolCall?.name, "suggest_reel_ideas");
     assert.notEqual(result.toolCall?.name, "get_research_outliers");
   });
+
+  it("mock LLM does not invent a handle for vague competitor asks", async () => {
+    process.env.ZEREF_LLM_MOCK = "1";
+    delete process.env.OPENROUTER_API_KEY;
+    const port = createJarvisLlmPort();
+    const result = await port.predict({
+      messages: [{ role: "user", content: "What are my competitors posting right now?" }],
+      tools: TOOLS,
+    });
+    assert.notEqual(result.toolCall?.name, "discover_competitor");
+    assert.equal(result.toolCall?.name, "suggest_reel_ideas");
+  });
 });

@@ -1,13 +1,13 @@
-# Zeref — Current State
+﻿# Zeref â€” Current State
 
-**Last updated:** 2026-09-14 (Track B — CLOUD-B4 DONE/merged https://github.com/mohammedumar9919/zeref/pull/17 @ `78389f23`; live FB UAT leftover)  
+**Last updated:** 2026-09-17 (CLOUD-B5 PR_READY #18; LAPTOP-UAT IN_PROGRESS — college demo leftovers)
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
-**Read first in any new chat:** this file → [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) → [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
+**Read first in any new chat:** this file â†’ [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) â†’ [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
 
 **Phone / Cloud / Grok Bot:** start at [cloud/README.md](./cloud/README.md) (masterplan + QUEUE + phase cards + AGENT_LOG). Also [REMOTE_AGENTS.md](./REMOTE_AGENTS.md).
 
-**Fixture demo (CLOUD-A0, no Docker):** Windows `.\scripts\demo-start.ps1` (**build + `next start`** for instant nav — see [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md)). Coding: `.\scripts\demo-start-dev.ps1`. Live voice: [LIVE_VOICE_SETUP.md](./LIVE_VOICE_SETUP.md) + `.\scripts\live-voice-start.ps1`. **Live data (CLOUD-B1, fixture OFF):** `.\scripts\live-data-start.ps1` + `GET /api/v1/ops/instagram-health`. Studio entity id: `550e8400-e29b-41d4-a716-446655440001` ([fixtures/README.md](../fixtures/README.md)).
+**Fixture demo (CLOUD-A0, no Docker):** Windows `.\scripts\demo-start.ps1` (**build + `next start`** for instant nav â€” see [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md)). Coding: `.\scripts\demo-start-dev.ps1`. Live voice: [LIVE_VOICE_SETUP.md](./LIVE_VOICE_SETUP.md) + `.\scripts\live-voice-start.ps1`. **Live data (CLOUD-B1, fixture OFF):** `.\scripts\live-data-start.ps1` + `GET /api/v1/ops/instagram-health`. Studio entity id: `550e8400-e29b-41d4-a716-446655440001` ([fixtures/README.md](../fixtures/README.md)).
 
 Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for agents.**
 
@@ -17,36 +17,36 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 
 | Area | Status |
 |------|--------|
-| Phases 0–5 implementation | **DONE** (verify green in CI @ `568a5fc`) |
+| Phases 0â€“5 implementation | **DONE** (verify green in CI @ `568a5fc`) |
 | Phase 5 Planner sign-off | **APPROVED** (scaffold) |
 | Agent stack (GSD, council, uipro, Superpowers) | **DONE** |
 | Phase 5.0.1 ops | **DONE** (2026-05-30) |
 | Phase 5.0.2 dev perf + BFF loopback | **DONE** (2026-05-30) |
-| Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0–5.1 green) |
+| Phase 5.1 Luke JARVIS HUD visual | **APPROVED** @ `abb9dec` (CI Phase 0â€“5.1 green) |
 | Phase 6 Jarvis voice | **APPROVED** @ `183acf9` + hotfixes; screenshot @ `3020d1e` (2026-05-31) |
-| P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` — 440 Hz `tts-mock.wav` for UAT |
-| P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` — web tests no longer overwrite fixture to silence |
+| P6-HOTFIX-A audible TTS mock | **DONE** @ `9c5869f` â€” 440 Hz `tts-mock.wav` for UAT |
+| P6-HOTFIX-B voice-routes fixture | **DONE** @ `358d757` â€” web tests no longer overwrite fixture to silence |
 | Phase 7 zeref-memory + brain | **APPROVED** @ `0e7f8d5` (verify @ `0461bc1`; sign-off 2026-06-03) |
 | Phase 8 Studio + Calendar | **APPROVED** @ `e5dc5b6` (`verify:phase-8` green 2026-06-03) |
-| Phase 9 Research pipelines | **APPROVED** @ `9960c92` — CI Phase 0–9 green; research e2e 2/2 enforced |
-| Phase 6.1 Luke visual polish | **APPROVED** — `verify:phase-6.1` green; Planner visual sign-off 2026-06-16 |
-| **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ `e7908d1` — B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` green |
-| Phase 6.2 Visual Tier 3 | **PLANNING** — P6.2-A **MAY** parallel P10 Wave 1 (Amendment Q); P6.2-B after P10 sign-off |
-| Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `d8ce6c0` — full `verify:phase-10` green 2026-06-14 |
-| Phase 10.5 Stabilize & Instant | **APPROVED** @ `a90af79` — build fix `8e07b8a`; `verify:phase-10.5` green 2026-06-15; warm UAT C122 **31ms**, panel nav **21–26ms** (800ms gate) |
-| Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` — `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
-| Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` — `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
+| Phase 9 Research pipelines | **APPROVED** @ `9960c92` â€” CI Phase 0â€“9 green; research e2e 2/2 enforced |
+| Phase 6.1 Luke visual polish | **APPROVED** â€” `verify:phase-6.1` green; Planner visual sign-off 2026-06-16 |
+| **P8 hotfix (Studio/Reports hubs)** | **CLOSED** @ `e7908d1` â€” B `f52e0ef`, C `019e7bd`, E verify + CI; `verify:hotfix-p8` green |
+| Phase 6.2 Visual Tier 3 | **PLANNING** â€” P6.2-A **MAY** parallel P10 Wave 1 (Amendment Q); P6.2-B after P10 sign-off |
+| Phase 10 Live Ops & Pipeline Truth | **APPROVED** @ `d8ce6c0` â€” full `verify:phase-10` green 2026-06-14 |
+| Phase 10.5 Stabilize & Instant | **APPROVED** @ `a90af79` â€” build fix `8e07b8a`; `verify:phase-10.5` green 2026-06-15; warm UAT C122 **31ms**, panel nav **21â€“26ms** (800ms gate) |
+| Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` â€” `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
+| Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` â€” `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** **CLOUD-B4 DONE** ([PR #17](https://github.com/mohammedumar9919/zeref/pull/17) MERGED @ `78389f23`). Human live Facebook Business Discovery UAT remains leftover (`FACEBOOK_*` + curl + `scripts/uat-competitor.mjs` per [LIVE_COMPETITOR_SETUP.md](./LIVE_COMPETITOR_SETUP.md)). College demo: `.\scripts\demo-start.ps1`. Do **not** start TRACK-B-DEFER.
+**Immediate goal:** **LAPTOP-UAT IN_PROGRESS** — fixture `.\scripts\demo-start.ps1` + DEMO_SCRIPT video / Luke screenshot / slides ([cloud/phases/LAPTOP-UAT.md](./cloud/phases/LAPTOP-UAT.md)). **CLOUD-B5 PR_READY** https://github.com/mohammedumar9919/zeref/pull/18 — merge when reviewed. Do **not** start TRACK-B-DEFER.
 
 ### P8 hotfix root cause
 
-`/cockpit/studio` and `/cockpit/reports` render **CockpitShell only** (grid). Calendar/Research work because they add a **hub below the grid**. Studio/Reports deep links feel broken — no hub surface.
+`/cockpit/studio` and `/cockpit/reports` render **CockpitShell only** (grid). Calendar/Research work because they add a **hub below the grid**. Studio/Reports deep links feel broken â€” no hub surface.
 
 **Exit gate (before Phase 10):**
 
-- `/cockpit/studio` — `StudioHub` + links to entity editor
-- `/cockpit/reports` — `ReportsHub` + artifact detail for `?artifact=`
+- `/cockpit/studio` â€” `StudioHub` + links to entity editor
+- `/cockpit/reports` â€” `ReportsHub` + artifact detail for `?artifact=`
 - `verify:phase-8` still green
 - `verify:hotfix-p8` green (new)
 
@@ -55,16 +55,16 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 ## Pipeline (as built)
 
 ```
-collect → normalize → embed → analyze → report
+collect â†’ normalize â†’ embed â†’ analyze â†’ report
 ```
 
 | Stage | Package / app | Queue job | Auto-chain |
 |-------|---------------|-----------|------------|
 | collect | `@zeref/worker`, `@zeref/instagram` | `collect` | none |
-| normalize | `@zeref/worker` | `normalize` | → embed inline if `ZEREF_AUTO_EMBED` |
-| embed | `@zeref/worker` | `embed` | — |
-| analyze | `@zeref/worker`, `@zeref/analytics` | `analyze` | → report inline if `ZEREF_AUTO_REPORT` |
-| report | `@zeref/worker`, `@zeref/reports` | `report` | — |
+| normalize | `@zeref/worker` | `normalize` | â†’ embed inline if `ZEREF_AUTO_EMBED` |
+| embed | `@zeref/worker` | `embed` | â€” |
+| analyze | `@zeref/worker`, `@zeref/analytics` | `analyze` | â†’ report inline if `ZEREF_AUTO_REPORT` |
+| report | `@zeref/worker`, `@zeref/reports` | `report` | â€” |
 
 **Ops (Phase 10):**
 
@@ -72,11 +72,11 @@ collect → normalize → embed → analyze → report
 |-------------|--------|
 | `npm run dev:stack` / root `npm run dev` + `ZEREF_WORKER_AVAILABLE=1` on web | **DONE** @ `45880e6` (P10-A) |
 | `GET /api/v1/ops/worker-health` `{ consuming, source }` | **DONE** @ `bd5da5f` (P10-B) |
-| Pipeline SSE honesty (outbox drain → `simulated: false`) | **DONE** @ `780ac36` (P10-F) — `isOutboxDrainAllowed()` gates `events/stream` |
-| `npm run verify:phase-10` | **GREEN** @ `0634f86` (2026-06-14) — full chained gate OK; C69 SSE latency tolerance 500ms CI |
-| `npm run verify:phase-10.5` | **GREEN** @ `a90af79` (2026-06-15) — chains `verify:phase-10` + C128 stability e2e |
+| Pipeline SSE honesty (outbox drain â†’ `simulated: false`) | **DONE** @ `780ac36` (P10-F) â€” `isOutboxDrainAllowed()` gates `events/stream` |
+| `npm run verify:phase-10` | **GREEN** @ `0634f86` (2026-06-14) â€” full chained gate OK; C69 SSE latency tolerance 500ms CI |
+| `npm run verify:phase-10.5` | **GREEN** @ `a90af79` (2026-06-15) â€” chains `verify:phase-10` + C128 stability e2e |
 
-Web-only: **`npm run dev -w @zeref/web`** — no queue consumer, simulated pipeline only. See [phase-10-contract.md](./governance/phase-10-contract.md) · [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md) § Operator UAT.
+Web-only: **`npm run dev -w @zeref/web`** â€” no queue consumer, simulated pipeline only. See [phase-10-contract.md](./governance/phase-10-contract.md) Â· [DEV_PERFORMANCE.md](./DEV_PERFORMANCE.md) Â§ Operator UAT.
 
 ---
 
@@ -86,7 +86,7 @@ Web-only: **`npm run dev -w @zeref/web`** — no queue consumer, simulated pipel
 |-------------|--------|
 | `/cockpit` layout (Studio, Calendar \| Globe \| Reports, Research) | **DONE** |
 | BFF `GET /api/v1/cockpit/slices` | **DONE** (fixture mode in CI) |
-| Wireframe icosahedron globe | **SUPERSEDED** — point-cloud + rings @ `838e34d` (ADR-015 amendment) |
+| Wireframe icosahedron globe | **SUPERSEDED** â€” point-cloud + rings @ `838e34d` (ADR-015 amendment) |
 | Luke HUD shell + SIMULATED telemetry/AUDIO | **DONE** @ `838e34d` |
 | Playwright 16/16 (layout + C48) | **DONE** with `ZEREF_PHASE51_UI=1` |
 | SSE stub `GET /api/v1/events/stream` | **DONE** (P5.1-B) |
@@ -98,18 +98,18 @@ Web-only: **`npm run dev -w @zeref/web`** — no queue consumer, simulated pipel
 
 | Gate | Local | CI |
 |------|-------|-----|
-| `verify:phase-0` … `verify:phase-4` | OK with `DATABASE_URL` | OK |
-| `verify:phase-5` | OK with `ZEREF_BFF_FIXTURE=1` | OK — **no live DB BFF test** |
-| `verify:phase-5.1` | OK with `ZEREF_BFF_FIXTURE=1` + `ZEREF_PHASE51_UI=1` | OK — C48 enforced |
-| `verify:phase-6` | OK with mocks + `ZEREF_PHASE6_VOICE=1` | OK — C59 enforced after CI update |
+| `verify:phase-0` â€¦ `verify:phase-4` | OK with `DATABASE_URL` | OK |
+| `verify:phase-5` | OK with `ZEREF_BFF_FIXTURE=1` | OK â€” **no live DB BFF test** |
+| `verify:phase-5.1` | OK with `ZEREF_BFF_FIXTURE=1` + `ZEREF_PHASE51_UI=1` | OK â€” C48 enforced |
+| `verify:phase-6` | OK with mocks + `ZEREF_PHASE6_VOICE=1` | OK â€” C59 enforced after CI update |
 
-### QA — Phase 5.1 verify (P5.1-C)
+### QA â€” Phase 5.1 verify (P5.1-C)
 
 | Deliverable | Status |
 |-------------|--------|
-| `scripts/verify-phase-5.1.mjs` | **DONE** — chains `verify:phase-0` … `verify:phase-5` + C48 |
-| `apps/web/e2e/cockpit-hud-5.1.spec.ts` | **DONE** — C48 testids |
-| CI **Phase 0–5.1 gate** | **DONE** — `ZEREF_PHASE51_UI=1` on 5.1 step |
+| `scripts/verify-phase-5.1.mjs` | **DONE** â€” chains `verify:phase-0` â€¦ `verify:phase-5` + C48 |
+| `apps/web/e2e/cockpit-hud-5.1.spec.ts` | **DONE** â€” C48 testids |
+| CI **Phase 0â€“5.1 gate** | **DONE** â€” `ZEREF_PHASE51_UI=1` on 5.1 step |
 
 ```powershell
 cd c:\Projects\zeref
@@ -125,13 +125,13 @@ npm run verify:phase-5.1
 
 | Component | Status |
 |-----------|--------|
-| GSD Redux | **DONE** — `.cursor/skills/gsd-*`, `.cursor/get-shit-done/` |
-| UI UX Pro Max | **DONE** — `.cursor/skills/ui-ux-pro-max/` |
-| Council skills | **PARTIAL** — 4 skills in `.cursor/skills/council-*`, `run-verify-gate` |
-| Council board YAML | **DONE** — `config/council/zeref-board.yaml` |
-| Cursor rules `.mdc` | **DONE** — `.cursor/rules/` |
-| phase_gate scripts | **DONE** — `scripts/phase_gate.ps1`, `phase_gate.sh` |
-| Superpowers plugin | **USER** — `/add-plugin superpowers` |
+| GSD Redux | **DONE** â€” `.cursor/skills/gsd-*`, `.cursor/get-shit-done/` |
+| UI UX Pro Max | **DONE** â€” `.cursor/skills/ui-ux-pro-max/` |
+| Council skills | **PARTIAL** â€” 4 skills in `.cursor/skills/council-*`, `run-verify-gate` |
+| Council board YAML | **DONE** â€” `config/council/zeref-board.yaml` |
+| Cursor rules `.mdc` | **DONE** â€” `.cursor/rules/` |
+| phase_gate scripts | **DONE** â€” `scripts/phase_gate.ps1`, `phase_gate.sh` |
+| Superpowers plugin | **USER** â€” `/add-plugin superpowers` |
 
 ---
 
@@ -144,8 +144,8 @@ npm run verify:phase-5.1
 | P6-C BFF/Voice | **DONE** @ `4171e14` |
 | P6-E Docs/QA | **DONE** @ `2cbe98b` |
 | P6-D UI | **DONE** @ `183acf9` |
-| P6-HOTFIX-A | **DONE** @ `9c5869f` — audible `tts-mock.wav` + kernel RMS test |
-| P6-HOTFIX-B | **DONE** @ `358d757` — voice-routes audible fixture + RMS assertions |
+| P6-HOTFIX-A | **DONE** @ `9c5869f` â€” audible `tts-mock.wav` + kernel RMS test |
+| P6-HOTFIX-B | **DONE** @ `358d757` â€” voice-routes audible fixture + RMS assertions |
 
 ```powershell
 cd c:\Projects\zeref
@@ -154,7 +154,7 @@ $env:ZEREF_BFF_FIXTURE='1'; $env:ZEREF_PHASE51_UI='1'; $env:ZEREF_PHASE6_VOICE='
 npm run verify:phase-6
 ```
 
-**Live Jarvis (your OpenRouter key):** edit `apps/web/.env.local` — set `OPENROUTER_API_KEY`, comment out `ZEREF_LLM_MOCK=1`, restart `npm run dev -w @zeref/web`, hold PTT on cockpit.
+**Live Jarvis (your OpenRouter key):** edit `apps/web/.env.local` â€” set `OPENROUTER_API_KEY`, comment out `ZEREF_LLM_MOCK=1`, restart `npm run dev -w @zeref/web`, hold PTT on cockpit.
 
 ### Phase 7 progress
 
@@ -179,7 +179,7 @@ Screenshot: `docs/design/reference/screenshots/zeref-cockpit-7-brain.png` @ `0e7
 
 ---
 
-## Phase 8 — local dev UAT (fixture mode)
+## Phase 8 â€” local dev UAT (fixture mode)
 
 Studio entity pages return **404** when `ZEREF_BFF_FIXTURE` is unset and Postgres has no matching `normalized_entities` row. In fixture mode only this entity resolves:
 
@@ -215,7 +215,7 @@ Restart dev after setting env vars. Link from `/cockpit` studio panel uses the s
 
 Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 
-**Verify:** `npm run verify:phase-8` **GREEN** (2026-06-03) @ `e5dc5b6` — Playwright reuse fix; full chain 0–8 + 25/25 e2e.
+**Verify:** `npm run verify:phase-8` **GREEN** (2026-06-03) @ `e5dc5b6` â€” Playwright reuse fix; full chain 0â€“8 + 25/25 e2e.
 
 Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 

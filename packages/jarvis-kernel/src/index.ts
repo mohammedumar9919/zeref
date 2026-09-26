@@ -18,6 +18,7 @@ export {
   synthesizeWithMock,
   synthesizeWithElevenLabs,
   synthesizeWithOpenAi,
+  synthesizeWithWindowsSapi,
 } from "./tts/synthesize-speech.js";
 
 export { defaultLlmAdapter } from "./llm/generate-response.js";

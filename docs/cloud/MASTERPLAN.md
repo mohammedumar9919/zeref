@@ -11,7 +11,7 @@
 |------|--------|
 | Phases **0–12** | **APPROVED / frozen** — do not rebuild |
 | College demo readiness | Track A **DONE** (A0–A5) |
-| Next remote work | **Track B** — first OPEN = **CLOUD-B4** ([QUEUE.md](./QUEUE.md)) |
+| Next remote work | **Track B** — **CLOUD-B5 IN_PROGRESS** ([QUEUE.md](./QUEUE.md)) |
 
 ---
 
@@ -20,8 +20,8 @@
 **Track A — College flash (DONE)**  
 6.2 HUD → product surfaces → research-lite → streaming-lite → submission pack.
 
-**Track B — ACTIVE (2026-09-14)**  
-B0–B3 DONE. **CLOUD-B4 OPEN** — live Facebook competitor UAT glue. Deferred (BLOCKED): Next 16, Meta publish + App Review, auth product, vector memory (`TRACK-B-DEFER`). Human `FACEBOOK_*`: [LIVE_COMPETITOR_SETUP.md](../LIVE_COMPETITOR_SETUP.md).
+**Track B — ACTIVE (2026-09-17)**  
+B0–B4 DONE. **CLOUD-B5 IN_PROGRESS** — live pipeline freshness (bulk Graph collect). Deferred (BLOCKED): Next 16, Meta publish + App Review, auth product, vector memory (`TRACK-B-DEFER`).
 
 ---
 

@@ -49,7 +49,7 @@ export type SpeechSynthesisOptions = {
 export type SpeechSynthesisResult = {
   audio: Buffer;
   mimeType: "audio/mpeg" | "audio/wav";
-  provider: "elevenlabs" | "openai" | "mock";
+  provider: "elevenlabs" | "openai" | "windows-sapi" | "mock";
   mocked: boolean;
   durationMs: number;
 };

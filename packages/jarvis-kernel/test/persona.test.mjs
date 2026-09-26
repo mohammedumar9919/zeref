@@ -32,4 +32,19 @@ describe("persona steering (CLOUD-B3)", () => {
     assert.match(prompt, /Never tell the operator Insights are impossible/i);
     assert.doesNotMatch(prompt, /Business Discovery works on graph\.instagram\.com/);
   });
+
+  it("steers vague competitors to ask for @handle and viral prediction honesty", () => {
+    const prompt = britishPartnerSystemPrompt("ops");
+    assert.match(prompt, /ask for one public Business\/Creator username/i);
+    assert.match(prompt, /Will this post go viral|no Meta viral predictor/i);
+    assert.match(prompt, /request_performance_report \(write-low\)/);
+    assert.match(prompt, /enqueue_job is write-high/i);
+  });
+
+  it("steers multi-turn voice follow-ups to continue offers", () => {
+    const prompt = britishPartnerSystemPrompt("ops");
+    assert.match(prompt, /Multi-turn voice/i);
+    assert.match(prompt, /how can I assist/i);
+    assert.match(prompt, /their\/them\/that/i);
+  });
 });

@@ -13,13 +13,50 @@ import {
   type MetricFactCitationSource,
 } from "@zeref/reports";
 import { analysisOutputs, metricFacts, reportArtifacts, schema } from "@zeref/db";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import type { Pool } from "pg";
 
 export type ReportHandlerDeps = {
   pool: Pool;
 };
+
+async function resolveAnalysisOutputId(
+  db: ReturnType<typeof drizzle<typeof schema>>,
+  input: {
+    analysisOutputId?: string;
+    normalizedEntityId?: string;
+    snapshotId?: string;
+  },
+): Promise<string> {
+  if (input.analysisOutputId) {
+    return input.analysisOutputId;
+  }
+
+  if (input.normalizedEntityId) {
+    const byEntity = await db
+      .select({ id: analysisOutputs.id })
+      .from(analysisOutputs)
+      .where(eq(analysisOutputs.normalizedEntityId, input.normalizedEntityId))
+      .orderBy(desc(analysisOutputs.createdAt))
+      .limit(1);
+    if (byEntity[0]?.id) return byEntity[0].id;
+  }
+
+  if (input.snapshotId) {
+    const bySnapshot = await db
+      .select({ id: analysisOutputs.id })
+      .from(analysisOutputs)
+      .where(eq(analysisOutputs.snapshotId, input.snapshotId))
+      .orderBy(desc(analysisOutputs.createdAt))
+      .limit(1);
+    if (bySnapshot[0]?.id) return bySnapshot[0].id;
+  }
+
+  throw new Error(
+    "report requires analysisOutputId (or a normalizedEntityId/snapshotId with an existing analysis_outputs row)",
+  );
+}
 
 /**
  * Report handler: analysis_outputs → elite (+ optional jarvis_brief) artifacts (C19, C23).
@@ -31,11 +68,9 @@ export async function runReport(
   const input = ReportJobInputSchema.parse(rawInput);
   const db = drizzle(deps.pool, { schema });
 
-  if (!input.analysisOutputId) {
-    throw new Error("report requires analysisOutputId in Phase 4");
-  }
-
-  const analysisId = AnalysisOutputIdSchema.parse(input.analysisOutputId);
+  const analysisId = AnalysisOutputIdSchema.parse(
+    await resolveAnalysisOutputId(db, input),
+  );
   const analysisRows = await db
     .select()
     .from(analysisOutputs)

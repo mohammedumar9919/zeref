@@ -28,6 +28,8 @@ export type AgentRunInput = {
   budgets?: Partial<AgentBudgets>;
   /** Resume flag after conversational confirm (C155). */
   confirmed?: boolean;
+  /** Prior user/assistant turns for multi-turn voice continuity. */
+  conversationHistory?: Array<{ role: "user" | "assistant"; content: string }>;
   killSignal?: AbortSignal;
   onStep?: (step: AgentStep) => void;
   /** Speakable token deltas from predictStream (final text only; tool JSON is not emitted). */
@@ -82,8 +84,16 @@ export async function runAgentLoop(
   });
 
   const mode = detectPersonaMode(input.transcript);
+  const history = (input.conversationHistory ?? [])
+    .filter((m) => m.content.trim().length > 0)
+    .slice(-8)
+    .map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
   const messages: LlmMessage[] = [
     { role: "system", content: britishPartnerSystemPrompt(mode) },
+    ...history,
     { role: "user", content: input.transcript },
   ];
 

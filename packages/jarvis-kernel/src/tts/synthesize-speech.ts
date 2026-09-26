@@ -1,6 +1,9 @@
-import { readFileSync } from "node:fs";
+import { spawn } from "node:child_process";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
 import type { SpeechSynthesisOptions, SpeechSynthesisResult, TtsAdapter } from "../types.js";
 
 const pkgRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -53,7 +56,10 @@ export async function synthesizeWithElevenLabs(
   );
 
   if (!response.ok) {
-    throw new Error(`ElevenLabs request failed: ${response.status}`);
+    const detail = await response.text().catch(() => "");
+    throw new Error(
+      `ElevenLabs request failed: ${response.status}${detail ? ` — ${detail.slice(0, 180)}` : ""}`,
+    );
   }
 
   const audio = Buffer.from(await response.arrayBuffer());
@@ -102,9 +108,76 @@ export async function synthesizeWithOpenAi(
   };
 }
 
+function runPowerShell(script: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      "powershell.exe",
+      ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", script],
+      { windowsHide: true },
+    );
+    let stderr = "";
+    child.stderr.on("data", (chunk: Buffer) => {
+      stderr += chunk.toString("utf8");
+    });
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`Windows SAPI failed (exit ${code}): ${stderr.slice(0, 240)}`));
+    });
+  });
+}
+
+/** Local spoken fallback via Windows System.Speech (no cloud quota). */
+export async function synthesizeWithWindowsSapi(
+  text: string,
+): Promise<SpeechSynthesisResult> {
+  if (process.platform !== "win32") {
+    throw new Error("Windows SAPI unavailable on this platform");
+  }
+  if (process.env.ZEREF_TTS_DISABLE_SAPI === "1") {
+    throw new Error("Windows SAPI disabled via ZEREF_TTS_DISABLE_SAPI");
+  }
+
+  const trimmed = text.trim().slice(0, 900);
+  if (!trimmed) {
+    throw new Error("empty TTS text");
+  }
+
+  const dir = await mkdtemp(join(tmpdir(), "zeref-tts-"));
+  const wavPath = join(dir, "out.wav");
+  const psWav = wavPath.replace(/'/g, "''");
+  const psText = trimmed.replace(/'/g, "''");
+
+  try {
+    await runPowerShell(
+      [
+        "Add-Type -AssemblyName System.Speech",
+        "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer",
+        "$s.Rate = 0",
+        `$s.SetOutputToWaveFile('${psWav}')`,
+        `$s.Speak('${psText}')`,
+        "$s.Dispose()",
+      ].join("; "),
+    );
+    const audio = await readFile(wavPath);
+    if (audio.length < 44) {
+      throw new Error("Windows SAPI produced empty wav");
+    }
+    return {
+      audio,
+      mimeType: "audio/wav",
+      provider: "windows-sapi",
+      mocked: false,
+      durationMs: estimateDurationMs(trimmed),
+    };
+  } finally {
+    await rm(dir, { recursive: true, force: true }).catch(() => undefined);
+  }
+}
+
 export const defaultTtsAdapter: TtsAdapter = async (
   text: string,
-  _opts?: SpeechSynthesisOptions,
+  opts?: SpeechSynthesisOptions,
 ) => {
   if (process.env.ZEREF_TTS_MOCK === "1") {
     return synthesizeWithMock(text);
@@ -114,11 +187,33 @@ export const defaultTtsAdapter: TtsAdapter = async (
     return await synthesizeWithElevenLabs(text);
   } catch (primaryError) {
     console.warn(
-      `[jarvis-kernel] ElevenLabs TTS failed, falling back to OpenAI: ${
+      `[jarvis-kernel] ElevenLabs TTS failed, falling back: ${
         primaryError instanceof Error ? primaryError.message : primaryError
       }`,
     );
-    return synthesizeWithOpenAi(text);
+  }
+
+  try {
+    return await synthesizeWithOpenAi(text);
+  } catch (openAiError) {
+    console.warn(
+      `[jarvis-kernel] OpenAI TTS failed, trying Windows SAPI: ${
+        openAiError instanceof Error ? openAiError.message : openAiError
+      }`,
+    );
+  }
+
+  try {
+    return await synthesizeWithWindowsSapi(text);
+  } catch (sapiError) {
+    console.warn(
+      `[jarvis-kernel] Windows SAPI failed, falling back to mock wav: ${
+        sapiError instanceof Error ? sapiError.message : sapiError
+      }`,
+    );
+    // Last resort — beep. Callers should skip ack audio when mocked.
+    void opts;
+    return synthesizeWithMock(text);
   }
 };
 

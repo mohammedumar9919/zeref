@@ -222,9 +222,9 @@ describe("handleVoiceTurn", () => {
     assert.match(body.transcript, /report headline/i);
 
     assert.ok(received.some((e) => e.eventType === "voice.transcript"));
-    assert.ok(received.some((e) => e.eventType === "voice.audio"));
+    // Mock TTS skips the ack tone so the operator does not hear two beeps.
     assert.ok(
-      received.some(
+      !received.some(
         (e) => e.eventType === "voice.audio" && e.data?.phase === "ack",
       ),
     );

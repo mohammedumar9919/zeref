@@ -53,15 +53,28 @@ export async function persistAgentAudit(input: {
   const status = mapTerminalStatus(input.terminalReason);
   const transcriptSummary = input.transcript.slice(0, 500);
 
-  await db.insert(jarvisAgentRuns).values({
-    id: input.runId,
-    status,
-    startedAt: new Date(input.startedAt),
-    endedAt: new Date(input.endedAt),
-    turnId: input.turnId,
-    transcriptSummary,
-    iterationCount: input.iterationCount,
-  });
+  // Confirmed write-high reuses the same runId — upsert instead of duplicate-key crash.
+  await db
+    .insert(jarvisAgentRuns)
+    .values({
+      id: input.runId,
+      status,
+      startedAt: new Date(input.startedAt),
+      endedAt: new Date(input.endedAt),
+      turnId: input.turnId,
+      transcriptSummary,
+      iterationCount: input.iterationCount,
+    })
+    .onConflictDoUpdate({
+      target: jarvisAgentRuns.id,
+      set: {
+        status,
+        endedAt: new Date(input.endedAt),
+        turnId: input.turnId,
+        transcriptSummary,
+        iterationCount: input.iterationCount,
+      },
+    });
 
   if (input.audit.entries.length === 0) {
     return;

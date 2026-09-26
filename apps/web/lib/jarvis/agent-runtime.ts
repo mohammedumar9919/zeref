@@ -22,6 +22,12 @@ import {
 
 import { getCockpitEventBus } from "../cockpit/cockpit-event-bus";
 import { persistAgentAudit } from "./audit-persist";
+import {
+  getConversationHistoryForLlm,
+  recordAssistantTurn,
+  recordUserTurn,
+  resolveConversationalTranscript,
+} from "./conversation-session";
 import { createJarvisLlmPort } from "./llm-port";
 import { mapCoreStepToContract } from "./map-agent-step";
 import { createZerefContext } from "./zeref-context";
@@ -117,6 +123,14 @@ export async function runJarvisAgent(
 ): Promise<JarvisAgentRunOutput> {
   const runId = input.runId ?? randomUUID();
   const startedAt = nowIso();
+  const originalTranscript = input.transcript;
+  const { transcript: resolvedTranscript } = resolveConversationalTranscript(
+    originalTranscript,
+  );
+  // History before recording this user turn (current utterance is appended separately).
+  const conversationHistory = getConversationHistoryForLlm();
+  recordUserTurn(originalTranscript);
+
   const zerefContext = createZerefContext(input.turnId);
   const toolExecutor = createZerefToolExecutor(zerefContext);
   const llm = createJarvisLlmPort();
@@ -132,13 +146,18 @@ export async function runJarvisAgent(
       if (input.killSignal?.aborted) return;
       const index = spokenCount;
       spokenCount += 1;
-      await input.onSpeakableSentence?.(sentence, { index });
+      try {
+        await input.onSpeakableSentence?.(sentence, { index });
+      } catch (error) {
+        console.error("[jarvis/agent] speakable sentence failed (continuing):", error);
+      }
     });
   };
 
   const result = await runAgentLoop({
     runId,
-    transcript: input.transcript,
+    transcript: resolvedTranscript,
+    conversationHistory,
     llm,
     toolExecutor,
     tools: ZEREF_TOOL_DESCRIPTORS,
@@ -160,37 +179,7 @@ export async function runJarvisAgent(
     },
   });
 
-  if (!input.killSignal?.aborted) {
-    const remainder = sentenceBuffer.flush();
-    if (remainder.length === 0 && spokenCount === 0 && result.finalText) {
-      for (const sentence of splitIntoSentences(result.finalText)) {
-        enqueueSpeakable(sentence);
-      }
-    } else {
-      for (const sentence of remainder) {
-        enqueueSpeakable(sentence);
-      }
-    }
-  }
-
-  await speakChain;
-
-  const endedAt = nowIso();
-  const toolCalls = extractToolCalls(result.steps);
-  const iterationCount = result.audit.entries.length;
-
-  await persistAgentAudit({
-    runId,
-    turnId: input.turnId,
-    transcript: input.transcript,
-    terminalReason: result.terminalReason,
-    audit: result.audit,
-    iterationCount,
-    startedAt,
-    endedAt,
-  });
-
-  const ackText = buildAckText(input.transcript);
+  const ackText = buildAckText(originalTranscript);
   let resultText: string;
   if (result.terminalReason === "awaiting_confirm" && result.pendingConfirm) {
     resultText = confirmResultText(result.pendingConfirm);
@@ -203,6 +192,42 @@ export async function runJarvisAgent(
   } else {
     resultText = "Done.";
   }
+
+  const toolCalls = extractToolCalls(result.steps);
+  recordAssistantTurn(
+    resultText,
+    toolCalls.map((c) => ({ name: c.name, args: c.args, result: c.result })),
+  );
+
+  // Persist before TTS so "Understood" + crash never loses the transcript.
+  const endedAt = nowIso();
+  const iterationCount = result.audit.entries.length;
+
+  await persistAgentAudit({
+    runId,
+    turnId: input.turnId,
+    transcript: originalTranscript,
+    terminalReason: result.terminalReason,
+    audit: result.audit,
+    iterationCount,
+    startedAt,
+    endedAt,
+  });
+
+  if (!input.killSignal?.aborted) {
+    const remainder = sentenceBuffer.flush();
+    if (remainder.length === 0 && spokenCount === 0 && resultText) {
+      for (const sentence of splitIntoSentences(resultText)) {
+        enqueueSpeakable(sentence);
+      }
+    } else {
+      for (const sentence of remainder) {
+        enqueueSpeakable(sentence);
+      }
+    }
+  }
+
+  await speakChain;
 
   const resultTs = nowIso();
   const events: Array<VoiceTranscriptEvent | VoiceStateEvent> = [

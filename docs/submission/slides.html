@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZEREF — College slides</title>
+  <style>
+    :root {
+      --bg: #05080c;
+      --void: #0a1218;
+      --cyan: #3de7ff;
+      --cyan-dim: #1a8a9a;
+      --text: #e8f4f8;
+      --muted: #8aa4b0;
+      --line: rgba(61, 231, 255, 0.22);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+    }
+    body {
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(61, 231, 255, 0.12), transparent),
+        linear-gradient(180deg, #05080c 0%, #0a1218 55%, #05080c 100%);
+    }
+    .deck { height: 100%; overflow: hidden; }
+    .slide {
+      display: none;
+      height: 100%;
+      padding: clamp(2rem, 5vw, 4rem);
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.25rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .slide.active { display: flex; }
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--cyan);
+    }
+    h2 {
+      font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+      font-weight: 600;
+      color: var(--text);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.6rem;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.5;
+      max-width: 42rem;
+    }
+    ul { list-style: none; display: grid; gap: 0.7rem; }
+    li {
+      position: relative;
+      padding-left: 1.2rem;
+      color: var(--text);
+      line-height: 1.45;
+      font-size: 1.05rem;
+    }
+    li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+    }
+    .one-line {
+      margin-top: 0.5rem;
+      color: var(--cyan);
+      font-size: 1.05rem;
+    }
+    .footer {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--line);
+      background: rgba(5, 8, 12, 0.92);
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+    }
+    .hint { opacity: 0.7; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.65rem 0.5rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th { color: var(--cyan); font-weight: 500; }
+    code, .mono {
+      color: var(--cyan);
+      font-size: 0.95em;
+    }
+    pre.arch {
+      border: 1px solid var(--line);
+      background: rgba(61, 231, 255, 0.04);
+      padding: 1rem 1.25rem;
+      color: var(--cyan);
+      line-height: 1.55;
+      overflow-x: auto;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    .title-slide h1 { font-size: clamp(3rem, 8vw, 5rem); }
+    .title-slide .brand-sub { margin-top: 0.5rem; font-size: 1.2rem; color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+    <section class="slide title-slide active" data-i="1">
+      <p class="eyebrow">College · Track A · Fixture-honest</p>
+      <h1>ZEREF</h1>
+      <p class="brand-sub">An Autonomous JARVIS Command Center for Instagram Growth</p>
+      <p class="sub">Mohammed Umar Salam</p>
+    </section>
+
+    <section class="slide" data-i="2">
+      <p class="eyebrow">02 · Problem</p>
+      <h2>Creators are drowning in tools</h2>
+      <ul>
+        <li>Scrapers, sheets, schedulers, and a chatbot that cannot see ops</li>
+        <li>Dashboards hide whether numbers are live, stale, or fake</li>
+        <li>Autopilot publish is unsafe — and <strong>not built</strong> here</li>
+      </ul>
+      <p class="one-line">Growth needs a command center, not another unlabeled chart.</p>
+    </section>
+
+    <section class="slide" data-i="3">
+      <p class="eyebrow">03 · Claim</p>
+      <h2>One HUD. One voice. One pipeline.</h2>
+      <ul>
+        <li>JARVIS <strong>reads</strong> cockpit, reports, research</li>
+        <li>JARVIS <strong>writes</strong> only after conversational confirm + audit</li>
+        <li>Autonomous <strong>inside</strong> the room — not an Instagram autopilot</li>
+      </ul>
+      <p class="sub">Do not say: “Auto-posts to Instagram.”</p>
+    </section>
+
+    <section class="slide" data-i="4">
+      <p class="eyebrow">04 · Architecture</p>
+      <h2>Honest pipeline</h2>
+      <pre class="arch">collect → normalize → embed → analyze → report
+        immutable snapshot (no re-scrape)</pre>
+      <ul>
+        <li><span class="mono">@zeref/contracts</span> = JSON shapes · BFF-only browser</li>
+        <li>Worker + Postgres when live · <strong>fixture mode</strong> for this demo</li>
+        <li>JARVIS: portable ReAct + MCP-style tools</li>
+      </ul>
+    </section>
+
+    <section class="slide" data-i="5">
+      <p class="eyebrow">05 · HUD</p>
+      <h2>Command center</h2>
+      <ul>
+        <li>Luke-style cyan / void cockpit</li>
+        <li>Globe + four panels: Studio · Calendar · Reports · Research</li>
+        <li>Chips: Fixture / stale / live · <strong>SIMULATED</strong> when telemetry is stubbed</li>
+      </ul>
+      <p class="sub">Visual: <span class="mono">/cockpit</span> — insert Luke screenshot after UAT.</p>
+    </section>
+
+    <section class="slide" data-i="6">
+      <p class="eyebrow">06 · Surfaces</p>
+      <h2>Operator hubs</h2>
+      <table>
+        <thead>
+          <tr><th>Surface</th><th>Judges see</th><th>Honest note</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Studio</td><td>Media + hook assist</td><td>Fixture LOG240</td></tr>
+          <tr><td>Calendar</td><td>Caption / media / slot</td><td>Enqueue is advanced</td></tr>
+          <tr><td>Reports</td><td>Narrative + 3 charts</td><td>Raw JSON advanced</td></tr>
+          <tr><td>Research</td><td>Cards + intel</td><td>Fixture topic</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="slide" data-i="7">
+      <p class="eyebrow">07 · Research</p>
+      <h2>Own-account intel</h2>
+      <ul>
+        <li>Outlier bar from <span class="mono">metric_facts</span> — demo <strong>HIT999 · 5.5×</strong> (600 vs 110)</li>
+        <li>Caption hook 0–10 (fixture: 8.0)</li>
+        <li>Weekly brief grounded in HIT999 — labeled mocked</li>
+        <li>Competitor <span class="mono">@ride_lab_pro</span> = fixture only in this pack</li>
+      </ul>
+    </section>
+
+    <section class="slide" data-i="8">
+      <p class="eyebrow">08 · JARVIS</p>
+      <h2>Voice + tools</h2>
+      <ul>
+        <li>PTT → STT → agent → cascaded TTS</li>
+        <li>Barge-in stops playback and kills the run</li>
+        <li>Writes require confirm first · audit trail</li>
+        <li>No mic → open Research (no typed HUD composer)</li>
+      </ul>
+      <p class="sub">Do not claim measured &lt;1.2s first-audio unless laptop UAT measured it.</p>
+    </section>
+
+    <section class="slide" data-i="9">
+      <p class="eyebrow">09 · Demo</p>
+      <h2>Four beats · 2–3 min</h2>
+      <ul>
+        <li>Command center (<span class="mono">/cockpit</span>)</li>
+        <li>“What’s the weekly brief?” <strong>or</strong> open Research</li>
+        <li>Studio → Calendar → Reports</li>
+        <li>HIT999 + close: we do not publish</li>
+      </ul>
+      <p class="one-line mono">.\scripts\demo-start.ps1 · ZEREF_BFF_FIXTURE=1</p>
+    </section>
+
+    <section class="slide" data-i="10">
+      <p class="eyebrow">10 · Close</p>
+      <h2>Shipped vs not in this build</h2>
+      <div class="grid-2">
+        <div>
+          <p class="eyebrow">Track A</p>
+          <ul>
+            <li>HUD + surfaces</li>
+            <li>Research-lite</li>
+            <li>Voice code + fixture demo</li>
+            <li>This pack</li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow">Say it · not shipped here</p>
+          <ul>
+            <li>Meta publish + App Review</li>
+            <li>Multi-tenant auth</li>
+            <li>Next 16</li>
+            <li>College video leftover</li>
+          </ul>
+        </div>
+      </div>
+      <p class="one-line">Honest data. Human approval. No fake publish.</p>
+    </section>
+  </div>
+
+  <div class="footer">
+    <span>ZEREF · fixture-honest college deck</span>
+    <span id="pos">1 / 10</span>
+    <span class="hint">← → or click · F for fullscreen</span>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    let i = 0;
+    const pos = document.getElementById("pos");
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      pos.textContent = (i + 1) + " / " + slides.length;
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); show(i + 1); }
+      if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); show(i - 1); }
+      if (e.key === "Home") show(0);
+      if (e.key === "End") show(slides.length - 1);
+      if (e.key === "f" || e.key === "F") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+        else document.exitFullscreen().catch(() => {});
+      }
+    });
+    document.getElementById("deck").addEventListener("click", (e) => {
+      const mid = window.innerWidth / 2;
+      show(e.clientX >= mid ? i + 1 : i - 1);
+    });
+  </script>
+</body>
+</html>
