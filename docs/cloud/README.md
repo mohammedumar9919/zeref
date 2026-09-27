@@ -4,14 +4,16 @@
 
 | File | Purpose |
 |------|---------|
-| [MASTERPLAN.md](./MASTERPLAN.md) | College Track A (DONE) + partner Track B (**ACTIVE**) |
-| [QUEUE.md](./QUEUE.md) | Ordered remote-ready work — **pick top OPEN/IN_PROGRESS item only** (CLOUD-B5) |
+| [GROK.md](./GROK.md) | **Start here, Grok Bot** — Track C boot, claim rules, finish steps, chat prompt |
+| [MASTERPLAN.md](./MASTERPLAN.md) | Tracks A/B (DONE) + **Track C (ACTIVE)** + Horizons 2–3 |
+| [QUEUE.md](./QUEUE.md) | Ordered work — work only on your **assigned** `OPEN` ID |
+| [log/](./log/) | One log file per Track C ID (workers write here, not AGENT_LOG) |
 | [HANDOFF.md](./HANDOFF.md) | PR rules, AGENT_LOG, how the laptop Planner reviews your work |
 | [AGENT_LOG.md](./AGENT_LOG.md) | Append-only work log (you write; Planner reads later) |
 | [PLANNER.md](./PLANNER.md) | Run a **Planner** Cloud Agent / Grok Bot from work (review/merge, not implement) |
 | [phases/](./phases/) | One card per remote-capable slice |
 
-**Track B:** B0–B4 **DONE**. **CLOUD-B5 IN_PROGRESS** ([phases/B5-pipeline-freshness.md](./phases/B5-pipeline-freshness.md)). TRACK-B-DEFER stays BLOCKED. **QUEUE wins.**
+**Track C (week 1, 2026-09-27):** **CLOUD-C0 OPEN** (CI gate) → wave 1 C1 / C3 / C6 → wave 2 C2 / C5. Week 2: C4 / C7. Rules in [GROK.md](./GROK.md). **QUEUE wins.**
 
 **Secrets:** Confirmed OK when dashboard has all 10 fixture Runtime Secrets on `mohammedumar9919/zeref` (see [../REMOTE_AGENTS.md](../REMOTE_AGENTS.md)). `ZEREF_BFF_FIXTURE=1` is already in that set. Live `FACEBOOK_*` is laptop-only.
 
@@ -25,12 +27,13 @@
 
 ## Boot (every Grok Bot / Cloud session)
 
-1. Read [../CURRENT_STATE.md](../CURRENT_STATE.md)
-2. Read this folder: **MASTERPLAN → QUEUE → your phase card → HANDOFF**
-3. Read [../failures-checklist.md](../failures-checklist.md)
-4. Do **exactly one** OPEN item from QUEUE
-5. Open a PR + append to AGENT_LOG.md on the same branch
-6. Stop. Do not start the next phase until Planner marks QUEUE done.
+Follow [GROK.md](./GROK.md) §1–§4. Short version:
+
+1. Read [../CURRENT_STATE.md](../CURRENT_STATE.md), then **GROK → MASTERPLAN → QUEUE → your phase card → HANDOFF**
+2. Read [../failures-checklist.md](../failures-checklist.md)
+3. Work only on your **assigned** ID, and only if it is `OPEN`
+4. Draft PR after first commit; write `docs/cloud/log/<ID>.md` (not AGENT_LOG / QUEUE)
+5. CI green → PR ready → reply with URL → stop
 
 ---
 

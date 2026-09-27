@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZEREF — Seminar 1</title>
+  <style>
+    :root {
+      --bg: #05080c;
+      --cyan: #3de7ff;
+      --cyan2: #1a9fb0;
+      --text: #f0f8fb;
+      --muted: #9bb4be;
+      --line: rgba(61, 231, 255, 0.28);
+      --panel: rgba(5, 12, 18, 0.72);
+      --panel2: rgba(8, 18, 26, 0.82);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: #020406; color: var(--text);
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+    /* Globe lives behind everything */
+    .world {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        url("assets/seminar-globe-bg.png") center 42% / cover no-repeat,
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(61,231,255,0.12), transparent 70%),
+        #020406;
+    }
+    .world::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(2,4,6,0.82) 0%, rgba(2,4,6,0.55) 42%, rgba(2,4,6,0.78) 100%),
+                  linear-gradient(180deg, rgba(2,4,6,0.55) 0%, transparent 30%, rgba(2,4,6,0.85) 100%);
+    }
+    /* Side symbols */
+    .rail {
+      position: fixed; left: 1.1rem; top: 50%; transform: translateY(-50%);
+      z-index: 3; display: flex; flex-direction: column; gap: 0.85rem;
+      opacity: 0.9;
+    }
+    .rail .sym {
+      width: 42px; height: 42px; border: 1px solid var(--line);
+      background: rgba(5,12,18,0.65); display: grid; place-items: center;
+      color: var(--cyan);
+    }
+    .rail svg { width: 22px; height: 22px; }
+    .deck { position: relative; z-index: 2; height: 100%; }
+    .slide {
+      display: none; height: 100%;
+      padding: 3.2rem 4.5rem 3.8rem 5.5rem;
+      flex-direction: column; justify-content: center; gap: 1.1rem;
+    }
+    .slide.active { display: flex; animation: in 0.35s ease; }
+    @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .eyebrow {
+      color: var(--cyan); font-size: 0.95rem; letter-spacing: 0.28em;
+      text-transform: uppercase; font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(3.2rem, 7vw, 5.2rem); font-weight: 700;
+      color: var(--cyan); line-height: 1.02; letter-spacing: -0.02em;
+      text-shadow: 0 0 40px rgba(61,231,255,0.25);
+    }
+    h2 {
+      font-size: clamp(2rem, 4.2vw, 3rem); font-weight: 700;
+      line-height: 1.15; max-width: 18ch;
+      text-shadow: 0 2px 24px rgba(0,0,0,0.65);
+    }
+    .lead {
+      font-size: clamp(1.25rem, 2.2vw, 1.55rem); color: var(--muted);
+      line-height: 1.45; max-width: 34rem; font-weight: 400;
+    }
+    .meta {
+      margin-top: 1.4rem; font-size: 1.2rem; color: var(--text);
+      line-height: 1.85; opacity: 0.92;
+    }
+    /* Cards / panels */
+    .panel {
+      background: var(--panel); border: 1px solid var(--line);
+      backdrop-filter: blur(10px); padding: 1rem 1.15rem;
+    }
+    .grid2 { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 1.4rem; align-items: center; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; }
+    @media (max-width: 1000px) {
+      .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+      .rail { display: none; }
+      .slide { padding-left: 2rem; padding-right: 2rem; }
+    }
+    .shot {
+      width: 100%; border: 1px solid var(--line);
+      background: #000; object-fit: cover; max-height: 52vh;
+      box-shadow: 0 0 50px rgba(61,231,255,0.12);
+    }
+    .shot.tall { max-height: 48vh; }
+    .card {
+      background: var(--panel2); border: 1px solid var(--line);
+      padding: 1.1rem 1rem; min-height: 8.5rem;
+      display: flex; flex-direction: column; gap: 0.45rem;
+    }
+    .card .ico { color: var(--cyan); width: 36px; height: 36px; }
+    .card h3 { font-size: 1.2rem; font-weight: 700; }
+    .card p { color: var(--muted); font-size: 1.05rem; line-height: 1.35; }
+    .kicker { color: var(--cyan); font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; }
+    /* Pipeline SVG area */
+    .pipe {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.25rem;
+      margin-top: 0.5rem;
+    }
+    .pipe .step {
+      background: rgba(61,231,255,0.1); border: 1px solid var(--line);
+      padding: 0.7rem 0.9rem; font-size: 1.05rem; font-weight: 600; color: var(--cyan);
+    }
+    .pipe .arr { color: var(--cyan2); font-size: 1.3rem; padding: 0 0.15rem; }
+    /* Big compare bars */
+    .bars { display: grid; gap: 0.7rem; margin-top: 0.4rem; }
+    .bar-row { display: grid; grid-template-columns: 9rem 1fr; gap: 0.75rem; align-items: center; }
+    .bar-row span { font-size: 1.05rem; font-weight: 600; }
+    .track { height: 1.15rem; background: rgba(255,255,255,0.06); border: 1px solid var(--line); position: relative; }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--cyan2), var(--cyan)); box-shadow: 0 0 12px rgba(61,231,255,0.45); }
+    /* Timeline */
+    .tl { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem; }
+    .tl .band {
+      background: var(--panel); border: 1px solid var(--line); padding: 1.2rem 1.15rem; min-height: 11rem;
+    }
+    .tl h3 { color: var(--cyan); font-size: 1.35rem; margin-bottom: 0.55rem; }
+    .tl ul { list-style: none; display: grid; gap: 0.4rem; }
+    .tl li { font-size: 1.15rem; padding-left: 1rem; position: relative; }
+    .tl li::before { content: ""; width: 6px; height: 6px; background: var(--cyan); border-radius: 50%;
+      position: absolute; left: 0; top: 0.55rem; }
+    /* Literature visual cards */
+    .lit {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .lit .piece {
+      background: var(--panel); border: 1px solid var(--line); padding: 1.15rem;
+      display: grid; grid-template-columns: auto 1fr; gap: 0.9rem; align-items: start;
+    }
+    .badge {
+      width: 52px; height: 52px; border: 1px solid var(--line);
+      display: grid; place-items: center; color: var(--cyan); font-weight: 800; font-size: 1.1rem;
+      background: rgba(61,231,255,0.08);
+    }
+    .piece h3 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+    .piece .what { font-size: 1.08rem; color: var(--text); margin-bottom: 0.35rem; }
+    .piece .gap { font-size: 1.02rem; color: var(--muted); }
+    .gap strong { color: #ffb4a2; font-weight: 600; }
+    /* Gap visual */
+    .gapflow {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 0.5rem;
+    }
+    .gapflow .box {
+      background: var(--panel); border: 1px solid var(--line); padding: 1.1rem; text-align: center;
+      min-height: 8rem; display: flex; flex-direction: column; justify-content: center; gap: 0.4rem;
+    }
+    .gapflow h3 { font-size: 1.2rem; color: var(--cyan); }
+    .gapflow p { font-size: 1.05rem; color: var(--muted); }
+    .plus {
+      position: relative;
+    }
+    .bigline {
+      font-size: clamp(1.35rem, 2.5vw, 1.75rem); color: var(--cyan); font-weight: 650;
+      margin-top: 0.4rem; max-width: 40rem; line-height: 1.35;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.7);
+    }
+    .footer {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.7rem 1.4rem; border-top: 1px solid var(--line);
+      background: rgba(2,4,6,0.88); color: var(--muted); font-size: 0.85rem; letter-spacing: 0.06em;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
+    .chip {
+      border: 1px solid var(--line); background: rgba(61,231,255,0.08);
+      color: var(--cyan); padding: 0.45rem 0.75rem; font-size: 1.05rem; font-weight: 600;
+    }
+    .statrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; margin-top: 0.6rem; }
+    .stat {
+      background: var(--panel); border: 1px solid var(--line); padding: 1.2rem 1rem; text-align: center;
+    }
+    .stat .n { font-size: 2.4rem; color: var(--cyan); font-weight: 800; line-height: 1; }
+    .stat .l { margin-top: 0.4rem; font-size: 1.05rem; color: var(--muted); }
+    .refs { font-size: 1.05rem; line-height: 1.55; display: grid; gap: 0.55rem; max-width: 52rem; }
+    .refs span { color: var(--cyan); font-weight: 700; }
+    .outline {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem 2rem; max-width: 40rem;
+      list-style: none; margin-top: 0.4rem;
+    }
+    .outline li {
+      font-size: 1.25rem; padding: 0.55rem 0.7rem; background: var(--panel);
+      border-left: 3px solid var(--cyan);
+    }
+    .obj {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem;
+    }
+    .obj .col {
+      background: var(--panel); border: 1px solid var(--line); padding: 1.1rem;
+    }
+    .obj h3 { color: var(--cyan); font-size: 1.25rem; margin-bottom: 0.6rem; }
+    .obj li { font-size: 1.1rem; margin: 0.35rem 0 0.35rem 1rem; color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="world" aria-hidden="true"></div>
+
+  <!-- Side symbols: globe, panels, shield, vault -->
+  <aside class="rail" aria-hidden="true">
+    <div class="sym" title="Globe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>
+    </div>
+    <div class="sym" title="Cockpit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>
+    </div>
+    <div class="sym" title="Confirm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>
+    </div>
+    <div class="sym" title="Vault">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="4" width="14" height="16" rx="1"/><circle cx="12" cy="12" r="3"/><path d="M12 15v3"/></svg>
+    </div>
+  </aside>
+
+  <div class="deck" id="deck">
+
+    <!-- 1 TITLE -->
+    <section class="slide active" data-i="1">
+      <div class="grid2">
+        <div>
+          <p class="eyebrow">Seminar 1 · Computer Science</p>
+          <h1>ZEREF</h1>
+          <p class="lead" style="max-width:22rem;color:#e8f4f8;font-size:1.55rem;margin-top:0.4rem;">
+            An AI command center for Instagram growth
+          </p>
+          <p class="meta">
+            Mohammed Umar Salam<br />
+            7th Semester · 2026–27<br />
+            Guide · Department · College
+          </p>
+        </div>
+        <div></div>
+      </div>
+    </section>
+
+    <!-- 2 OUTLINE -->
+    <section class="slide" data-i="2">
+      <p class="eyebrow">Agenda</p>
+      <h2>Today’s story</h2>
+      <ol class="outline">
+        <li>What is this?</li>
+        <li>Why it matters</li>
+        <li>What research says</li>
+        <li>What’s missing</li>
+        <li>Our problem</li>
+        <li>What we already built</li>
+        <li>What we finish next</li>
+        <li>How Jarvis gets smarter</li>
+      </ol>
+    </section>
+
+    <!-- 3 DOMAIN -->
+    <section class="slide" data-i="3">
+      <p class="eyebrow">The idea</p>
+      <div class="grid2">
+        <div>
+          <h2>One room.<br />One snapshot.<br />One assistant.</h2>
+          <p class="lead">Zeref watches Instagram data, speaks like an operator, and never acts without a human yes.</p>
+          <div class="pipe" style="margin-top:1rem;">
+            <span class="step">Collect</span><span class="arr">→</span>
+            <span class="step">Analyze</span><span class="arr">→</span>
+            <span class="step">Brief</span><span class="arr">→</span>
+            <span class="step">Confirm</span><span class="arr">→</span>
+            <span class="step">Act</span>
+          </div>
+        </div>
+        <img class="shot" src="assets/seminar-cockpit.png" alt="Cockpit panels beside a glowing globe" />
+      </div>
+    </section>
+
+    <!-- 4 NEED -->
+    <section class="slide" data-i="4">
+      <p class="eyebrow">Why it matters</p>
+      <div class="grid2">
+        <div>
+          <h2>Creators drown in tools</h2>
+          <div class="grid4" style="grid-template-columns:1fr 1fr;margin-top:1rem;">
+            <div class="card"><p class="kicker">01</p><h3>Spreadsheets</h3><p>Numbers without a source</p></div>
+            <div class="card"><p class="kicker">02</p><h3>Chatbots</h3><p>Talk — can’t see the account</p></div>
+            <div class="card"><p class="kicker">03</p><h3>Schedulers</h3><p>Post — no honest brief</p></div>
+            <div class="card"><p class="kicker">04</p><h3>Predictors</h3><p>Score a post — then stop</p></div>
+          </div>
+        </div>
+        <img class="shot tall" src="assets/seminar-problem.png" alt="Illustration of tool clutter around a creator" />
+      </div>
+    </section>
+
+    <!-- 5 LITERATURE AGENTS -->
+    <section class="slide" data-i="5">
+      <p class="eyebrow">Research · Agents</p>
+      <h2>AI can reason and use tools</h2>
+      <div class="lit" style="margin-top:0.6rem;">
+        <div class="piece">
+          <div class="badge">01</div>
+          <div>
+            <h3>ReAct · 2023</h3>
+            <p class="what">Think → use a tool → observe → repeat</p>
+            <p class="gap"><strong>Gap:</strong> proven on quizzes &amp; games — not a creator’s Instagram account</p>
+          </div>
+        </div>
+        <div class="piece">
+          <div class="badge">02</div>
+          <div>
+            <h3>Agent survey · 2024</h3>
+            <p class="what">Every serious agent needs memory</p>
+            <p class="gap"><strong>Gap:</strong> no rule for “new version must stay safe before it goes live”</p>
+          </div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">Reasoning</span><span class="chip">Tools</span><span class="chip">Memory required</span>
+      </div>
+    </section>
+
+    <!-- 6 MEMORY + FEEDBACK -->
+    <section class="slide" data-i="6">
+      <p class="eyebrow">Research · Memory &amp; learning</p>
+      <div class="grid2">
+        <div>
+          <h2>AI can remember — and improve from humans</h2>
+          <div class="lit" style="grid-template-columns:1fr;margin-top:0.8rem;">
+            <div class="piece">
+              <div class="badge">03</div>
+              <div>
+                <h3>MemGPT · 2023</h3>
+                <p class="what">Long-term memory across sessions</p>
+                <p class="gap"><strong>Gap:</strong> not your Instagram data · not deletable by you · no safety gate</p>
+              </div>
+            </div>
+            <div class="piece">
+              <div class="badge">04</div>
+              <div>
+                <h3>InstructGPT · 2022</h3>
+                <p class="what">Human feedback makes a better model</p>
+                <p class="gap"><strong>Gap:</strong> lab training · no rollback · no “don’t post without me”</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <img class="shot tall" src="assets/seminar-vault.png" alt="Memory vault illustration" />
+      </div>
+    </section>
+
+    <!-- 7 INSTAGRAM -->
+    <section class="slide" data-i="7">
+      <p class="eyebrow">Research · Instagram</p>
+      <h2>Engagement can be explained</h2>
+      <div class="statrow">
+        <div class="stat"><div class="n">10M</div><div class="l">posts studied<br />(Tricomi et al.)</div></div>
+        <div class="stat"><div class="n">94%</div><div class="l">best F1 on<br /><em>their</em> dataset</div></div>
+        <div class="stat"><div class="n">6K</div><div class="l">travel posts<br />(Son &amp; Park)</div></div>
+      </div>
+      <p class="bigline" style="margin-top:1.2rem;">They score a post. They do not run your week — or remember your corrections.</p>
+      <p class="lead" style="margin-top:0.4rem;">We never compare accuracy across different datasets.</p>
+    </section>
+
+    <!-- 8 SPEECH + TOOLS -->
+    <section class="slide" data-i="8">
+      <p class="eyebrow">Research · Voice &amp; tools</p>
+      <h2>Talk is solved. Trust is not.</h2>
+      <div class="grid2" style="margin-top:0.5rem;">
+        <div class="card" style="min-height:12rem;">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v10"/><path d="M8 9a4 4 0 008 0"/><path d="M5 21h14"/><path d="M12 13v4"/></svg>
+          <h3>Speech models · 2024</h3>
+          <p>Hear → think → speak works. End-to-end voice is the research frontier.</p>
+          <p class="gap" style="color:#ffb4a2;margin-top:auto;"><strong>Still missing:</strong> an audit trail and a memory of your decisions</p>
+        </div>
+        <div class="card" style="min-height:12rem;">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h10M4 17h13"/><circle cx="18" cy="12" r="3"/></svg>
+          <h3>Toolformer · 2023</h3>
+          <p>Models can teach themselves to call calculators, search, calendars.</p>
+          <p class="gap" style="color:#ffb4a2;margin-top:auto;"><strong>Still missing:</strong> “ask me before you post”</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 EXISTING -->
+    <section class="slide" data-i="9">
+      <p class="eyebrow">Today’s options</p>
+      <h2>Good tools. Still fragmented.</h2>
+      <div class="grid3" style="margin-top:0.6rem;">
+        <div class="card"><h3>Dashboards</h3><p>Show numbers</p><p style="color:var(--cyan);margin-top:auto;">No voice · no confirm</p></div>
+        <div class="card"><h3>Predictors</h3><p>Score a post</p><p style="color:var(--cyan);margin-top:auto;">Stop after the score</p></div>
+        <div class="card"><h3>Chatbots</h3><p>Answer questions</p><p style="color:var(--cyan);margin-top:auto;">Can’t see your snapshot</p></div>
+        <div class="card"><h3>Memory agents</h3><p>Remember chats</p><p style="color:var(--cyan);margin-top:auto;">Not your Instagram vault</p></div>
+        <div class="card"><h3>Voice AI</h3><p>Speak fluently</p><p style="color:var(--cyan);margin-top:auto;">No publish safety gate</p></div>
+        <div class="card"><h3>Schedulers</h3><p>Queue content</p><p style="color:var(--cyan);margin-top:auto;">No honest brief first</p></div>
+      </div>
+    </section>
+
+    <!-- 10 COMPARE -->
+    <section class="slide" data-i="10">
+      <p class="eyebrow">Comparison</p>
+      <h2>Who covers what</h2>
+      <div class="bars">
+        <div class="bar-row"><span>Own Instagram data</span><div class="track"><div class="fill" style="width:12%"></div></div></div>
+        <div class="bar-row"><span>Freshness labels</span><div class="track"><div class="fill" style="width:8%"></div></div></div>
+        <div class="bar-row"><span>Ask before write</span><div class="track"><div class="fill" style="width:15%"></div></div></div>
+        <div class="bar-row"><span>Long-term memory</span><div class="track"><div class="fill" style="width:55%"></div></div></div>
+        <div class="bar-row"><span>Safe new versions</span><div class="track"><div class="fill" style="width:20%"></div></div></div>
+        <div class="bar-row"><span style="color:var(--cyan)">Zeref (planned end)</span><div class="track"><div class="fill" style="width:92%"></div></div></div>
+      </div>
+      <p class="lead" style="margin-top:0.8rem;">Bars show coverage of the need — not a shared accuracy contest.</p>
+    </section>
+
+    <!-- 11 GAP -->
+    <section class="slide" data-i="11">
+      <p class="eyebrow">Research gap</p>
+      <h2>The missing room</h2>
+      <div class="gapflow">
+        <div class="box"><h3>Research</h3><p>Tools · memory · feedback · engagement</p></div>
+        <div class="box"><h3>Still open</h3><p>One snapshot · deleteable vault · version that stays safe</p></div>
+        <div class="box"><h3>Zeref</h3><p>Build that room — then make Jarvis smarter from your yes</p></div>
+      </div>
+      <p class="bigline">Smarter only if it still cannot act without you.</p>
+    </section>
+
+    <!-- 12 GAP MAP -->
+    <section class="slide" data-i="12">
+      <p class="eyebrow">Gap → response</p>
+      <h2>How we close it</h2>
+      <div class="grid2" style="grid-template-columns:1fr 1fr;gap:0.85rem;">
+        <div class="card"><p class="kicker">From tools research</p><h3>Command center</h3><p>Already running</p></div>
+        <div class="card"><p class="kicker">From MemGPT</p><h3>Memory vault</h3><p>Next horizon</p></div>
+        <div class="card"><p class="kicker">From InstructGPT</p><h3>Version gate</h3><p>Promote only if safe</p></div>
+        <div class="card"><p class="kicker">From engagement papers</p><h3>Briefs &amp; charts</h3><p>Run the whole week</p></div>
+      </div>
+    </section>
+
+    <!-- 13 MOTIVATION -->
+    <section class="slide" data-i="13">
+      <p class="eyebrow">Motivation</p>
+      <h2>Why we build this</h2>
+      <div class="grid4" style="margin-top:0.6rem;">
+        <div class="card"><h3>1</h3><p>Corrections get forgotten</p></div>
+        <div class="card"><h3>2</h3><p>Each paper solves one layer</p></div>
+        <div class="card"><h3>3</h3><p>Creators need one room</p></div>
+        <div class="card"><h3>4</h3><p>Eight months left to finish</p></div>
+      </div>
+    </section>
+
+    <!-- 14 PROBLEM -->
+    <section class="slide" data-i="14">
+      <p class="eyebrow">Problem statement</p>
+      <h2>In one sentence</h2>
+      <div class="panel" style="margin-top:0.6rem;padding:1.4rem 1.5rem;">
+        <p style="font-size:1.45rem;line-height:1.5;">
+          Creators lack one system that <strong style="color:var(--cyan)">reads their Instagram honestly</strong>,
+          <strong style="color:var(--cyan)">remembers what they confirmed</strong>,
+          and <strong style="color:var(--cyan)">never posts without a yes</strong>.
+        </p>
+      </div>
+      <div class="chips">
+        <span class="chip">Snapshot</span>
+        <span class="chip">Confirm</span>
+        <span class="chip">Vault</span>
+        <span class="chip">Safe versions</span>
+      </div>
+    </section>
+
+    <!-- 15 BUILT -->
+    <section class="slide" data-i="15">
+      <p class="eyebrow">Traction</p>
+      <div class="grid2">
+        <div>
+          <h2>Already built</h2>
+          <div class="chips" style="flex-direction:column;align-items:flex-start;gap:0.55rem;margin-top:0.8rem;">
+            <span class="chip">Live Instagram pipeline</span>
+            <span class="chip">Cockpit · Studio · Calendar · Reports · Research</span>
+            <span class="chip">Voice JARVIS with confirm-before-write</span>
+            <span class="chip">Honest labels: fixture · stale · live</span>
+            <span class="chip">Competitor discovery · reel ideas</span>
+          </div>
+          <p class="lead" style="margin-top:1rem;">About 80% of the college demo scope — plus live data past that demo.</p>
+        </div>
+        <img class="shot" src="assets/seminar-cockpit.png" alt="Cockpit concept" />
+      </div>
+    </section>
+
+    <!-- 16 SCOPE -->
+    <section class="slide" data-i="16">
+      <p class="eyebrow">Roadmap</p>
+      <h2>Two chapters</h2>
+      <div class="tl">
+        <div class="band">
+          <h3>Chapter 1 · to ~March</h3>
+          <ul>
+            <li>Smarter memory over posts</li>
+            <li>Pro charts</li>
+            <li>Clearer streaming voice</li>
+            <li>Login for a second user</li>
+            <li>Publish — only after a yes</li>
+          </ul>
+        </div>
+        <div class="band">
+          <h3>Chapter 2 · to May</h3>
+          <ul>
+            <li>Memory vault you can open &amp; delete</li>
+            <li>New Jarvis versions from your corrections</li>
+            <li>Goes live only if safety passes</li>
+            <li>Morning brief · competitor watch</li>
+          </ul>
+        </div>
+      </div>
+      <img class="shot" src="assets/seminar-timeline.png" alt="Two-phase timeline glow" style="max-height:18vh;margin-top:0.6rem;object-position:center;" />
+    </section>
+
+    <!-- 17 OBJECTIVES -->
+    <section class="slide" data-i="17">
+      <p class="eyebrow">Objectives</p>
+      <h2>What success looks like</h2>
+      <div class="obj" style="margin-top:0.5rem;">
+        <div class="col">
+          <h3>Done</h3>
+          <ul>
+            <li>Pipeline + cockpit</li>
+            <li>Confirm before write</li>
+            <li>Live collect</li>
+            <li>Competitor tools</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>Next</h3>
+          <ul>
+            <li>Vector memory</li>
+            <li>Charts + voice polish</li>
+            <li>Login</li>
+            <li>Safe publish path</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>Then</h3>
+          <ul>
+            <li>Vault</li>
+            <li>Version gate</li>
+            <li>Cited answers</li>
+            <li>Watchlist</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 18 CONCLUSION -->
+    <section class="slide" data-i="18">
+      <p class="eyebrow">Close</p>
+      <h2>The ask</h2>
+      <div class="panel" style="padding:1.5rem;margin-top:0.4rem;">
+        <p style="font-size:1.55rem;line-height:1.45;">
+          Approve the full scope:<br />
+          <span style="color:var(--cyan)">finish the command center</span>,
+          then give Jarvis a vault —
+          so it gets smarter <em>only</em> from what you confirm.
+        </p>
+      </div>
+      <p class="bigline">It already runs. It will remember your yes. It will not act without you.</p>
+    </section>
+
+    <!-- 19 REFS -->
+    <section class="slide" data-i="19">
+      <p class="eyebrow">References</p>
+      <h2>Eight papers</h2>
+      <div class="refs" style="margin-top:0.5rem;">
+        <p><span>[1]</span> Yao et al. — ReAct — ICLR 2023</p>
+        <p><span>[2]</span> Wang et al. — LLM agents survey — 2024</p>
+        <p><span>[3]</span> Packer et al. — MemGPT — 2023</p>
+        <p><span>[4]</span> Ouyang et al. — InstructGPT — NeurIPS 2022</p>
+        <p><span>[5]</span> Tricomi et al. — Instagram engagement — WebSci 2023</p>
+        <p><span>[6]</span> Son &amp; Park — OTA Instagram features — 2023</p>
+        <p><span>[7]</span> Cui et al. — Speech language models survey — 2024</p>
+        <p><span>[8]</span> Schick et al. — Toolformer — NeurIPS 2023</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="footer">
+    <span>ZEREF · Seminar 1</span>
+    <span id="pos">1 / 19</span>
+    <span>← → · F fullscreen</span>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    let i = 0;
+    const pos = document.getElementById("pos");
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      pos.textContent = (i + 1) + " / " + slides.length;
+    }
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowRight", " ", "PageDown"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (e.key === "Home") show(0);
+      if (e.key === "End") show(slides.length - 1);
+      if (e.key === "f" || e.key === "F") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+        else document.exitFullscreen().catch(() => {});
+      }
+    });
+    document.getElementById("deck").addEventListener("click", (e) => {
+      show(e.clientX >= window.innerWidth / 2 ? i + 1 : i - 1);
+    });
+  </script>
+</body>
+</html>

@@ -66,22 +66,13 @@ Details: [CURRENT_STATE.md](./CURRENT_STATE.md) · [fixtures/README.md](../fixtu
 
 ## First prompt for Grok Bot (after cloud docs are on main)
 
-```
-You are Zeref Cloud worker.
-Read docs/cloud/README.md, docs/cloud/QUEUE.md, docs/cloud/MASTERPLAN.md, docs/CURRENT_STATE.md.
-Track B B3 is DONE. There is no OPEN queue row (TRACK-B-DEFER stays BLOCKED).
-Confirm secrets are fixture mode for CI. Do not code yet.
-Reply with: top OPEN queue item, why, and the exact phase card path you will use next.
-```
+**Track C (2026-09-27+):** use the chat prompt in [cloud/GROK.md](./cloud/GROK.md) §6 — one assigned ID per chat, max 3 chats, wave order in §5.
 
-When ready to build:
+Boot-check prompt (no code):
 
 ```
-Claim the first OPEN item in docs/cloud/QUEUE.md (none — CLOUD-B3 DONE; do not start TRACK-B-DEFER).
-If a new OPEN row exists, follow that phase card exactly.
-Follow docs/cloud/HANDOFF.md (branch + PR template + AGENT_LOG append).
-QUEUE wins over any old AGENT_LOG “do not start TRACK-B” lines.
-One slice only. Stop when PR is ready.
+You are a Zeref Cloud worker for mohammedumar9919/zeref. Read docs/cloud/GROK.md, docs/CURRENT_STATE.md, docs/cloud/QUEUE.md. Confirm fixture secrets are set. Do not code yet.
+Reply with: the OPEN Track C IDs, their phase card paths, and which wave they belong to.
 ```
 
 ---
@@ -89,6 +80,6 @@ One slice only. Stop when PR is ready.
 ## How the laptop Planner reads your work later
 
 1. GitHub PRs with prefix `cloud/`
-2. [cloud/AGENT_LOG.md](./cloud/AGENT_LOG.md)
+2. `docs/cloud/log/<ID>.md` (Track C) and [cloud/AGENT_LOG.md](./cloud/AGENT_LOG.md)
 3. QUEUE status transitions
 4. Local UAT for visual/voice, then merge + CURRENT_STATE update

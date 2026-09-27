@@ -321,3 +321,10 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: QUEUE CLOUD-B5 set to DONE. No OPEN cloud rows remain. Did not unlock TRACK-B-DEFER.
 - Not done / blocked: LAPTOP-UAT human leftovers (Luke screenshot, 2-3 min demo video, optional mic PTT, PPTX if required). TRACK-B-DEFER still BLOCKED.
 - Next for Planner: LAPTOP-UAT only, until Lead writes new phase cards or unblocks TRACK-B-DEFER.
+### 2026-09-26 — TRACK-C PLAN + CLOUD-B5 DONE — agent:laptop-planner
+- Branch: `plan/track-c-week1` (docs) · PR #18 merged to `main`
+- Status: done (planner)
+- PR: https://github.com/mohammedumar9919/zeref/pull/18 — **MERGED** (B5). Planning PR: see this branch.
+- Done: Fixed stale voice live-mode test on B5 (mock ack tone skip) so #18 only shares main's pre-existing Playwright webServer timeout; merged #18 → CLOUD-B5 DONE. Rebuilt MASTERPLAN (scope delta, Track C, Horizons 2–3, Jarvis self-improvement rules), wrote GROK.md, log/ convention, cards C0–C7, QUEUE Track C rows. Council 3-pass review logged in docs/superpowers/plans/2026-09-26-track-c-week1.md. TRACK-B-DEFER dissolved into C4 / C7 / Horizons.
+- Not done / blocked: main CI still red until CLOUD-C0 merges. LAPTOP-UAT video / Luke screenshot.
+- Next for Workers: Grok chat 1 → CLOUD-C0 only (GROK.md §6). Wave 1 (C1 / C3 / C6) opens after C0 merges.

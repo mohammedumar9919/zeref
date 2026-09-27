@@ -69,13 +69,13 @@ When spawning subagents, include ownership table and exact acceptance command.
 
 ## Cursor Cloud specific instructions
 
-Remote / phone agents (Cursor Cloud Agents, Grok Bot) **must** boot from [docs/cloud/README.md](docs/cloud/README.md).
+Remote / phone agents (Cursor Cloud Agents, Grok Bot) **must** boot from [docs/cloud/GROK.md](docs/cloud/GROK.md) (then [docs/cloud/README.md](docs/cloud/README.md)).
 
-- Work queue: [docs/cloud/QUEUE.md](docs/cloud/QUEUE.md) — **one OPEN item only**
+- Work queue: [docs/cloud/QUEUE.md](docs/cloud/QUEUE.md) — work only on the **assigned** ID, only if `OPEN`; max 3 parallel chats
 - Masterplan (cloud copy): [docs/cloud/MASTERPLAN.md](docs/cloud/MASTERPLAN.md)
 - Handoff + PR rules: [docs/cloud/HANDOFF.md](docs/cloud/HANDOFF.md)
-- Append work to [docs/cloud/AGENT_LOG.md](docs/cloud/AGENT_LOG.md) so the laptop Planner can review later
+- Track C workers write `docs/cloud/log/<ID>.md`; the Planner owns QUEUE / AGENT_LOG / CURRENT_STATE
 - Prefer **fixture mode** Secrets; never commit secrets
-- Branch `cloud/<id>-slug` → open **PR** → stop
-- Track B **ACTIVE** — claim first OPEN (CLOUD-B3). Still forbidden without QUEUE: Meta publish, Next 16, Instagram scrape, auth product, vector memory (`TRACK-B-DEFER`)
+- Branch `cloud/<id>-slug` from latest `main` → draft PR → CI green → stop
+- Track C **ACTIVE** (C0–C7 cards). Still forbidden without a QUEUE row + card: Meta publish, Next 16, Instagram scrape, auth product, Jarvis pack promotion (`--approve` is human-only)
 - Environment: [`.cursor/environment.json`](.cursor/environment.json) + [`.cursor/Dockerfile`](.cursor/Dockerfile)

@@ -36,15 +36,18 @@ So the laptop Planner (and you later) can **read and continue** remote work with
 - [ ] Visual UAT / screenshot vs Luke ref
 - [ ] Merge + CURRENT_STATE update by Planner
 
-## AGENT_LOG
-- Entry appended: yes
+## Log
+- Log file: docs/cloud/log/CLOUD-….md (Track C) · AGENT_LOG entry (older tracks)
+- CI: `gh pr checks <n>` green
 ```
 
 ---
 
-## AGENT_LOG (mandatory)
+## Worker log (mandatory)
 
-On every remote session, **append** (do not rewrite history) to [AGENT_LOG.md](./AGENT_LOG.md):
+**Track C (2026-09-27+):** write `docs/cloud/log/<ID>.md` using [log/README.md](./log/README.md). Do **not** edit `AGENT_LOG.md` or `QUEUE.md` — parallel PRs conflict. The Planner copies a summary into AGENT_LOG on merge. PR body `## AGENT_LOG` line becomes `- Log file: docs/cloud/log/<ID>.md`.
+
+**Planner / older tracks:** **append** (do not rewrite history) to [AGENT_LOG.md](./AGENT_LOG.md):
 
 ```markdown
 ### YYYY-MM-DD — CLOUD-P62 — agent:<name-or-grok>
@@ -74,4 +77,4 @@ If you are blocked, write `blocked` in AGENT_LOG with the exact error — do not
 
 After opening a PR:
 
-> PR ready: \<url\>. Queue ID CLOUD-…. Laptop Planner should review AGENT_LOG + merge. I will not start the next queue item until QUEUE says so.
+> PR ready: \<url\> · CLOUD-… · CI \<green | red: reason\>. Laptop Planner should review docs/cloud/log/CLOUD-….md + merge. I will not start another ID.
