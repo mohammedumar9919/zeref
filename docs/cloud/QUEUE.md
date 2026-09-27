@@ -18,7 +18,7 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 | 9 | CLOUD-B2 | Live Graph collect UAT glue (needs human tokens) | DONE | `cloud/b2-` | [phases/B2-live-graph-uat.md](./phases/B2-live-graph-uat.md) |
 | 10 | CLOUD-B3 | Competitor Business Discovery + reel ideas (FB Login token) | DONE | `cloud/b3-` | [phases/B3-competitor-discovery.md](./phases/B3-competitor-discovery.md) |
 | 11 | CLOUD-B4 | Live Facebook competitor UAT glue | DONE | `cloud/b4-` | [phases/B4-competitor-uat.md](./phases/B4-competitor-uat.md) |
-| 12 | CLOUD-B5 | Live pipeline freshness (bulk Graph collect) | PR_READY | `cloud/b5-` | [phases/B5-pipeline-freshness.md](./phases/B5-pipeline-freshness.md) |
+| 12 | CLOUD-B5 | Live pipeline freshness (bulk Graph collect) | DONE | `cloud/b5-` | [phases/B5-pipeline-freshness.md](./phases/B5-pipeline-freshness.md) |
 | — | TRACK-B-DEFER | Next 16, Meta publish/App Review, auth product, vector memory | BLOCKED | — | After B5+ (not for Grok now) |
 
 ### How to claim a row
@@ -33,7 +33,7 @@ Status legend: `OPEN` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAPTOP_ONLY` 
 ### Track status (authoritative)
 
 - **Track A (college):** DONE (A0–A5). **LAPTOP-UAT IN_PROGRESS** (fixture demo video / Luke screenshot / slides).
-- **Track B (live Graph + competitor):** B0–B4 **DONE**. **CLOUD-B5 PR_READY** — https://github.com/mohammedumar9919/zeref/pull/18 (`cloud/b5-pipeline-freshness`).
+- **Track B (live Graph + competitor):** B0-B5 DONE (PR #18 merged @ 4c80c09e).
 - **TRACK-B-DEFER** stays BLOCKED — Next 16 / publish / auth / vector.
 
 **Track B note (2026-09-17):** B5 PR #18 open (bulk collect + voice continuity + Jarvis TTS/report hotfixes). Live FB BD already passed. Next human track: **LAPTOP-UAT**. TRACK-B-DEFER still BLOCKED.

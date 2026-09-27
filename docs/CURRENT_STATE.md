@@ -1,6 +1,6 @@
 ﻿# Zeref â€” Current State
 
-**Last updated:** 2026-09-17 (CLOUD-B5 PR_READY #18; LAPTOP-UAT IN_PROGRESS — college demo leftovers)
+**Last updated:** 2026-09-17 (CLOUD-B5 DONE/merged #18; LAPTOP-UAT IN_PROGRESS — college demo leftovers)
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file â†’ [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) â†’ [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -37,7 +37,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` â€” `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 | Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` â€” `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** **LAPTOP-UAT IN_PROGRESS** — fixture `.\scripts\demo-start.ps1` + DEMO_SCRIPT video / Luke screenshot / slides ([cloud/phases/LAPTOP-UAT.md](./cloud/phases/LAPTOP-UAT.md)). **CLOUD-B5 PR_READY** https://github.com/mohammedumar9919/zeref/pull/18 — merge when reviewed. Do **not** start TRACK-B-DEFER.
+**Immediate goal:** **LAPTOP-UAT IN_PROGRESS** — fixture `.\scripts\demo-start.ps1` + DEMO_SCRIPT video / Luke screenshot / slides ([cloud/phases/LAPTOP-UAT.md](./cloud/phases/LAPTOP-UAT.md)). **CLOUD-B5 DONE/merged** https://github.com/mohammedumar9919/zeref/pull/18. Do **not** start TRACK-B-DEFER.
 
 ### P8 hotfix root cause
 

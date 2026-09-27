@@ -313,3 +313,11 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Rebuilt stale `.next`; fixture `next start` healthy on :3000; all DEMO_SCRIPT URLs 200 + fixture markers; shipped `docs/submission/slides.html` (10 slides from SLIDES.md). Opened cockpit + slides locally.
 - Not done / blocked: Luke screenshot file under docs/design/reference/screenshots/; 2–3 min demo video (off-repo); optional mic PTT UAT; PPTX export if judges require it.
 - Next for human: Follow DEMO_SCRIPT beats on http://localhost:3000/cockpit (Fixture only). Capture screenshot + record video. Do not use live-data-start for graded video.
+
+### 2026-09-27 — CLOUD-B5 — agent:cloud-planner
+- Branch: `main` (merged PR #18)
+- Status: done
+- PR: https://github.com/mohammedumar9919/zeref/pull/18 — **MERGED** @ `4c80c09e`
+- Done: QUEUE CLOUD-B5 set to DONE. No OPEN cloud rows remain. Did not unlock TRACK-B-DEFER.
+- Not done / blocked: LAPTOP-UAT human leftovers (Luke screenshot, 2-3 min demo video, optional mic PTT, PPTX if required). TRACK-B-DEFER still BLOCKED.
+- Next for Planner: LAPTOP-UAT only, until Lead writes new phase cards or unblocks TRACK-B-DEFER.
