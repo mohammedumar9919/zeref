@@ -225,9 +225,11 @@ Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 
 | # | Owner | Task |
 |---|-------|------|
-| 1 | Lead | Integration commits P9-A + P6.1-A |
-| 2 | User | Spawn **P9-B**, **P9-E scaffold**, **P6.1-E** (3 chats) |
-| 3 | Planner | Visual sign-off on `zeref-cockpit-6.1-hud.png` |
+| 1 | Track A | DONE (A0-A5) |
+| 2 | Track B | DONE (B0-B5, PR #18 merged @ `4c80c09e`) |
+| 3 | Cloud | No OPEN cloud rows |
+| 4 | Human | Next: LAPTOP-UAT leftovers (Luke screenshot, 2-3 min fixture demo video, optional mic PTT, PPTX if judges require) |
+| 5 | Planner | TRACK-B-DEFER stays BLOCKED (Next 16 / Meta publish / auth / vector memory) |
 
 ---
 
