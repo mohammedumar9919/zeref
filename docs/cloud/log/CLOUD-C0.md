@@ -3,45 +3,25 @@
 - Agent: grok-cloud
 - Branch: cloud/c0-ci-green
 - PR: https://github.com/mohammedumar9919/zeref/pull/20
-- Status: blocked
+- Status: pr_ready
 
 ## Done
 
-- Playwright webServer timeout (main run `36353883691`, step Verify Phase 5): `apps/web/playwright.config.ts` probed `http://127.0.0.1:3099/cockpit` while `npm run start` is `next start --port 3000` (commit `319f9e1`). Next stayed up on 3000, so the 120000ms readiness check timed out with no Next stderr. The webServer command is now `npx --no-install next start --hostname 127.0.0.1 --port ${PORT}`. After that change, the same step's Playwright run finishes (17 passed, 41 skipped).
-- `packages/db/test/migrations.test.mjs` does not spawn `docker compose up` when `DATABASE_URL` is set or `CI` is `true`/`1`. That removed the `Bind for 0.0.0.0:5432 failed` noise from Verify Phase 1, 3, and 4. The Postgres suite still runs when `DATABASE_URL` is set and skips when it is unset and Docker is unavailable.
+- Playwright webServer timeout (main run `36353883691`, step Verify Phase 5): readiness is `http://127.0.0.1:${PLAYWRIGHT_PORT}/cockpit` (default 3099) while `npm run start` is `next start --port 3000`. The webServer command is now `npx --no-install next start --hostname 127.0.0.1 --port ${PORT}`.
+- `packages/db/test/migrations.test.mjs` does not spawn `docker compose up` when `DATABASE_URL` is set or `CI` is `true`/`1`.
+- C30 in `scripts/verify-phase-5.mjs` now follows the jarvis-kernel shape. `@zeref/instagram` is allowed only in server-only modules under `apps/web/lib/jarvis/**` and `apps/web/lib/ops/**`. It stays blocked under `apps/web/app/**`, `apps/web/components/**`, every other web path, and any file marked `use client`. ADR-018 records that this rule was amended on 2026-09-27 because of the Track B Graph work. The four `apps/web/lib` files were not edited.
 
 ## Tests
 
-- `npm ci` — pass
-- `npm run build` — pass (Next.js 15.5.18)
-- `npm run lint` — pass
-- `npm test -w @zeref/db` — pass (5 guard tests; migration suite skipped: DATABASE_URL unset and Docker unavailable)
-- Local `node scripts/verify-phase-5.mjs` with `CI=true` and fixture mocks, phase flags unset — Playwright 17 passed, 41 skipped, then process exit 1
-- CI runs `36363340109` and `36363342712` — Phase 0–9 gate fail in Verify Phase 5, exit code 1, about 4–5 min (not the 120s webServer timeout)
+- `npm ci`, `npm run build`, `npm run lint` — pass (prior commit on this branch)
+- `npm test -w @zeref/db` — pass (5 guard tests; migration suite skipped without `DATABASE_URL`)
+- `CI=true` fixture env, phase flags unset: `node scripts/verify-phase-5.mjs` — exit 0, `[verify:phase-5] OK`. Playwright: 15 passed, 2 flaky (retry then pass), 41 skipped. No C30 lines.
 
 ## Not done / blocked
 
-Exact error (printed at the start of Verify Phase 5, then the script continues because `fail()` only sets `process.exitCode`; Playwright still passes; the step exits 1). Same four lines are in main run `36353883691` and PR runs `36363340109` / `36363342712`:
-
-```
-[verify:phase-5] C30: apps/web/lib/jarvis/competitor-discovery.ts must not import @zeref/instagram
-[verify:phase-5] C30: apps/web/lib/jarvis/instagram-snapshot.ts must not import @zeref/instagram
-[verify:phase-5] C30: apps/web/lib/ops/facebook-health.ts must not import @zeref/instagram
-[verify:phase-5] C30: apps/web/lib/ops/instagram-health.ts must not import @zeref/instagram
-```
-
-Imports that trip the guard (ADR-018 C30: no `@zeref/instagram` import statements under `apps/web`):
-
-- `apps/web/lib/jarvis/competitor-discovery.ts` — `fetchCompetitorDiscovery`, `DEFAULT_FACEBOOK_GRAPH_BASE`, `CompetitorDiscoveryResult`, `GraphFetch` from `@zeref/instagram`
-- `apps/web/lib/jarvis/instagram-snapshot.ts` — `fetchAccountInsights`, `fetchInstagramMedia`, `fetchInstagramUser`, `fetchMediaInsights`, `probeInsightsAvailable`, `InstagramInsightMetric` from `@zeref/instagram`
-- `apps/web/lib/ops/facebook-health.ts` — `fetchCompetitorDiscovery`, `DEFAULT_FACEBOOK_GRAPH_BASE`, `GraphFetch` from `@zeref/instagram`
-- `apps/web/lib/ops/instagram-health.ts` — `probeInsightsAvailable` from `@zeref/instagram`
-
-Those files are outside the C0 allowed paths. Loosening the C30 assertion in `scripts/verify-phase-5.mjs` is forbidden. Stopped for Planner approval. Later verify steps never start because this step exits 1.
+- None in the approved paths. Later verify scripts still have their own instagram guards (C50, C59, C70, C78). Those assertions were not changed.
 
 ## Laptop follow-up
 
-- Planner decides how C30 should treat these four `apps/web/lib` modules (move the Graph calls out of `apps/web`, or amend the guard). Do not skip the assertion.
-- After that, re-run the Phase 0–9 gate. The Playwright port fix and the compose guard are already on this branch.
 - Planner merges first; wave-1 branches (C1, C3, C6) are cut after this merge.
 - Planner updates QUEUE, AGENT_LOG, and CURRENT_STATE.

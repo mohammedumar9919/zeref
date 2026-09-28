@@ -39,7 +39,9 @@ Runs after `verify:phase-4` in the **Phase 0–5 gate** (C28).
 | **C24** | Built `@zeref/contracts`: `PHASE5_CONTRACT_VERSION`, `CockpitSlicesSchema` |
 | **C25–C26** | Playwright spec + globe component + BFF route files exist |
 | **C27** | Cockpit RSC pages import and call `getCockpitSlices()` from `@/lib/bff` |
-| **C30** | No `@zeref/instagram` / voice / whisper / jarvis **import statements** under `apps/web` |
+| **C30** | No voice / whisper / jarvis **import statements** under `apps/web`. `@zeref/instagram` is allowed only in server-only modules under `apps/web/lib/jarvis/**` and `apps/web/lib/ops/**`, and stays blocked under `apps/web/app/**`, `apps/web/components/**`, and any file marked `use client`. |
+
+The C30 rule was amended on 2026-09-27 because of the Track B Graph work.
 
 Dynamic contract imports use `pathToFileURL` (Windows ESM).
 
