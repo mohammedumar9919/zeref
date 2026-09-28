@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { PHASE10_CONTRACT_VERSION } from "@zeref/contracts";
 
 /**
  * Phase 6.1 C91–C94 — Luke Tier-2 HUD visual polish (ADR-033).
@@ -33,7 +34,7 @@ test.describe("cockpit HUD phase 6.1 (C91–C94)", () => {
     const header = page.getByTestId("hud-header");
     await expect(header).toBeVisible();
     await expect(header.locator(".status-chip")).toHaveCount(4);
-    await expect(header.getByText("Phase 6.1")).toBeVisible();
+    await expect(header.getByText(`Phase ${PHASE10_CONTRACT_VERSION.split(".")[0]}`, { exact: true })).toBeVisible();
     await expect(header.getByText("Zeref operator")).toBeVisible();
     await expect(header.getByText("Command center HUD")).toBeVisible();
   });
