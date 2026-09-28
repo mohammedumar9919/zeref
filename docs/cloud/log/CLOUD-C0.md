@@ -3,7 +3,7 @@
 - Agent: grok-cloud
 - Branch: cloud/c0-ci-green
 - PR: https://github.com/mohammedumar9919/zeref/pull/20
-- Status: pr_ready
+- Status: blocked
 
 ## Done
 
@@ -23,7 +23,21 @@
 
 ## Not done / blocked
 
-- Waiting on `gh pr checks 20 --watch` after the phase 10 port change. Later verify scripts (10.5, 11, 12) still spawn plain `npm run start` and will be changed only if CI shows the same 3099 timeout.
+Phase 10's owned server reached `/cockpit` (run `36369708413`: `[perf-smoke] within C122 target (500ms)`). Verify Phase 10.5 then exited 1. The hard failure, three attempts, is not the port mismatch and not an Instagram import check:
+
+```
+Error: expect(locator).toBeVisible() failed
+Locator: locator('[data-testid="globe-island"][data-globe-brain-state="memory_saved"]')
+Expected: visible
+Error: element(s) not found
+> 82 |     await expect(globe).toBeVisible();
+    at apps/web/e2e/cockpit-stability-10.5.spec.ts:82:25
+
+1 failed
+  [chromium] › e2e/cockpit-stability-10.5.spec.ts:32:3 › cockpit stability phase 10.5 (C128) › single EventSource and SSE brain state survive panel navigation
+```
+
+Runs `36369711565` (40m16s) and `36369708413` (44m7s). Stopped.
 
 ## Laptop follow-up
 
