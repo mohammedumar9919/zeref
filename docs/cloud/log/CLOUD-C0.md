@@ -3,13 +3,12 @@
 - Agent: grok-cloud
 - Branch: cloud/c0-ci-green
 - PR: https://github.com/mohammedumar9919/zeref/pull/20
-- Status: pr_ready
+- Status: blocked
 
 ## Done
 
-- Root cause: GitHub run `36353883691` (main, 2026-09-27) failed in step **Verify Phase 5** (`npm run verify:phase-5`), not in a later phase. Unit tests in that step passed (131/131). Playwright then printed only `Error: Timed out waiting 120000ms from config.webServer.` with no Next stderr, which means the webServer process was still running. `apps/web/playwright.config.ts` probes `http://127.0.0.1:${PLAYWRIGHT_PORT}/cockpit` (default **3099**) and sets `PORT`, but `npm run start` is `next start --port 3000` (commit `319f9e1`, 2026-09-13) and that flag overrides `PORT`. Next stayed up on 3000, so the 3099 readiness check never succeeded. The same config is what later verify steps and the P8 hotfix use, so they never started. The webServer command now runs `npx --no-install next start --hostname 127.0.0.1 --port ${PORT}`.
-- `packages/db/test/migrations.test.mjs` no longer spawns `docker compose up` when `DATABASE_URL` is set or `CI` is `true`/`1`. That was the `Bind for 0.0.0.0:5432 failed` noise in Verify Phase 1, 3, and 4 of the same run. The Postgres integration suite still runs when `DATABASE_URL` is set. It skips when `DATABASE_URL` is unset and Docker is unavailable.
-- Council (failures-checklist): no Playwright skip, no assertion removed, no CI step removed, no `continue-on-error`, no app code under `apps/web/app/**`, `apps/web/components/**`, or package `src/**`.
+- Playwright webServer timeout (main run `36353883691`, step Verify Phase 5): `apps/web/playwright.config.ts` probed `http://127.0.0.1:3099/cockpit` while `npm run start` is `next start --port 3000` (commit `319f9e1`). Next stayed up on 3000, so the 120000ms readiness check timed out with no Next stderr. The webServer command is now `npx --no-install next start --hostname 127.0.0.1 --port ${PORT}`. After that change, the same step's Playwright run finishes (17 passed, 41 skipped).
+- `packages/db/test/migrations.test.mjs` does not spawn `docker compose up` when `DATABASE_URL` is set or `CI` is `true`/`1`. That removed the `Bind for 0.0.0.0:5432 failed` noise from Verify Phase 1, 3, and 4. The Postgres suite still runs when `DATABASE_URL` is set and skips when it is unset and Docker is unavailable.
 
 ## Tests
 
@@ -17,15 +16,32 @@
 - `npm run build` — pass (Next.js 15.5.18)
 - `npm run lint` — pass
 - `npm test -w @zeref/db` — pass (5 guard tests; migration suite skipped: DATABASE_URL unset and Docker unavailable)
-- Local readiness: `next start --hostname 127.0.0.1 --port 3099` ready in 373ms; `GET /cockpit` returned 200; port 3000 was down
-- `npm -w @zeref/web run test:e2e:install` then `CI=true` + fixture mocks `npm -w @zeref/web run test:e2e -- e2e/cockpit-layout.spec.ts` — 11 passed (1 flaky C48 globe strict-mode retry, then pass). WebServer came up; this was not the 120s timeout.
-- CI: `gh pr checks 20 --watch` — see PR
+- Local `node scripts/verify-phase-5.mjs` with `CI=true` and fixture mocks, phase flags unset — Playwright 17 passed, 41 skipped, then process exit 1
+- CI runs `36363340109` and `36363342712` — Phase 0–9 gate fail in Verify Phase 5, exit code 1, about 4–5 min (not the 120s webServer timeout)
 
 ## Not done / blocked
 
-- None in allowed paths. `apps/web/package.json` `start` still pins port 3000 for the laptop demo scripts; Playwright no longer calls that script.
+Exact error (printed at the start of Verify Phase 5, then the script continues because `fail()` only sets `process.exitCode`; Playwright still passes; the step exits 1). Same four lines are in main run `36353883691` and PR runs `36363340109` / `36363342712`:
+
+```
+[verify:phase-5] C30: apps/web/lib/jarvis/competitor-discovery.ts must not import @zeref/instagram
+[verify:phase-5] C30: apps/web/lib/jarvis/instagram-snapshot.ts must not import @zeref/instagram
+[verify:phase-5] C30: apps/web/lib/ops/facebook-health.ts must not import @zeref/instagram
+[verify:phase-5] C30: apps/web/lib/ops/instagram-health.ts must not import @zeref/instagram
+```
+
+Imports that trip the guard (ADR-018 C30: no `@zeref/instagram` import statements under `apps/web`):
+
+- `apps/web/lib/jarvis/competitor-discovery.ts` — `fetchCompetitorDiscovery`, `DEFAULT_FACEBOOK_GRAPH_BASE`, `CompetitorDiscoveryResult`, `GraphFetch` from `@zeref/instagram`
+- `apps/web/lib/jarvis/instagram-snapshot.ts` — `fetchAccountInsights`, `fetchInstagramMedia`, `fetchInstagramUser`, `fetchMediaInsights`, `probeInsightsAvailable`, `InstagramInsightMetric` from `@zeref/instagram`
+- `apps/web/lib/ops/facebook-health.ts` — `fetchCompetitorDiscovery`, `DEFAULT_FACEBOOK_GRAPH_BASE`, `GraphFetch` from `@zeref/instagram`
+- `apps/web/lib/ops/instagram-health.ts` — `probeInsightsAvailable` from `@zeref/instagram`
+
+Those files are outside the C0 allowed paths. Loosening the C30 assertion in `scripts/verify-phase-5.mjs` is forbidden. Stopped for Planner approval. Later verify steps never start because this step exits 1.
 
 ## Laptop follow-up
 
+- Planner decides how C30 should treat these four `apps/web/lib` modules (move the Graph calls out of `apps/web`, or amend the guard). Do not skip the assertion.
+- After that, re-run the Phase 0–9 gate. The Playwright port fix and the compose guard are already on this branch.
 - Planner merges first; wave-1 branches (C1, C3, C6) are cut after this merge.
 - Planner updates QUEUE, AGENT_LOG, and CURRENT_STATE.
