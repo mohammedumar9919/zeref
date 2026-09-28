@@ -41,7 +41,7 @@ Runs after `verify:phase-4` in the **Phase 0–5 gate** (C28).
 | **C27** | Cockpit RSC pages import and call `getCockpitSlices()` from `@/lib/bff` |
 | **C30** | No voice / whisper / jarvis **import statements** under `apps/web`. `@zeref/instagram` is allowed only in server-only modules under `apps/web/lib/jarvis/**` and `apps/web/lib/ops/**`, and stays blocked under `apps/web/app/**`, `apps/web/components/**`, and any file marked `use client`. |
 
-The C30 rule was amended on 2026-09-27 because of the Track B Graph work.
+The C30 rule was amended on 2026-09-27 because of the Track B Graph work. The same amendment applies to C50, C59, C70, and C78.
 
 Dynamic contract imports use `pathToFileURL` (Windows ESM).
 
@@ -134,7 +134,7 @@ Preserved from Phase 5: `cockpit-grid`, `panel-*`, `globe-island`, `globe-canvas
 |-------|-------------|
 | Governance | `phase-5.1-contract.md`, ADR-015 amendment, ADR-019 |
 | **C48** | E2E spec references all new testids |
-| **C50** | Same voice/instagram import guard as C30 |
+| **C50** | Same voice/instagram import guard as amended C30 |
 
 ### Phase 5.1 verify command
 
@@ -188,7 +188,7 @@ Spec: `apps/web/e2e/cockpit-voice-6.spec.ts`
 | `apps/web/app/api/**` | **Allowed** (server route handlers) |
 | `apps/web/lib/voice/**` | **Allowed** (BFF voice helpers) |
 | `apps/web/components/**` | **Forbidden** (especially `"use client"`) |
-| `@zeref/instagram` | **Forbidden** everywhere |
+| `@zeref/instagram` | **Allowed** only in server-only `apps/web/lib/jarvis/**` and `apps/web/lib/ops/**`; **forbidden** under `apps/web/app/**`, `apps/web/components/**`, any `use client` file, and every other `apps/web` path |
 
 ### CI workflow
 
