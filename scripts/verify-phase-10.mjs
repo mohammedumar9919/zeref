@@ -163,7 +163,7 @@ async function runPhase10OpsPlaywright() {
   const cockpitUrl = `http://127.0.0.1:${port}/cockpit`;
 
   if (existsSync(perfScript)) {
-    ownedServer = spawn("npm", ["run", "start"], {
+    ownedServer = spawn("npm", ["run", "start", "--", "--hostname", "127.0.0.1", "--port", port], {
       cwd: join(repoRoot, "apps/web"),
       stdio: "ignore",
       shell: process.platform === "win32",
