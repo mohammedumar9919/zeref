@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
@@ -39,6 +39,21 @@ function dockerAvailable() {
   return res.status === 0;
 }
 
+/** Do not `docker compose up` when CI already provides Postgres or DATABASE_URL is set. */
+function shouldStartDockerCompose(env = process.env) {
+  if (typeof env.DATABASE_URL === "string" && env.DATABASE_URL.length > 0) return false;
+  if (env.CI === "true" || env.CI === "1") return false;
+  return true;
+}
+
+function migrationSuiteSkip() {
+  if (process.env.SKIP_DB_TESTS === "1") return "SKIP_DB_TESTS=1";
+  if (!process.env.DATABASE_URL && !dockerAvailable()) {
+    return "DATABASE_URL unset and Docker unavailable";
+  }
+  return false;
+}
+
 function composePostgresRunning() {
   const res = spawnSync(
     "docker",
@@ -60,7 +75,44 @@ async function waitForPostgres(client, attempts = 30) {
   throw new Error("Postgres did not become ready");
 }
 
-describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, () => {
+describe("docker compose guard", () => {
+  it("never starts compose when DATABASE_URL is set", () => {
+    assert.equal(
+      shouldStartDockerCompose({ DATABASE_URL: "postgres://zeref:zeref@localhost:5432/zeref" }),
+      false,
+    );
+  });
+
+  it("never starts compose when CI is true", () => {
+    assert.equal(shouldStartDockerCompose({ CI: "true" }), false);
+    assert.equal(shouldStartDockerCompose({ CI: "1" }), false);
+  });
+
+  it("never starts compose when both DATABASE_URL and CI are set", () => {
+    assert.equal(
+      shouldStartDockerCompose({
+        DATABASE_URL: "postgres://zeref:zeref@localhost:5432/zeref",
+        CI: "true",
+      }),
+      false,
+    );
+  });
+
+  it("allows compose only when DATABASE_URL is unset and CI is not true", () => {
+    assert.equal(shouldStartDockerCompose({}), true);
+    assert.equal(shouldStartDockerCompose({ DATABASE_URL: "", CI: "" }), true);
+  });
+
+  it("gates the compose up spawn behind shouldStartDockerCompose", () => {
+    const source = readFileSync(fileURLToPath(import.meta.url), "utf8");
+    assert.match(
+      source,
+      /if\s*\(\s*shouldStartDockerCompose\(\)\s*&&\s*dockerAvailable\(\)\s*&&\s*!composePostgresRunning\(\)\s*\)\s*\{[^}]*\["compose", "up", "-d", "db"\]/s,
+    );
+  });
+});
+
+describe("@zeref/db migrations", { skip: migrationSuiteSkip() }, () => {
   /** @type {pg.Client} */
   let adminClient;
   /** @type {string} */
@@ -73,7 +125,7 @@ describe("@zeref/db migrations", { skip: process.env.SKIP_DB_TESTS === "1" }, ()
       throw new Error("Missing migration 0000_phase1_pipeline.sql");
     }
 
-    if (dockerAvailable() && !composePostgresRunning()) {
+    if (shouldStartDockerCompose() && dockerAvailable() && !composePostgresRunning()) {
       spawnSync("docker", ["compose", "up", "-d", "db"], {
         cwd: repoRoot,
         stdio: "inherit",
