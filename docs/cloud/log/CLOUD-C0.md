@@ -44,3 +44,7 @@ Runs `36369711565` (40m16s) and `36369708413` (44m7s). Stopped.
 - `apps/web/package.json` `start` still pins port 3000 for the laptop demo. Phase 10's verify spawn overrides that with `--port`.
 - Planner merges first; wave-1 branches (C1, C3, C6) are cut after this merge.
 - Planner updates QUEUE, AGENT_LOG, and CURRENT_STATE.
+
+## 2026-09-28 — local remaining steps (no code changes)
+
+CI env, branch `cloud/c0-ci-green`. C128 treated as known. P8 (`npm run verify:hotfix-p8`) exit 0, `[verify:hotfix-p8] OK`. Phase 10.5 exit 1 only on C128 `apps/web/e2e/cockpit-stability-10.5.spec.ts:82`; `[verify:phase-10] OK` before that. Phase 11 exit 1 only because it chains phase 10.5; own checks passed (`[jarvis-eval] OK`, `jarvis-agent-11.spec.ts` 3 passed). Phase 12 exit 1 only because it chains phase 11; own checks passed (`cockpit-data-age-12.spec.ts` 2 passed). No other hard failures.
