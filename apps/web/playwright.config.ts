@@ -34,7 +34,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start",
+    // `npm run start` is `next start --port 3000` and ignores PORT / PLAYWRIGHT_PORT.
+    // Readiness is http://127.0.0.1:$PORT/cockpit (default 3099), so start Next on that port.
+    command: `npx --no-install next start --hostname 127.0.0.1 --port ${PORT}`,
     url: `http://127.0.0.1:${PORT}/cockpit`,
     /** Only reuse when explicitly opted in after a verify-started server (see verify-phase-5.mjs). */
     reuseExistingServer: process.env.ZEREF_PLAYWRIGHT_REUSE === "1",
