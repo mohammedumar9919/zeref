@@ -54,8 +54,8 @@ export const ZEREF_TOOL_DESCRIPTORS: ToolDescriptor[] = [
   {
     name: "memory_save",
     description: "Persist episodic memory from the current conversation.",
-    riskTier: "read",
-    ...readBase,
+    riskTier: "write-low",
+    ...writeLowBase,
   },
   {
     name: "memory_search",
@@ -143,6 +143,27 @@ export const ZEREF_TOOL_DESCRIPTORS: ToolDescriptor[] = [
       "Queue a NEW elite performance report for the latest studio entity (or args.entityId). Use when the operator asks to make/generate a report on current account performance. Does not reuse an old headline.",
     riskTier: "write-low",
     ...writeLowBase,
+  },
+  {
+    name: "vault_list",
+    description:
+      "List the operator's memory vault: things they pinned, confirmed, rejected or corrected. Args: { kind?: 'pin'|'confirmed_turn'|'rejection'|'correction', limit?: number }.",
+    riskTier: "read",
+    ...readBase,
+  },
+  {
+    name: "vault_pin",
+    description:
+      "Pin a fact or instruction the operator explicitly asked you to keep. Args: { content: string }.",
+    riskTier: "write-low",
+    ...writeLowBase,
+  },
+  {
+    name: "vault_forget",
+    description:
+      "Permanently delete one vault item (hard delete, needs confirm). Args: { id?: uuid, content?: string } — no args forgets the most recent item.",
+    riskTier: "write-high",
+    ...writeHighBase,
   },
 ];
 

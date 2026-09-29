@@ -24,6 +24,9 @@ export const JarvisToolNameSchema = z.enum([
   "research_external_trends",
   "suggest_reel_ideas",
   "request_performance_report",
+  "vault_list",
+  "vault_pin",
+  "vault_forget",
 ]);
 
 export const JarvisToolCallSchema = z

@@ -86,6 +86,29 @@ function pickMockToolCall(
   const lower = transcript.toLowerCase();
   const has = (name: string) => tools.some((t) => t.name === name);
 
+  if (/\bforget\b/.test(lower) && has("vault_forget")) {
+    const target = transcript
+      .replace(/^.*?\bforget\b\s*(about\s+)?((that|this|it|the pin)\b)?\s*[:,-]?\s*/i, "")
+      .trim();
+    return {
+      name: "vault_forget",
+      args: target ? { content: target } : {},
+      id: "mock-tc-vault-forget",
+    };
+  }
+  if (/\bpin\b/.test(lower) && has("vault_pin")) {
+    const content = transcript
+      .replace(/^.*?\bpin\b\s*((this|that|it)\b)?\s*[:,-]?\s*/i, "")
+      .trim();
+    return {
+      name: "vault_pin",
+      args: { content: content || transcript },
+      id: "mock-tc-vault-pin",
+    };
+  }
+  if (/(pinned|vault)/.test(lower) && has("vault_list")) {
+    return { name: "vault_list", args: {}, id: "mock-tc-vault-list" };
+  }
   if (/(make a report|generate a report|new report|performance report)/i.test(lower) && has("request_performance_report")) {
     return { name: "request_performance_report", args: {}, id: "mock-tc-perf-report" };
   }

@@ -19,6 +19,7 @@ export const MemorySourceSchema = z.enum([
   "kernel",
   "manual",
   "system",
+  "vault",
 ]);
 
 /** Persisted memory entry (ADR-025). */

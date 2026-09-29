@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { eq, and, ilike, or } from "drizzle-orm";
+import { eq, and, desc, ilike, or } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   MemoryEntrySchema,
@@ -8,6 +8,8 @@ import {
   type MemoryEntry,
   type MemoryEntity,
   type MemoryRelation,
+  type VaultForgetResult,
+  type VaultItem,
 } from "@zeref/contracts";
 import {
   memoryEntries,
@@ -19,13 +21,22 @@ import {
 import { ruleBasedContradictionCheck } from "./contradiction.js";
 import { autoTierClassifier } from "./tier-classifier.js";
 import { temporalScore } from "./temporal-score.js";
+import {
+  VAULT_SOURCE,
+  isUuid,
+  selectVaultItems,
+  toVaultItem,
+  toVaultSaveInput,
+} from "./vault.js";
 import type {
   CreateEntityInput,
+  ListVaultItemsOptions,
   MemoryAdapter,
   QueryEntitiesOptions,
   RelateEntitiesInput,
   SaveMemoryInput,
   SaveMemoryResult,
+  SaveVaultItemInput,
   SearchMemoryOptions,
   UpdateEntityInput,
   VerifyMemoryInput,
@@ -203,6 +214,41 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
       totalCount: ranked.length,
       ts: toIso(now),
     };
+  }
+
+  async saveVaultItem(input: SaveVaultItemInput): Promise<VaultItem> {
+    const { entry } = await this.saveMemory(
+      toVaultSaveInput(input.kind, input.content, input),
+    );
+    return toVaultItem(entry);
+  }
+
+  async listVaultItems(options: ListVaultItemsOptions = {}): Promise<VaultItem[]> {
+    const rows = await this.db
+      .select()
+      .from(memoryEntries)
+      .where(eq(memoryEntries.source, VAULT_SOURCE))
+      .orderBy(desc(memoryEntries.createdAt));
+    return selectVaultItems(rows.map(rowToEntry), options);
+  }
+
+  async forgetVaultItem(id: string): Promise<VaultForgetResult> {
+    if (!isUuid(id)) {
+      return { deleted: false };
+    }
+    return this.db.transaction(async (tx) => {
+      const target = and(eq(memoryEntries.id, id), eq(memoryEntries.source, VAULT_SOURCE));
+      const existing = await tx.select({ id: memoryEntries.id }).from(memoryEntries).where(target);
+      if (existing.length === 0) {
+        return { deleted: false };
+      }
+      await tx.delete(memoryObservations).where(eq(memoryObservations.entryId, id));
+      const removed = await tx
+        .delete(memoryEntries)
+        .where(target)
+        .returning({ id: memoryEntries.id });
+      return { deleted: removed.length > 0 };
+    });
   }
 
   async verifyMemory(input: VerifyMemoryInput): Promise<MemoryEntry> {

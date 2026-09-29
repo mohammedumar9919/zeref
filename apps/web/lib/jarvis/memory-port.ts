@@ -1,8 +1,19 @@
-import { isMemoryMockMode, saveMemory, searchMemory } from "@zeref/zeref-memory";
+import {
+  forgetVaultItem,
+  isMemoryMockMode,
+  listVaultItems,
+  saveMemory,
+  saveVaultItem,
+  searchMemory,
+  type MemoryAdapter,
+} from "@zeref/zeref-memory";
 import type { MemoryPort } from "@zeref/jarvis-kernel";
 
-/** MemoryPort adapter for web BFF (C144). */
-export function createWebMemoryPort(): MemoryPort {
+export type WebMemoryPort = MemoryPort &
+  Pick<MemoryAdapter, "saveVaultItem" | "listVaultItems" | "forgetVaultItem">;
+
+/** MemoryPort + vault adapter for web BFF (C144, CLOUD-C3). */
+export function createWebMemoryPort(): WebMemoryPort {
   return {
     async search(query, opts) {
       const result = await searchMemory(query);
@@ -25,6 +36,21 @@ export function createWebMemoryPort(): MemoryPort {
         },
       });
       return { id: result.entry.id };
+    },
+    async saveVaultItem(input) {
+      return saveVaultItem({
+        ...input,
+        metadata: {
+          ...(input.metadata ?? {}),
+          ...(isMemoryMockMode() ? { simulated: true } : {}),
+        },
+      });
+    },
+    async listVaultItems(opts) {
+      return listVaultItems(opts);
+    },
+    async forgetVaultItem(id) {
+      return forgetVaultItem(id);
     },
   };
 }

@@ -1,3 +1,5 @@
+import { forgetVaultItem, listVaultItems, saveVaultItem } from "@zeref/zeref-memory";
+import type { VaultPort } from "../core/ports/memory-port.js";
 import type { ToolExecutionResult, ToolExecutorPort } from "../core/ports/tool-executor-port.js";
 import {
   readCockpitSummary,
@@ -5,11 +7,11 @@ import {
   readInstagramAccountSnapshot,
   readInstagramInsights,
   readLatestReportHeadline,
-  readMemorySave,
   readMemorySearch,
   readPipelineStatus,
   readReportArtifact,
   readResearchOutliers,
+  readVaultList,
   readWeeklyBrief,
   readWorkerHealth,
 } from "./adapters/read-adapters.js";
@@ -18,12 +20,22 @@ import {
   writeCreateCalendarEvent,
   writeCreateResearchTopic,
   writeEnqueueJob,
+  writeMemorySave,
   writeRequestPerformanceReport,
   writeResearchExternalTrends,
   writeSuggestReelIdeas,
   writeUpdateStudioDraft,
+  writeVaultForget,
+  writeVaultPin,
 } from "./adapters/write-adapters.js";
 import type { ZerefContext } from "./context.js";
+
+/** Default vault port: the shared `@zeref/zeref-memory` adapter (mock or Postgres). */
+const defaultVaultPort: VaultPort = {
+  saveVaultItem: (input) => saveVaultItem(input),
+  listVaultItems: (opts) => listVaultItems(opts),
+  forgetVaultItem: (id) => forgetVaultItem(id),
+};
 
 function ok(data: unknown, auditMeta?: Record<string, unknown>): ToolExecutionResult {
   return { ok: true, data, auditMeta };
@@ -36,9 +48,10 @@ function fail(error: string): ToolExecutionResult {
 /** ToolExecutorPort implementation delegating to injected ZerefContext (C144, C153–C154). */
 export function createZerefToolExecutor(
   ctx: ZerefContext,
-  opts?: { idempotencyCache?: IdempotencyCache },
+  opts?: { idempotencyCache?: IdempotencyCache; vault?: VaultPort },
 ): ToolExecutorPort {
   const cache = opts?.idempotencyCache ?? new Map<string, unknown>();
+  const vault = opts?.vault ?? defaultVaultPort;
 
   return {
     async execute(name, args): Promise<ToolExecutionResult> {
@@ -73,8 +86,14 @@ export function createZerefToolExecutor(
             const tags = Array.isArray(args.tags)
               ? args.tags.filter((t): t is string => typeof t === "string")
               : undefined;
-            return ok(await readMemorySave(ctx.read, content, { turnId, tags }));
+            return ok(await writeMemorySave(ctx.read, content, { turnId, tags }));
           }
+          case "vault_list":
+            return ok(await readVaultList(vault, args));
+          case "vault_pin":
+            return ok(await writeVaultPin(vault, args));
+          case "vault_forget":
+            return ok(await writeVaultForget(vault, args));
           case "enqueue_job": {
             const data = await writeEnqueueJob(ctx.write, args, cache);
             const mocked =

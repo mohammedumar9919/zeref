@@ -20,6 +20,15 @@ export {
 } from "./memory.js";
 
 export {
+  VaultKindSchema,
+  VaultItemSchema,
+  VaultForgetResultSchema,
+  type VaultKind,
+  type VaultItem,
+  type VaultForgetResult,
+} from "./memory-vault.js";
+
+export {
   MemorySavedEventSchema,
   MemorySearchEventSchema,
   MemoryContradictionEventSchema,

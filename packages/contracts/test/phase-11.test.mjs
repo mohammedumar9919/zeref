@@ -39,6 +39,9 @@ const EXPECTED_TOOLS = [
   "research_external_trends",
   "suggest_reel_ideas",
   "request_performance_report",
+  "vault_list",
+  "vault_pin",
+  "vault_forget",
 ];
 
 function loadFixture(name) {

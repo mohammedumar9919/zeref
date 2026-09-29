@@ -6,6 +6,9 @@ import type {
   MemorySearchResult,
   MemorySource,
   MemoryTier,
+  VaultForgetResult,
+  VaultItem,
+  VaultKind,
 } from "@zeref/contracts";
 
 export type SaveMemoryInput = {
@@ -66,8 +69,27 @@ export type TierClassifierContext = {
   metadata?: Record<string, unknown>;
 };
 
+export type SaveVaultItemInput = {
+  kind: VaultKind;
+  content: string;
+  entityId?: string | null;
+  sourceTurnId?: string | null;
+  metadata?: Record<string, unknown>;
+  createdAt?: Date;
+};
+
+export type ListVaultItemsOptions = {
+  kind?: VaultKind;
+  limit?: number;
+};
+
 export interface MemoryAdapter {
   saveMemory(input: SaveMemoryInput): Promise<SaveMemoryResult>;
+  saveVaultItem(input: SaveVaultItemInput): Promise<VaultItem>;
+  /** Newest first. Only `source = 'vault'` rows with a valid `metadata.kind`. */
+  listVaultItems(options?: ListVaultItemsOptions): Promise<VaultItem[]>;
+  /** Hard delete; `{ deleted: false }` for unknown ids and non-vault entries. */
+  forgetVaultItem(id: string): Promise<VaultForgetResult>;
   searchMemory(query: string, options?: SearchMemoryOptions): Promise<MemorySearchResult>;
   verifyMemory(input: VerifyMemoryInput): Promise<MemoryEntry>;
   createEntity(input: CreateEntityInput): Promise<MemoryEntity>;
@@ -76,4 +98,13 @@ export interface MemoryAdapter {
   relateEntities(input: RelateEntitiesInput): Promise<MemoryRelation>;
 }
 
-export type { MemoryEntry, MemoryEntity, MemoryRelation, MemorySearchResult, MemoryTier };
+export type {
+  MemoryEntry,
+  MemoryEntity,
+  MemoryRelation,
+  MemorySearchResult,
+  MemoryTier,
+  VaultForgetResult,
+  VaultItem,
+  VaultKind,
+};

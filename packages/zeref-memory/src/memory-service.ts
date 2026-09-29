@@ -54,6 +54,27 @@ export async function searchMemory(
   return adapter.searchMemory(...args);
 }
 
+export async function saveVaultItem(
+  ...args: Parameters<MemoryAdapter["saveVaultItem"]>
+) {
+  const adapter = await getMemoryAdapter();
+  return adapter.saveVaultItem(...args);
+}
+
+export async function listVaultItems(
+  ...args: Parameters<MemoryAdapter["listVaultItems"]>
+) {
+  const adapter = await getMemoryAdapter();
+  return adapter.listVaultItems(...args);
+}
+
+export async function forgetVaultItem(
+  ...args: Parameters<MemoryAdapter["forgetVaultItem"]>
+) {
+  const adapter = await getMemoryAdapter();
+  return adapter.forgetVaultItem(...args);
+}
+
 export async function verifyMemory(
   ...args: Parameters<MemoryAdapter["verifyMemory"]>
 ) {
