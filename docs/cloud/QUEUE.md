@@ -24,12 +24,18 @@ Status legend: `OPEN` · `NEXT` · `IN_PROGRESS` · `PR_READY` · `DONE` · `LAP
 
 | Order | ID | Title | Status | Wave | Depends | Branch prefix | Phase card |
 |------:|----|-------|--------|------|---------|---------------|------------|
-| 13 | CLOUD-C0 | CI green (gate) | OPEN | 0 | B5 | `cloud/c0-` | [phases/C0-ci-green.md](./phases/C0-ci-green.md) |
-| 14 | CLOUD-C1 | Typed HUD composer + confirm card | NEXT | 1 | C0 | `cloud/c1-` | [phases/C1-typed-composer.md](./phases/C1-typed-composer.md) |
-| 15 | CLOUD-C3 | Memory vault v0 | NEXT | 1 | C0 | `cloud/c3-` | [phases/C3-memory-vault.md](./phases/C3-memory-vault.md) |
-| 16 | CLOUD-C6 | Pro charts v1 | NEXT | 1 | C0 | `cloud/c6-` | [phases/C6-pro-charts.md](./phases/C6-pro-charts.md) |
-| 17 | CLOUD-C2 | Confirm-gated cockpit collect | NEXT | 2 | C1, C3 | `cloud/c2-` | [phases/C2-cockpit-collect.md](./phases/C2-cockpit-collect.md) |
-| 18 | CLOUD-C5 | Semantic contradiction v1 | NEXT | 2 | C3 | `cloud/c5-` | [phases/C5-semantic-contradiction.md](./phases/C5-semantic-contradiction.md) |
+Week plan (waves, cut order, demo DoD): [2026-09-28-week-plan.md](../superpowers/plans/2026-09-28-week-plan.md). This week the **lead runs agents locally**; rows marked IN_PROGRESS are taken.
+
+| Order | ID | Title | Status | Wave | Depends | Branch prefix | Phase card |
+|------:|----|-------|--------|------|---------|---------------|------------|
+| 13 | CLOUD-C0 | CI green (gate) — round 2 | IN_PROGRESS | A | B5 | `cloud/c0-` | [phases/C0-ci-green.md](./phases/C0-ci-green.md) |
+| 14 | CLOUD-C1 | Typed HUD composer + confirm card | IN_PROGRESS | A | C0 (merge) | `cloud/c1-` | [phases/C1-typed-composer.md](./phases/C1-typed-composer.md) |
+| 15 | CLOUD-C3 | Memory vault v0 | IN_PROGRESS | A | C0 (merge) | `cloud/c3-` | [phases/C3-memory-vault.md](./phases/C3-memory-vault.md) |
+| 21 | CLOUD-D1 | Projector polish + report honesty | NEXT | B | C0 | `cloud/d1-` | [phases/D1-projector-polish.md](./phases/D1-projector-polish.md) |
+| 16 | CLOUD-C6 | Pro charts v1 | NEXT | B | C0 | `cloud/c6-` | [phases/C6-pro-charts.md](./phases/C6-pro-charts.md) |
+| 22 | CLOUD-D2 | Jarvis answers with real content | NEXT | B | C1, C3 | `cloud/d2-` | [phases/D2-jarvis-answers.md](./phases/D2-jarvis-answers.md) |
+| 17 | CLOUD-C2 | Confirm-gated cockpit collect | NEXT | C | C1, C3, D2 | `cloud/c2-` | [phases/C2-cockpit-collect.md](./phases/C2-cockpit-collect.md) |
+| 18 | CLOUD-C5 | Semantic contradiction v1 | NEXT | C | C3 | `cloud/c5-` | [phases/C5-semantic-contradiction.md](./phases/C5-semantic-contradiction.md) |
 
 ### Track C — week 2 (cards ready)
 
@@ -56,6 +62,6 @@ Status legend (Track C adds): `NEXT` = card ready, waiting for a dependency to m
 
 - **Track A (college):** DONE (A0–A5). **LAPTOP-UAT IN_PROGRESS** (fixture demo video / Luke screenshot / slides).
 - **Track B (live Graph + competitor):** B0–B5 **DONE** (B5 = PR #18).
-- **Track C (build horizon):** week 1 ACTIVE — **CLOUD-C0 OPEN** (gate). TRACK-B-DEFER dissolved into C4 / C7 / Horizons 2–3.
+- **Track C (build horizon):** week 1 ACTIVE — wave A (C0 r2, C1, C3) IN_PROGRESS by lead agents; demo rehearsal Thu 1 Oct ([DEMO_SCRIPT](../demo/DEMO_SCRIPT.md)). TRACK-B-DEFER dissolved into C4 / C7 / Horizons 2–3.
 
 **Grok / Cloud worker rule:** QUEUE wins over stale AGENT_LOG lines.

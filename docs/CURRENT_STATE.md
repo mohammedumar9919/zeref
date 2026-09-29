@@ -1,6 +1,6 @@
 # Zeref â€” Current State
 
-**Last updated:** 2026-09-26 (CLOUD-B5 merged #18; Track C week 1 planned — CLOUD-C0 OPEN; LAPTOP-UAT leftovers)
+**Last updated:** 2026-09-28 (week re-plan: C0 round 2 + D1/D2 demo cards; wave A running; LAPTOP-UAT leftovers)
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file â†’ [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) â†’ [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -37,7 +37,7 @@ Also see `.planning/STATE.md` for commit SHAs; **this file is runtime truth for 
 | Phase 11 Agentic JARVIS | **APPROVED** @ `0072c18` â€” `verify:phase-11` green 2026-06-15; eval 5/5, 0 unsafe; jarvis-agent e2e 3/3 |
 | Phase 12 Real Data & Live Instagram | **APPROVED** @ `ed27642` â€” `verify:phase-12` green 2026-06-17; media in normalized payload (C163), scheduled collect (C165), data-age badges (C175) |
 
-**Immediate goal:** **Track C week 1 (2026-09-27 → 10-03)** — Grok Bot runs [cloud/GROK.md](./cloud/GROK.md): **CLOUD-C0 CI green** first (main CI red since 2026-09-14: Playwright `webServer` 120 s timeout), then C1 typed composer / C3 memory vault / C6 pro charts, then C2 cockpit collect / C5 semantic contradiction. Week 2: C4 vector recall, C7 version packs. Scope delta + horizons: [cloud/MASTERPLAN.md](./cloud/MASTERPLAN.md). Council log: [superpowers/plans/2026-09-26-track-c-week1.md](./superpowers/plans/2026-09-26-track-c-week1.md). **CLOUD-B5 DONE** (PR #18). LAPTOP-UAT leftovers remain (video / Luke screenshot). Seminar 1 pack: [submission/seminar1/](./submission/seminar1/). TRACK-B-DEFER dissolved into Track C / Horizons.
+**Immediate goal (re-planned 2026-09-28):** [week plan](./superpowers/plans/2026-09-28-week-plan.md) — lead runs local agents in waves: A = C0 round 2 (PR #20: C128 spec vs P6.2 + duplicate report detail) ∥ C1 ∥ C3; B = D1 projector polish ∥ C6 ∥ D2 Jarvis answers; C = C2 ∥ C5. Demo rehearsal Thu 1 Oct via [demo/DEMO_SCRIPT.md](./demo/DEMO_SCRIPT.md), then merge freeze. Previous framing: **Track C week 1 (2026-09-27 → 10-03)** — Grok Bot runs [cloud/GROK.md](./cloud/GROK.md): **CLOUD-C0 CI green** first (main CI red since 2026-09-14: Playwright `webServer` 120 s timeout), then C1 typed composer / C3 memory vault / C6 pro charts, then C2 cockpit collect / C5 semantic contradiction. Week 2: C4 vector recall, C7 version packs. Scope delta + horizons: [cloud/MASTERPLAN.md](./cloud/MASTERPLAN.md). Council log: [superpowers/plans/2026-09-26-track-c-week1.md](./superpowers/plans/2026-09-26-track-c-week1.md). **CLOUD-B5 DONE** (PR #18). LAPTOP-UAT leftovers remain (video / Luke screenshot). Seminar 1 pack: [submission/seminar1/](./submission/seminar1/). TRACK-B-DEFER dissolved into Track C / Horizons.
 
 ### P8 hotfix root cause
 
