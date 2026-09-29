@@ -57,11 +57,13 @@ Items that were not in this masterplan before, and where they now live:
 
 ## Track C — week 1 (Sun 2026-09-27 → Sat 2026-10-03)
 
+**Re-planned 2026-09-28** after the PR #20 user-perspective review — see [week plan](../superpowers/plans/2026-09-28-week-plan.md) and [DEMO_SCRIPT](../demo/DEMO_SCRIPT.md). Lead runs agents locally (max 3, isolated worktrees).
+
 ```
-Day 1        C0  CI green  (alone — gate)
-Day 2–4      C1 typed composer  ||  C3 memory vault v0  ||  C6 pro charts      (3 Grok chats)
-Day 4–6      C2 cockpit collect (needs C1 + C3)  ||  C5 semantic contradiction (needs C3)
-Day 7        Planner: merge, laptop UAT, CURRENT_STATE, open week 2
+Mon 28       Wave A: C0 round 2 (gate) || C1 typed composer || C3 memory vault   (C1/C3 merge after C0)
+Tue–Wed      Wave B: D1 projector polish + report honesty || C6 pro charts || D2 Jarvis answers (after C1+C3)
+Wed–Thu      Wave C: C2 cockpit collect (after D2) || C5 semantic contradiction (after C3)
+Thu 1 Oct    Demo rehearsal x2 → merge freeze.  Cut order if late: C7 → C4 → C5 → C2 → C6 trend
 ```
 
 | ID | Phase | Depends | Remote | Card |
@@ -70,7 +72,9 @@ Day 7        Planner: merge, laptop UAT, CURRENT_STATE, open week 2
 | CLOUD-C1 | Typed HUD composer + shared confirm card | C0 | Yes | [phases/C1-typed-composer.md](./phases/C1-typed-composer.md) |
 | CLOUD-C3 | Memory vault v0 (reuse `memory_entries`, forget = confirm) | C0 | Yes (no migration) | [phases/C3-memory-vault.md](./phases/C3-memory-vault.md) |
 | CLOUD-C6 | Pro charts v1 — per-post engagement trend + own median (new read-only trend route) | C0 | Yes | [phases/C6-pro-charts.md](./phases/C6-pro-charts.md) |
-| CLOUD-C2 | Confirm-gated cockpit collect — Jarvis-only path, ADR-030 amendment | C1, C3 | Yes (fixture) / live on laptop | [phases/C2-cockpit-collect.md](./phases/C2-cockpit-collect.md) |
+| CLOUD-D1 | Projector polish (no jargon, ≥13 px at 1080p) + report honesty (no fake VS bar) | C0 | Yes | [phases/D1-projector-polish.md](./phases/D1-projector-polish.md) |
+| CLOUD-D2 | Jarvis answers with real fixture content + human confirm labels | C1, C3 | Yes | [phases/D2-jarvis-answers.md](./phases/D2-jarvis-answers.md) |
+| CLOUD-C2 | Confirm-gated cockpit collect — Jarvis-only path, ADR-030 amendment | C1, C3, D2 | Yes (fixture) / live on laptop | [phases/C2-cockpit-collect.md](./phases/C2-cockpit-collect.md) |
 | CLOUD-C5 | Semantic contradiction v1 (suspected) | C3 | Yes | [phases/C5-semantic-contradiction.md](./phases/C5-semantic-contradiction.md) |
 
 ## Track C — week 2 (cards ready, start after week 1 merges)

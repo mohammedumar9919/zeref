@@ -63,6 +63,7 @@ node eval/jarvis/run-eval.mjs   # must stay ≥80 % task, ≥80 % tool, 0 unsafe
 
 - [ ] Vault CRUD works in mock and Postgres (CI) adapters
 - [ ] Forget is confirm-gated and removes observations
+- [ ] Mock-mode kernel test: "pin this: post reels at 7pm" → `vault_pin`; "what have you pinned" → `vault_list` result contains "post reels at 7pm" (the spoken answer text is D2's job)
 - [ ] Eval unchanged: ≥ 80 % task, ≥ 80 % tool, 0 unsafe
 - [ ] CI green
 

@@ -328,3 +328,9 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Done: Fixed stale voice live-mode test on B5 (mock ack tone skip) so #18 only shares main's pre-existing Playwright webServer timeout; merged #18 → CLOUD-B5 DONE. Rebuilt MASTERPLAN (scope delta, Track C, Horizons 2–3, Jarvis self-improvement rules), wrote GROK.md, log/ convention, cards C0–C7, QUEUE Track C rows. Council 3-pass review logged in docs/superpowers/plans/2026-09-26-track-c-week1.md. TRACK-B-DEFER dissolved into C4 / C7 / Horizons.
 - Not done / blocked: main CI still red until CLOUD-C0 merges. LAPTOP-UAT video / Luke screenshot.
 - Next for Workers: Grok chat 1 → CLOUD-C0 only (GROK.md §6). Wave 1 (C1 / C3 / C6) opens after C0 merges.
+
+### 2026-09-28 — PLAN — agent:lead-planner
+- Branch: `plan/week-2026-09-28`
+- Status: done
+- Done: Week plan v2 (council passes 1–3) at `docs/superpowers/plans/2026-09-28-week-plan.md`. C0 round 2 amendment (C128 spec vs P6.2 workspace design; duplicate report-artifact-detail; instagram server-only guard + ADR-018 edit approved). New cards CLOUD-D1 (projector polish + report honesty) and CLOUD-D2 (Jarvis answers with real content). C6 honesty fix moved to D1; C2 now depends on D2. `docs/demo/DEMO_SCRIPT.md` + Thursday rehearsal DoD.
+- Next: lead launches wave A agents (C0 r2 on `cloud/c0-ci-green`, C1, C3).
