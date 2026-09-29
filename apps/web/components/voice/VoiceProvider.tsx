@@ -34,9 +34,18 @@ import {
 } from "@/lib/voice/parse-voice-events";
 import type { VoiceTurnSyncResponse } from "@/lib/voice/types";
 
+export type TranscriptSource = "voice" | "typed";
+
 export type TranscriptLine = {
   id: string;
   role: VoiceTranscriptRole | "user";
+  text: string;
+  turnId?: string;
+  source?: TranscriptSource;
+};
+
+export type TypedTranscriptLine = {
+  role: "user" | "assistant";
   text: string;
   turnId?: string;
 };
@@ -67,6 +76,7 @@ type VoiceContextValue = {
   submitPttAudio: (blob: Blob) => Promise<void>;
   setListening: (active: boolean) => void;
   bargeIn: () => Promise<void>;
+  appendTypedTranscript: (line: TypedTranscriptLine) => void;
   agentStepLabel: string | null;
   subscribeStreamEvents: (handler: StreamEventHandler) => () => void;
 };
@@ -145,14 +155,25 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
     [applyBrainState],
   );
 
+  const transcriptSeqRef = useRef(0);
+
   const appendTranscript = useCallback(
     (line: Omit<TranscriptLine, "id">) => {
+      transcriptSeqRef.current += 1;
+      const seq = transcriptSeqRef.current;
       setTranscripts((prev) => [
         ...prev.slice(-20),
-        { ...line, id: `${line.turnId ?? "x"}-${line.role}-${prev.length}` },
+        { ...line, id: `${line.turnId ?? "x"}-${line.role}-${seq}` },
       ]);
     },
     [],
+  );
+
+  const appendTypedTranscript = useCallback(
+    (line: TypedTranscriptLine) => {
+      appendTranscript({ ...line, source: "typed" });
+    },
+    [appendTranscript],
   );
 
   const enqueuePlayback = useCallback(
@@ -510,6 +531,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       submitPttAudio,
       setListening,
       bargeIn,
+      appendTypedTranscript,
       agentStepLabel,
       subscribeStreamEvents,
     }),
@@ -525,6 +547,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       submitPttAudio,
       setListening,
       bargeIn,
+      appendTypedTranscript,
       agentStepLabel,
       subscribeStreamEvents,
     ],
