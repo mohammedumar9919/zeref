@@ -3,7 +3,7 @@
 **Queue ID:** CLOUD-C2  
 **Status:** see [../QUEUE.md](../QUEUE.md)  
 **Remote:** Yes (fixture) · live collect = laptop  
-**Depends on:** CLOUD-C1 **and** CLOUD-C3 merged  
+**Depends on:** CLOUD-C1, CLOUD-C3 **and** CLOUD-D2 merged  
 **Branch prefix:** `cloud/c2-`  
 **Council review:** mandatory (ADR-030 amendment, contracts, enqueue path)  
 **Phase flags:** `ZEREF_PHASE11_AGENT=1 ZEREF_PHASE51_UI=1 ZEREF_JOB_ENQUEUE_MOCK=1`
@@ -65,7 +65,9 @@ npm -w @zeref/web run test:e2e -- cockpit-collect-c2 cockpit-composer-c1 jarvis-
 ## Acceptance
 
 - [ ] `collect` reachable only through Jarvis confirmed write-high; UI route still rejects it
+- [ ] In fixture mode, after Confirm the reply reads "Collect queued — simulated in demo mode." with the `SIMULATED` badge
 - [ ] Audit row written; ADR-030 amended; eval unchanged; CI green
+- [ ] Rebased onto D2 (D2 owns `llm-port.ts` mock final text; C2 adds only the collect regex + its answer row)
 
 ## Laptop follow-up
 

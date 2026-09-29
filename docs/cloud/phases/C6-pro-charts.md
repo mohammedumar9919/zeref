@@ -41,6 +41,7 @@ The elite report artifact (`EliteReportSchema`, `packages/contracts/src/phase4/e
 - `apps/web/components/reports/chart-math.ts` (create) — `median(values)`, `scaleSeries(points, width, height, padding)`
 - `apps/web/components/reports/ReportsHub.tsx` and `apps/web/app/cockpit/reports/page.tsx` — page loads the trend server-side and passes it as a prop to `ReportsHub`
 - `apps/web/test/chart-math.test.mjs`, `apps/web/test/engagement-trend-bff.test.mjs` (create)
+- Chart title reads "Engagement per post" + the `Fixture` badge in fixture mode; median value shown as a number next to the dashed line
 - `apps/web/e2e/reports-charts-c6.spec.ts` (create)
 - `docs/cloud/log/CLOUD-C6.md` (create)
 
@@ -58,6 +59,9 @@ The elite report artifact (`EliteReportSchema`, `packages/contracts/src/phase4/e
 2. `chart-math.test.mjs`: `median([3,1,2]) === 2`, `median([1,2,3,4]) === 2.5`, `median([]) === null`; `scaleSeries` maps min→bottom, max→top within padding; single value → flat mid-line.
 3. `engagement-trend-bff.test.mjs`: fixture mode returns `source: 'fixture'`, ≥ 6 points, correct median; live mode without `DATABASE_URL` → `test.skip`.
 4. `reports-charts-c6.spec.ts` (Playwright, fixture; `test.skip` unless `ZEREF_BFF_FIXTURE=1`): reports hub shows `report-trend-engagement` with a `polyline` and a median line. (The `insufficientData` → "Not enough posts yet" state is covered in `engagement-trend-bff.test.mjs` / a component unit test, not e2e, since the fixture has ≥ 6 points.)
+
+
+`report-view.ts` / `ReportCharts.tsx` are owned by **D1** this week (honesty fix) — do not edit them.
 
 ## Verify (repo root)
 

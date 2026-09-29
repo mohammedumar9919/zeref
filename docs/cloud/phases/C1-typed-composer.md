@@ -62,6 +62,10 @@ npm -w @zeref/web run test:e2e -- cockpit-composer-c1 jarvis-agent-11 cockpit-vo
 
 - [ ] Typed and voice turns share one transcript
 - [ ] Write-high tools always stop at `ConfirmCard`
+- [ ] Cancel shows "Cancelled — nothing queued." and nothing executes
+- [ ] Errors show friendly copy ("Jarvis couldn't answer — try again"), raw server error only in `console`/`title`, never as the main text
+- [ ] Composer text ≥ 15 px at 1920×1080
+- [ ] `ConfirmCard` takes an optional `label` prop (falls back to tool name); D2 wires the human label later
 - [ ] Existing voice + agent e2e still green; CI green
 
 ## Laptop follow-up
