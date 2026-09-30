@@ -77,15 +77,18 @@ test.describe("cockpit stability phase 10.5 (C128)", () => {
     );
     await expect(globe).toBeVisible({ timeout: 5_000 });
 
+    // P6.2 hides the globe on workspace routes; the HUD shell carries brain state there.
+    const shellBrainState = page.locator('[data-brain-state="memory_saved"]');
+
     await page.getByRole("link", { name: "Open studio →" }).click();
     await expect(page.getByTestId("cockpit-studio-page")).toBeVisible();
-    await expect(globe).toBeVisible();
+    await expect(shellBrainState).toBeVisible();
 
     await page.getByRole("link", { name: "Open calendar →" }).click();
     await expect(page.getByTestId("calendar-scheduler")).toBeVisible({
       timeout: 10_000,
     });
-    await expect(globe).toBeVisible();
+    await expect(shellBrainState).toBeVisible();
 
     const tracker = await page.evaluate(() => {
       const t = (

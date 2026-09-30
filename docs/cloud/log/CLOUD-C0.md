@@ -3,7 +3,7 @@
 - Agent: grok-cloud
 - Branch: cloud/c0-ci-green
 - PR: https://github.com/mohammedumar9919/zeref/pull/20
-- Status: blocked
+- Status: PR_READY (round 2)
 
 ## Done
 
@@ -48,3 +48,8 @@ Runs `36369711565` (40m16s) and `36369708413` (44m7s). Stopped.
 ## 2026-09-28 — local remaining steps (no code changes)
 
 CI env, branch `cloud/c0-ci-green`. C128 treated as known. P8 (`npm run verify:hotfix-p8`) exit 0, `[verify:hotfix-p8] OK`. Phase 10.5 exit 1 only on C128 `apps/web/e2e/cockpit-stability-10.5.spec.ts:82`; `[verify:phase-10] OK` before that. Phase 11 exit 1 only because it chains phase 10.5; own checks passed (`[jarvis-eval] OK`, `jarvis-agent-11.spec.ts` 3 passed). Phase 12 exit 1 only because it chains phase 11; own checks passed (`cockpit-data-age-12.spec.ts` 2 passed). No other hard failures.
+
+## 2026-09-30 — round 2 (lead)
+
+- **C128:** P6.2 hides the globe on workspace routes by design. `HudShell` (on every cockpit route via `app/cockpit/layout.tsx`) now carries `data-brain-state` from `useVoice()`. The spec still asserts the globe on `/cockpit` and asserts the shell's `[data-brain-state="memory_saved"]` after studio / calendar navigation. EventSource tracker assertions unchanged.
+- **A2 duplicate `report-artifact-detail`:** not a double render. React 19.2.6 (Next 15.5.18) batches Suspense reveals, so streamed content sits in a hidden `div[id^="S:"]` next to the revealed copy until the reveal completes; under CPU load Playwright's strict locator saw both. The spec now waits for `div[hidden][id^="S:"]` count 0 before asserting (no `.first()`).
