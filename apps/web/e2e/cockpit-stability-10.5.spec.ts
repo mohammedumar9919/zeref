@@ -84,6 +84,9 @@ test.describe("cockpit stability phase 10.5 (C128)", () => {
     await expect(page.getByTestId("cockpit-studio-page")).toBeVisible();
     await expect(shellBrainState).toBeVisible();
 
+    // Workspace routes hide the panel grid, so return to /cockpit client-side first.
+    await page.goBack();
+    await expect(page.getByTestId("cockpit-grid")).toBeVisible();
     await page.getByRole("link", { name: "Open calendar →" }).click();
     await expect(page.getByTestId("calendar-scheduler")).toBeVisible({
       timeout: 10_000,
