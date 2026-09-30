@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * Phase 12 C175 — data-age badge visible on cockpit panels in fixture mode.

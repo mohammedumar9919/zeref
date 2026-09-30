@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * CLOUD-A3 — research intel lite (outliers + weekly brief) under fixture mode.

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * CLOUD-A2 — product surfaces polish (narrative reports, media, slots, cards).
@@ -12,9 +12,6 @@ const FIXTURE_CALENDAR_ID = "660e8400-e29b-41d4-a716-446655440010";
 test.describe("CLOUD-A2 product surfaces", () => {
   test("reports artifact is narrative + charts, not primary JSON", async ({ page }) => {
     await page.goto(`/cockpit/reports?artifact=${FIXTURE_ARTIFACT_ID}`);
-    // React 19.2 batches Suspense reveals: streamed content sits in a hidden
-    // `div[id^="S:"]` next to the revealed copy until the reveal completes.
-    await expect(page.locator('div[hidden][id^="S:"]')).toHaveCount(0);
     await expect(page.getByTestId("report-artifact-detail")).toBeVisible();
     await expect(page.getByTestId("report-narrative")).toBeVisible();
     await expect(page.getByTestId("report-charts")).toBeVisible();

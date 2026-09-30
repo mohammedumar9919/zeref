@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * Phase 10.5 C128 — single EventSource + SSE state survives cockpit panel nav.

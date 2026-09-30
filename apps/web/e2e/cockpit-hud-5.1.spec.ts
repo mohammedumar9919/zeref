@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * Phase 5.1 C48 — Luke HUD chrome, simulated telemetry/audio, point-cloud globe.

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { PHASE10_CONTRACT_VERSION } from "@zeref/contracts";
 
 /**

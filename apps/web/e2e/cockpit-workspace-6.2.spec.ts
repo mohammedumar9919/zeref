@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * Phase 6.2 C99–C106 — Visual Tier 3 workspace HUD (ADR-035).

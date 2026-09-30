@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * Phase 11 C161 — agentic JARVIS slow path under mock LLM.
