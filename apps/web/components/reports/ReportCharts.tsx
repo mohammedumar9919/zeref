@@ -13,6 +13,25 @@ function HudBarChart({ chart }: { chart: ReportChart }): React.ReactElement {
       <h3 className="font-mono text-[10px] uppercase tracking-widest text-hud-muted">
         {chart.title}
       </h3>
+      {chart.comparison ? (
+        <p
+          data-testid={`report-chart-${chart.id}-comparison`}
+          className="mt-2 text-sm text-hud-primary"
+        >
+          <span className="rounded border border-hud-cyan/35 bg-hud-cyan/[0.07] px-2 py-0.5 text-hud-cyan">
+            {chart.comparison.label}
+          </span>
+          {chart.comparison.baseline ? (
+            <span
+              className={
+                chart.comparison.lowConfidence ? "ml-2 text-amber-200/90" : "ml-2 text-hud-muted"
+              }
+            >
+              {chart.comparison.baseline}
+            </span>
+          ) : null}
+        </p>
+      ) : null}
       <ul className="mt-3 flex flex-col gap-2">
         {chart.bars.map((bar) => {
           const pct = bar.max > 0 ? Math.min(100, Math.max(0, (bar.value / bar.max) * 100)) : 0;

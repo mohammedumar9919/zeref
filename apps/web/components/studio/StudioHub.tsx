@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import type { CockpitStudioItemV8 } from "@zeref/contracts";
 
+import { resolveDataMode } from "@/lib/data-mode";
+
 import { resolveStudioMedia } from "./studio-media";
 
 type StudioHubProps = {
@@ -13,6 +15,8 @@ export function StudioHub({
   items,
   insufficientData,
 }: StudioHubProps): React.ReactElement {
+  const dataMode = resolveDataMode();
+
   return (
     <section
       data-testid="studio-hub"
@@ -24,9 +28,14 @@ export function StudioHub({
         </p>
         <h2 className="text-lg font-medium text-hud-primary">Content drafts</h2>
         <p className="text-sm text-hud-muted">
-          Edit captions and schedule posts from normalized entity snapshots (Phase
-          8)
+          Edit captions and schedule your posts.
         </p>
+        {items.length > 0 ? (
+          <p data-testid="studio-hub-count" className="text-sm text-hud-cyan/90">
+            {items.length} {items.length === 1 ? "post" : "posts"}
+            {dataMode === "fixture" ? " in sample data" : ""}
+          </p>
+        ) : null}
       </header>
 
       {items.length === 0 ? (
@@ -35,8 +44,8 @@ export function StudioHub({
           className="rounded border border-hud-border bg-hud-surface/30 px-4 py-6 text-sm text-hud-muted"
         >
           {insufficientData
-            ? "Insufficient normalized entity data."
-            : "No studio snapshots yet."}
+            ? "Not enough post data yet — collect more posts to fill Studio."
+            : "No posts yet — collect more posts to fill Studio."}
         </p>
       ) : (
         <ul className="flex flex-col gap-3" data-testid="studio-hub-item-list">

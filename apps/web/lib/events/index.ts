@@ -3,9 +3,8 @@ import {
   type TelemetryEvent,
 } from "@zeref/contracts";
 
-/** Default stub message for Phase 5.1 SSE (ADR-019). */
-export const SIMULATED_TELEMETRY_MESSAGE =
-  "Pipeline idle — stub telemetry (Phase 5.1)";
+/** Default stub message for Phase 5.1 SSE (ADR-019); the SIMULATED badge carries the honesty label. */
+export const SIMULATED_TELEMETRY_MESSAGE = "Pipeline idle";
 
 /** Build a schema-valid simulated telemetry event for the SSE stub. */
 export function buildSimulatedTelemetryEvent(

@@ -21,11 +21,48 @@ export type ReportChartBar = {
   max: number;
 };
 
+export type ReportComparison = {
+  label: string;
+  /** Baseline sample note, only when the report exposes the cohort size. */
+  baseline?: string;
+  lowConfidence: boolean;
+};
+
 export type ReportChart = {
   id: "engagement" | "recommendations" | "citations";
   title: string;
   bars: ReportChartBar[];
+  comparison?: ReportComparison;
 };
+
+const LOW_CONFIDENCE_SAMPLE = 5;
+
+/** `vsCohort` is categorical; it is shown as words, never as a bar value. */
+export function describeVsCohort(vsCohort: string): string {
+  switch (vsCohort) {
+    case "above":
+      return "Above your usual";
+    case "inline":
+      return "In line with your usual";
+    case "below":
+      return "Below your usual";
+    default:
+      return "Not enough history";
+  }
+}
+
+export function buildComparison(report: EliteReportLike): ReportComparison {
+  const sampleSize = report.cohort?.sampleSize;
+  const hasSample = typeof sampleSize === "number" && Number.isFinite(sampleSize);
+  const lowConfidence = hasSample && sampleSize < LOW_CONFIDENCE_SAMPLE;
+  return {
+    label: describeVsCohort(report.engagement.vsCohort),
+    baseline: hasSample
+      ? `vs ${sampleSize} ${sampleSize === 1 ? "post" : "posts"}${lowConfidence ? " — low confidence" : ""}`
+      : undefined,
+    lowConfidence,
+  };
+}
 
 /** Strip markdown emphasis and raw metric-fact tokens for operator reading. */
 export function formatEliteNarrative(report: EliteReportLike): string {
@@ -40,30 +77,15 @@ export function formatEliteNarrative(report: EliteReportLike): string {
 export function buildReportCharts(report: EliteReportLike): ReportChart[] {
   const score = report.engagement.score;
   const engagementMax = 100;
-  const vsWeight =
-    report.engagement.vsCohort === "above"
-      ? 75
-      : report.engagement.vsCohort === "below"
-        ? 25
-        : report.engagement.vsCohort === "inline"
-          ? 50
-          : 0;
 
   const engagement: ReportChart = {
     id: "engagement",
     title: "Engagement",
-    bars: [
-      {
-        label: "score",
-        value: typeof score === "number" ? score : 0,
-        max: engagementMax,
-      },
-      {
-        label: `vs ${report.engagement.vsCohort}`,
-        value: vsWeight,
-        max: engagementMax,
-      },
-    ],
+    bars:
+      typeof score === "number"
+        ? [{ label: "score", value: score, max: engagementMax }]
+        : [],
+    comparison: buildComparison(report),
   };
 
   const priorityCounts = { high: 0, medium: 0, low: 0 };
@@ -83,11 +105,14 @@ export function buildReportCharts(report: EliteReportLike): ReportChart[] {
     })),
   };
 
+  const citationLabels = new Map(
+    (report.engagement.citations ?? []).map((c) => [c.metricFactId, c.label]),
+  );
   const citations: ReportChart = {
     id: "citations",
-    title: "Cited facts",
-    bars: report.narrative.citationIndex.map((entry) => ({
-      label: entry.id,
+    title: `Facts cited: ${report.narrative.citationIndex.length}`,
+    bars: report.narrative.citationIndex.map((entry, index) => ({
+      label: citationLabels.get(entry.metricFactId) ?? `Fact ${index + 1}`,
       value: entry.value,
       max: Math.max(100, ...report.narrative.citationIndex.map((c) => c.value), 1),
     })),

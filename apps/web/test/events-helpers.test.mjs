@@ -17,7 +17,7 @@ describe("events helpers", () => {
     const event = events.buildSimulatedTelemetryEvent();
     const parsed = contracts.TelemetryEventSchema.parse(event);
     assert.equal(parsed.simulated, true);
-    assert.match(parsed.message, /stub/i);
+    assert.equal(parsed.message, "Pipeline idle");
     assert.match(parsed.ts, /^\d{4}-\d{2}-\d{2}T/);
   });
 
