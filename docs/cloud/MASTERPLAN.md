@@ -93,8 +93,8 @@ The operator's 14 ideas (special-code access, Iron Man visuals while Jarvis talk
 | Horizon | Window (sustainable pace) | Phases |
 |---------|---------------------------|--------|
 | **H2a — Jarvis feel** | Oct 2026 | C4 · C7 · **K1** kernel gate hardening (confirm bound to tool + args, unknown tools fail closed) · **C20a** CI split (< 20 min) · **C17a** fact cards as Jarvis speaks (absorbs C9) · C10 streaming TTS + first-audio metric (P15) · **C18** own-account watch every 4 h + on demand (opt-in, Graph budget, token alert, "what changed") · **R1** research spike (Obsidian, saved Jarvis apps — docs only) |
-| **H2b — Smarter Jarvis** | Nov 2026 | **C17b** motion system · **C19** memory lifecycle (confirm-gated supersede, archive never delete; absorbs C8 history + sticky corrections) · C12 morning brief (fed by C18) · **C21** step-up code v0 (`sensitive` tier, typed code, never in model context) · **C22a** Team Jarvis: Jarvis + Friday (data/research) + Sunday (content) · **C22b** Critic veto (absorbs C13) · **W1** worker-only cloud host · C11 competitor refresh. Cut order: C11 → C22b → C12 → C17b |
-| **H3 — Product boundary** | Dec 2026–Feb 2027 | C14 auth / workspace boundary (P16a) · **C23** flexible HUD · **C24a** Tauri desktop shell · **C27a** PWA mobile companion · C15 confirm-gated publish + App Review packet, "review-pending" until Meta approves (P16b) · **C25** approved Graph scopes, one card per scope (publish / replies / DMs = `sensitive`) · **C26** media store · **C20b** dead code + bundle budget · C16 Next 16 (last, after demo freeze) |
+| **H2b — Smarter Jarvis** | Nov 2026 | **C17b** motion system · **C19** memory lifecycle (confirm-gated supersede, archive never delete; absorbs C8 history + sticky corrections) · C12 morning brief (fed by C18) · **C21a** `sensitive` tier + typed PIN · **C21b** movie-style voice challenge-response (paired with PIN, intercepted before the LLM) · **C22a** Team Jarvis: Jarvis + Friday (data/research) + Sunday (content) · **C22b** Critic veto (absorbs C13) · **W1** worker-only cloud host · C11 competitor refresh. Cut order: C11 → C22b → C12 → C17b |
+| **H3 — Product boundary** | Dec 2026–Feb 2027 | C14 auth / workspace boundary (P16a) · **C21c** `classified` level (two voice challenge sets + authenticator code) · **C23** flexible HUD · **C24a** Tauri desktop shell · **C27a** PWA mobile companion · C15 confirm-gated publish + App Review packet, "review-pending" until Meta approves (P16b) · **C25** approved Graph scopes, one card per scope (publish / replies / DMs = `sensitive`) · **C26** media store · **C20b** dead code + bundle budget · C16 Next 16 (last, after demo freeze) |
 | **Stretch** | Mar–May 2027 | C24b desktop connected to cloud · C27b native mobile + push · **C28** local editing lab (ffmpeg on own media; recipes confirmed by the operator) · replay · draft-from-pin · public SaaS, G6 settings UI, deployment hardening, adapter fine-tune **only** behind the C7 promotion gate |
 
 **Pace basis:** Sep 11–17 2026 shipped ~70 commits / PRs #2–#17 (~1 phase per day when the card is specified). Plan assumes one sprint-week every two weeks → full contract track lands late Jan–early Mar 2027, leaving ~3 months buffer before the 8-month mark.
@@ -109,7 +109,7 @@ The operator's 14 ideas (special-code access, Iron Man visuals while Jarvis talk
 - The memory vault stores what the user confirmed, rejected, corrected or pinned. The user can forget any item (hard delete, confirm-gated).
 - Semantic contradiction only **flags** (`suspected`). It never overwrites a memory without the user.
 - Sub-agents (Friday, Sunday) are read / draft only. Only the main Jarvis run calls write-high or `sensitive` tools, after confirm.
-- Step-up codes are typed, checked outside the kernel, and never enter LLM messages, SSE, logs, the vault or audit args.
+- Step-up codes (typed PIN / TOTP and voice challenge phrases) are checked outside the kernel, stored only as hashes, and never enter LLM messages, SSE, logs, the vault or audit args; challenge turns are intercepted before the LLM and redacted to `[challenge]`.
 
 ## Kill list (never do)
 
@@ -123,7 +123,7 @@ The operator's 14 ideas (special-code access, Iron Man visuals while Jarvis talk
 - Purple AI gradients / green CTA HUD swap
 - Commit secrets
 - Automate third-party apps with stored logins (CapCut, Instagram Edits, …)
-- Spoken secrets as authentication
+- A spoken phrase as the only authentication factor (voice challenges always pair with a typed PIN / TOTP)
 - Call Graph access "full access" — only approved scopes, each mapped to a tier
 
 ## Abstract (flash — finalized CLOUD-A5)
