@@ -84,13 +84,18 @@ Thu 1 Oct    Demo rehearsal x2 → merge freeze.  Cut order if late: C7 → C4 �
 | CLOUD-C4 | Vector recall — migration `0006`, hybrid RRF, injected embedder | C3, C5 | [phases/C4-vector-recall.md](./phases/C4-vector-recall.md) |
 | CLOUD-C7 | Jarvis version packs + human-only promotion gate + rollback | C3 | [phases/C7-version-packs.md](./phases/C7-version-packs.md) |
 
+## What changed on 2026-09-30 (vision intake)
+
+The operator's 14 ideas (special-code access, Iron Man visuals while Jarvis talks, 4-hourly watch, desktop + mobile, media, team Jarvis + Friday + Sunday, …) were ranked and placed by a 3-pass council: [../superpowers/plans/2026-09-30-vision-intake.md](../superpowers/plans/2026-09-30-vision-intake.md). Merges: C9 → C17a, C13 → C22b, C8 history + sticky corrections → C19. Own-account watch is **C18** (C11 stays competitor refresh). New safety prerequisite **K1** comes first.
+
 ## Horizons (cards written when the previous horizon is merged)
 
 | Horizon | Window (sustainable pace) | Phases |
 |---------|---------------------------|--------|
-| **H2 — Smarter Jarvis** | Oct–Nov 2026 | C8 vault panel (list / pin / forget) · C9 cited answers + fast/deep path · C10 streaming TTS + first-audio metric (P15) · C11 scheduled competitor refresh + watchlist vs own median (P13) · C12 morning brief · C13 Critic seat veto · sticky corrections · replay · draft-from-pin |
-| **H3 — Product boundary** | Dec 2026–Feb 2027 | C14 auth / workspace boundary (P16a) · C15 confirm-gated publish + App Review packet, "review-pending" until Meta approves (P16b) · C16 Next 16 (last, after demo freeze) |
-| **Stretch** | Mar–May 2027 | public SaaS, G6 settings UI, deployment hardening, adapter fine-tune **only** behind the C7 promotion gate |
+| **H2a — Jarvis feel** | Oct 2026 | C4 · C7 · **K1** kernel gate hardening (confirm bound to tool + args, unknown tools fail closed) · **C20a** CI split (< 20 min) · **C17a** fact cards as Jarvis speaks (absorbs C9) · C10 streaming TTS + first-audio metric (P15) · **C18** own-account watch every 4 h + on demand (opt-in, Graph budget, token alert, "what changed") · **R1** research spike (Obsidian, saved Jarvis apps — docs only) |
+| **H2b — Smarter Jarvis** | Nov 2026 | **C17b** motion system · **C19** memory lifecycle (confirm-gated supersede, archive never delete; absorbs C8 history + sticky corrections) · C12 morning brief (fed by C18) · **C21a** `sensitive` tier + typed PIN · **C21b** movie-style voice challenge-response (paired with PIN, intercepted before the LLM) · **C22a** Team Jarvis: Jarvis + Friday (data/research) + Sunday (content) · **C22b** Critic veto (absorbs C13) · **W1** worker-only cloud host · C11 competitor refresh. Cut order: C11 → C22b → C12 → C17b |
+| **H3 — Product boundary** | Dec 2026–Feb 2027 | C14 auth / workspace boundary (P16a) · **C21c** `classified` level (two voice challenge sets + authenticator code) · **C23** flexible HUD · **C24a** Tauri desktop shell · **C27a** PWA mobile companion · C15 confirm-gated publish + App Review packet, "review-pending" until Meta approves (P16b) · **C25** approved Graph scopes, one card per scope (publish / replies / DMs = `sensitive`) · **C26** media store · **C20b** dead code + bundle budget · C16 Next 16 (last, after demo freeze) |
+| **Stretch** | Mar–May 2027 | C24b desktop connected to cloud · C27b native mobile + push · **C28** local editing lab (ffmpeg on own media; recipes confirmed by the operator) · replay · draft-from-pin · public SaaS, G6 settings UI, deployment hardening, adapter fine-tune **only** behind the C7 promotion gate |
 
 **Pace basis:** Sep 11–17 2026 shipped ~70 commits / PRs #2–#17 (~1 phase per day when the card is specified). Plan assumes one sprint-week every two weeks → full contract track lands late Jan–early Mar 2027, leaving ~3 months buffer before the 8-month mark.
 
@@ -103,6 +108,8 @@ Thu 1 Oct    Demo rehearsal x2 → merge freeze.  Cut order if late: C7 → C4 �
 - A pack may never lower a tool's risk tier or remove a confirm gate. Rollback is one command.
 - The memory vault stores what the user confirmed, rejected, corrected or pinned. The user can forget any item (hard delete, confirm-gated).
 - Semantic contradiction only **flags** (`suspected`). It never overwrites a memory without the user.
+- Sub-agents (Friday, Sunday) are read / draft only. Only the main Jarvis run calls write-high or `sensitive` tools, after confirm.
+- Step-up codes (typed PIN / TOTP and voice challenge phrases) are checked outside the kernel, stored only as hashes, and never enter LLM messages, SSE, logs, the vault or audit args; challenge turns are intercepted before the LLM and redacted to `[challenge]`.
 
 ## Kill list (never do)
 
@@ -115,6 +122,9 @@ Thu 1 Oct    Demo rehearsal x2 → merge freeze.  Cut order if late: C7 → C4 �
 - Editing `eval/jarvis/golden-tasks.jsonl` without human sign-off
 - Purple AI gradients / green CTA HUD swap
 - Commit secrets
+- Automate third-party apps with stored logins (CapCut, Instagram Edits, …)
+- A spoken phrase as the only authentication factor (voice challenges always pair with a typed PIN / TOTP)
+- Call Graph access "full access" — only approved scopes, each mapped to a tier
 
 ## Abstract (flash — finalized CLOUD-A5)
 

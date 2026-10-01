@@ -26,7 +26,8 @@ The mock final-text builder lives in `apps/web/lib/jarvis/llm-port.ts` (≈ line
 ## Allowed paths
 
 - `apps/web/lib/jarvis/llm-port.ts` — mock routing + mock final text built **from tool results**
-- `apps/web/lib/jarvis/agent-runtime.ts` — `confirmResultText` human labels
+- `apps/web/lib/jarvis/agent-runtime.ts` — `confirmResultText` human labels; **C3 follow-up:** inject `createWebMemoryPort()` into the kernel run so vault tools use the web port (PR #22 left the kernel default)
+- `vault_forget` confirm must name the item: "Shall I forget 'post reels at 7pm'? Say yes to confirm." (no-args forget resolves the most recent pin **before** asking, so the operator sees what will be deleted)
 - `packages/jarvis-kernel/src/core/react-loop.ts` — confirm message uses the same label map
 - `packages/jarvis-kernel/src/zeref/tool-labels.ts` (create) — `{ enqueue_job: "queue a {jobType} job", create_calendar_event: "add this to the calendar", vault_forget: "forget that item", … }`
 - `packages/jarvis-kernel/src/index.ts` / `zeref/index.ts` — export `toolLabel(name, args)` only
