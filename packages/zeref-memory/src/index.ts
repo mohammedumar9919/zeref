@@ -16,7 +16,17 @@ export {
 
 export { autoTierClassifier } from "./tier-classifier.js";
 export { temporalScore, getHalfLifeDays } from "./temporal-score.js";
-export { ruleBasedContradictionCheck } from "./contradiction.js";
+export {
+  ruleBasedContradictionCheck,
+  checkContradictions,
+  type ContradictionCheckResult,
+  type ContradictionMatch,
+} from "./contradiction.js";
+export {
+  semanticContradictionCheck,
+  type SuspectedContradiction,
+  type SuspectedContradictionReason,
+} from "./semantic-contradiction.js";
 export {
   VAULT_SOURCE,
   toVaultSaveInput,
