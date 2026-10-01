@@ -1,6 +1,7 @@
 "use client";
 
 import { HudShell } from "./HudShell";
+import { TypedComposer } from "./TypedComposer";
 
 type VoiceHudShellProps = {
   children: React.ReactNode;
@@ -10,5 +11,10 @@ type VoiceHudShellProps = {
 export function VoiceHudShell({
   children,
 }: VoiceHudShellProps): React.ReactElement {
-  return <HudShell>{children}</HudShell>;
+  return (
+    <HudShell>
+      {children}
+      <TypedComposer />
+    </HudShell>
+  );
 }
