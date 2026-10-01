@@ -96,18 +96,23 @@ function pickMockToolCall(
       id: "mock-tc-vault-forget",
     };
   }
+  const asksAboutPins =
+    /\b(pinned|vault|my pins)\b/.test(lower) ||
+    (/\bpins?\b/.test(lower) && /^(what|which|show|list|did|do|have|any)\b|\?\s*$/.test(lower.trim()));
+  if (asksAboutPins && has("vault_list")) {
+    return { name: "vault_list", args: {}, id: "mock-tc-vault-list" };
+  }
   if (/\bpin\b/.test(lower) && has("vault_pin")) {
     const content = transcript
       .replace(/^.*?\bpin\b\s*((this|that|it)\b)?\s*[:,-]?\s*/i, "")
       .trim();
-    return {
-      name: "vault_pin",
-      args: { content: content || transcript },
-      id: "mock-tc-vault-pin",
-    };
-  }
-  if (/(pinned|vault)/.test(lower) && has("vault_list")) {
-    return { name: "vault_list", args: {}, id: "mock-tc-vault-list" };
+    if (content) {
+      return {
+        name: "vault_pin",
+        args: { content },
+        id: "mock-tc-vault-pin",
+      };
+    }
   }
   if (/(make a report|generate a report|new report|performance report)/i.test(lower) && has("request_performance_report")) {
     return { name: "request_performance_report", args: {}, id: "mock-tc-perf-report" };
@@ -208,10 +213,59 @@ function pickMockToolCall(
   return undefined;
 }
 
-function buildMockFinishText(toolName: string | undefined, transcript: string): string {
+type VaultResultData = {
+  item?: { content?: string };
+  alreadyPinned?: boolean;
+  items?: Array<{ content?: string }>;
+  deleted?: boolean;
+  content?: string;
+};
+
+function readToolData(toolMessageContent: string | undefined): VaultResultData | undefined {
+  if (!toolMessageContent) return undefined;
+  try {
+    const parsed = JSON.parse(toolMessageContent) as { ok?: boolean; data?: VaultResultData };
+    return parsed.ok === false ? undefined : parsed.data;
+  } catch {
+    return undefined;
+  }
+}
+
+function buildVaultFinishText(toolName: string, data: VaultResultData | undefined): string | undefined {
+  if (!data) return undefined;
+  switch (toolName) {
+    case "vault_pin": {
+      const content = data.item?.content;
+      if (!content) return undefined;
+      return data.alreadyPinned ? `That's already pinned: "${content}".` : `Pinned: "${content}".`;
+    }
+    case "vault_list": {
+      const contents = [
+        ...new Set((data.items ?? []).map((i) => i.content).filter((c): c is string => Boolean(c))),
+      ];
+      if (contents.length === 0) return "Your vault is empty — nothing pinned yet.";
+      const shown = contents.slice(0, 5).map((c) => `"${c}"`).join(", ");
+      const more = contents.length > 5 ? ` and ${contents.length - 5} more` : "";
+      return `You've pinned ${contents.length === 1 ? "one thing" : `${contents.length} things`}: ${shown}${more}.`;
+    }
+    case "vault_forget":
+      if (data.deleted && data.content) return `Forgotten: "${data.content}".`;
+      return "Nothing in your vault matched, so nothing was forgotten.";
+    default:
+      return undefined;
+  }
+}
+
+function buildMockFinishText(
+  toolName: string | undefined,
+  transcript: string,
+  toolMessageContent?: string,
+): string {
   if (!toolName) {
     return `Right then — I heard: ${transcript}`;
   }
+  const vaultText = buildVaultFinishText(toolName, readToolData(toolMessageContent));
+  if (vaultText) return vaultText;
   switch (toolName) {
     case "get_cockpit_summary":
       return "Cockpit summary is ready — studio, calendar, reports, and research panels are available.";
@@ -403,7 +457,7 @@ export function createJarvisLlmPort(scriptState?: MockScriptState): LlmPort {
           }
           state.pass += 1;
           return {
-            text: buildMockFinishText(toolName, transcript),
+            text: buildMockFinishText(toolName, transcript, lastToolMessage.content),
             tokensUsed: 24,
           };
         }

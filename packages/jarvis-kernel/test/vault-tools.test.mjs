@@ -147,4 +147,27 @@ describe("@zeref/jarvis-kernel vault tools (CLOUD-C3)", () => {
     const search = await adapter.searchMemory("voice note");
     assert.ok(search.results.some((r) => r.entry.id === entry.id));
   });
+
+  it("vault_pin keeps one copy of the same content (case-insensitive)", async () => {
+    const adapter = new MockMemoryAdapter(false);
+    const executor = createZerefToolExecutor(stubContext(), { vault: vaultPortFrom(adapter) });
+    const first = await executor.execute("vault_pin", { content: "post reels at 7pm" });
+    const second = await executor.execute("vault_pin", { content: "Post Reels at 7pm" });
+    assert.equal(second.data.alreadyPinned, true);
+    assert.equal(second.data.item.id, first.data.item.id);
+    assert.equal((await adapter.listVaultItems({ kind: "pin" })).length, 1);
+  });
+
+  it("resolveVaultForgetTarget prefers the latest pin and names it in the result", async () => {
+    const adapter = new MockMemoryAdapter(false);
+    const vault = vaultPortFrom(adapter);
+    await adapter.saveVaultItem({ kind: "pin", content: "post reels at 7pm" });
+    await adapter.saveVaultItem({ kind: "correction", content: "my niche is fitness" });
+    const target = await kernel.resolveVaultForgetTarget(vault, {});
+    assert.equal(target.content, "post reels at 7pm");
+    const executor = createZerefToolExecutor(stubContext(), { vault });
+    const result = await executor.execute("vault_forget", {});
+    assert.equal(result.data.deleted, true);
+    assert.equal(result.data.content, "post reels at 7pm");
+  });
 });

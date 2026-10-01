@@ -1,4 +1,4 @@
-import { VaultKindSchema } from "@zeref/contracts";
+import { VaultKindSchema, type VaultItem } from "@zeref/contracts";
 import type { VaultPort } from "../../core/ports/memory-port.js";
 import type { ZerefReadContext, ZerefWriteContext } from "../context.js";
 
@@ -160,9 +160,16 @@ export async function writeVaultPin(
     throw new Error("content is required for vault_pin");
   }
   const kind = VaultKindSchema.safeParse(args.kind);
+  const resolvedKind = kind.success ? kind.data : "pin";
+  const existing = (await vault.listVaultItems({ kind: resolvedKind, limit: 200 })).find(
+    (item) => item.content.trim().toLowerCase() === content.toLowerCase(),
+  );
+  if (existing) {
+    return { available: true, item: existing, alreadyPinned: true };
+  }
   const turnId = typeof args.turnId === "string" && args.turnId ? args.turnId : undefined;
   const item = await vault.saveVaultItem({
-    kind: kind.success ? kind.data : "pin",
+    kind: resolvedKind,
     content,
     ...(turnId ? { sourceTurnId: turnId } : {}),
   });
@@ -170,39 +177,45 @@ export async function writeVaultPin(
 }
 
 /**
- * Hard-delete one vault item (write-high, confirm-gated by the loop).
- * Target: `id`, else a case-insensitive `content` match, else the most recent item.
- * A `content` that matches nothing deletes nothing.
+ * Which item `vault_forget` would delete: `id`, else a case-insensitive `content`
+ * match, else the most recent pin (falling back to the most recent item).
+ * A `content` that matches nothing resolves to nothing.
  */
-export async function writeVaultForget(
+export async function resolveVaultForgetTarget(
   vault: VaultPort,
   args: Record<string, unknown>,
-): Promise<unknown> {
+): Promise<VaultItem | undefined> {
   const explicitId =
     typeof args.id === "string" && args.id.trim()
       ? args.id.trim()
       : typeof args.itemId === "string" && args.itemId.trim()
         ? args.itemId.trim()
         : undefined;
-
-  let targetId = explicitId;
-  if (!targetId) {
-    const needle =
-      typeof args.content === "string" && args.content.trim()
-        ? args.content.trim().toLowerCase()
-        : undefined;
-    const items = await vault.listVaultItems({ limit: 200 });
-    const match = needle
-      ? items.find((item) => item.content.toLowerCase().includes(needle))
-      : items[0];
-    targetId = match?.id;
+  const items = await vault.listVaultItems({ limit: 200 });
+  if (explicitId) {
+    return items.find((item) => item.id === explicitId);
   }
+  const needle =
+    typeof args.content === "string" && args.content.trim()
+      ? args.content.trim().toLowerCase()
+      : undefined;
+  if (needle) {
+    return items.find((item) => item.content.toLowerCase().includes(needle));
+  }
+  return items.find((item) => item.kind === "pin") ?? items[0];
+}
 
-  if (!targetId) {
+/** Hard-delete one vault item (write-high, confirm-gated by the loop). */
+export async function writeVaultForget(
+  vault: VaultPort,
+  args: Record<string, unknown>,
+): Promise<unknown> {
+  const target = await resolveVaultForgetTarget(vault, args);
+  if (!target) {
     return { available: true, deleted: false, message: "no vault item matched" };
   }
-  const result = await vault.forgetVaultItem(targetId);
-  return { available: true, deleted: result.deleted, id: targetId };
+  const result = await vault.forgetVaultItem(target.id);
+  return { available: true, deleted: result.deleted, id: target.id, content: target.content };
 }
 
 /** Queue a fresh performance report (write-low voice path). */
