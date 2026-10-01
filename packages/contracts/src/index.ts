@@ -295,3 +295,15 @@ export {
   type ScrapePostFields,
   type MergedInstagramPostPayload,
 } from "./instagram/index.js";
+
+export {
+  PHASE14_CONTRACT_VERSION,
+  ENGAGEMENT_TREND_MAX_POINTS,
+  ENGAGEMENT_TREND_MIN_SCORED,
+  EngagementTrendPointSchema,
+  EngagementTrendSchema,
+  EngagementTrendTimeBasisSchema,
+  type EngagementTrend,
+  type EngagementTrendPoint,
+  type EngagementTrendTimeBasis,
+} from "./phase14/index.js";

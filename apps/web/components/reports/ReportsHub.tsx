@@ -1,15 +1,21 @@
 import Link from "next/link";
 
-import type { CockpitReportItem } from "@zeref/contracts";
+import type { CockpitReportItem, EngagementTrend } from "@zeref/contracts";
+
+import { TrendLineChart } from "./TrendLineChart";
 
 type ReportsHubProps = {
   items: CockpitReportItem[];
   insufficientData: boolean;
+  trend?: EngagementTrend | null;
+  trendError?: string | null;
 };
 
 export function ReportsHub({
   items,
   insufficientData,
+  trend = null,
+  trendError = null,
 }: ReportsHubProps): React.ReactElement {
   return (
     <section
@@ -25,6 +31,13 @@ export function ReportsHub({
           How each post performed, with the facts behind every claim.
         </p>
       </header>
+
+      {trend ? <TrendLineChart trend={trend} /> : null}
+      {trendError ? (
+        <p data-testid="report-trend-error" className="text-sm text-amber-200/90">
+          Engagement trend unavailable: {trendError}
+        </p>
+      ) : null}
 
       {items.length === 0 ? (
         <p
