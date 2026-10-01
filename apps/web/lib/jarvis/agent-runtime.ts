@@ -14,11 +14,13 @@ import {
   createZerefToolExecutor,
   buildAckText,
   createSentenceBuffer,
+  resolveVaultForgetTarget,
   splitIntoSentences,
   type AgentRunResult,
   type AgentStep as CoreAgentStep,
   type PendingConfirm,
 } from "@zeref/jarvis-kernel";
+import { forgetVaultItem, listVaultItems, saveVaultItem } from "@zeref/zeref-memory";
 
 import { getCockpitEventBus } from "../cockpit/cockpit-event-bus";
 import { persistAgentAudit } from "./audit-persist";
@@ -103,6 +105,23 @@ function confirmResultText(pending: PendingConfirm): string {
   return `Shall I proceed with ${pending.toolName.replaceAll("_", " ")}?`;
 }
 
+const vaultPort = {
+  saveVaultItem,
+  listVaultItems,
+  forgetVaultItem,
+};
+
+/** Name the exact item a forget would delete; no confirm when nothing matches. */
+async function describeVaultForget(
+  pending: PendingConfirm,
+): Promise<{ text: string; keepConfirm: boolean }> {
+  const target = await resolveVaultForgetTarget(vaultPort, pending.args);
+  if (!target) {
+    return { text: "There's nothing in your vault that matches — nothing to forget.", keepConfirm: false };
+  }
+  return { text: `Shall I forget "${target.content}"?`, keepConfirm: true };
+}
+
 function emitAgentSteps(
   runId: string,
   coreStep: CoreAgentStep,
@@ -181,8 +200,16 @@ export async function runJarvisAgent(
 
   const ackText = buildAckText(originalTranscript);
   let resultText: string;
-  if (result.terminalReason === "awaiting_confirm" && result.pendingConfirm) {
-    resultText = confirmResultText(result.pendingConfirm);
+  let pendingConfirm = result.pendingConfirm;
+  if (
+    result.terminalReason === "awaiting_confirm" &&
+    pendingConfirm?.toolName === "vault_forget"
+  ) {
+    const described = await describeVaultForget(pendingConfirm);
+    resultText = described.text;
+    if (!described.keepConfirm) pendingConfirm = undefined;
+  } else if (result.terminalReason === "awaiting_confirm" && pendingConfirm) {
+    resultText = confirmResultText(pendingConfirm);
   } else if (result.finalText) {
     resultText = result.finalText;
   } else if (result.terminalReason === "budget_exhausted") {
@@ -242,8 +269,10 @@ export async function runJarvisAgent(
     toolCalls,
     globeState: "speaking",
     events,
-    terminalReason: result.terminalReason,
-    pendingConfirm: result.pendingConfirm,
+    terminalReason: pendingConfirm || result.terminalReason !== "awaiting_confirm"
+      ? result.terminalReason
+      : "completed",
+    pendingConfirm,
     contractSteps,
     spokenSentenceCount: spokenCount,
   };

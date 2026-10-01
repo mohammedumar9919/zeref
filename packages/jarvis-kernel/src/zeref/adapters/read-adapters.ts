@@ -1,3 +1,5 @@
+import { VaultKindSchema } from "@zeref/contracts";
+import type { VaultPort } from "../../core/ports/memory-port.js";
 import type { ZerefReadContext } from "../context.js";
 
 function degraded(ctx: ZerefReadContext, toolName: string): { available: false; message: string } {
@@ -102,14 +104,19 @@ export async function readDiscoverCompetitor(
   return ctx.discoverCompetitor(args);
 }
 
-/** Memory save via MemoryPort adapter (C153). */
-export async function readMemorySave(
-  ctx: ZerefReadContext,
-  content: string,
-  opts?: { turnId?: string; tags?: string[] },
+/** Memory vault listing (CLOUD-C3). */
+export async function readVaultList(
+  vault: VaultPort,
+  args: Record<string, unknown>,
 ): Promise<unknown> {
-  if (!ctx.canRead()) {
-    return degraded(ctx, "memory_save");
-  }
-  return ctx.memorySave(content, opts);
+  const kind = VaultKindSchema.safeParse(args.kind);
+  const limit =
+    typeof args.limit === "number" && Number.isFinite(args.limit) && args.limit > 0
+      ? Math.floor(args.limit)
+      : 20;
+  const items = await vault.listVaultItems({
+    ...(kind.success ? { kind: kind.data } : {}),
+    limit,
+  });
+  return { available: true, count: items.length, items };
 }

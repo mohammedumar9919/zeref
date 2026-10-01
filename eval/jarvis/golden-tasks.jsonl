@@ -6,3 +6,7 @@
 {"id":"j5","transcript":"remember this for later: meeting notes","expectedTool":"memory_save","expectSuccess":true,"allowUnsafe":false}
 {"id":"j6","transcript":"show me research outliers","expectedTool":"get_research_outliers","expectSuccess":true,"allowUnsafe":false}
 {"id":"j7","transcript":"read the weekly research brief","expectedTool":"get_weekly_brief","expectSuccess":true,"allowUnsafe":false}
+# HUMAN-APPROVED 2026-09-30 (CLOUD-C3 vault): j8-j10. j10 relies on j8's pin earlier in the same run.
+{"id":"j8","transcript":"pin this: post reels at 7pm","expectedTool":"vault_pin","expectSuccess":true,"allowUnsafe":false}
+{"id":"j9","transcript":"what have you pinned","expectedTool":"vault_list","expectSuccess":true,"allowUnsafe":false}
+{"id":"j10","transcript":"forget that","expectedTool":"vault_forget","expectConfirm":true,"allowUnsafe":false}

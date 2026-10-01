@@ -9,17 +9,22 @@ import {
   type MemoryEntry,
   type MemoryEntity,
   type MemoryRelation,
+  type VaultForgetResult,
+  type VaultItem,
 } from "@zeref/contracts";
 import { ruleBasedContradictionCheck } from "./contradiction.js";
+import { isVaultEntry, selectVaultItems, toVaultItem, toVaultSaveInput } from "./vault.js";
 import { autoTierClassifier } from "./tier-classifier.js";
 import { temporalScore } from "./temporal-score.js";
 import type {
   CreateEntityInput,
+  ListVaultItemsOptions,
   MemoryAdapter,
   QueryEntitiesOptions,
   RelateEntitiesInput,
   SaveMemoryInput,
   SaveMemoryResult,
+  SaveVaultItemInput,
   SearchMemoryOptions,
   UpdateEntityInput,
   VerifyMemoryInput,
@@ -161,6 +166,26 @@ export class MockMemoryAdapter implements MemoryAdapter {
       totalCount: ranked.length,
       ts: toIso(now),
     };
+  }
+
+  async saveVaultItem(input: SaveVaultItemInput): Promise<VaultItem> {
+    const { entry } = await this.saveMemory(
+      toVaultSaveInput(input.kind, input.content, input),
+    );
+    return toVaultItem(entry);
+  }
+
+  async listVaultItems(options: ListVaultItemsOptions = {}): Promise<VaultItem[]> {
+    return selectVaultItems(this.store.entries, options);
+  }
+
+  async forgetVaultItem(id: string): Promise<VaultForgetResult> {
+    const idx = this.store.entries.findIndex((e) => e.id === id);
+    if (idx < 0 || !isVaultEntry(this.store.entries[idx])) {
+      return { deleted: false };
+    }
+    this.store.entries.splice(idx, 1);
+    return { deleted: true };
   }
 
   async verifyMemory(input: VerifyMemoryInput): Promise<MemoryEntry> {

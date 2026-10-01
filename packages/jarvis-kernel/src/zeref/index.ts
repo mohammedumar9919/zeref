@@ -5,3 +5,4 @@ export {
 } from "./tool-descriptors.js";
 export { createZerefToolExecutor } from "./tool-executor.js";
 export type { IdempotencyCache } from "./adapters/write-adapters.js";
+export { resolveVaultForgetTarget } from "./adapters/write-adapters.js";

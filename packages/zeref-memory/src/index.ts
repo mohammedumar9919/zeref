@@ -6,6 +6,9 @@ export {
   updateEntity,
   queryEntities,
   relateEntities,
+  saveVaultItem,
+  listVaultItems,
+  forgetVaultItem,
   getMemoryAdapter,
   resetMemoryAdapterCache,
   isMemoryMockMode,
@@ -14,6 +17,13 @@ export {
 export { autoTierClassifier } from "./tier-classifier.js";
 export { temporalScore, getHalfLifeDays } from "./temporal-score.js";
 export { ruleBasedContradictionCheck } from "./contradiction.js";
+export {
+  VAULT_SOURCE,
+  toVaultSaveInput,
+  isVaultEntry,
+  toVaultItem,
+  type VaultSaveOptions,
+} from "./vault.js";
 export { createMockMemoryAdapter, MockMemoryAdapter } from "./mock-adapter.js";
 export { createPostgresMemoryAdapter, PostgresMemoryAdapter } from "./postgres-adapter.js";
 
@@ -27,12 +37,17 @@ export type {
   QueryEntitiesOptions,
   RelateEntitiesInput,
   TierClassifierContext,
+  SaveVaultItemInput,
+  ListVaultItemsOptions,
   MemoryAdapter,
   MemoryEntry,
   MemoryEntity,
   MemoryRelation,
   MemorySearchResult,
   MemoryTier,
+  VaultForgetResult,
+  VaultItem,
+  VaultKind,
 } from "./types.js";
 
 export {
@@ -41,5 +56,7 @@ export {
   MemoryEntitySchema,
   MemoryBrainEventSchema,
   CockpitSseOutboxSchema,
+  VaultKindSchema,
+  VaultItemSchema,
   PHASE7_CONTRACT_VERSION,
 } from "@zeref/contracts";

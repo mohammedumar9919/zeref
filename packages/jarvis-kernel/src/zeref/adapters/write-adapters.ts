@@ -1,4 +1,6 @@
-import type { ZerefWriteContext } from "../context.js";
+import { VaultKindSchema, type VaultItem } from "@zeref/contracts";
+import type { VaultPort } from "../../core/ports/memory-port.js";
+import type { ZerefReadContext, ZerefWriteContext } from "../context.js";
 
 export type IdempotencyCache = Map<string, unknown>;
 
@@ -128,6 +130,92 @@ export async function writeSuggestReelIdeas(
     cache.set(cacheKey("suggest_reel_ideas", idempotencyKey), result);
   }
   return result;
+}
+
+/** Episodic memory save (write-low; persistence still flows through the read context's MemoryPort). */
+export async function writeMemorySave(
+  ctx: Pick<ZerefReadContext, "canRead" | "unavailableMessage" | "memorySave">,
+  content: string,
+  opts?: { turnId?: string; tags?: string[] },
+): Promise<unknown> {
+  if (!ctx.canRead()) {
+    return { available: false, message: ctx.unavailableMessage("memory_save") };
+  }
+  return ctx.memorySave(content, opts);
+}
+
+/** Pin an explicit operator instruction into the memory vault (CLOUD-C3). */
+export async function writeVaultPin(
+  vault: VaultPort,
+  args: Record<string, unknown>,
+): Promise<unknown> {
+  const raw =
+    typeof args.content === "string"
+      ? args.content
+      : typeof args.text === "string"
+        ? args.text
+        : "";
+  const content = raw.trim();
+  if (!content) {
+    throw new Error("content is required for vault_pin");
+  }
+  const kind = VaultKindSchema.safeParse(args.kind);
+  const resolvedKind = kind.success ? kind.data : "pin";
+  const existing = (await vault.listVaultItems({ kind: resolvedKind, limit: 200 })).find(
+    (item) => item.content.trim().toLowerCase() === content.toLowerCase(),
+  );
+  if (existing) {
+    return { available: true, item: existing, alreadyPinned: true };
+  }
+  const turnId = typeof args.turnId === "string" && args.turnId ? args.turnId : undefined;
+  const item = await vault.saveVaultItem({
+    kind: resolvedKind,
+    content,
+    ...(turnId ? { sourceTurnId: turnId } : {}),
+  });
+  return { available: true, item };
+}
+
+/**
+ * Which item `vault_forget` would delete: `id`, else a case-insensitive `content`
+ * match, else the most recent pin (falling back to the most recent item).
+ * A `content` that matches nothing resolves to nothing.
+ */
+export async function resolveVaultForgetTarget(
+  vault: VaultPort,
+  args: Record<string, unknown>,
+): Promise<VaultItem | undefined> {
+  const explicitId =
+    typeof args.id === "string" && args.id.trim()
+      ? args.id.trim()
+      : typeof args.itemId === "string" && args.itemId.trim()
+        ? args.itemId.trim()
+        : undefined;
+  const items = await vault.listVaultItems({ limit: 200 });
+  if (explicitId) {
+    return items.find((item) => item.id === explicitId);
+  }
+  const needle =
+    typeof args.content === "string" && args.content.trim()
+      ? args.content.trim().toLowerCase()
+      : undefined;
+  if (needle) {
+    return items.find((item) => item.content.toLowerCase().includes(needle));
+  }
+  return items.find((item) => item.kind === "pin") ?? items[0];
+}
+
+/** Hard-delete one vault item (write-high, confirm-gated by the loop). */
+export async function writeVaultForget(
+  vault: VaultPort,
+  args: Record<string, unknown>,
+): Promise<unknown> {
+  const target = await resolveVaultForgetTarget(vault, args);
+  if (!target) {
+    return { available: true, deleted: false, message: "no vault item matched" };
+  }
+  const result = await vault.forgetVaultItem(target.id);
+  return { available: true, deleted: result.deleted, id: target.id, content: target.content };
 }
 
 /** Queue a fresh performance report (write-low voice path). */

@@ -151,6 +151,9 @@ export {
   MemoryEntityChangedEventSchema,
   MemoryBrainEventSchema,
   CockpitSseOutboxSchema,
+  VaultKindSchema,
+  VaultItemSchema,
+  VaultForgetResultSchema,
   type MemoryTier,
   type MemoryObservation,
   type MemorySource,
@@ -165,6 +168,9 @@ export {
   type MemoryEntityChangedEvent,
   type MemoryBrainEvent,
   type CockpitSseOutbox,
+  type VaultKind,
+  type VaultItem,
+  type VaultForgetResult,
 } from "./phase7/index.js";
 
 export {

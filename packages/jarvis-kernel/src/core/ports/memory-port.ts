@@ -1,3 +1,5 @@
+import type { VaultForgetResult, VaultItem, VaultKind } from "@zeref/contracts";
+
 export type MemorySearchResult = {
   id: string;
   content: string;
@@ -9,4 +11,16 @@ export type MemorySearchResult = {
 export type MemoryPort = {
   search(query: string, opts?: { limit?: number }): Promise<MemorySearchResult[]>;
   save(content: string, opts?: { tags?: string[] }): Promise<{ id: string }>;
+};
+
+/** Memory vault port (CLOUD-C3). Forget must only ever delete vault items. */
+export type VaultPort = {
+  saveVaultItem(input: {
+    kind: VaultKind;
+    content: string;
+    sourceTurnId?: string | null;
+    entityId?: string | null;
+  }): Promise<VaultItem>;
+  listVaultItems(opts?: { kind?: VaultKind; limit?: number }): Promise<VaultItem[]>;
+  forgetVaultItem(id: string): Promise<VaultForgetResult>;
 };
