@@ -12,6 +12,7 @@ const WRITE_HIGH_TOOLS = new Set([
   "create_calendar_event",
   "update_studio_draft",
   "create_research_topic",
+  "vault_forget",
 ]);
 
 const TASK_SUCCESS_THRESHOLD = 0.8;
