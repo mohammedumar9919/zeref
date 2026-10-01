@@ -58,6 +58,19 @@ async function waitForHttpOk(url, timeoutMs = 120_000) {
   throw new Error(`Timed out waiting for ${url}`);
 }
 
+async function waitForHttpDown(url, timeoutMs = 15_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      await fetch(url, { signal: AbortSignal.timeout(1_000) });
+    } catch {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  console.warn(`[verify:phase-10] ${url} still answering after stop`);
+}
+
 function stopOwnedWebServer(child) {
   if (!child || child.killed) return;
   if (process.platform === "win32") {
@@ -67,7 +80,12 @@ function stopOwnedWebServer(child) {
     });
     return;
   }
-  child.kill("SIGTERM");
+  // `npm run start` forks `next start`; signal the whole group or the grandchild keeps the port.
+  try {
+    process.kill(-child.pid, "SIGTERM");
+  } catch {
+    child.kill("SIGTERM");
+  }
 }
 function run(cmd, args, env = ciSafeEnv()) {
   const res = spawnSync(cmd, args, {
@@ -163,10 +181,11 @@ async function runPhase10OpsPlaywright() {
   const cockpitUrl = `http://127.0.0.1:${port}/cockpit`;
 
   if (existsSync(perfScript)) {
-    ownedServer = spawn("npm", ["run", "start"], {
+    ownedServer = spawn("npm", ["run", "start", "--", "--hostname", "127.0.0.1", "--port", port], {
       cwd: join(repoRoot, "apps/web"),
       stdio: "ignore",
       shell: process.platform === "win32",
+      detached: process.platform !== "win32",
       env,
     });
     try {
@@ -193,6 +212,7 @@ async function runPhase10OpsPlaywright() {
 
   if (ownedServer) {
     stopOwnedWebServer(ownedServer);
+    await waitForHttpDown(cockpitUrl);
   }
 
   if (res.status !== 0) {

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * P8 hotfix — reports hub + artifact detail (P8-HOTFIX-C @ 019e7bd).

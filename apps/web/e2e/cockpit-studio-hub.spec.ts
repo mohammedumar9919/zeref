@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * P8 hotfix — studio hub at /cockpit/studio (P8-HOTFIX-B @ f52e0ef).

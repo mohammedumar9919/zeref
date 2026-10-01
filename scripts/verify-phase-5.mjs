@@ -52,6 +52,17 @@ function isServerVoicePath(relPath) {
   );
 }
 
+/** Track B Graph clients. Same shape as the jarvis-kernel allow-list: server modules only. */
+function isServerInstagramPath(relPath) {
+  const normalized = relPath.replace(/\\/g, "/").toLowerCase();
+  return (
+    normalized.includes("/apps/web/lib/jarvis/") ||
+    normalized.includes("/apps/web/lib/ops/") ||
+    normalized.startsWith("apps/web/lib/jarvis/") ||
+    normalized.startsWith("apps/web/lib/ops/")
+  );
+}
+
 function isClientComponent(source) {
   return /^\s*["']use client["'];?\s*$/m.test(source);
 }
@@ -115,7 +126,14 @@ function assertNoVoiceOrInstagramInWeb() {
       const source = readFileSync(abs, "utf8");
 
       if (C30_INSTAGRAM_IMPORT.test(source)) {
-        fail(`C30: ${rel} must not import @zeref/instagram`);
+        if (!isServerInstagramPath(rel)) {
+          fail(
+            `C30: ${rel} must not import @zeref/instagram outside lib/jarvis/** or lib/ops/**`,
+          );
+        }
+        if (isClientComponent(source)) {
+          fail(`C30: ${rel} is a client component and must not import @zeref/instagram`);
+        }
       }
 
       if (C30_WHISPER_IMPORT.test(source) && !isServerVoicePath(rel)) {

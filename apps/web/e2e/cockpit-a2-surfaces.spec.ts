@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 /**
  * CLOUD-A2 — product surfaces polish (narrative reports, media, slots, cards).

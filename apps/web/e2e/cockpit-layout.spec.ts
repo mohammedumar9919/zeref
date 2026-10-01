@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test.describe("cockpit layout", () => {
   test("top nav shows Cockpit and Settings only", async ({ page }) => {
