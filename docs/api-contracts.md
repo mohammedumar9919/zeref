@@ -13,6 +13,18 @@ Council Stage 2 required for changes to this file or underlying Zod schemas.
 |--------|------|---------|-----------------|
 | GET | `/api/v1/cockpit/slices` | `apps/web/app/api/v1/cockpit/slices/route.ts` | `CockpitSlicesSchema` |
 | GET | `/api/v1/reports/artifacts/:id` | `apps/web/app/api/v1/reports/artifacts/[id]/route.ts` | Elite report JSON (phase4) |
+| GET | `/api/v1/reports/engagement-trend` | `apps/web/app/api/v1/reports/engagement-trend/route.ts` | `EngagementTrendSchema` (phase14, CLOUD-C6) — fixture source labelled `fixture`; live without DB → 500, never empty "live" |
+
+### Jarvis vault tools (CLOUD-C3, phase7 `memory-vault.ts`)
+
+| Tool | Risk tier | Args | Notes |
+|------|-----------|------|-------|
+| `vault_list` | read | `{ kind?, limit? }` | `VaultItemSchema[]` |
+| `vault_pin` | write-low | `{ content }` | same content (case-insensitive) returns the existing item with `alreadyPinned: true` |
+| `vault_forget` | write-high (confirm) | `{ id? , content? }` | no args → most recent pin; deletes `source='vault'` rows only; confirm text names the item |
+| `memory_save` | write-low | `{ content, tags? }` | |
+
+Memory saves also run the CLOUD-C5 semantic check: suspected near-miss contradictions are stored on the new entry as `metadata.suspectedContradictionOf: [{ id, reason }]` and never mark anything `contradicted`.
 
 ### RSC fetch
 
