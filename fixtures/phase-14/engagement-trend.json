@@ -1,0 +1,15 @@
+{
+  "points": [
+    { "entityId": "990e8400-e29b-41d4-a716-446655440001", "title": "Sample post 1 · ride log", "at": "2026-08-03T17:05:00.000Z", "timeBasis": "published", "engagementScore": 42.1 },
+    { "entityId": "990e8400-e29b-41d4-a716-446655440002", "title": "Sample post 2 · night ride", "at": "2026-08-10T19:40:00.000Z", "timeBasis": "published", "engagementScore": 55.3 },
+    { "entityId": "990e8400-e29b-41d4-a716-446655440003", "title": "Sample post 3 · gear check", "at": "2026-08-17T16:20:00.000Z", "timeBasis": "published", "engagementScore": 38.7 },
+    { "entityId": "990e8400-e29b-41d4-a716-446655440004", "title": "Sample post 4 · canyon reel", "at": "2026-08-24T18:15:00.000Z", "timeBasis": "published", "engagementScore": 61.2 },
+    { "entityId": "990e8400-e29b-41d4-a716-446655440005", "title": "Sample post 5 · Q&A", "at": "2026-08-31T17:50:00.000Z", "timeBasis": "published", "engagementScore": 47.9 },
+    { "entityId": "990e8400-e29b-41d4-a716-446655440006", "title": "Sample post 6 · ride log", "at": "2026-09-07T19:05:00.000Z", "timeBasis": "published", "engagementScore": 50.74 },
+    { "entityId": "990e8400-e29b-41d4-a716-446655440007", "title": "Sample post 7 · maintenance", "at": "2026-09-14T16:45:00.000Z", "timeBasis": "published", "engagementScore": 44.0 },
+    { "entityId": "990e8400-e29b-41d4-a716-446655440008", "title": "Sample post 8 · sunset reel", "at": "2026-09-21T18:30:00.000Z", "timeBasis": "published", "engagementScore": 58.6 }
+  ],
+  "median": 49.32,
+  "source": "fixture",
+  "insufficientData": false
+}

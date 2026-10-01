@@ -5,6 +5,7 @@ import { ReportArtifactDetail } from "@/components/reports/ReportArtifactDetail"
 import { ReportsHub } from "@/components/reports/ReportsHub";
 import { CockpitBffError, getCockpitSlices } from "@/lib/bff";
 import { getReportArtifact } from "@/lib/cockpit-bff";
+import { getEngagementTrend } from "@/lib/reports/engagement-trend-bff";
 
 type ReportsPageProps = {
   searchParams: Promise<{ artifact?: string }>;
@@ -40,7 +41,15 @@ export default async function ReportsDeepLinkPage({
       <ReportArtifactDetail artifactId={artifact} report={result.body} />
     );
   } else {
-    belowGrid = <ReportsHub items={items} insufficientData={insufficientData} />;
+    const trendResult = await getEngagementTrend();
+    belowGrid = (
+      <ReportsHub
+        items={items}
+        insufficientData={insufficientData}
+        trend={trendResult.status === 200 ? trendResult.body : null}
+        trendError={trendResult.status === 200 ? null : trendResult.body.error}
+      />
+    );
   }
 
   return (
