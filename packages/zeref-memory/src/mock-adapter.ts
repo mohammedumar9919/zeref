@@ -12,7 +12,7 @@ import {
   type VaultForgetResult,
   type VaultItem,
 } from "@zeref/contracts";
-import { ruleBasedContradictionCheck } from "./contradiction.js";
+import { checkContradictions, suspectedMetadata } from "./contradiction.js";
 import { isVaultEntry, selectVaultItems, toVaultItem, toVaultSaveInput } from "./vault.js";
 import { autoTierClassifier } from "./tier-classifier.js";
 import { temporalScore } from "./temporal-score.js";
@@ -106,12 +106,12 @@ export class MockMemoryAdapter implements MemoryAdapter {
       updatedAt: toIso(now),
     });
 
-    const contradictions = ruleBasedContradictionCheck(draft, this.store.entries).map(
-      (match) => ({
-        ...match,
-        entryId: entryId,
-      }),
-    );
+    const { exact, suspected } = checkContradictions(draft, this.store.entries);
+    const contradictions = exact.map((match) => ({
+      ...match,
+      entryId: entryId,
+    }));
+    draft.metadata = suspectedMetadata(draft.metadata, suspected);
 
     for (const match of contradictions) {
       const idx = this.store.entries.findIndex((e) => e.id === match.supersededId);

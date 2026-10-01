@@ -18,7 +18,7 @@ import {
   memoryObservations,
   schema,
 } from "@zeref/db/schema";
-import { ruleBasedContradictionCheck } from "./contradiction.js";
+import { checkContradictions, suspectedMetadata } from "./contradiction.js";
 import { autoTierClassifier } from "./tier-classifier.js";
 import { temporalScore } from "./temporal-score.js";
 import {
@@ -125,10 +125,12 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
 
     const existingRows = await this.db.select().from(memoryEntries);
     const existing = existingRows.map(rowToEntry);
-    const contradictions = ruleBasedContradictionCheck(draft, existing).map((m) => ({
+    const { exact, suspected } = checkContradictions(draft, existing);
+    const contradictions = exact.map((m) => ({
       ...m,
       entryId,
     }));
+    draft.metadata = suspectedMetadata(draft.metadata, suspected);
 
     await this.db.insert(memoryEntries).values({
       id: entryId,
