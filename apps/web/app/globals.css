@@ -310,6 +310,20 @@
   }
 }
 
+/* Projector legibility: at desktop widths the smallest label is 13px and body text ~15px. */
+@media (min-width: 1280px) {
+  html {
+    font-size: 107.5%;
+  }
+
+  .text-\[9px\],
+  .text-\[10px\],
+  .text-\[11px\],
+  .text-xs {
+    font-size: 13px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .globe-voice-pulse-ring,
   .globe-jarvis-sync-rings,

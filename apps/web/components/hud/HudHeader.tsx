@@ -1,14 +1,20 @@
-import { getActivePhaseLabel } from "@/lib/phase-marker";
+"use client";
 
-const STATUS_CHIPS = ["Online", "Secure", "RSC"] as const;
+import { dataModeLabel } from "@/lib/data-mode";
+import { getWebPhaseMarker } from "@/lib/phase-marker";
+
+import { useDataMode } from "./DataModeProvider";
+
+const STATUS_CHIPS = ["Online", "Secure", "Jarvis"] as const;
 
 export function HudHeader(): React.ReactElement {
-  const phaseLabel = getActivePhaseLabel();
+  const modeLabel = dataModeLabel(useDataMode());
 
   return (
     <header
       data-testid="hud-header"
       data-unified-header="1"
+      data-phase={getWebPhaseMarker()}
       className="hud-header unified-hud-rail border-b border-hud-border/60 bg-void/80 px-4 py-1.5 backdrop-blur-md md:px-6"
     >
       <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-x-3 gap-y-1">
@@ -28,9 +34,10 @@ export function HudHeader(): React.ReactElement {
           className="flex flex-wrap items-center gap-1.5"
           aria-label="System status"
         >
-          {[...STATUS_CHIPS, phaseLabel].map((label) => (
+          {[...STATUS_CHIPS, modeLabel].map((label) => (
             <li
               key={label}
+              data-testid={label === modeLabel ? "hud-data-mode" : undefined}
               className="status-chip inline-flex items-center gap-1.5 rounded border border-hud-cyan/35 bg-hud-cyan/[0.07] px-2 py-0.5 font-mono text-[10px] uppercase leading-none tracking-[0.18em] text-hud-cyan"
             >
               <span

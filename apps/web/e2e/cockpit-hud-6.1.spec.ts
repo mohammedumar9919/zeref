@@ -34,7 +34,9 @@ test.describe("cockpit HUD phase 6.1 (C91–C94)", () => {
     const header = page.getByTestId("hud-header");
     await expect(header).toBeVisible();
     await expect(header.locator(".status-chip")).toHaveCount(4);
-    await expect(header.getByText(`Phase ${PHASE10_CONTRACT_VERSION.split(".")[0]}`, { exact: true })).toBeVisible();
+    await expect(header.getByTestId("hud-data-mode")).toHaveText("Fixture");
+    await expect(header).toHaveAttribute("data-phase", `web@${PHASE10_CONTRACT_VERSION}`);
+    await expect(header).not.toContainText(/Phase \d/);
     await expect(header.getByText("Zeref operator")).toBeVisible();
     await expect(header.getByText("Command center HUD")).toBeVisible();
   });

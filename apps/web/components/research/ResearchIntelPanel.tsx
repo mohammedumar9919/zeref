@@ -4,6 +4,14 @@ type ResearchIntelPanelProps = {
   intel: ResearchIntel;
 };
 
+/** Operator copy for the competitor line; server skip reasons name env vars, which never reach the screen. */
+export function competitorLine(competitor: NonNullable<ResearchIntel["competitor"]>): string {
+  if (competitor.source === "fixture" || competitor.skippedReason) {
+    return `Competitor ${competitor.handle} · data: sample (connect Instagram for live)`;
+  }
+  return `Competitor ${competitor.handle} · live`;
+}
+
 function formatMultiplier(value: number): string {
   return `${value.toFixed(1).replace(/\.0$/, "")}×`;
 }
@@ -117,8 +125,7 @@ export function ResearchIntelPanel({ intel }: ResearchIntelPanelProps): React.Re
           data-testid="research-competitor-fixture"
           className="font-mono text-[10px] text-hud-muted"
         >
-          Competitor {intel.competitor.handle} · {intel.competitor.source}
-          {intel.competitor.skippedReason ? ` — ${intel.competitor.skippedReason}` : ""}
+          {competitorLine(intel.competitor)}
         </p>
       ) : null}
     </section>

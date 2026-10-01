@@ -20,10 +20,9 @@ export function ReportsHub({
         <p className="font-mono text-[10px] uppercase tracking-widest text-hud-cyan/90">
           Reports hub
         </p>
-        <h2 className="text-lg font-medium text-hud-primary">Elite artifacts</h2>
+        <h2 className="text-lg font-medium text-hud-primary">Post reports</h2>
         <p className="text-sm text-hud-muted">
-          Read-only elite report payloads from the analyze → report pipeline (Phase
-          4)
+          How each post performed, with the facts behind every claim.
         </p>
       </header>
 
