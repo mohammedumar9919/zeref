@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 
-import { toolLabel } from "@zeref/jarvis-kernel/tool-labels";
-
 import { useVoice } from "@/components/voice/VoiceProvider";
 import {
   TYPED_TURN_CANCEL_COPY,
@@ -19,11 +17,8 @@ import { ConfirmCard } from "./ConfirmCard";
 type PendingTurn = TypedPendingConfirm & {
   transcript: string;
   runId: string;
+  question: string;
 };
-
-function capitalize(text: string): string {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
 
 export function TypedComposer(): React.ReactElement {
   const { appendTypedTranscript } = useVoice();
@@ -41,7 +36,12 @@ export function TypedComposer(): React.ReactElement {
         turnId: result.runId,
       });
       if (result.pendingConfirm && result.runId) {
-        setPending({ ...result.pendingConfirm, transcript, runId: result.runId });
+        setPending({
+          ...result.pendingConfirm,
+          transcript,
+          runId: result.runId,
+          question: result.resultText.replace(/\s*Say yes to confirm\.$/, ""),
+        });
       } else {
         setPending(null);
       }
@@ -118,7 +118,7 @@ export function TypedComposer(): React.ReactElement {
         {pending ? (
           <ConfirmCard
             pending={pending}
-            label={capitalize(toolLabel(pending.toolName, pending.args))}
+            label={pending.question}
             busy={running}
             onApprove={() => void handleApprove()}
             onCancel={handleCancel}

@@ -6,7 +6,7 @@ Branch: `cloud/d2-jarvis-answers` · Risk tier: kernel (council review required)
 
 - **Plain-English confirms.** New `packages/jarvis-kernel/src/zeref/tool-labels.ts` (`toolLabel`, `confirmPrompt`).
   The ReAct loop and `agent-runtime.ts` now say `Shall I queue a report job? Say yes to confirm.` instead of
-  `Shall I proceed with enqueue_job?`. `ConfirmCard` shows the label (e.g. "Queue a report job").
+  `Shall I proceed with enqueue_job?`. `ConfirmCard` shows the question (e.g. "Shall I queue a report job?").
 - **Mock answers read the tool result** (`apps/web/lib/jarvis/llm-port.ts`):
   - headline → quotes the saved headline ("Ride log post shows solid engagement vs account baseline.");
   - "what did I ask you to remember" → `memory_search` with an empty query → top 3 items, or "Nothing saved yet";
@@ -21,9 +21,9 @@ from the tool result.
 
 ## Deviations from the card
 
-- `packages/jarvis-kernel/package.json`: added a `./tool-labels` subpath export so the client
-  `TypedComposer` can import the label helper without pulling server-only kernel deps.
-- `apps/web/components/hud/TypedComposer.tsx`: passes `label` to `ConfirmCard` (the card itself needed no change).
+- `apps/web/components/hud/TypedComposer.tsx`: passes the server's confirm question (minus "Say yes to confirm.")
+  as the `ConfirmCard` label. Client components may not import `@zeref/jarvis-kernel` (verify-phase-5 rule C30),
+  so the label is never computed in the browser.
 - `apps/web/lib/jarvis/zeref-context.ts` (C2-owned): latest-artifact fallback in `getReportArtifact`.
 - `apps/web/e2e/cockpit-composer-c1.spec.ts`: confirm-card assertion now expects the label and checks
   `data-tool-name="enqueue_job"`.
