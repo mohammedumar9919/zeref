@@ -19,12 +19,18 @@ import {
   splitIntoSentences,
   type AgentRunResult,
   type AgentStep as CoreAgentStep,
+  type ConfirmGrant,
   type PendingConfirm,
 } from "@zeref/jarvis-kernel";
 import { forgetVaultItem, listVaultItems, saveVaultItem } from "@zeref/zeref-memory";
 
 import { getCockpitEventBus } from "../cockpit/cockpit-event-bus";
 import { persistAgentAudit } from "./audit-persist";
+import {
+  CONFIRM_EXPIRED_REPLY,
+  recordConfirmGrant,
+  takeConfirmGrant,
+} from "./confirm-grants";
 import {
   getConversationHistoryForLlm,
   recordAssistantTurn,
@@ -38,6 +44,7 @@ import { createZerefContext } from "./zeref-context";
 export type JarvisAgentRunInput = {
   turnId: string;
   transcript: string;
+  /** Redeems the single-use grant stored for runId; without one nothing write-high runs. */
   confirmed?: boolean;
   runId?: string;
   killSignal?: AbortSignal;
@@ -81,6 +88,19 @@ function stateEvent(
   return { type: "voice.state", turnId, state, ts };
 }
 
+const KNOWN_TOOL_NAMES = new Set(ZEREF_TOOL_DESCRIPTORS.map((t) => t.name));
+
+/** Steps naming a tool outside the registry cannot satisfy the contract tool enum. */
+function referencesUnknownTool(step: CoreAgentStep): boolean {
+  if (step.type === "llm_predict") {
+    return Boolean(step.toolCall && !KNOWN_TOOL_NAMES.has(step.toolCall.name));
+  }
+  if (step.type === "tool_execute" || step.type === "confirm_required") {
+    return !KNOWN_TOOL_NAMES.has(step.toolName);
+  }
+  return false;
+}
+
 function extractToolCalls(steps: CoreAgentStep[]): JarvisToolCall[] {
   const calls: JarvisToolCall[] = [];
   const pendingArgs = new Map<number, Record<string, unknown>>();
@@ -89,7 +109,7 @@ function extractToolCalls(steps: CoreAgentStep[]): JarvisToolCall[] {
     if (step.type === "llm_predict" && step.toolCall) {
       pendingArgs.set(step.stepIndex, step.toolCall.args);
     }
-    if (step.type === "tool_execute") {
+    if (step.type === "tool_execute" && KNOWN_TOOL_NAMES.has(step.toolName)) {
       const args = pendingArgs.get(step.stepIndex - 1) ?? {};
       calls.push({
         name: step.toolName as JarvisToolName,
@@ -133,11 +153,50 @@ function emitAgentSteps(
   }
 }
 
+/** Confirmed turn with no live grant: refuse without running the loop or any tool. */
+async function expiredConfirmOutput(
+  input: JarvisAgentRunInput,
+  runId: string,
+): Promise<JarvisAgentRunOutput> {
+  const ts = nowIso();
+  const contractSteps: ContractAgentStep[] = [
+    {
+      type: "completed",
+      runId,
+      stepIndex: 0,
+      ts,
+      resultText: CONFIRM_EXPIRED_REPLY,
+    },
+  ];
+  for (const step of contractSteps) {
+    getCockpitEventBus().emit("agent.step", AgentStepSchema.parse(step));
+  }
+  return {
+    runId,
+    ackText: buildAckText(input.transcript),
+    resultText: CONFIRM_EXPIRED_REPLY,
+    toolCalls: [],
+    globeState: "speaking",
+    events: [
+      transcriptEvent(input.turnId, "assistant", CONFIRM_EXPIRED_REPLY, ts),
+      stateEvent(input.turnId, "speaking", ts),
+    ],
+    terminalReason: "completed",
+    contractSteps,
+    spokenSentenceCount: 0,
+  };
+}
+
 /** Phase 11 agent runtime — ReAct loop via BFF ports (C157). */
 export async function runJarvisAgent(
   input: JarvisAgentRunInput,
 ): Promise<JarvisAgentRunOutput> {
   const runId = input.runId ?? randomUUID();
+  let confirmGrant: ConfirmGrant | undefined;
+  if (input.confirmed) {
+    confirmGrant = input.runId ? takeConfirmGrant(input.runId) : undefined;
+    if (!confirmGrant) return expiredConfirmOutput(input, runId);
+  }
   const startedAt = nowIso();
   const originalTranscript = input.transcript;
   const { transcript: resolvedTranscript } = resolveConversationalTranscript(
@@ -177,7 +236,7 @@ export async function runJarvisAgent(
     llm,
     toolExecutor,
     tools: ZEREF_TOOL_DESCRIPTORS,
-    confirmed: input.confirmed,
+    confirmGrant,
     killSignal: input.killSignal,
     onToken: (delta) => {
       for (const sentence of sentenceBuffer.push(delta)) {
@@ -189,6 +248,7 @@ export async function runJarvisAgent(
       if (step.type === "llm_predict" && step.toolCall) {
         lastToolCallArgs = step.toolCall.args;
       }
+      if (referencesUnknownTool(step)) return;
       const mapped = mapCoreStepToContract(runId, step, ts, lastToolCallArgs);
       contractSteps.push(...mapped);
       emitAgentSteps(runId, step, ts, lastToolCallArgs);
@@ -215,6 +275,14 @@ export async function runJarvisAgent(
     resultText = "Run cancelled.";
   } else {
     resultText = "Done.";
+  }
+
+  if (result.terminalReason === "awaiting_confirm" && pendingConfirm) {
+    recordConfirmGrant({
+      runId,
+      toolName: pendingConfirm.toolName,
+      argsHash: pendingConfirm.argsHash,
+    });
   }
 
   const toolCalls = extractToolCalls(result.steps);

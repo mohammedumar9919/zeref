@@ -1,5 +1,6 @@
 export {
   runAgentLoop,
+  UNKNOWN_TOOL_REPLY,
   type AgentRunInput,
   type AgentRunResult,
   type PendingConfirm,
@@ -17,8 +18,11 @@ export {
 export {
   confirmRequired,
   canExecuteTool,
+  grantMatches,
   isWriteTier,
+  type ConfirmGrant,
   type RiskTier,
+  type ToolCallIdentity,
 } from "./permissions.js";
 
 export {

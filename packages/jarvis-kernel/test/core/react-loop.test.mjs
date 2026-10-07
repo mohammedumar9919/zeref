@@ -146,7 +146,7 @@ describe("@zeref/jarvis-kernel core react-loop", () => {
       ]),
       toolExecutor: executor,
       tools: [WRITE_HIGH_TOOL],
-      confirmed: true,
+      confirmGrant: { runId: "run-3", ...blocked.pendingConfirm },
     });
 
     assert.equal(resumed.terminalReason, "completed");

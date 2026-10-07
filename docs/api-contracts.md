@@ -26,6 +26,16 @@ Council Stage 2 required for changes to this file or underlying Zod schemas.
 
 Memory saves also run the CLOUD-C5 semantic check: suspected near-miss contradictions are stored on the new entry as `metadata.suspectedContradictionOf: [{ id, reason }]` and never mark anything `contradicted`.
 
+### Jarvis run + write-high confirm (K1)
+
+`POST /api/v1/jarvis/run` — body `{ turnId: uuid, transcript, confirmed?: boolean, runId?: uuid }` (strict; unchanged shape).
+
+- A write-high tool call stops the run with `terminalReason: "awaiting_confirm"` and `pendingConfirm: { toolName, args, argsHash }` (`argsHash` = kernel `hashArgs(args)`). The server records a **confirm grant** `{ runId, toolName, argsHash }` in an in-memory store (`apps/web/lib/jarvis/confirm-grants.ts`, TTL 5 min). No grant is recorded when `pendingConfirm` is dropped (e.g. `vault_forget` with nothing to forget).
+- To approve, the client re-sends the same transcript with `confirmed: true` and the **same `runId`**. The server removes the grant (single use) and passes it to the kernel as `confirmGrant`. The kernel executes a write-high call only if `runId`, tool name and `hashArgs(args)` all match and the grant has not been used in this run; a second write-high call in the same run stops at `awaiting_confirm` again.
+- `confirmed: true` with a missing, unknown, expired or already-used `runId` runs no tools and returns `terminalReason: "completed"`, no `pendingConfirm`, `resultText: "That confirmation has expired — please ask again."`.
+- `confirmed` alone never approves anything. Voice "yes" turns reuse the stored `runId` the same way.
+- A tool call naming a tool outside the registry is never executed (no fallback tier): the kernel emits a failed `tool_execute` step and finishes with `"I can't run that tool."`.
+
 ### RSC fetch
 
 - `getCockpitSlices()` in `apps/web/lib/bff.ts` — direct server load via `loadCockpitSlices()` + Zod parse (no HTTP loopback)

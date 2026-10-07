@@ -12,7 +12,7 @@ import {
   type AgentBudgets,
 } from "./budgets.js";
 import { britishPartnerSystemPrompt, detectPersonaMode } from "./persona.js";
-import { canExecuteTool } from "./permissions.js";
+import { canExecuteTool, confirmRequired, type ConfirmGrant } from "./permissions.js";
 import type { LlmMessage, LlmPort } from "./ports/llm-port.js";
 import type { MemoryPort } from "./ports/memory-port.js";
 import type { ToolExecutorPort } from "./ports/tool-executor-port.js";
@@ -27,8 +27,11 @@ export type AgentRunInput = {
   tools: ToolDescriptor[];
   memory?: MemoryPort;
   budgets?: Partial<AgentBudgets>;
-  /** Resume flag after conversational confirm (C155). */
-  confirmed?: boolean;
+  /**
+   * Approves one write-high call whose runId, tool name and hashArgs(args) all
+   * match (K1). Consumed after one execution; there is no boolean override.
+   */
+  confirmGrant?: ConfirmGrant;
   /** Prior user/assistant turns for multi-turn voice continuity. */
   conversationHistory?: Array<{ role: "user" | "assistant"; content: string }>;
   killSignal?: AbortSignal;
@@ -41,7 +44,10 @@ export type AgentRunInput = {
 export type PendingConfirm = {
   toolName: string;
   args: Record<string, unknown>;
+  argsHash: string;
 };
+
+export const UNKNOWN_TOOL_REPLY = "I can't run that tool.";
 
 export type AgentRunResult = {
   terminalReason: AgentTerminalReason;
@@ -65,7 +71,7 @@ export async function runAgentLoop(
   let stepIndex = 0;
   let iteration = 0;
   let tokensUsed = 0;
-  let confirmed = input.confirmed ?? false;
+  let grant: ConfirmGrant | undefined = input.confirmGrant;
 
   const emit = (step: AgentStep) => {
     steps.push(step);
@@ -167,9 +173,29 @@ export async function runAgentLoop(
       const { name, args } = predict.toolCall;
       const id = predict.toolCall.id ?? `call_${name}_${stepIndex}`;
       const descriptor = input.tools.find((t) => t.name === name);
-      const riskTier = descriptor?.riskTier ?? "read";
+      const argsHash = hashArgs(args);
 
-      if (!canExecuteTool(riskTier, confirmed)) {
+      if (!descriptor) {
+        emit({
+          type: "tool_execute",
+          stepIndex: stepIndex++,
+          toolName: name,
+          ok: false,
+          error: "unknown_tool",
+        });
+        emit({
+          type: "terminal",
+          stepIndex: stepIndex++,
+          reason: "completed",
+          text: UNKNOWN_TOOL_REPLY,
+        });
+        return finish("completed", UNKNOWN_TOOL_REPLY);
+      }
+
+      const riskTier = descriptor.riskTier;
+      const call = { runId: input.runId, toolName: name, argsHash };
+
+      if (!canExecuteTool(riskTier, grant, call)) {
         const message = confirmPrompt(name, args);
         emit({
           type: "confirm_required",
@@ -182,8 +208,14 @@ export async function runAgentLoop(
           stepIndex: stepIndex++,
           reason: "awaiting_confirm",
         });
-        return finish("awaiting_confirm", undefined, { toolName: name, args });
+        return finish("awaiting_confirm", undefined, {
+          toolName: name,
+          args,
+          argsHash,
+        });
       }
+
+      if (confirmRequired(riskTier)) grant = undefined;
 
       const result = await input.toolExecutor.execute(name, args);
       const ts = input.now?.() ?? new Date().toISOString();
@@ -192,7 +224,7 @@ export async function runAgentLoop(
         runId: input.runId,
         stepIndex: stepIndex - 1,
         toolName: name,
-        argsHash: hashArgs(args),
+        argsHash,
         riskTier,
         resultSummary: summarizeAuditResult(result.data, result.error),
         ts,
