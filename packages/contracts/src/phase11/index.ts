@@ -24,3 +24,14 @@ export {
   JarvisAuditEntrySchema,
   type JarvisAuditEntry,
 } from "./audit.js";
+
+export {
+  JarvisJobTypeSchema,
+  JarvisJobTypeSchemaV9,
+  JarvisJobEnqueueRequestSchema,
+  JarvisJobEnqueueRequestSchemaV9,
+  type JarvisJobType,
+  type JarvisJobTypeV9,
+  type JarvisJobEnqueueRequest,
+  type JarvisJobEnqueueRequestV9,
+} from "./jarvis-jobs.js";

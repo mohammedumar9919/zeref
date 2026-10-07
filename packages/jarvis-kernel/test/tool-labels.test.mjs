@@ -7,6 +7,10 @@ describe("tool labels (CLOUD-D2)", () => {
   it("enqueue_job names the job type", () => {
     assert.equal(toolLabel("enqueue_job", { jobType: "report" }), "queue a report job");
     assert.equal(toolLabel("enqueue_job"), "queue a background job");
+    assert.equal(
+      toolLabel("enqueue_job", { jobType: "collect" }),
+      "collect your latest Instagram data",
+    );
   });
 
   it("confirm prompt is plain English", () => {

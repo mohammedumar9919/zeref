@@ -4,6 +4,7 @@ import type { CockpitReportItem } from "@zeref/contracts";
 import type { DataAgeState } from "@/lib/data-age";
 
 import { CockpitPanel } from "./CockpitPanel";
+import { CollectRefreshButton } from "./panels/CollectRefreshButton";
 
 type ReportsPanelProps = {
   items: CockpitReportItem[];
@@ -49,6 +50,7 @@ export function ReportsPanel({
             : "No elite report artifacts yet."}
         </p>
       )}
+      <CollectRefreshButton />
       <Link
         href="/cockpit/reports"
         className="mt-auto font-mono text-xs text-hud-cyan hover:underline"

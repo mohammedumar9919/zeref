@@ -212,7 +212,7 @@ export function createZerefContext(turnId?: string): ZerefContext {
     },
     write: {
       async enqueueJob(body, _idempotencyKey) {
-        return enqueueJob(body);
+        return enqueueJob(body, { via: "jarvis-confirmed" });
       },
       async createCalendarEvent(body, _idempotencyKey) {
         const result = await createCalendarEvent(body);

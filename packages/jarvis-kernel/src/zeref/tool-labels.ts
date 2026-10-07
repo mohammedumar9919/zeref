@@ -8,6 +8,7 @@ export function toolLabel(name: string, args: Record<string, unknown> = {}): str
   switch (name) {
     case "enqueue_job": {
       const jobType = str("jobType");
+      if (jobType === "collect") return "collect your latest Instagram data";
       return jobType ? `queue a ${jobType} job` : "queue a background job";
     }
     case "request_performance_report":
