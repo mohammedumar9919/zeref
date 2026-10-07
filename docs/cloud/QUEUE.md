@@ -33,8 +33,9 @@ Week plan (waves, cut order, demo DoD): [2026-09-28-week-plan.md](../superpowers
 | 15 | CLOUD-C3 | Memory vault v0 | DONE | A | C0 (merge) | `cloud/c3-` | [phases/C3-memory-vault.md](./phases/C3-memory-vault.md) |
 | 21 | CLOUD-D1 | Projector polish + report honesty | DONE | B | C0 | `cloud/d1-` | [phases/D1-projector-polish.md](./phases/D1-projector-polish.md) |
 | 16 | CLOUD-C6 | Pro charts v1 | DONE | B | C0 | `cloud/c6-` | [phases/C6-pro-charts.md](./phases/C6-pro-charts.md) |
-| 22 | CLOUD-D2 | Jarvis answers with real content | NEXT | B | C1, C3 | `cloud/d2-` | [phases/D2-jarvis-answers.md](./phases/D2-jarvis-answers.md) |
-| 17 | CLOUD-C2 | Confirm-gated cockpit collect | NEXT | C | C1, C3, D2 | `cloud/c2-` | [phases/C2-cockpit-collect.md](./phases/C2-cockpit-collect.md) |
+| 22 | CLOUD-D2 | Jarvis answers with real content | DONE (#28) | B | C1, C3 | `cloud/d2-` | [phases/D2-jarvis-answers.md](./phases/D2-jarvis-answers.md) |
+| 17 | CLOUD-C2 | Confirm-gated cockpit collect | IN PROGRESS | C | C1, C3, D2 | `cloud/c2-` | [phases/C2-cockpit-collect.md](./phases/C2-cockpit-collect.md) |
+| 23 | K1 | Kernel gate hardening (confirm bound to run + tool + args, single use; unknown tools fail closed) | IN PROGRESS — merge after rehearsal | C | D2 | `cloud/k1-` | [phases/K1-kernel-gate.md](./phases/K1-kernel-gate.md) |
 | 18 | CLOUD-C5 | Semantic contradiction v1 | DONE | C | C3 | `cloud/c5-` | [phases/C5-semantic-contradiction.md](./phases/C5-semantic-contradiction.md) |
 
 ### Track C — week 2 (cards ready)
