@@ -79,6 +79,28 @@ function openRouterToolParams(tools: ToolDescriptor[]) {
   }));
 }
 
+const POST_VS_USUAL =
+  /\b(last|latest|recent) post\b.*\b(usual|average|normal|baseline|compare)|\bhow did my (last|latest|recent) post do\b/;
+const MEMORY_RECALL =
+  /\bwhat (did|have) i (ask(ed)?|tell|told) you to remember\b|\bwhat do you remember\b|\bwhat have you (saved|remembered)\b/;
+
+/** "Delete all my data" / "forget everything" — never mapped to a tool. */
+function isBulkDeleteRequest(lower: string): boolean {
+  return (
+    /\b(delete|wipe|erase|forget|clear|remove|destroy)\b/.test(lower) &&
+    /\b(all|everything|every)\b/.test(lower)
+  );
+}
+
+const BULK_DELETE_REFUSAL =
+  "I can't delete all your data in one go — that's not something I'm allowed to do. " +
+  'I can forget a specific item from your vault, though: say "forget" followed by what you pinned.';
+
+const CAPABILITY_HELP =
+  "I'm not sure how to help with that yet. I can read your latest report headline, compare your last post " +
+  "with your usual, show the cockpit or pipeline status, recall what you've asked me to remember, " +
+  "pin or forget vault items, and queue report jobs.";
+
 function pickMockToolCall(
   transcript: string,
   tools: ToolDescriptor[],
@@ -86,6 +108,13 @@ function pickMockToolCall(
   const lower = transcript.toLowerCase();
   const has = (name: string) => tools.some((t) => t.name === name);
 
+  if (isBulkDeleteRequest(lower)) return undefined;
+  if (POST_VS_USUAL.test(lower) && has("get_report_artifact")) {
+    return { name: "get_report_artifact", args: {}, id: "mock-tc-post-vs-usual" };
+  }
+  if (MEMORY_RECALL.test(lower) && has("memory_search")) {
+    return { name: "memory_search", args: { query: "" }, id: "mock-tc-memory-recall" };
+  }
   if (/\bforget\b/.test(lower) && has("vault_forget")) {
     const target = transcript
       .replace(/^.*?\bforget\b\s*(about\s+)?((that|this|it|the pin)\b)?\s*[:,-]?\s*/i, "")
@@ -221,10 +250,68 @@ type VaultResultData = {
   content?: string;
 };
 
-function readToolData(toolMessageContent: string | undefined): VaultResultData | undefined {
+type ReadResultData = {
+  available?: boolean;
+  headline?: string;
+  results?: Array<{ content?: string }>;
+  report?: {
+    engagement?: { score?: number; vsCohort?: string };
+    cohort?: { sampleSize?: number };
+  };
+};
+
+type ToolResultData = VaultResultData & ReadResultData;
+
+const LOW_CONFIDENCE_SAMPLE = 5;
+
+function describeUsual(vsCohort: string | undefined): string {
+  switch (vsCohort) {
+    case "above":
+      return "above your usual";
+    case "inline":
+      return "in line with your usual";
+    case "below":
+      return "below your usual";
+    default:
+      return "not comparable with your usual yet";
+  }
+}
+
+function buildReadFinishText(toolName: string, data: ToolResultData | undefined): string | undefined {
+  if (!data) return undefined;
+  switch (toolName) {
+    case "get_latest_report_headline":
+      if (data.available === false || !data.headline) return "There's no saved report headline yet.";
+      return `Your latest report says: "${data.headline}"`;
+    case "memory_search": {
+      const contents = [
+        ...new Set((data.results ?? []).map((r) => r.content).filter((c): c is string => Boolean(c))),
+      ];
+      if (contents.length === 0) return "Nothing saved yet — ask me to remember something first.";
+      const shown = contents.slice(0, 3).map((c) => `"${c}"`).join("; ");
+      return `Here's what you've asked me to remember: ${shown}.`;
+    }
+    case "get_report_artifact": {
+      const score = data.report?.engagement?.score;
+      if (data.available === false || typeof score !== "number") {
+        return "I can't find a saved report for your last post yet.";
+      }
+      const sampleSize = data.report?.cohort?.sampleSize;
+      const confidence =
+        typeof sampleSize === "number" && sampleSize < LOW_CONFIDENCE_SAMPLE
+          ? ` Low confidence — not enough history yet (compared against ${sampleSize} ${sampleSize === 1 ? "post" : "posts"}).`
+          : "";
+      return `Your last post scored ${score.toFixed(1)} for engagement — ${describeUsual(data.report?.engagement?.vsCohort)}.${confidence}`;
+    }
+    default:
+      return undefined;
+  }
+}
+
+function readToolData(toolMessageContent: string | undefined): ToolResultData | undefined {
   if (!toolMessageContent) return undefined;
   try {
-    const parsed = JSON.parse(toolMessageContent) as { ok?: boolean; data?: VaultResultData };
+    const parsed = JSON.parse(toolMessageContent) as { ok?: boolean; data?: ToolResultData };
     return parsed.ok === false ? undefined : parsed.data;
   } catch {
     return undefined;
@@ -262,10 +349,11 @@ function buildMockFinishText(
   toolMessageContent?: string,
 ): string {
   if (!toolName) {
-    return `Right then — I heard: ${transcript}`;
+    return isBulkDeleteRequest(transcript.toLowerCase()) ? BULK_DELETE_REFUSAL : CAPABILITY_HELP;
   }
-  const vaultText = buildVaultFinishText(toolName, readToolData(toolMessageContent));
-  if (vaultText) return vaultText;
+  const data = readToolData(toolMessageContent);
+  const toolText = buildVaultFinishText(toolName, data) ?? buildReadFinishText(toolName, data);
+  if (toolText) return toolText;
   switch (toolName) {
     case "get_cockpit_summary":
       return "Cockpit summary is ready — studio, calendar, reports, and research panels are available.";
