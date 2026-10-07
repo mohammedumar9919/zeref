@@ -146,6 +146,9 @@ function pickMockToolCall(
   if (/(make a report|generate a report|new report|performance report)/i.test(lower) && has("request_performance_report")) {
     return { name: "request_performance_report", args: {}, id: "mock-tc-perf-report" };
   }
+  if (/(collect|refresh).*(instagram|data)/i.test(lower) && has("enqueue_job")) {
+    return { name: "enqueue_job", args: { jobType: "collect" }, id: "mock-tc-enqueue-collect" };
+  }
   if (/(enqueue|queue|report job|normalize job)/i.test(lower) && has("enqueue_job")) {
     return { name: "enqueue_job", args: { jobType: "report" }, id: "mock-tc-enqueue" };
   }
@@ -343,10 +346,30 @@ function buildVaultFinishText(toolName: string, data: VaultResultData | undefine
   }
 }
 
+const COLLECT_SIMULATED_TEXT = "Collect queued — simulated in demo mode.";
+
+function isSimulatedCollect(
+  toolArgs: Record<string, unknown> | undefined,
+  toolMessageContent: string | undefined,
+): boolean {
+  if (toolArgs?.jobType !== "collect" || !toolMessageContent) return false;
+  try {
+    const parsed = JSON.parse(toolMessageContent) as {
+      ok?: boolean;
+      data?: { mocked?: boolean };
+      auditMeta?: { simulated?: boolean };
+    };
+    return parsed.ok !== false && (parsed.auditMeta?.simulated === true || parsed.data?.mocked === true);
+  } catch {
+    return false;
+  }
+}
+
 function buildMockFinishText(
   toolName: string | undefined,
   transcript: string,
   toolMessageContent?: string,
+  toolArgs?: Record<string, unknown>,
 ): string {
   if (!toolName) {
     return isBulkDeleteRequest(transcript.toLowerCase()) ? BULK_DELETE_REFUSAL : CAPABILITY_HELP;
@@ -378,7 +401,9 @@ function buildMockFinishText(
     case "get_weekly_brief":
       return "Weekly research brief is ready — grounded in the outlier posts.";
     case "enqueue_job":
-      return "Job enqueued successfully.";
+      return isSimulatedCollect(toolArgs, toolMessageContent)
+        ? COLLECT_SIMULATED_TEXT
+        : "Job enqueued successfully.";
     case "create_calendar_event":
       return "Calendar event created.";
     case "memory_save":
@@ -530,22 +555,24 @@ export function createJarvisLlmPort(scriptState?: MockScriptState): LlmPort {
           .find((m) => m.role === "tool");
         if (lastToolMessage) {
           let toolName: string | undefined;
+          let toolArgs: Record<string, unknown> | undefined;
           try {
             const priorAssistant = [...input.messages]
               .reverse()
               .find((m) => m.role === "assistant");
             if (priorAssistant) {
               const call = JSON.parse(priorAssistant.content) as {
-                toolCall?: { name?: string };
+                toolCall?: { name?: string; args?: Record<string, unknown> };
               };
               toolName = call.toolCall?.name;
+              toolArgs = call.toolCall?.args;
             }
           } catch {
             toolName = state.lastTool;
           }
           state.pass += 1;
           return {
-            text: buildMockFinishText(toolName, transcript, lastToolMessage.content),
+            text: buildMockFinishText(toolName, transcript, lastToolMessage.content, toolArgs),
             tokensUsed: 24,
           };
         }

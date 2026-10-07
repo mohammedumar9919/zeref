@@ -53,3 +53,13 @@ When pg-boss accepts job but worker daemon not running:
 
 - Route test: `collect` rejected with 400.
 - Mock mode: no live boss connection in CI.
+
+---
+
+## Amendment 2026-10 — CLOUD-C2: `collect` via Jarvis confirmed write-high only
+
+- `collect` is allowed **only** through Jarvis: `enqueue_job` (write-high) → operator Confirm (bound to a single-use grant once K1 lands) → `zeref-context.ts` calls `enqueueJob(body, { via: "jarvis-confirmed" })`, which parses with `JarvisJobEnqueueRequestSchema` (UI allowlist ∪ `collect`; V9 variant keeps `research`).
+- `POST /api/v1/jobs/enqueue` and `UiJobTypeSchema` are **unchanged**: `collect` is still rejected with 400.
+- The Reports panel "Refresh data" button never calls the enqueue route; it sends a typed Jarvis turn and shows the shared ConfirmCard.
+- Live (non-mock) collect resolves the newest Graph media id server-side when no target is given; in fixture / `ZEREF_JOB_ENQUEUE_MOCK=1` the result is SIMULATED after schema parse. Live collect stays laptop-only.
+- Tests: `apps/web/test/enqueue-job-via.test.mjs`, `apps/web/test/jarvis/collect-routing.test.mjs`, `apps/web/e2e/cockpit-collect-c2.spec.ts`.

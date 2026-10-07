@@ -270,12 +270,20 @@ export {
   AgentStepSchema,
   ConfirmRequestSchema,
   JarvisAuditEntrySchema,
+  JarvisJobTypeSchema,
+  JarvisJobTypeSchemaV9,
+  JarvisJobEnqueueRequestSchema,
+  JarvisJobEnqueueRequestSchemaV9,
   type JarvisRiskTier,
   type AgentRunStatus,
   type AgentRun,
   type AgentStep,
   type ConfirmRequest,
   type JarvisAuditEntry,
+  type JarvisJobType,
+  type JarvisJobTypeV9,
+  type JarvisJobEnqueueRequest,
+  type JarvisJobEnqueueRequestV9,
 } from "./phase11/index.js";
 
 export {
