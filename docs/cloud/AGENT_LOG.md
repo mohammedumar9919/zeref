@@ -339,3 +339,8 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Status: done
 - Done: Week 1 merged to `main`: C0 #20 (CI green phases 0–12 after fixing port 3000 vs 3099 in verify 10/10.5/11/12, group-kill of owned `next start`, Suspense-reveal e2e fixture, 90-min job timeout), C1 #23, D1 #24, C3 #22, C6 #25, C5 #26. Lead implemented C0 r2, D1, C6, C5 after worker agents crashed (`WritableIterable is closed`). Operator UAT on an integration build passed after a vault fix (pin replies, dedupe, named forget confirm, empty-vault forget). Golden j8–j10 human-approved 2026-09-30 (eval 10/10, 0 unsafe; `vault_forget` write-high in scorer). Vision intake: 14 operator ideas ranked by 3-pass council into H2a/H2b/H3/Stretch (K1, C17a/b, C18, C19, C20a/b, C21a–c, C22a/b, W1, C23–C28, R1); MASTERPLAN + kill list updated; operator decisions recorded. `docs/api-contracts.md`: vault tools + engagement-trend route.
 - Next: D2, then C2, then demo rehearsal ×2.
+### 2026-10-06 — MERGE + DISPATCH — agent:lead
+- Branch: `planner/d2-done`
+- Status: done
+- Done: D2 merged (#28 @ `221b377`) after lead council review; CI green on second run (first run failed verify-phase-5 rule C30: client `TypedComposer` imported the kernel; fixed by using the server's confirm question as the card label). Dispatched two parallel workers with disjoint paths: C2 (contracts phase11, enqueue-job, zeref-context, llm-port collect regex, Reports button, ADR-030 amendment) and K1 (kernel permissions/react-loop, agent-runtime, confirm-grants store, run route, voice handle-turn).
+- Next: council review of C2 and K1 PRs; merge C2; operator demo rehearsal ×2; merge K1 after rehearsal; then C20a, C17a.
