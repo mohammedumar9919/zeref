@@ -97,7 +97,8 @@ describe("jarvis agent runtime (P11-C)", () => {
     });
 
     assert.equal(blocked.terminalReason, "awaiting_confirm");
-    assert.match(blocked.resultText, /Shall I proceed/i);
+    assert.match(blocked.resultText, /^Shall I .+\? Say yes to confirm\.$/);
+    assert.doesNotMatch(blocked.resultText, /_/);
     assert.equal(blocked.toolCalls.length, 0);
     assert.ok(blocked.pendingConfirm);
     assert.equal(blocked.pendingConfirm.toolName, "enqueue_job");

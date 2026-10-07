@@ -17,6 +17,7 @@ import type { LlmMessage, LlmPort } from "./ports/llm-port.js";
 import type { MemoryPort } from "./ports/memory-port.js";
 import type { ToolExecutorPort } from "./ports/tool-executor-port.js";
 import type { ToolDescriptor } from "./tool-descriptor.js";
+import { confirmPrompt } from "../zeref/tool-labels.js";
 
 export type AgentRunInput = {
   runId: string;
@@ -169,7 +170,7 @@ export async function runAgentLoop(
       const riskTier = descriptor?.riskTier ?? "read";
 
       if (!canExecuteTool(riskTier, confirmed)) {
-        const message = `Shall I proceed with ${name}?`;
+        const message = confirmPrompt(name, args);
         emit({
           type: "confirm_required",
           stepIndex: stepIndex++,

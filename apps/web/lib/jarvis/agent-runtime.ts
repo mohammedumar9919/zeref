@@ -13,6 +13,7 @@ import {
   ZEREF_TOOL_DESCRIPTORS,
   createZerefToolExecutor,
   buildAckText,
+  confirmPrompt,
   createSentenceBuffer,
   resolveVaultForgetTarget,
   splitIntoSentences,
@@ -99,10 +100,6 @@ function extractToolCalls(steps: CoreAgentStep[]): JarvisToolCall[] {
   }
 
   return calls;
-}
-
-function confirmResultText(pending: PendingConfirm): string {
-  return `Shall I proceed with ${pending.toolName.replaceAll("_", " ")}?`;
 }
 
 const vaultPort = {
@@ -209,7 +206,7 @@ export async function runJarvisAgent(
     resultText = described.text;
     if (!described.keepConfirm) pendingConfirm = undefined;
   } else if (result.terminalReason === "awaiting_confirm" && pendingConfirm) {
-    resultText = confirmResultText(pendingConfirm);
+    resultText = confirmPrompt(pendingConfirm.toolName, pendingConfirm.args);
   } else if (result.finalText) {
     resultText = result.finalText;
   } else if (result.terminalReason === "budget_exhausted") {

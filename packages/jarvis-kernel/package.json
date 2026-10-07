@@ -7,6 +7,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./tool-labels": {
+      "types": "./dist/zeref/tool-labels.d.ts",
+      "import": "./dist/zeref/tool-labels.js"
     }
   },
   "scripts": {

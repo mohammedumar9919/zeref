@@ -139,7 +139,15 @@ export function createZerefContext(turnId?: string): ZerefContext {
             : "pipeline idle — no active jobs",
         };
       },
-      async getReportArtifact(artifactId: string) {
+      async getReportArtifact(requestedId: string) {
+        let artifactId = requestedId.trim();
+        if (!artifactId) {
+          const slices = await loadCockpitSlices();
+          artifactId = slices.panels.reports.items[0]?.artifactId ?? "";
+        }
+        if (!artifactId) {
+          return { available: false, message: "no saved report yet" };
+        }
         const result = await getReportArtifact(artifactId);
         if (result.status !== 200) {
           return { available: false, message: result.body.error };

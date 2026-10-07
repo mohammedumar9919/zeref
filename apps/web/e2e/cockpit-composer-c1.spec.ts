@@ -71,7 +71,9 @@ test.describe("cockpit typed composer (CLOUD-C1)", () => {
     await sendTyped(page, "enqueue a report job");
     const card = page.getByTestId("confirm-card");
     await expect(card).toBeVisible();
-    await expect(card).toContainText(/enqueue_job|enqueue job/i);
+    await expect(card).toContainText(/queue a report job/i);
+    await expect(card).toHaveAttribute("data-tool-name", "enqueue_job");
+    await expect(panel).toContainText("Shall I queue a report job? Say yes to confirm.");
     await expect(page.getByTestId("typed-composer-input")).toBeDisabled();
 
     await page.getByTestId("confirm-card-cancel").click();
