@@ -1,5 +1,6 @@
 "use client";
 
+import { FactCards } from "./FactCards";
 import { HudShell } from "./HudShell";
 import { TypedComposer } from "./TypedComposer";
 
@@ -14,6 +15,7 @@ export function VoiceHudShell({
   return (
     <HudShell>
       {children}
+      <FactCards />
       <TypedComposer />
     </HudShell>
   );

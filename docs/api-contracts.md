@@ -79,6 +79,21 @@ Source: `packages/contracts/src/phase5/cockpit.ts`
 
 ---
 
+## Jarvis fact cards (`FactCardSchema`, C17a)
+
+Each Jarvis run that completes a whitelisted read or enqueue tool emits one card per successful tool result:
+
+- SSE event `jarvis.fact_card` on `/api/v1/events/stream` (payload = `FactCard`)
+- `factCards: FactCard[]` on the agent run output (empty when a confirmation is pending or expired)
+
+Fields: `id`, `runId` (uuid), `toolName`, `title` (≤120), `fields` (≤6 × `{label≤40, value≤160, unit?}`), `badge` (`FIXTURE` | `SIMULATED` | `LIVE`), `ts`.
+
+Cards contain only values copied from the tool result — no derived numbers. Failed / unavailable / unknown tools produce no card.
+
+Source: `packages/contracts/src/phase11/fact-card.ts`, builder `apps/web/lib/jarvis/fact-cards.ts`
+
+---
+
 ## OpenAPI
 
 Generated from Zod: `scripts/generate-openapi.mjs` (ADR-003)

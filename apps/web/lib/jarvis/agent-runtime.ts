@@ -2,12 +2,13 @@ import { randomUUID } from "node:crypto";
 
 import type {
   AgentStep as ContractAgentStep,
+  FactCard,
   JarvisToolCall,
   JarvisToolName,
   VoiceStateEvent,
   VoiceTranscriptEvent,
 } from "@zeref/contracts";
-import { AgentStepSchema } from "@zeref/contracts";
+import { AgentStepSchema, FACT_CARD_EVENT } from "@zeref/contracts";
 import {
   runAgentLoop,
   ZEREF_TOOL_DESCRIPTORS,
@@ -26,6 +27,7 @@ import { forgetVaultItem, listVaultItems, saveVaultItem } from "@zeref/zeref-mem
 
 import { getCockpitEventBus } from "../cockpit/cockpit-event-bus";
 import { persistAgentAudit } from "./audit-persist";
+import { buildFactCards } from "./fact-cards";
 import {
   CONFIRM_EXPIRED_REPLY,
   recordConfirmGrant,
@@ -65,6 +67,7 @@ export type JarvisAgentRunOutput = {
   pendingConfirm?: PendingConfirm;
   contractSteps: ContractAgentStep[];
   spokenSentenceCount: number;
+  factCards: FactCard[];
 };
 
 function nowIso(): string {
@@ -184,6 +187,7 @@ async function expiredConfirmOutput(
     terminalReason: "completed",
     contractSteps,
     spokenSentenceCount: 0,
+    factCards: [],
   };
 }
 
@@ -286,6 +290,10 @@ export async function runJarvisAgent(
   }
 
   const toolCalls = extractToolCalls(result.steps);
+  const factCards = buildFactCards(runId, toolCalls);
+  for (const card of factCards) {
+    getCockpitEventBus().emit(FACT_CARD_EVENT, card);
+  }
   recordAssistantTurn(
     resultText,
     toolCalls.map((c) => ({ name: c.name, args: c.args, result: c.result })),
@@ -340,6 +348,7 @@ export async function runJarvisAgent(
     pendingConfirm,
     contractSteps,
     spokenSentenceCount: spokenCount,
+    factCards,
   };
 }
 

@@ -26,6 +26,17 @@ export {
 } from "./audit.js";
 
 export {
+  FACT_CARD_EVENT,
+  FACT_CARD_MAX_FIELDS,
+  FactCardBadgeSchema,
+  FactCardFieldSchema,
+  FactCardSchema,
+  type FactCardBadge,
+  type FactCardField,
+  type FactCard,
+} from "./fact-card.js";
+
+export {
   JarvisJobTypeSchema,
   JarvisJobTypeSchemaV9,
   JarvisJobEnqueueRequestSchema,

@@ -60,7 +60,8 @@ export type StreamEventType =
   | "memory.search"
   | "memory.contradiction"
   | "memory.entity_changed"
-  | "agent.step";
+  | "agent.step"
+  | "jarvis.fact_card";
 
 export type StreamEventHandler = (eventType: StreamEventType, data: unknown) => void;
 
@@ -479,6 +480,14 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
           handleAgentStep(JSON.parse(event.data));
         } catch {
           /* ignore */
+        }
+      });
+
+      source.addEventListener("jarvis.fact_card", (event) => {
+        try {
+          emitStreamEvent("jarvis.fact_card", JSON.parse(event.data));
+        } catch {
+          /* ignore malformed */
         }
       });
 
