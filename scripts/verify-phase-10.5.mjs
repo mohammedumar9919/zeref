@@ -112,6 +112,12 @@ function priorGateEnv(extra = {}) {
 }
 
 function runPhase10Chain() {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:phase-10.5] skipping verify:phase-10 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).",
+    );
+    return;
+  }
   console.log("[verify:phase-10.5] chaining verify:phase-10 (C140) …");
   run(
     "npm",
@@ -224,7 +230,9 @@ await runPhase105StabilityPlaywright();
 
 if (!process.exitCode) {
   console.log("[verify:phase-10.5] OK");
-  console.log("[verify:phase-10.5] C140 chained verify:phase-10 (Phases 0–10 preserved).");
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN !== "1") {
+    console.log("[verify:phase-10.5] C140 chained verify:phase-10 (Phases 0–10 preserved).");
+  }
   if (process.env.ZEREF_PHASE105_STABILITY === "1") {
     console.log(
       "[verify:phase-10.5] C128 Playwright cockpit-stability-10.5.spec.ts enforced (ZEREF_PHASE105_STABILITY=1).",

@@ -131,6 +131,12 @@ function priorGateEnv(extra = {}) {
 }
 
 function runPhase11Chain() {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:phase-12] skipping verify:phase-11 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).",
+    );
+    return;
+  }
   console.log("[verify:phase-12] chaining verify:phase-11 (C173) ...");
   run(
     "npm",
@@ -265,9 +271,11 @@ await runPhase12DataPlaywright();
 
 if (!process.exitCode) {
   console.log("[verify:phase-12] OK");
-  console.log(
-    "[verify:phase-12] C173 chained verify:phase-11 (Phases 0-11 preserved).",
-  );
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN !== "1") {
+    console.log(
+      "[verify:phase-12] C173 chained verify:phase-11 (Phases 0-11 preserved).",
+    );
+  }
   console.log("[verify:phase-12] Phase 12 contracts + worker + web unit tests enforced.");
   if (process.env.ZEREF_PHASE12_DATA === "1") {
     console.log(

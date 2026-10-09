@@ -206,6 +206,12 @@ function assertC67SpecDocumentsBrainContract() {
 }
 
 function runPriorPhases() {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:phase-7] skipping verify:phase-6 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).",
+    );
+    return;
+  }
   console.log("[verify:phase-7] chaining verify:phase-6 …");
   run("npm", ["run", "verify:phase-6"]);
 }

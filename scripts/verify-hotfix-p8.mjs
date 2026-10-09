@@ -72,6 +72,12 @@ function assertHotfixE2eSpecDocumentsTestids(specPath, testids, label) {
 }
 
 function runPriorPhases() {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:hotfix-p8] skipping verify:phase-8 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).",
+    );
+    return;
+  }
   console.log("[verify:hotfix-p8] chaining verify:phase-8 …");
   run(
     "npm",

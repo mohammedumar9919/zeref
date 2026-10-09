@@ -164,7 +164,15 @@ function assertC48SpecCoversTestids() {
 }
 
 function runPriorPhases() {
-  for (let phase = 0; phase <= 5; phase += 1) {
+  // verify:phase-5 always runs: C48 Playwright is enforced through its full test:e2e pass.
+  let first = 0;
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:phase-5.1] skipping verify:phase-0..4 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs them).",
+    );
+    first = 5;
+  }
+  for (let phase = first; phase <= 5; phase += 1) {
     console.log(`[verify:phase-5.1] chaining verify:phase-${phase} …`);
     run("npm", ["run", `verify:phase-${phase}`]);
   }
