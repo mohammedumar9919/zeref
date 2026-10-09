@@ -349,3 +349,8 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Status: done
 - Done: C2 merged (#31; lead finished the stalled worker: e2e, ADR-030 amendment, collect confirm label). Operator rehearsal passed on the fixture server (all DEMO_SCRIPT questions). K1 merged (#30) after rehearsal. Dispatched H2a wave 1: C20a (CI workflow + verify scripts only) ∥ C17a (contracts phase11, web jarvis lib, HUD components).
 - Next: council review of C20a and C17a (contract) PRs; then C10, C18, R1.
+### 2026-10-09 — MERGE — agent:lead
+- Branch: `planner/h2a-wave1-done`
+- Status: done
+- Done: C20a merged (#34; worker split CI, lead added phase card/log and checked run logs — all gates still run, ~5 min). C17a merged (#33; worker stopped by operator after contract, lead finished builder, runtime wiring, HUD cards, tests, docs; council: additive contract, no fake metrics). Docs #32 merged.
+- Next: C10 streaming TTS + first-audio metric, C18 own-account watch; R1 waits on operator reference links.
