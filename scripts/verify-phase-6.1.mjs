@@ -91,6 +91,12 @@ function assertPhase61E2eGateDocumented() {
 }
 
 function runPriorPhases() {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:phase-6.1] skipping verify:phase-5.1 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).",
+    );
+    return;
+  }
   console.log("[verify:phase-6.1] chaining verify:phase-5.1 …");
   run("npm", ["run", "verify:phase-5.1"]);
 }

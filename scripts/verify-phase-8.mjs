@@ -214,6 +214,12 @@ function assertPhase8FixtureRoundTrip() {
 }
 
 function runPriorPhases() {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:phase-8] skipping verify:phase-7 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).",
+    );
+    return;
+  }
   console.log("[verify:phase-8] chaining verify:phase-7 …");
   run("npm", ["run", "verify:phase-7"], ciSafeEnv({ ZEREF_PHASE7_BRAIN: "1" }));
 }

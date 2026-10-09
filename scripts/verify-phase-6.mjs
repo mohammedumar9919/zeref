@@ -173,6 +173,12 @@ function assertC59SpecCoversTestids() {
 }
 
 function runPriorPhases() {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:phase-6] skipping verify:phase-5.1 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).",
+    );
+    return;
+  }
   console.log("[verify:phase-6] chaining verify:phase-5.1 …");
   run("npm", ["run", "verify:phase-5.1"]);
 }
