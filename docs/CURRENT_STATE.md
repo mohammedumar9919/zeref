@@ -1,6 +1,6 @@
 # Zeref â€” Current State
 
-**Last updated:** 2026-10-01 (week 1 merges: C0 #20, C1 #23, D1 #24, C3 #22, C6 #25, C5 #26 on `main`; vault UAT passed; golden j8–j10 approved; vision intake → H2a/H2b/H3 in MASTERPLAN. Next: D2 → C2 → demo rehearsal)
+**Last updated:** 2026-10-09 (D2 #28, C2 #31, K1 #30, C17a #33, C20a #34 on `main`; demo rehearsal passed. Next: C10 → C18 → R1)
 **Status owner:** Lead orchestrator (update after every phase gate or Planner sign-off)
 
 **Read first in any new chat:** this file â†’ [LEAD_ORCHESTRATOR.md](./LEAD_ORCHESTRATOR.md) â†’ [COUNCIL_ORCHESTRATION.md](./COUNCIL_ORCHESTRATION.md)
@@ -231,7 +231,7 @@ Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 | 4 | Lead | D2 DONE on `main` 2026-10-06 (#28 @ `221b377`): plain-English confirms, answers from tool results (headline, memory recall, post vs usual with low-confidence note), delete-all refusal, capability help; eval 10/10, 0 unsafe; CI green. C2 DONE (#31 @ `d722245`): Reports "Refresh data" → Jarvis confirm → collect (SIMULATED in fixture); UI enqueue route still rejects collect. Operator demo rehearsal passed 2026-10-08 (all DEMO_SCRIPT questions). K1 DONE (#30 @ `f2d6862`): confirm grants bound to run + tool + args hash, single use; unknown tools fail closed |
 
 | 5 | Human | LAPTOP-UAT leftovers (Luke screenshot, 2-3 min fixture demo video, optional mic PTT, PPTX if judges require) |
-| 6 | Lead | H2a per [vision intake](./superpowers/plans/2026-09-30-vision-intake.md): K1 DONE; **C20a** CI split + **C17a** fact cards in progress (workers); then C10, C18, R1 (+ C4, C7) |
+| 6 | Lead | H2a per [vision intake](./superpowers/plans/2026-09-30-vision-intake.md): K1 DONE. **C20a DONE** (#34): CI split into 5 parallel jobs + aggregate `Phase 0–9 gate`, ~5 min per run (was 45–56). **C17a DONE** (#33 @ `bf9b876`): fact cards (`jarvis.fact_card` SSE + `factCards` on run output) built only from whitelisted tool results, with Fixture/Simulated/Live badge; eval 10/10, 0 unsafe. Next: C10 streaming TTS, C18 own-account watch, R1 (needs operator's 5–8 reference app links), then C4, C7 |
 
 ---
 

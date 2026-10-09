@@ -36,8 +36,8 @@ Week plan (waves, cut order, demo DoD): [2026-09-28-week-plan.md](../superpowers
 | 22 | CLOUD-D2 | Jarvis answers with real content | DONE (#28) | B | C1, C3 | `cloud/d2-` | [phases/D2-jarvis-answers.md](./phases/D2-jarvis-answers.md) |
 | 17 | CLOUD-C2 | Confirm-gated cockpit collect | DONE (#31) | C | C1, C3, D2 | `cloud/c2-` | [phases/C2-cockpit-collect.md](./phases/C2-cockpit-collect.md) |
 | 23 | K1 | Kernel gate hardening (confirm bound to run + tool + args, single use; unknown tools fail closed) | DONE (#30) | C | D2 | `cloud/k1-` | [phases/K1-kernel-gate.md](./phases/K1-kernel-gate.md) |
-| 24 | C20a | Split CI into parallel jobs (< 20 min target) | IN PROGRESS | C | — | `cloud/c20a-` | [phases/C20a-ci-split.md](./phases/C20a-ci-split.md) |
-| 25 | C17a | Fact cards as Jarvis speaks (tool-result values only, whitelist, badges) | IN PROGRESS | C | D2, K1 | `cloud/c17a-` | [phases/C17a-fact-cards.md](./phases/C17a-fact-cards.md) |
+| 24 | C20a | Split CI into parallel jobs (< 20 min target) | DONE (#34) | C | — | `cloud/c20a-` | [phases/C20a-ci-split.md](./phases/C20a-ci-split.md) |
+| 25 | C17a | Fact cards as Jarvis speaks (tool-result values only, whitelist, badges) | DONE (#33) | C | D2, K1 | `cloud/c17a-` | [phases/C17a-fact-cards.md](./phases/C17a-fact-cards.md) |
 | 18 | CLOUD-C5 | Semantic contradiction v1 | DONE | C | C3 | `cloud/c5-` | [phases/C5-semantic-contradiction.md](./phases/C5-semantic-contradiction.md) |
 
 ### Track C — week 2 (cards ready)
