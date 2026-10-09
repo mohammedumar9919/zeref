@@ -35,6 +35,22 @@ export const VoiceAudioEventSchema = z
     audioBase64: z.string().min(1),
     mimeType: z.enum(["audio/mpeg", "audio/wav"]),
     ts: z.string().datetime({ offset: true }),
+    /** Result sentence order within a turn (C10); emitted strictly ascending. */
+    seq: z.number().int().min(0).optional(),
+    /** Server ms from transcription done to this event; only on a turn's first audio (C10). */
+    serverFirstAudioMs: z.number().min(0).optional(),
+  })
+  .strict();
+
+/** Target for PTT release → first reply audio playing (C10 / CLOUD-A4). Not a measurement. */
+export const FIRST_AUDIO_TARGET_MS = 1200;
+
+/** Client-measured first-audio sample POSTed to /api/v1/ops/voice-latency (C10). */
+export const VoiceLatencySampleSchema = z
+  .object({
+    turnId: z.string().uuid(),
+    firstAudioMs: z.number().finite().min(0),
+    source: z.literal("client"),
   })
   .strict();
 
@@ -55,3 +71,4 @@ export type VoiceStateEvent = z.infer<typeof VoiceStateEventSchema>;
 export type VoiceTranscriptEvent = z.infer<typeof VoiceTranscriptEventSchema>;
 export type VoiceAudioEvent = z.infer<typeof VoiceAudioEventSchema>;
 export type PipelineEvent = z.infer<typeof PipelineEventSchema>;
+export type VoiceLatencySample = z.infer<typeof VoiceLatencySampleSchema>;

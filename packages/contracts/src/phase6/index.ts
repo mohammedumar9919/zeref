@@ -24,10 +24,13 @@ export {
   VoiceTranscriptEventSchema,
   VoiceAudioEventSchema,
   PipelineEventSchema,
+  VoiceLatencySampleSchema,
+  FIRST_AUDIO_TARGET_MS,
   type VoiceTranscriptRole,
   type VoiceAudioPhase,
   type VoiceStateEvent,
   type VoiceTranscriptEvent,
   type VoiceAudioEvent,
   type PipelineEvent,
+  type VoiceLatencySample,
 } from "./voice-events.js";
