@@ -100,12 +100,16 @@ describe("@zeref/jarvis-kernel vault tools (CLOUD-C3)", () => {
     assert.equal((await adapter.listVaultItems()).length, 1);
 
     const confirmed = await runAgentLoop({
-      runId: "run-forget-2",
+      runId: "run-forget-1",
       transcript: "forget that",
       llm: scriptedLlm([forgetCall]),
       toolExecutor: executor,
       tools: ZEREF_TOOL_DESCRIPTORS,
-      confirmed: true,
+      confirmGrant: {
+        runId: "run-forget-1",
+        toolName: blocked.pendingConfirm.toolName,
+        argsHash: blocked.pendingConfirm.argsHash,
+      },
     });
     assert.equal(confirmed.terminalReason, "completed");
     const exec = confirmed.steps.find((s) => s.type === "tool_execute");

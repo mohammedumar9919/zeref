@@ -96,6 +96,7 @@ describe("jarvis vault mock flow (CLOUD-C3)", () => {
       turnId: randomUUID(),
       transcript: "forget that",
       confirmed: true,
+      runId: blocked.runId,
     });
     assert.equal(confirmed.terminalReason, "completed");
     const forgetCall = confirmed.toolCalls.find((c) => c.name === "vault_forget");
@@ -116,5 +117,14 @@ describe("jarvis vault mock flow (CLOUD-C3)", () => {
     assert.equal(empty.pendingConfirm, undefined);
     assert.equal(empty.terminalReason, "completed");
     assert.match(empty.resultText, /nothing to forget/);
+
+    const forcedConfirm = await runJarvisAgent({
+      turnId: randomUUID(),
+      transcript: "forget that",
+      confirmed: true,
+      runId: empty.runId,
+    });
+    assert.equal(forcedConfirm.toolCalls.length, 0);
+    assert.match(forcedConfirm.resultText, /confirmation has expired/);
   });
 });

@@ -105,14 +105,17 @@ describe("jarvis agent runtime (P11-C)", () => {
   });
 
   it("executes write-high after confirmed resume", async () => {
-    const turnId = randomUUID();
-    const runId = randomUUID();
+    const blocked = await runJarvisAgent({
+      turnId: randomUUID(),
+      transcript: "Please enqueue a report job",
+    });
+    assert.equal(blocked.terminalReason, "awaiting_confirm");
 
     const resumed = await runJarvisAgent({
-      turnId,
+      turnId: randomUUID(),
       transcript: "Please enqueue a report job",
       confirmed: true,
-      runId,
+      runId: blocked.runId,
     });
 
     assert.equal(resumed.terminalReason, "completed");

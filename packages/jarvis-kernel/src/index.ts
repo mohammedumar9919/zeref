@@ -52,9 +52,12 @@ export type { JarvisTurnInput } from "@zeref/contracts";
 
 export {
   runAgentLoop,
+  hashArgs,
+  UNKNOWN_TOOL_REPLY,
   type AgentRunInput,
   type AgentRunResult,
   type PendingConfirm,
+  type ConfirmGrant,
   type AgentStep,
   type AuditBuffer,
   type LlmPort,
