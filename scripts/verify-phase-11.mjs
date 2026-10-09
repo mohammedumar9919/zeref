@@ -129,6 +129,12 @@ function priorGateEnv(extra = {}) {
 }
 
 function runPhase105Chain() {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN === "1") {
+    console.log(
+      "[verify:phase-11] skipping verify:phase-10.5 (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).",
+    );
+    return;
+  }
   console.log("[verify:phase-11] chaining verify:phase-10.5 (C159) ...");
   run(
     "npm",
@@ -282,9 +288,11 @@ await runPhase11AgentPlaywright();
 
 if (!process.exitCode) {
   console.log("[verify:phase-11] OK");
-  console.log(
-    "[verify:phase-11] C159 chained verify:phase-10.5 (Phases 0-10.5 preserved).",
-  );
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN !== "1") {
+    console.log(
+      "[verify:phase-11] C159 chained verify:phase-10.5 (Phases 0-10.5 preserved).",
+    );
+  }
   console.log("[verify:phase-11] C160 JARVIS eval harness enforced.");
   if (process.env.ZEREF_PHASE11_AGENT === "1") {
     console.log(

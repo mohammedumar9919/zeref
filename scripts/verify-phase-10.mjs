@@ -117,7 +117,16 @@ function priorGateEnv(extra = {}) {
   return env;
 }
 
+function skipPriorChain(name) {
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN !== "1") return false;
+  console.log(
+    `[verify:phase-10] skipping ${name} (ZEREF_SKIP_PRIOR_CHAIN=1 — another CI job runs it).`,
+  );
+  return true;
+}
+
 function runHotfixChain() {
+  if (skipPriorChain("verify:hotfix-p8")) return;
   console.log("[verify:phase-10] chaining verify:hotfix-p8 …");
   run(
     "npm",
@@ -131,6 +140,7 @@ function runHotfixChain() {
 }
 
 function runPhase9Chain() {
+  if (skipPriorChain("verify:phase-9")) return;
   console.log("[verify:phase-10] chaining verify:phase-9 …");
   run(
     "npm",
@@ -302,7 +312,9 @@ if (!process.exitCode) {
   console.log(
     "[verify:phase-10] C119 Playwright cockpit-ops-10.spec.ts enforced (ZEREF_PHASE10_OPS=1).",
   );
-  console.log(
-    "[verify:phase-10] C118 chained verify:hotfix-p8 → verify:phase-9 (prior gates preserved).",
-  );
+  if (process.env.ZEREF_SKIP_PRIOR_CHAIN !== "1") {
+    console.log(
+      "[verify:phase-10] C118 chained verify:hotfix-p8 → verify:phase-9 (prior gates preserved).",
+    );
+  }
 }

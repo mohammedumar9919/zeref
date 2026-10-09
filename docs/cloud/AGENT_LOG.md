@@ -344,3 +344,8 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Status: done
 - Done: D2 merged (#28 @ `221b377`) after lead council review; CI green on second run (first run failed verify-phase-5 rule C30: client `TypedComposer` imported the kernel; fixed by using the server's confirm question as the card label). Dispatched two parallel workers with disjoint paths: C2 (contracts phase11, enqueue-job, zeref-context, llm-port collect regex, Reports button, ADR-030 amendment) and K1 (kernel permissions/react-loop, agent-runtime, confirm-grants store, run route, voice handle-turn).
 - Next: council review of C2 and K1 PRs; merge C2; operator demo rehearsal ×2; merge K1 after rehearsal; then C20a, C17a.
+### 2026-10-08 — MERGE + DISPATCH — agent:lead
+- Branch: `planner/k1-c2-done`
+- Status: done
+- Done: C2 merged (#31; lead finished the stalled worker: e2e, ADR-030 amendment, collect confirm label). Operator rehearsal passed on the fixture server (all DEMO_SCRIPT questions). K1 merged (#30) after rehearsal. Dispatched H2a wave 1: C20a (CI workflow + verify scripts only) ∥ C17a (contracts phase11, web jarvis lib, HUD components).
+- Next: council review of C20a and C17a (contract) PRs; then C10, C18, R1.
