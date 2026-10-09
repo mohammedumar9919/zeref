@@ -228,9 +228,10 @@ Screenshots: `zeref-studio-editor-p8c.png`, `zeref-calendar-scheduler-8.png`
 | 1 | Track A | DONE (A0-A5) |
 | 2 | Track B | DONE (B0-B5, PR #18 merged @ `4c80c09e`) |
 | 3 | Track C week 1 | DONE on `main` 2026-10-01: C0 CI green (phases 0–12, 51 min), C1 typed composer, D1 projector polish, C3 memory vault (+ UAT fix: replies name pins, no duplicate pins, forget confirm names the item), C6 engagement trend, C5 suspected contradictions. Jarvis eval 10/10, 0 unsafe |
-| 4 | Lead | D2 DONE on `main` 2026-10-06 (#28 @ `221b377`): plain-English confirms, answers from tool results (headline, memory recall, post vs usual with low-confidence note), delete-all refusal, capability help; eval 10/10, 0 unsafe; CI green. **C2** cockpit collect (worker, in progress) → demo rehearsal ×2 ([DEMO_SCRIPT](./demo/DEMO_SCRIPT.md)) → merge freeze. **K1** built in parallel, merged after rehearsal |
+| 4 | Lead | D2 DONE on `main` 2026-10-06 (#28 @ `221b377`): plain-English confirms, answers from tool results (headline, memory recall, post vs usual with low-confidence note), delete-all refusal, capability help; eval 10/10, 0 unsafe; CI green. C2 DONE (#31 @ `d722245`): Reports "Refresh data" → Jarvis confirm → collect (SIMULATED in fixture); UI enqueue route still rejects collect. Operator demo rehearsal passed 2026-10-08 (all DEMO_SCRIPT questions). K1 DONE (#30 @ `f2d6862`): confirm grants bound to run + tool + args hash, single use; unknown tools fail closed |
+
 | 5 | Human | LAPTOP-UAT leftovers (Luke screenshot, 2-3 min fixture demo video, optional mic PTT, PPTX if judges require) |
-| 6 | Planner | After rehearsal: H2a per [vision intake](./superpowers/plans/2026-09-30-vision-intake.md) — K1 kernel gate hardening first, then C20a, C17a, C10, C18, R1 (+ C4, C7) |
+| 6 | Lead | H2a per [vision intake](./superpowers/plans/2026-09-30-vision-intake.md): K1 DONE; **C20a** CI split + **C17a** fact cards in progress (workers); then C10, C18, R1 (+ C4, C7) |
 
 ---
 
