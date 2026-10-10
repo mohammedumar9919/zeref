@@ -38,6 +38,9 @@ Week plan (waves, cut order, demo DoD): [2026-09-28-week-plan.md](../superpowers
 | 23 | K1 | Kernel gate hardening (confirm bound to run + tool + args, single use; unknown tools fail closed) | DONE (#30) | C | D2 | `cloud/k1-` | [phases/K1-kernel-gate.md](./phases/K1-kernel-gate.md) |
 | 24 | C20a | Split CI into parallel jobs (< 20 min target) | DONE (#34) | C | — | `cloud/c20a-` | [phases/C20a-ci-split.md](./phases/C20a-ci-split.md) |
 | 25 | C17a | Fact cards as Jarvis speaks (tool-result values only, whitelist, badges) | DONE (#33) | C | D2, K1 | `cloud/c17a-` | [phases/C17a-fact-cards.md](./phases/C17a-fact-cards.md) |
+| 26 | C10 | First-audio metric + pipelined sentence TTS (provider byte-streaming → C10b) | DONE (#36) | C | — | `cloud/c10-` | [phases/C10-first-audio.md](./phases/C10-first-audio.md) |
+| 27 | C18a | Graph call budget + usage-header back-off | DONE (#37) | C | C2 | `cloud/c18a-` | [phases/C18a-graph-budget.md](./phases/C18a-graph-budget.md) |
+| 28 | C18b | Own-account watch: opt-in 4 h schedule, advisory lock, `watch_runs` audit (migration 0006), "what changed" diff, Task Scheduler scripts | DONE (#38) | C | C18a | `cloud/c18b-` | [phases/C18b-own-account-watch.md](./phases/C18b-own-account-watch.md) |
 | 18 | CLOUD-C5 | Semantic contradiction v1 | DONE | C | C3 | `cloud/c5-` | [phases/C5-semantic-contradiction.md](./phases/C5-semantic-contradiction.md) |
 
 ### Track C — week 2 (cards ready)
