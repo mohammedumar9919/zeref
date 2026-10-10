@@ -108,10 +108,146 @@ function emitFastAck(turnId: string, ackText: string): void {
   });
 }
 
+/** Per-turn server clock: started when transcription finishes (C10). */
+export type TurnAudioClock = {
+  startedAt: number;
+  firstAudioSent: boolean;
+  now: () => number;
+};
+
+export function startTurnAudioClock(now: () => number = () => performance.now()): TurnAudioClock {
+  return { startedAt: now(), firstAudioSent: false, now };
+}
+
+/** Attach serverFirstAudioMs to the first audio event of a turn only. */
+function stampFirstAudio(clock: TurnAudioClock | undefined, event: VoiceAudioEvent): VoiceAudioEvent {
+  if (!clock || clock.firstAudioSent) return event;
+  clock.firstAudioSent = true;
+  return {
+    ...event,
+    serverFirstAudioMs: Math.max(0, Math.round(clock.now() - clock.startedAt)),
+  };
+}
+
+export type SentenceAudio = {
+  audioBase64: string;
+  mimeType: VoiceAudioEvent["mimeType"];
+};
+
+export type SentenceAudioPipelineOptions = {
+  turnId: string;
+  killSignal: AbortSignal;
+  synthesize: (sentence: string) => Promise<SentenceAudio | null>;
+  emit: (event: VoiceAudioEvent) => void;
+  clock?: TurnAudioClock;
+  maxInFlight?: number;
+};
+
+export type SentenceAudioPipeline = {
+  /** Start TTS for the sentence now; its audio is emitted only after all earlier sentences. */
+  enqueue: (sentence: string) => void;
+  /** Resolves once every enqueued sentence was emitted, skipped, or dropped by abort. */
+  drain: () => Promise<void>;
+  enqueuedCount: () => number;
+};
+
+const DEFAULT_TTS_MAX_IN_FLIGHT = 3;
+
+/**
+ * Pipelined sentence TTS (C10): synthesis runs concurrently (bounded), `voice.audio`
+ * is emitted strictly by ascending `seq`, and nothing is emitted once killSignal aborts.
+ */
+export function createSentenceAudioPipeline(
+  opts: SentenceAudioPipelineOptions,
+): SentenceAudioPipeline {
+  const maxInFlight = Math.max(1, opts.maxInFlight ?? DEFAULT_TTS_MAX_IN_FLIGHT);
+  let nextSeq = 0;
+  let inFlight = 0;
+  const waiting: Array<() => void> = [];
+  let emitChain: Promise<void> = Promise.resolve();
+
+  const acquire = async (): Promise<void> => {
+    if (inFlight < maxInFlight) {
+      inFlight += 1;
+      return;
+    }
+    await new Promise<void>((resolve) => waiting.push(resolve));
+  };
+
+  const release = (): void => {
+    const next = waiting.shift();
+    if (next) {
+      next();
+    } else {
+      inFlight -= 1;
+    }
+  };
+
+  const synthesizeBounded = async (sentence: string): Promise<SentenceAudio | null> => {
+    await acquire();
+    try {
+      if (opts.killSignal.aborted) return null;
+      return await opts.synthesize(sentence);
+    } catch (error) {
+      console.error("[voice/turn] result TTS failed (text still emitted):", error);
+      return null;
+    } finally {
+      release();
+    }
+  };
+
+  return {
+    enqueue(sentence) {
+      if (opts.killSignal.aborted || !sentence.trim()) return;
+      const seq = nextSeq;
+      nextSeq += 1;
+      const audio = synthesizeBounded(sentence);
+      emitChain = emitChain.then(async () => {
+        const result = await audio;
+        if (!result || !result.audioBase64 || opts.killSignal.aborted) return;
+        opts.emit(
+          stampFirstAudio(opts.clock, {
+            type: "voice.audio",
+            turnId: opts.turnId,
+            phase: "result",
+            audioBase64: result.audioBase64,
+            mimeType: result.mimeType,
+            ts: nowIso(),
+            seq,
+          }),
+        );
+      });
+    },
+    drain: () => emitChain,
+    enqueuedCount: () => nextSeq,
+  };
+}
+
+async function synthesizeResultSentence(sentence: string): Promise<SentenceAudio> {
+  const tts = await defaultTtsAdapter(sentence, { phase: "result" });
+  return { audioBase64: tts.audio.toString("base64"), mimeType: tts.mimeType };
+}
+
+function createTurnSentencePipeline(
+  turnId: string,
+  killSignal: AbortSignal,
+  clock: TurnAudioClock,
+): SentenceAudioPipeline {
+  return createSentenceAudioPipeline({
+    turnId,
+    killSignal,
+    clock,
+    synthesize: synthesizeResultSentence,
+    emit: emitVoiceEvent,
+  });
+}
+
 async function synthesizeAndEmitAudio(
   turnId: string,
   phase: "ack" | "result",
   text: string,
+  clock?: TurnAudioClock,
+  killSignal?: AbortSignal,
 ): Promise<VoiceTurnAudioBlob | null> {
   try {
     const tts = await defaultTtsAdapter(text, { phase });
@@ -119,14 +255,15 @@ async function synthesizeAndEmitAudio(
     if (tts.mocked && phase === "ack") {
       return null;
     }
-    const event: VoiceAudioEvent = {
+    if (killSignal?.aborted) return null;
+    const event = stampFirstAudio(clock, {
       type: "voice.audio",
       turnId,
       phase,
       audioBase64: tts.audio.toString("base64"),
       mimeType: tts.mimeType,
       ts: nowIso(),
-    };
+    });
     emitVoiceEvent(event);
     return { audioBase64: event.audioBase64, mimeType: event.mimeType };
   } catch (error) {
@@ -202,16 +339,18 @@ async function completeTurnInBackground(
   turnId: string,
   handle: ProcessTurnHandle,
   killSignal: AbortSignal,
+  clock: TurnAudioClock,
 ): Promise<void> {
   try {
     const result = await handle.complete;
     if (killSignal.aborted) return;
     emitKernelEvents(result.events);
     emitMemoryBrainEventsFromToolCalls(result.toolCalls);
+    const pipeline = createTurnSentencePipeline(turnId, killSignal, clock);
     for (const sentence of splitIntoSentences(result.resultText)) {
-      if (killSignal.aborted) return;
-      await synthesizeAndEmitAudio(turnId, "result", sentence);
+      pipeline.enqueue(sentence);
     }
+    await pipeline.drain();
   } catch (error) {
     console.error("[voice/turn] background complete failed:", error);
     emitVoiceEvent({
@@ -227,17 +366,19 @@ async function completeAgentTurnInBackground(
   turnId: string,
   transcript: string,
   killSignal: AbortSignal,
+  clock: TurnAudioClock,
 ): Promise<void> {
+  const pipeline = createTurnSentencePipeline(turnId, killSignal, clock);
   try {
     const agentInput = resolveAgentTurnInput(turnId, transcript);
     const result = await runJarvisAgent({
       ...agentInput,
       killSignal,
-      onSpeakableSentence: async (sentence) => {
-        if (killSignal.aborted) return;
-        await synthesizeAndEmitAudio(turnId, "result", sentence);
+      onSpeakableSentence: (sentence) => {
+        pipeline.enqueue(sentence);
       },
     });
+    await pipeline.drain();
     if (killSignal.aborted || result.terminalReason === "killed") {
       emitVoiceEvent({
         type: "voice.state",
@@ -251,7 +392,8 @@ async function completeAgentTurnInBackground(
     emitKernelEvents(result.events);
     emitMemoryBrainEventsFromToolCalls(result.toolCalls);
     if (result.spokenSentenceCount === 0) {
-      await synthesizeAndEmitAudio(turnId, "result", result.resultText);
+      pipeline.enqueue(result.resultText);
+      await pipeline.drain();
     }
   } catch (error) {
     if (killSignal.aborted) {
@@ -349,6 +491,7 @@ async function handleVoiceTurnSync(
 async function handleVoiceTurnLiveLegacy(
   turnId: string,
   transcript: string,
+  clock: TurnAudioClock,
 ): Promise<Response> {
   const killSignal = beginLiveTurnAbort();
   emitUserTranscript(turnId, transcript);
@@ -358,9 +501,9 @@ async function handleVoiceTurnLiveLegacy(
     createDefaultDeps(),
   );
   emitKernelEvents(handle.ack.events);
-  await synthesizeAndEmitAudio(turnId, "ack", handle.ack.ackText);
+  await synthesizeAndEmitAudio(turnId, "ack", handle.ack.ackText, clock, killSignal);
 
-  trackPendingTurn(completeTurnInBackground(turnId, handle, killSignal));
+  trackPendingTurn(completeTurnInBackground(turnId, handle, killSignal, clock));
 
   const body: VoiceTurnAcceptedResponse = { turnId, transcript };
   return Response.json(body, { status: 202 });
@@ -369,15 +512,16 @@ async function handleVoiceTurnLiveLegacy(
 async function handleVoiceTurnLiveAgent(
   turnId: string,
   transcript: string,
+  clock: TurnAudioClock,
 ): Promise<Response> {
   const killSignal = beginLiveTurnAbort();
   emitUserTranscript(turnId, transcript);
 
   const ackText = buildAckText(transcript);
   emitFastAck(turnId, ackText);
-  await synthesizeAndEmitAudio(turnId, "ack", ackText);
+  await synthesizeAndEmitAudio(turnId, "ack", ackText, clock, killSignal);
 
-  trackPendingTurn(completeAgentTurnInBackground(turnId, transcript, killSignal));
+  trackPendingTurn(completeAgentTurnInBackground(turnId, transcript, killSignal, clock));
 
   const body: VoiceTurnAcceptedResponse = { turnId, transcript };
   return Response.json(body, { status: 202 });
@@ -386,11 +530,12 @@ async function handleVoiceTurnLiveAgent(
 async function handleVoiceTurnLive(
   turnId: string,
   transcript: string,
+  clock: TurnAudioClock,
 ): Promise<Response> {
   if (isPhase11AgentEnabled()) {
-    return handleVoiceTurnLiveAgent(turnId, transcript);
+    return handleVoiceTurnLiveAgent(turnId, transcript, clock);
   }
-  return handleVoiceTurnLiveLegacy(turnId, transcript);
+  return handleVoiceTurnLiveLegacy(turnId, transcript, clock);
 }
 
 /** Process PTT audio through STT → jarvis-kernel → TTS (Amendment A). */
@@ -406,6 +551,7 @@ export async function handleVoiceTurn(audio: Blob): Promise<Response> {
   }
 
   const transcribed = await transcribeAudio(audio);
+  const clock = startTurnAudioClock();
   const transcript = transcribed.text.trim();
 
   if (!transcript) {
@@ -418,7 +564,7 @@ export async function handleVoiceTurn(audio: Blob): Promise<Response> {
     return handleVoiceTurnSync(turnId, transcript);
   }
 
-  return handleVoiceTurnLive(turnId, transcript);
+  return handleVoiceTurnLive(turnId, transcript, clock);
 }
 
 /** Await in-flight background turns (tests only). */
