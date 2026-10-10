@@ -36,6 +36,8 @@ async function resolveAdapter(): Promise<MemoryAdapter> {
 
 /** MemoryPort + vault adapter for web BFF (C144, CLOUD-C3, CLOUD-C4). */
 export function createWebMemoryPort(): WebMemoryPort {
+  // The kernel's default vault port shares the cached adapter, so attach early.
+  void resolveAdapter().catch(() => undefined);
   return {
     async search(query, opts) {
       const limit = opts?.limit ?? 5;
