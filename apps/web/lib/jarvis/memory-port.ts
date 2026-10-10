@@ -25,10 +25,18 @@ export async function embedMemoryText(text: string): Promise<number[]> {
   return embedding;
 }
 
-/** Postgres adapter gets the embedder (hybrid lexical + vector RRF); mock stays lexical. */
+/**
+ * Sha256 mock vectors carry no meaning; fusing them would surface unrelated
+ * vault items for queries with no lexical match. Only real providers go hybrid.
+ */
+export function shouldAttachEmbedder(env: NodeJS.ProcessEnv = process.env): boolean {
+  return memoryEmbedModel(env) !== "mock-sha256";
+}
+
+/** Postgres adapter + real embed provider → hybrid lexical + vector RRF; otherwise lexical. */
 async function resolveAdapter(): Promise<MemoryAdapter> {
   const adapter = await getMemoryAdapter();
-  if (adapter instanceof PostgresMemoryAdapter) {
+  if (adapter instanceof PostgresMemoryAdapter && shouldAttachEmbedder()) {
     adapter.useEmbedder(embedMemoryText, memoryEmbedModel());
   }
   return adapter;
