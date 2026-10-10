@@ -15,6 +15,7 @@
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
+    "@zeref/analytics": "0.0.0",
     "@zeref/contracts": "0.0.0",
     "@zeref/db": "0.0.0",
     "@zeref/jarvis-kernel": "0.0.0",
