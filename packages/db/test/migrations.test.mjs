@@ -202,10 +202,11 @@ describe("@zeref/db migrations", { skip: migrationSuiteSkip() }, () => {
           "research_topics",
           "snapshots",
           "studio_drafts",
+          "watch_runs",
         ],
       ],
     );
-    assert.equal(tables.rowCount, 18);
+    assert.equal(tables.rowCount, 19);
 
     const ext = await pool.query(
       `SELECT 1 FROM pg_extension WHERE extname = 'vector'`,
@@ -448,5 +449,59 @@ describe("@zeref/db migrations", { skip: migrationSuiteSkip() }, () => {
     );
 
     await client.end();
+  });
+
+  it("creates watch_runs audit table with trigger/status checks (C18b)", async () => {
+    const url = new URL(databaseUrl);
+    url.pathname = `/${testDbName}`;
+    const client = new pg.Client({ connectionString: url.toString() });
+    await client.connect();
+
+    const row = await client.query(
+      `INSERT INTO watch_runs (trigger, started_at, finished_at, status, graph_calls, max_usage_pct, error_code, diff_json)
+       VALUES ('schedule', NOW(), NOW(), 'ok', 2, 12.5, NULL, '{"posts":[]}'::jsonb) RETURNING id, graph_calls`,
+    );
+    assert.equal(row.rows[0].graph_calls, 2);
+
+    await assert.rejects(
+      () =>
+        client.query(
+          `INSERT INTO watch_runs (trigger, started_at, status) VALUES ('cron', NOW(), 'ok')`,
+        ),
+      /watch_runs_trigger_chk/,
+    );
+    await assert.rejects(
+      () =>
+        client.query(
+          `INSERT INTO watch_runs (trigger, started_at, status) VALUES ('schedule', NOW(), 'bogus')`,
+        ),
+      /watch_runs_status_chk/,
+    );
+
+    const cols = await client.query(
+      `SELECT column_name FROM information_schema.columns WHERE table_name = 'watch_runs'`,
+    );
+    const names = cols.rows.map((r) => r.column_name);
+    assert.ok(names.includes("token_expires_at"));
+    assert.ok(!names.some((n) => /(^|_)token$/i.test(n)), "no raw token column");
+
+    await client.end();
+  });
+});
+
+describe("@zeref/db migration journal (C18b)", () => {
+  it("lists 0006_c18_watch_runs after 0005 with a matching SQL file", () => {
+    const journal = JSON.parse(
+      readFileSync(join(migrationsFolder, "meta/_journal.json"), "utf8"),
+    );
+    const tags = journal.entries.map((e) => e.tag);
+    assert.equal(tags.at(-1), "0006_c18_watch_runs");
+    journal.entries.forEach((e, i) => assert.equal(e.idx, i));
+    for (const tag of tags) {
+      assert.ok(existsSync(join(migrationsFolder, `${tag}.sql`)), `missing ${tag}.sql`);
+    }
+    const sql = readFileSync(join(migrationsFolder, "0006_c18_watch_runs.sql"), "utf8");
+    assert.match(sql, /CREATE TABLE "watch_runs"/);
+    assert.doesNotMatch(sql, /access_token|"token"\s/i);
   });
 });
