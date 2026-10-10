@@ -25,14 +25,24 @@ export function stopAllPlayback(): void {
 
 export type AudioLevelCallback = (level: number) => void;
 
+export type PlayAudioOptions = {
+  /** Fires once when the element actually starts producing sound (`playing`). */
+  onPlaying?: () => void;
+};
+
 /** Play audio blob; invoke onLevel with 0–1 RMS during playback. */
 export function playAudioBlob(
   blob: Blob,
   onLevel?: AudioLevelCallback,
+  options?: PlayAudioOptions,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
+    if (options?.onPlaying) {
+      const onPlaying = options.onPlaying;
+      audio.addEventListener("playing", () => onPlaying(), { once: true });
+    }
 
     let rafId = 0;
     let audioContext: AudioContext | undefined;

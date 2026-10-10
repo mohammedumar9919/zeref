@@ -94,6 +94,21 @@ Source: `packages/contracts/src/phase11/fact-card.ts`, builder `apps/web/lib/jar
 
 ---
 
+## Voice first-audio latency (C10)
+
+**`voice.audio` SSE event** (`VoiceAudioEventSchema`, strict) gained two optional fields; payloads without them stay valid:
+
+- `seq` (int ≥ 0) — result-sentence index within a turn. Sentence TTS runs concurrently (bounded), but events are emitted strictly in ascending `seq`; after barge-in / abort nothing more is emitted. Gaps are possible when a sentence's TTS fails. Ack audio and the CI sync-mock JSON path carry no `seq`.
+- `serverFirstAudioMs` (number ≥ 0) — server time from transcription finished to this event; present only on the first audio event of a live turn.
+
+**`POST /api/v1/ops/voice-latency`** — body `VoiceLatencySample` `{ turnId (uuid), firstAudioMs (≥ 0), source: "client" }` (strict). The cockpit sends one sample per turn: PTT release → first reply `<audio>` `playing`. `202 { accepted: true, count }`; `400 { error }` on invalid JSON / schema.
+
+**`GET /api/v1/ops/voice-latency`** — `{ count, p50Ms, p95Ms, targetMs, lastSampleAt }` over an in-memory ring of the last 100 samples (nearest-rank percentiles). Empty buffer → `count: 0`, `p50Ms: null`, `p95Ms: null`, `lastSampleAt: null`. Samples reset on server restart; the route never synthesizes a value. `targetMs` is the constant `FIRST_AUDIO_TARGET_MS` from `@zeref/contracts` — a target, not a measurement.
+
+Source: `packages/contracts/src/phase6/voice-events.ts`, store `apps/web/lib/voice/voice-latency-store.ts`, pipeline `createSentenceAudioPipeline` in `apps/web/lib/voice/handle-turn.ts`.
+
+---
+
 ## OpenAPI
 
 Generated from Zod: `scripts/generate-openapi.mjs` (ADR-003)

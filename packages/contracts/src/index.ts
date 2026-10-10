@@ -121,6 +121,8 @@ export {
   VoiceTranscriptEventSchema,
   VoiceAudioEventSchema,
   PipelineEventSchema,
+  VoiceLatencySampleSchema,
+  FIRST_AUDIO_TARGET_MS,
   type JarvisToolName,
   type JarvisToolCall,
   type JarvisGlobeState,
@@ -134,6 +136,7 @@ export {
   type VoiceTranscriptEvent,
   type VoiceAudioEvent,
   type PipelineEvent,
+  type VoiceLatencySample,
 } from "./phase6/index.js";
 
 export {
