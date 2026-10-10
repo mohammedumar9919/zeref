@@ -47,8 +47,8 @@ Week plan (waves, cut order, demo DoD): [2026-09-28-week-plan.md](../superpowers
 
 | Order | ID | Title | Status | Depends | Branch prefix | Phase card |
 |------:|----|-------|--------|---------|---------------|------------|
-| 19 | CLOUD-C4 | Vector recall (hybrid RRF, migration 0006) | NEXT | C3, C5 | `cloud/c4-` | [phases/C4-vector-recall.md](./phases/C4-vector-recall.md) |
-| 20 | CLOUD-C7 | Version packs + human-only promotion gate | NEXT | C3 | `cloud/c7-` | [phases/C7-version-packs.md](./phases/C7-version-packs.md) |
+| 19 | CLOUD-C4 | Vector recall (hybrid RRF, migration 0007) | DONE (#41) | C3, C5 | `cloud/c4-` | [phases/C4-vector-recall.md](./phases/C4-vector-recall.md) |
+| 20 | CLOUD-C7 | Version packs + human-only promotion gate | DONE (#40; human `--approve` v1 pending) | C3 | `cloud/c7-` | [phases/C7-version-packs.md](./phases/C7-version-packs.md) |
 
 Horizon 2 / 3 phases (C8–C16) are listed in [MASTERPLAN.md](./MASTERPLAN.md); they get rows + cards when week 2 merges. Anything without a row here is still forbidden.
 
