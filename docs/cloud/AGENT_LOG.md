@@ -354,3 +354,8 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Status: done
 - Done: C20a merged (#34; worker split CI, lead added phase card/log and checked run logs — all gates still run, ~5 min). C17a merged (#33; worker stopped by operator after contract, lead finished builder, runtime wiring, HUD cards, tests, docs; council: additive contract, no fake metrics). Docs #32 merged.
 - Next: C10 streaming TTS + first-audio metric, C18 own-account watch; R1 waits on operator reference links.
+### 2026-10-09 — MERGE — agent:lead
+- Branch: `planner/h2a-wave2-done`
+- Status: done
+- Done: Scoped C10 and C18 with explore agents; split C18 into C18a (instagram package) and C18b (worker + migration). Workers delivered all three; lead council review on each PR. C10 merged (#36; contract + route, additive). C18a merged (#37). C18b merged (#38; migration 0006 `watch_runs`, verified in CI's Postgres job; C4 moved to 0007).
+- Next: R1 (waits on operator links), C4, C7; follow-ups: cockpit outbox for scheduled watch runs, budget for insights.ts, C10b.
