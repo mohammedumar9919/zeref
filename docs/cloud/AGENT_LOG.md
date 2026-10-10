@@ -359,3 +359,8 @@ Append-only. Newest entries at the **bottom**. Remote agents write; laptop Plann
 - Status: done
 - Done: Scoped C10 and C18 with explore agents; split C18 into C18a (instagram package) and C18b (worker + migration). Workers delivered all three; lead council review on each PR. C10 merged (#36; contract + route, additive). C18a merged (#37). C18b merged (#38; migration 0006 `watch_runs`, verified in CI's Postgres job; C4 moved to 0007).
 - Next: R1 (waits on operator links), C4, C7; follow-ups: cockpit outbox for scheduled watch runs, budget for insights.ts, C10b.
+### 2026-10-09 — MERGE — agent:lead
+- Branch: `planner/h2a-done`
+- Status: done
+- Done: C7 merged (#40; council: human-only guard, eval gate, no tier lowering, kernel label only; no real `--approve` run). C4 merged (#41; council found the mock sha256 embedder was attached on Postgres, which would surface unrelated vault items for no-match queries — lead fix keeps mock lexical-only; cascade-on-forget verified in CI Postgres).
+- Next: R1 (waits on operator links); human `--approve` of pack v1; H2b cards (C17b, C19, C12, C21a/b, C22a/b, W1, C11).
