@@ -27,6 +27,13 @@ export type SaveMemoryResult = {
   contradictions: Array<{ supersededId: string; entryId: string }>;
 };
 
+export type PostgresMemoryAdapterOptions = {
+  /** Without `embed`, search is lexical only. Search is never vector-only. */
+  embed?: (text: string) => Promise<number[]>;
+  /** Stored per row; vector search only compares rows with the same model. */
+  embedModel?: string;
+};
+
 export type SearchMemoryOptions = {
   limit?: number;
   includeContradicted?: boolean;

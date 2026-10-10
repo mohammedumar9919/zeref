@@ -21,6 +21,7 @@ export { researchSignals } from "./research-signals.js";
 export { jarvisAgentRuns } from "./jarvis-agent-runs.js";
 export { jarvisAuditLog } from "./jarvis-audit-log.js";
 export { watchRuns } from "./watch-runs.js";
+export { memoryEntryEmbeddings } from "./memory-entry-embeddings.js";
 
 import { platformAccounts } from "./platform-accounts.js";
 import { snapshots } from "./snapshots.js";
@@ -41,6 +42,7 @@ import { researchSignals } from "./research-signals.js";
 import { jarvisAgentRuns } from "./jarvis-agent-runs.js";
 import { jarvisAuditLog } from "./jarvis-audit-log.js";
 import { watchRuns } from "./watch-runs.js";
+import { memoryEntryEmbeddings } from "./memory-entry-embeddings.js";
 
 export const schema = {
   platformAccounts,
@@ -62,4 +64,5 @@ export const schema = {
   jarvisAgentRuns,
   jarvisAuditLog,
   watchRuns,
+  memoryEntryEmbeddings,
 };

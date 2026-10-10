@@ -63,6 +63,12 @@ export {
   type WeeklyBrief,
   type WeeklyBriefInput,
 } from "./hooks.js";
+export {
+  embedContentHash,
+  embedText,
+  mockEmbedVector,
+  type EmbedProviderResult,
+} from "./embed-provider.js";
 
 /** Normalize-stage metric bundle for `metric_facts` persistence. */
 export function computeMetricFacts(input: {

@@ -192,6 +192,7 @@ describe("@zeref/db migrations", { skip: migrationSuiteSkip() }, () => {
           "jarvis_audit_log",
           "memory_entities",
           "memory_entries",
+          "memory_entry_embeddings",
           "memory_observations",
           "memory_relations",
           "metric_facts",
@@ -206,7 +207,7 @@ describe("@zeref/db migrations", { skip: migrationSuiteSkip() }, () => {
         ],
       ],
     );
-    assert.equal(tables.rowCount, 19);
+    assert.equal(tables.rowCount, 20);
 
     const ext = await pool.query(
       `SELECT 1 FROM pg_extension WHERE extname = 'vector'`,
@@ -487,21 +488,76 @@ describe("@zeref/db migrations", { skip: migrationSuiteSkip() }, () => {
 
     await client.end();
   });
+
+  it("cascades memory_entry_embeddings on memory entry delete (CLOUD-C4)", async () => {
+    const url = new URL(databaseUrl);
+    url.pathname = `/${testDbName}`;
+    const client = new pg.Client({ connectionString: url.toString() });
+    await client.connect();
+
+    const embeddingType = await client.query(
+      `SELECT format_type(a.atttypid, a.atttypmod) AS col_type
+       FROM pg_attribute a
+       JOIN pg_class c ON c.oid = a.attrelid
+       WHERE c.relname = 'memory_entry_embeddings' AND a.attname = 'embedding' AND NOT a.attisdropped`,
+    );
+    assert.equal(embeddingType.rows[0].col_type, "vector(1536)");
+
+    const entry = await client.query(
+      `INSERT INTO memory_entries (tier, content, source, temporal_score)
+       VALUES ('episodic', 'c4 cascade fixture', 'vault', 1) RETURNING id`,
+    );
+    const entryId = entry.rows[0].id;
+    const vectorLiteral = `[${Array.from({ length: 1536 }, () => 0.5).join(",")}]`;
+    await client.query(
+      `INSERT INTO memory_entry_embeddings (entry_id, model, embedding, content_hash)
+       VALUES ($1, 'mock-sha256', $2::vector, 'sha256:c4')`,
+      [entryId, vectorLiteral],
+    );
+
+    await assert.rejects(
+      () =>
+        client.query(
+          `INSERT INTO memory_entry_embeddings (entry_id, model, embedding, content_hash)
+           VALUES ($1, 'mock-sha256', $2::vector, 'sha256:dup')`,
+          [entryId, vectorLiteral],
+        ),
+      /duplicate key|memory_entry_embeddings_pkey/,
+    );
+
+    await client.query(`DELETE FROM memory_entries WHERE id = $1`, [entryId]);
+    const left = await client.query(
+      `SELECT 1 FROM memory_entry_embeddings WHERE entry_id = $1`,
+      [entryId],
+    );
+    assert.equal(left.rowCount, 0);
+
+    await client.end();
+  });
 });
 
-describe("@zeref/db migration journal (C18b)", () => {
-  it("lists 0006_c18_watch_runs after 0005 with a matching SQL file", () => {
+describe("@zeref/db migration journal (C18b, CLOUD-C4)", () => {
+  it("lists 0006_c18_watch_runs then 0007_memory_entry_embeddings with matching SQL files", () => {
     const journal = JSON.parse(
       readFileSync(join(migrationsFolder, "meta/_journal.json"), "utf8"),
     );
     const tags = journal.entries.map((e) => e.tag);
-    assert.equal(tags.at(-1), "0006_c18_watch_runs");
+    assert.equal(tags.at(-2), "0006_c18_watch_runs");
+    assert.equal(tags.at(-1), "0007_memory_entry_embeddings");
     journal.entries.forEach((e, i) => assert.equal(e.idx, i));
+    for (let i = 1; i < journal.entries.length; i += 1) {
+      assert.ok(journal.entries[i].when > journal.entries[i - 1].when, "journal `when` increases");
+    }
     for (const tag of tags) {
       assert.ok(existsSync(join(migrationsFolder, `${tag}.sql`)), `missing ${tag}.sql`);
     }
     const sql = readFileSync(join(migrationsFolder, "0006_c18_watch_runs.sql"), "utf8");
     assert.match(sql, /CREATE TABLE "watch_runs"/);
     assert.doesNotMatch(sql, /access_token|"token"\s/i);
+
+    const c4 = readFileSync(join(migrationsFolder, "0007_memory_entry_embeddings.sql"), "utf8");
+    assert.match(c4, /CREATE TABLE "memory_entry_embeddings"/);
+    assert.match(c4, /REFERENCES "public"\."memory_entries"\("id"\) ON DELETE cascade/);
+    assert.doesNotMatch(c4, /embedding_vectors/);
   });
 });
