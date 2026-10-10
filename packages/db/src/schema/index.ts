@@ -20,6 +20,7 @@ export { researchTopics } from "./research-topics.js";
 export { researchSignals } from "./research-signals.js";
 export { jarvisAgentRuns } from "./jarvis-agent-runs.js";
 export { jarvisAuditLog } from "./jarvis-audit-log.js";
+export { watchRuns } from "./watch-runs.js";
 
 import { platformAccounts } from "./platform-accounts.js";
 import { snapshots } from "./snapshots.js";
@@ -39,6 +40,7 @@ import { researchTopics } from "./research-topics.js";
 import { researchSignals } from "./research-signals.js";
 import { jarvisAgentRuns } from "./jarvis-agent-runs.js";
 import { jarvisAuditLog } from "./jarvis-audit-log.js";
+import { watchRuns } from "./watch-runs.js";
 
 export const schema = {
   platformAccounts,
@@ -59,4 +61,5 @@ export const schema = {
   researchSignals,
   jarvisAgentRuns,
   jarvisAuditLog,
+  watchRuns,
 };

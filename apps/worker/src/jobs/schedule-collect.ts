@@ -1,6 +1,14 @@
 import { CollectJobInputSchema } from "@zeref/contracts";
+import { graphGet, type GraphFetch } from "@zeref/instagram";
 import type PgBoss from "pg-boss";
-import { COLLECT_JOB_NAME } from "./registry.js";
+import { COLLECT_JOB_NAME, SCHEDULE_COLLECT_JOB_NAME } from "./registry.js";
+import {
+  collectIntervalCron,
+  isWatchEnabled,
+  parseCollectIntervalHours,
+} from "../lib/watch-config.js";
+
+export { collectIntervalCron, parseCollectIntervalHours } from "../lib/watch-config.js";
 
 export type ScheduleCollectResult =
   | { skipped: true; reason: "missing_token" }
@@ -12,6 +20,8 @@ export type ScheduleCollectDeps = {
   shortcodesEnv?: string;
   graphMediaIdEnv?: string;
   send?: (name: string, data: unknown) => Promise<string | null>;
+  /** Newest own media id when no env target is set (default: Graph `/me/media?limit=1`). */
+  resolveLatestMediaId?: (accessToken: string) => Promise<string>;
 };
 
 /** Parse comma-separated shortcodes from operator env (C166). */
@@ -38,21 +48,28 @@ export function buildScheduleCollectInput(env: {
   };
 }
 
-/** Cron expression for recurring schedule-collect (default every 6h). */
-export function collectIntervalCron(hours: number): string {
-  const interval = Number.isFinite(hours) && hours > 0 ? Math.floor(hours) : 6;
-  return `0 */${interval} * * *`;
-}
-
-export function parseCollectIntervalHours(raw: string | undefined): number {
-  if (!raw?.trim()) return 6;
-  const parsed = Number.parseInt(raw, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 6;
+/** Newest own Graph media id (same lookup as the web enqueue path, reimplemented here). */
+export async function resolveLatestGraphMediaId(opts: {
+  accessToken: string;
+  userId?: string;
+  fetchImpl?: GraphFetch;
+  baseUrl?: string;
+}): Promise<string> {
+  const res = await graphGet<{ data?: Array<{ id: string }> }>(
+    `${opts.userId?.trim() || "me"}/media?fields=id,timestamp&limit=1`,
+    opts.accessToken,
+    opts.fetchImpl ?? globalThis.fetch,
+    opts.baseUrl ?? "https://graph.instagram.com",
+  );
+  const id = res.data?.[0]?.id;
+  if (!id) throw new Error("Graph /media returned no posts to collect");
+  return id;
 }
 
 /**
  * Scheduled collect: enqueue `collect` when INSTAGRAM_ACCESS_TOKEN is set (C165).
- * No-ops with log when token missing — not fatal (ADR-042).
+ * No-ops with log when token missing — not fatal (ADR-042). Without an env target the
+ * newest own media id is resolved first (C18b).
  */
 export async function runScheduleCollect(
   deps: ScheduleCollectDeps,
@@ -63,12 +80,22 @@ export async function runScheduleCollect(
     return { skipped: true, reason: "missing_token" };
   }
 
-  const raw = buildScheduleCollectInput({
-    shortcodes: deps.shortcodesEnv ?? process.env.ZEREF_COLLECT_SHORTCODES,
-    graphMediaId: deps.graphMediaIdEnv ?? process.env.ZEREF_COLLECT_GRAPH_MEDIA_ID,
-  });
+  const shortcodes = deps.shortcodesEnv ?? process.env.ZEREF_COLLECT_SHORTCODES;
+  let graphMediaId = deps.graphMediaIdEnv ?? process.env.ZEREF_COLLECT_GRAPH_MEDIA_ID;
+  if (parseCollectShortcodes(shortcodes).length === 0 && !graphMediaId?.trim()) {
+    const resolve =
+      deps.resolveLatestMediaId ??
+      ((accessToken: string) =>
+        resolveLatestGraphMediaId({
+          accessToken,
+          userId: process.env.INSTAGRAM_GRAPH_USER_ID,
+        }));
+    graphMediaId = await resolve(token.trim());
+  }
 
-  const input = CollectJobInputSchema.parse(raw);
+  const input = CollectJobInputSchema.parse(
+    buildScheduleCollectInput({ shortcodes, graphMediaId }),
+  );
   const send =
     deps.send ??
     ((name: string, data: unknown) => deps.boss.send(name, data as object));
@@ -80,4 +107,26 @@ export async function runScheduleCollect(
 export function createScheduleCollectHandler(deps: { boss: PgBoss }) {
   return async (_job: { data: unknown }): Promise<ScheduleCollectResult> =>
     runScheduleCollect({ boss: deps.boss });
+}
+
+export type WatchScheduleState =
+  | { scheduled: true; cron: string; intervalHours: number }
+  | { scheduled: false };
+
+/**
+ * Opt-in recurring watch: schedule `schedule-collect` only when `ZEREF_WATCH_ENABLED=1`,
+ * otherwise remove any schedule left over from earlier runs.
+ */
+export async function applyWatchSchedule(
+  boss: Pick<PgBoss, "schedule" | "unschedule">,
+  env: Record<string, string | undefined> = process.env,
+): Promise<WatchScheduleState> {
+  if (!isWatchEnabled(env)) {
+    await boss.unschedule(SCHEDULE_COLLECT_JOB_NAME);
+    return { scheduled: false };
+  }
+  const intervalHours = parseCollectIntervalHours(env.ZEREF_COLLECT_INTERVAL_HOURS);
+  const cron = collectIntervalCron(intervalHours);
+  await boss.schedule(SCHEDULE_COLLECT_JOB_NAME, cron, { trigger: "schedule" });
+  return { scheduled: true, cron, intervalHours };
 }

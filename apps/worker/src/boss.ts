@@ -6,7 +6,8 @@ import { createEmbedHandler } from "./jobs/embed.js";
 import { createNormalizeHandler } from "./jobs/normalize.js";
 import { createReportHandler } from "./jobs/report.js";
 import { createResearchHandler } from "./jobs/research.js";
-import { createScheduleCollectHandler } from "./jobs/schedule-collect.js";
+import { applyWatchSchedule } from "./jobs/schedule-collect.js";
+import { createWatchJobHandler } from "./jobs/watch-run.js";
 import {
   ANALYZE_JOB_NAME,
   COLLECT_JOB_NAME,
@@ -18,10 +19,6 @@ import {
   WORKER_JOB_NAMES,
   type WorkerJobName,
 } from "./jobs/registry.js";
-import {
-  collectIntervalCron,
-  parseCollectIntervalHours,
-} from "./jobs/schedule-collect.js";
 import { insertCockpitPipelineOutbox } from "./lib/cockpit-outbox.js";
 
 export type WorkerBossOptions = {
@@ -102,11 +99,11 @@ export async function registerWorkers(
     options.pool,
   );
 
-  const scheduleHandler = createScheduleCollectHandler({ boss });
+  const watchHandler = createWatchJobHandler(shared);
   await boss.work(SCHEDULE_COLLECT_JOB_NAME, async (jobs) => {
     const results = [];
     for (const job of jobs) {
-      results.push(await scheduleHandler(job));
+      results.push(await watchHandler(job));
     }
     return results;
   });
@@ -124,11 +121,11 @@ export async function startWorker(options: WorkerBossOptions): Promise<PgBoss> {
   const boss = await createWorkerBoss(options);
   await registerWorkers(boss, options);
 
-  const intervalHours = parseCollectIntervalHours(process.env.ZEREF_COLLECT_INTERVAL_HOURS);
-  await boss.schedule(
-    SCHEDULE_COLLECT_JOB_NAME,
-    collectIntervalCron(intervalHours),
-    {},
+  const watch = await applyWatchSchedule(boss);
+  console.log(
+    watch.scheduled
+      ? `[worker] watch schedule on: ${watch.cron} (every ${watch.intervalHours}h)`
+      : "[worker] watch schedule off (set ZEREF_WATCH_ENABLED=1 to enable)",
   );
 
   return boss;
