@@ -1,5 +1,5 @@
-import { randomUUID } from "node:crypto";
-import { eq, and, desc, ilike, or } from "drizzle-orm";
+import { createHash, randomUUID } from "node:crypto";
+import { eq, and, cosineDistance, desc, ilike, or } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   MemoryEntrySchema,
@@ -12,13 +12,16 @@ import {
   type VaultItem,
 } from "@zeref/contracts";
 import {
+  DEFAULT_EMBEDDING_MODEL,
   memoryEntries,
   memoryEntities,
+  memoryEntryEmbeddings,
   memoryRelations,
   memoryObservations,
   schema,
 } from "@zeref/db/schema";
 import { checkContradictions, suspectedMetadata } from "./contradiction.js";
+import { hybridFuse, tryEmbed, type EmbedFn } from "./fuse.js";
 import { autoTierClassifier } from "./tier-classifier.js";
 import { temporalScore } from "./temporal-score.js";
 import {
@@ -37,12 +40,18 @@ import type {
   SaveMemoryInput,
   SaveMemoryResult,
   SaveVaultItemInput,
+  PostgresMemoryAdapterOptions,
   SearchMemoryOptions,
   UpdateEntityInput,
   VerifyMemoryInput,
 } from "./types.js";
 
 type Db = NodePgDatabase<typeof schema>;
+type EntryRow = typeof memoryEntries.$inferSelect;
+
+function memoryContentHash(text: string, model: string): string {
+  return `sha256:${createHash("sha256").update(`${model}\0${text}`).digest("hex")}`;
+}
 
 function toIso(date: Date): string {
   return date.toISOString();
@@ -89,7 +98,64 @@ function rowToRelation(row: typeof memoryRelations.$inferSelect): MemoryRelation
 }
 
 export class PostgresMemoryAdapter implements MemoryAdapter {
-  constructor(private readonly db: Db) {}
+  private embed: EmbedFn | undefined;
+  private embedModel: string;
+
+  constructor(
+    private readonly db: Db,
+    opts: PostgresMemoryAdapterOptions = {},
+  ) {
+    this.embed = opts.embed;
+    this.embedModel = opts.embedModel ?? DEFAULT_EMBEDDING_MODEL;
+  }
+
+  /** Attach an embedder to an already-constructed (e.g. cached) adapter. */
+  useEmbedder(embed: EmbedFn, embedModel: string = DEFAULT_EMBEDDING_MODEL): void {
+    this.embed = embed;
+    this.embedModel = embedModel;
+  }
+
+  /** Best effort: a failed embed or insert leaves the entry without an embedding. */
+  private async storeEmbedding(entryId: string, content: string): Promise<void> {
+    const embedding = await tryEmbed(this.embed, content);
+    if (!embedding) return;
+    try {
+      await this.db
+        .insert(memoryEntryEmbeddings)
+        .values({
+          entryId,
+          model: this.embedModel,
+          embedding,
+          contentHash: memoryContentHash(content, this.embedModel),
+        })
+        .onConflictDoNothing();
+    } catch {
+      // Search falls back to lexical for entries without an embedding.
+    }
+  }
+
+  private async vectorCandidates(
+    embedding: number[],
+    limit: number,
+    options: SearchMemoryOptions,
+  ): Promise<EntryRow[]> {
+    const rows = await this.db
+      .select({ entry: memoryEntries })
+      .from(memoryEntryEmbeddings)
+      .innerJoin(memoryEntries, eq(memoryEntries.id, memoryEntryEmbeddings.entryId))
+      .where(
+        and(
+          eq(memoryEntryEmbeddings.model, this.embedModel),
+          options.tier ? eq(memoryEntries.tier, options.tier) : undefined,
+          !options.includeContradicted
+            ? eq(memoryEntries.observation, "verified")
+            : undefined,
+        ),
+      )
+      .orderBy(cosineDistance(memoryEntryEmbeddings.embedding, embedding))
+      .limit(limit);
+    return rows.map((r) => r.entry);
+  }
 
   async saveMemory(input: SaveMemoryInput): Promise<SaveMemoryResult> {
     const now = input.createdAt ?? new Date();
@@ -147,6 +213,8 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
       updatedAt: now,
     });
 
+    await this.storeEmbedding(entryId, draft.content);
+
     for (const match of contradictions) {
       await this.db
         .update(memoryEntries)
@@ -197,14 +265,37 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
         );
     }
 
-    const ranked = rows
+    const lexical = rows
       .map((row) => {
         const entry = rowToEntry(row);
         const score = temporalScore(new Date(entry.createdAt), now);
         return { entry: { ...entry, temporalScore: score }, score };
       })
-      .sort((a, b) => b.score - a.score)
-      .slice(0, limit);
+      .sort((a, b) => b.score - a.score);
+
+    const byId = new Map(lexical.map((item) => [item.entry.id, item.entry]));
+    const fused = await hybridFuse({
+      query: trimmed,
+      lexicalIds: lexical.map((item) => item.entry.id),
+      embed: this.embed,
+      vectorSearch: async (embedding, candidates) => {
+        const vectorRows = await this.vectorCandidates(embedding, candidates, options);
+        for (const row of vectorRows) {
+          if (!byId.has(row.id)) {
+            const entry = rowToEntry(row);
+            byId.set(row.id, {
+              ...entry,
+              temporalScore: temporalScore(new Date(entry.createdAt), now),
+            });
+          }
+        }
+        return vectorRows.map((row) => row.id);
+      },
+    });
+
+    const ranked = fused
+      ? fused.slice(0, limit).map((item) => ({ entry: byId.get(item.id)!, score: item.score }))
+      : lexical.slice(0, limit);
 
     return {
       query,
@@ -342,6 +433,9 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
   }
 }
 
-export function createPostgresMemoryAdapter(db: Db): PostgresMemoryAdapter {
-  return new PostgresMemoryAdapter(db);
+export function createPostgresMemoryAdapter(
+  db: Db,
+  opts?: PostgresMemoryAdapterOptions,
+): PostgresMemoryAdapter {
+  return new PostgresMemoryAdapter(db, opts);
 }

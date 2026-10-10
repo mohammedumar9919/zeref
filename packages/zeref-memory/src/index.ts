@@ -36,11 +36,22 @@ export {
 } from "./vault.js";
 export { createMockMemoryAdapter, MockMemoryAdapter } from "./mock-adapter.js";
 export { createPostgresMemoryAdapter, PostgresMemoryAdapter } from "./postgres-adapter.js";
+export {
+  RRF_K,
+  HYBRID_CANDIDATES,
+  fuseRrf,
+  hybridFuse,
+  tryEmbed,
+  type EmbedFn,
+  type FusedItem,
+  type HybridFuseInput,
+} from "./fuse.js";
 
 export type {
   SaveMemoryInput,
   SaveMemoryResult,
   SearchMemoryOptions,
+  PostgresMemoryAdapterOptions,
   VerifyMemoryInput,
   CreateEntityInput,
   UpdateEntityInput,
