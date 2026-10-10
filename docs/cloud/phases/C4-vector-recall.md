@@ -6,7 +6,7 @@
 **Depends on:** CLOUD-C3 and CLOUD-C5 merged  
 **Branch prefix:** `cloud/c4-`  
 **Council review:** mandatory (`packages/db/**`, shared embedder move)  
-**Migration number:** `0006` (reserved — no other card may add a migration until this merges)
+**Migration number:** `0007` (reserved — no other card may add a migration until this merges)
 
 ## Goal
 
@@ -23,7 +23,7 @@ Jarvis memory search is lexical (`ILIKE` in `postgres-adapter.ts`). Add vector r
 
 ## Allowed paths
 
-- `packages/db/drizzle/0006_memory_entry_embeddings.sql` (create), `packages/db/drizzle/meta/_journal.json`, `packages/db/src/schema/memory-entry-embeddings.ts` (create), `packages/db/src/schema/index.ts`
+- `packages/db/drizzle/0007_memory_entry_embeddings.sql` (create), `packages/db/drizzle/meta/_journal.json`, `packages/db/src/schema/memory-entry-embeddings.ts` (create), `packages/db/src/schema/index.ts`
 - `packages/analytics/src/embed-provider.ts` (create), `packages/analytics/src/index.ts`, `packages/analytics/package.json`, `apps/web/package.json` (dependency lines only), `package-lock.json`, `apps/worker/src/lib/embed-provider.ts` (re-export only)
 - `packages/zeref-memory/src/fuse.ts` (create), `postgres-adapter.ts`, `mock-adapter.ts`, `types.ts`, `index.ts`
 - `packages/zeref-memory/test/fuse.test.mjs` (create), `test/vector-recall-postgres.test.mjs` (create, skips without `DATABASE_URL`)
