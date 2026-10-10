@@ -11,6 +11,7 @@ import {
   parsePostHtml,
   shortcodeFromPermalink,
   type GraphFetch,
+  type GraphGetOptions,
   type GraphMediaFields,
   type MergedInstagramPostPayload,
   type ScrapePostFields,
@@ -23,6 +24,8 @@ export type CollectPipelineDeps = {
   graphUserId?: string;
   graphBaseUrl?: string;
   graphFetch?: GraphFetch;
+  /** Budget / usage hooks forwarded to every Graph call (C18b watch runs). */
+  graphOptions?: GraphGetOptions;
 };
 
 function postSourceRef(shortcode: string): string {
@@ -111,6 +114,7 @@ async function loadGraphMedia(
     userId: deps.graphUserId ?? process.env.INSTAGRAM_GRAPH_USER_ID,
     baseUrl: deps.graphBaseUrl,
     fetchImpl: deps.graphFetch,
+    graph: deps.graphOptions,
   };
 
   if (input.graphMediaId) {
@@ -181,6 +185,7 @@ export async function collectProfilePayload(
     userId: deps.graphUserId ?? process.env.INSTAGRAM_GRAPH_USER_ID,
     baseUrl: deps.graphBaseUrl,
     fetchImpl: deps.graphFetch,
+    graph: deps.graphOptions,
   });
 
   return {
