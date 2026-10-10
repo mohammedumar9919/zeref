@@ -17,7 +17,13 @@ const USAGE =
   "Usage: node apps/worker/dist/cli/watch-trigger.js [--trigger task_scheduler|on_demand|schedule] [--direct]";
 
 async function main(): Promise<number> {
-  const args = parseWatchCliArgs(process.argv.slice(2));
+  let args;
+  try {
+    args = parseWatchCliArgs(process.argv.slice(2));
+  } catch (err) {
+    console.error(`[watch-trigger] ${err instanceof Error ? err.message : "bad arguments"}\n${USAGE}`);
+    return 2;
+  }
   if (args.help) {
     console.log(USAGE);
     return 0;

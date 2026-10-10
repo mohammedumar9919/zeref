@@ -68,7 +68,7 @@ export function parseWatchCliArgs(argv: string[]): WatchCliArgs {
       }
       out.trigger = value as WatchTrigger;
     } else {
-      throw new Error(`unknown argument: ${arg}`);
+      throw new Error("unknown argument (values are not echoed; see --help)");
     }
   }
   return out;
