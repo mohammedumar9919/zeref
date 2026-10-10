@@ -12,7 +12,11 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 
-import type { AgentStep, VoiceTranscriptRole } from "@zeref/contracts";
+import type {
+  AgentStep,
+  VoiceLatencySample,
+  VoiceTranscriptRole,
+} from "@zeref/contracts";
 
 import {
   BRAIN_STATE_IDLE_MS,
@@ -177,15 +181,43 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
     [appendTranscript],
   );
 
+  const pttReleasedAtRef = useRef<number | null>(null);
+  const firstAudioPendingRef = useRef<{
+    releasedAt: number;
+    priorTurnId: string | null;
+  } | null>(null);
+
+  /** PTT release → first reply audio `playing`; one real sample per turn, never synthesized. */
+  const reportFirstAudio = useCallback((turnId: string | undefined) => {
+    const pending = firstAudioPendingRef.current;
+    if (!pending || !turnId || turnId === pending.priorTurnId) return;
+    firstAudioPendingRef.current = null;
+    const sample: VoiceLatencySample = {
+      turnId,
+      firstAudioMs: Math.max(0, Math.round(performance.now() - pending.releasedAt)),
+      source: "client",
+    };
+    void fetch("/api/v1/ops/voice-latency", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(sample),
+      keepalive: true,
+    }).catch(() => {
+      /* latency sample is best-effort */
+    });
+  }, []);
+
   const enqueuePlayback = useCallback(
-    (audioBase64: string, mimeType: string) => {
+    (audioBase64: string, mimeType: string, turnId?: string) => {
       const generation = playbackGenerationRef.current;
       playbackQueueRef.current = playbackQueueRef.current
         .then(async () => {
           if (generation !== playbackGenerationRef.current) return;
           setVoiceState("speaking");
           const blob = decodeAudioBase64(audioBase64, mimeType);
-          await playAudioBlob(blob, setOutputLevel);
+          await playAudioBlob(blob, setOutputLevel, {
+            onPlaying: () => reportFirstAudio(turnId),
+          });
         })
         .catch(() => {
           setOutputLevel(0);
@@ -196,7 +228,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
           setVoiceState("idle");
         });
     },
-    [],
+    [reportFirstAudio],
   );
 
   const handleVoiceAudio = useCallback(
@@ -214,7 +246,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
         receivedAckRef.current.add(ackKey);
       }
 
-      enqueuePlayback(event.audioBase64, event.mimeType);
+      enqueuePlayback(event.audioBase64, event.mimeType, event.turnId);
     },
     [enqueuePlayback],
   );
@@ -251,8 +283,8 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       setVoiceState("thinking");
       setTelemetryLive(true);
 
-      enqueuePlayback(body.ackAudio.audioBase64, body.ackAudio.mimeType);
-      enqueuePlayback(body.resultAudio.audioBase64, body.resultAudio.mimeType);
+      enqueuePlayback(body.ackAudio.audioBase64, body.ackAudio.mimeType, body.turnId);
+      enqueuePlayback(body.resultAudio.audioBase64, body.resultAudio.mimeType, body.turnId);
     },
     [appendTranscript, applyBrainEventsFromToolCalls, enqueuePlayback],
   );
@@ -261,6 +293,14 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
     async (blob: Blob) => {
       setMicLevel(0);
       setVoiceState("thinking");
+
+      firstAudioPendingRef.current = {
+        releasedAt: pttReleasedAtRef.current ?? performance.now(),
+        priorTurnId: activeTurnRef.current,
+      };
+      pttReleasedAtRef.current = null;
+      // The live ack is emitted over SSE before the 202 names the new turn; don't drop it.
+      activeTurnRef.current = null;
 
       const form = new FormData();
       form.append("audio", blob, "ptt.webm");
@@ -271,6 +311,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
       });
 
       if (!res.ok) {
+        firstAudioPendingRef.current = null;
         setVoiceState("idle");
         throw new Error(`voice turn failed: ${res.status}`);
       }
@@ -297,6 +338,7 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
         return;
       }
 
+      firstAudioPendingRef.current = null;
       setVoiceState("idle");
     },
     [appendTranscript, handleSyncMockTurn],
@@ -305,13 +347,16 @@ export function VoiceProvider({ children }: VoiceProviderProps): React.ReactElem
   const setListening = useCallback((active: boolean) => {
     setVoiceState(active ? "listening" : "idle");
     if (active) {
+      pttReleasedAtRef.current = null;
       setMicLevel(0.65);
     } else {
+      pttReleasedAtRef.current = performance.now();
       setMicLevel(0);
     }
   }, []);
 
   const bargeIn = useCallback(async () => {
+    firstAudioPendingRef.current = null;
     playbackGenerationRef.current += 1;
     stopAllPlayback();
     playbackQueueRef.current = Promise.resolve();
