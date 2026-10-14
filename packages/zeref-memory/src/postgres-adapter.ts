@@ -505,7 +505,13 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
     const rows = await this.db
       .select()
       .from(memoryEntries)
-      .where(eq(memoryEntries.source, VAULT_SOURCE))
+      .where(
+        and(
+          eq(memoryEntries.source, VAULT_SOURCE),
+          isNull(memoryEntries.supersededBy),
+          isNull(memoryEntries.archivedAt),
+        ),
+      )
       .orderBy(desc(memoryEntries.createdAt));
     return selectVaultItems(rows.map(rowToEntry), options);
   }

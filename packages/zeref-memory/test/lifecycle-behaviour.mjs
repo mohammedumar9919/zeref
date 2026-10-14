@@ -247,4 +247,20 @@ export function registerLifecycleBehaviour(ctx) {
     const pins = await adapter.listVaultItems({ kind: "pin", limit: 100000 });
     assert.ok(pins.some((p) => p.id === v3.id));
   });
+
+  it("vault list shows only current pins (hides superseded and archived)", async (t) => {
+    if (!(await ctx.ready())) return t.skip("lifecycle columns not migrated");
+    const adapter = ctx.adapter();
+    const old = await adapter.saveVaultItem({ kind: "pin", content: `${tag()} list old` });
+    ctx.track(old.id);
+    const { entry: current } = await supersede(old.id, { content: "list new" });
+    const gone = await adapter.saveVaultItem({ kind: "pin", content: `${tag()} list archived` });
+    ctx.track(gone.id);
+    await adapter.archiveEntries([gone.id]);
+
+    const ids = (await adapter.listVaultItems({ kind: "pin", limit: 100000 })).map((p) => p.id);
+    assert.ok(ids.includes(current.id));
+    assert.ok(!ids.includes(old.id));
+    assert.ok(!ids.includes(gone.id));
+  });
 }
