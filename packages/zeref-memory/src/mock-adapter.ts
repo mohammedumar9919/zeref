@@ -14,6 +14,7 @@ import {
 } from "@zeref/contracts";
 import { checkContradictions, suspectedMetadata } from "./contradiction.js";
 import {
+  chainOrder,
   collectChainIds,
   isStaleArchiveCandidate,
   oldestFirst,
@@ -220,10 +221,9 @@ export class MockMemoryAdapter implements MemoryAdapter {
           .filter((e) => this.lifecycleOf(e.id).supersededBy === current)
           .map((e) => e.id),
     );
-    return this.store.entries
-      .filter((e) => chain.has(e.id))
-      .map((e) => this.withLifecycle(e))
-      .sort(oldestFirst);
+    return chainOrder(
+      this.store.entries.filter((e) => chain.has(e.id)).map((e) => this.withLifecycle(e)),
+    );
   }
 
   async searchMemory(

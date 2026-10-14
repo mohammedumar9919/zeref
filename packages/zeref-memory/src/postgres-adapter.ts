@@ -36,7 +36,7 @@ import {
 import { checkContradictions, suspectedMetadata } from "./contradiction.js";
 import { hybridFuse, tryEmbed, type EmbedFn } from "./fuse.js";
 import {
-  oldestFirst,
+  chainOrder,
   staleArchiveWindow,
   supersedeDraft,
   supersedeRefusal,
@@ -411,7 +411,7 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
     if (!found.has(id)) {
       return [];
     }
-    return [...found.values()].map(rowToLifecycleEntry).sort(oldestFirst);
+    return chainOrder([...found.values()].map(rowToLifecycleEntry));
   }
 
   async searchMemory(query: string, options: SearchMemoryOptions = {}) {

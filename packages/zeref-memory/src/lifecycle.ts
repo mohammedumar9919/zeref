@@ -54,6 +54,36 @@ export function oldestFirst<T extends { createdAt: string; id: string }>(a: T, b
   return Date.parse(a.createdAt) - Date.parse(b.createdAt) || a.id.localeCompare(b.id);
 }
 
+/**
+ * Order a chain so every entry precedes the one that superseded it (equal
+ * `createdAt` timestamps are common); ties fall back to oldest first.
+ */
+export function chainOrder(entries: MemoryLifecycleEntry[]): MemoryLifecycleEntry[] {
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  const pending = new Map(entries.map((e) => [e.id, 0]));
+  for (const e of entries) {
+    if (e.supersededBy && byId.has(e.supersededBy)) {
+      pending.set(e.supersededBy, pending.get(e.supersededBy)! + 1);
+    }
+  }
+  const ordered: MemoryLifecycleEntry[] = [];
+  let ready = entries.filter((e) => pending.get(e.id) === 0);
+  while (ready.length > 0) {
+    ready.sort(oldestFirst);
+    const next = ready.shift()!;
+    ordered.push(next);
+    const successor = next.supersededBy ? byId.get(next.supersededBy) : undefined;
+    if (successor) {
+      const left = pending.get(successor.id)! - 1;
+      pending.set(successor.id, left);
+      if (left === 0) ready.push(successor);
+    }
+  }
+  // A cycle cannot come from the adapters; keep any leftovers rather than drop them.
+  const placed = new Set(ordered.map((e) => e.id));
+  return [...ordered, ...entries.filter((e) => !placed.has(e.id)).sort(oldestFirst)];
+}
+
 /** Describe why `old` cannot be superseded, or `null` when it can. */
 export function supersedeRefusal(
   oldId: string,
