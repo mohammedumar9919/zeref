@@ -8,10 +8,14 @@ const built = await import(pathToFileURL(join(testDir, "../dist/index.js")).href
 const {
   createInMemoryDailyBudget,
   debugTokenExpiry,
+  fetchAccountInsights,
   fetchInstagramMedia,
+  fetchMediaInsights,
   graphGet,
+  GRAPH_THROTTLE_ERROR_CODES,
   GraphThrottledError,
   parseGraphUsage,
+  probeInsightsAvailable,
 } = built;
 
 const SECRET = "SECRET_TOKEN_123";
@@ -288,6 +292,186 @@ test("client helpers thread graph options through to every call", async () => {
   );
   assert.equal(calls.length, 1, "me lookup consumed the only budget slot");
   assert.equal(budget.used(), 1);
+});
+
+// --- Meta throttling error codes -------------------------------------------
+
+test("graphGet maps Meta throttle codes 4/17/32/613 to usage_high (with and without options)", async () => {
+  assert.deepEqual([...GRAPH_THROTTLE_ERROR_CODES].sort((a, b) => a - b), [4, 17, 32, 613]);
+  for (const code of [4, 17, 32, 613, "613"]) {
+    const { fetchImpl } = countingFetch(() =>
+      jsonResponse(
+        { error: { message: `Application request limit reached ${SECRET}`, code } },
+        {
+          status: 403,
+          headers: {
+            "x-app-usage": JSON.stringify({ call_count: 100, total_time: 0, total_cputime: 0 }),
+          },
+        },
+      ),
+    );
+    for (const opts of [undefined, {}]) {
+      await assert.rejects(
+        () => graphGet("me", SECRET, fetchImpl, BASE, opts),
+        (err) => {
+          assert.ok(err instanceof GraphThrottledError, `code ${code}`);
+          assert.equal(err.reason, "usage_high");
+          assert.equal(err.usage.maxPct, 100);
+          assertNoSecret(err, SECRET);
+          return true;
+        },
+      );
+    }
+  }
+});
+
+test("graphGet throttle code uses Retry-After when present", async () => {
+  const { fetchImpl } = countingFetch(() =>
+    jsonResponse({ error: { message: "User request limit reached", code: 17 } }, {
+      status: 400,
+      headers: { "retry-after": "61" },
+    }),
+  );
+  await assert.rejects(
+    () => graphGet("me", SECRET, fetchImpl, BASE),
+    (err) => err instanceof GraphThrottledError && err.retryAfterMin === 2,
+  );
+});
+
+test("graphGet leaves non-throttle Meta codes and non-JSON bodies as plain errors", async () => {
+  for (const body of [
+    JSON.stringify({ error: { message: `bad token ${SECRET}`, code: 190 } }),
+    JSON.stringify({ error: { message: "nope", code: "abc" } }),
+    `<html>4 17 32 613 ${SECRET}</html>`,
+  ]) {
+    const { fetchImpl } = countingFetch(() => new Response(body, { status: 400 }));
+    await assert.rejects(
+      () => graphGet("me", SECRET, fetchImpl, BASE),
+      (err) => {
+        assert.ok(!(err instanceof GraphThrottledError));
+        assert.match(err.message, /^Graph API 400: /);
+        assertNoSecret(err, SECRET);
+        return true;
+      },
+    );
+  }
+});
+
+// --- insights under the Graph budget ---------------------------------------
+
+const INSIGHTS_BODY = { data: [{ name: "reach", period: "lifetime", values: [{ value: 5 }] }] };
+
+test("insights without options behave as before (Meta message, no throttling on usage)", async () => {
+  const { fetchImpl, calls } = countingFetch(() =>
+    jsonResponse(INSIGHTS_BODY, {
+      headers: { "x-app-usage": JSON.stringify({ call_count: 99, total_time: 0, total_cputime: 0 }) },
+    }),
+  );
+  const res = await fetchMediaInsights({ accessToken: SECRET, mediaId: "m1", fetchImpl, baseUrl: BASE });
+  assert.equal(res.metrics[0].values[0].value, 5);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].pathname, "/m1/insights");
+
+  const failing = countingFetch(() =>
+    jsonResponse({ error: { message: "(#10) Not enough permissions", code: 10 } }, { status: 400 }),
+  );
+  await assert.rejects(
+    () => fetchMediaInsights({ accessToken: SECRET, mediaId: "m1", fetchImpl: failing.fetchImpl, baseUrl: BASE }),
+    (err) => err.message === "(#10) Not enough permissions",
+  );
+  const noMessage = countingFetch(() => new Response("oops", { status: 500 }));
+  await assert.rejects(
+    () => fetchAccountInsights({ accessToken: SECRET, userId: "u1", fetchImpl: noMessage.fetchImpl, baseUrl: BASE }),
+    (err) => err.message === "Graph account insights 500",
+  );
+  const meFails = countingFetch(() => new Response("oops", { status: 502 }));
+  await assert.rejects(
+    () => fetchAccountInsights({ accessToken: SECRET, fetchImpl: meFails.fetchImpl, baseUrl: BASE }),
+    (err) => err.message === "Graph me failed: 502",
+  );
+});
+
+test("insights calls (me lookup + insights) count against the Graph budget", async () => {
+  const budget = createInMemoryDailyBudget({ cap: 2, now: () => new Date("2026-10-09T08:00:00Z") });
+  const { fetchImpl, calls } = countingFetch((n) => (n === 1 ? jsonResponse({ id: "u1" }) : jsonResponse(INSIGHTS_BODY)));
+  const res = await fetchAccountInsights({ accessToken: SECRET, fetchImpl, baseUrl: BASE, graph: { budget } });
+  assert.equal(res.userId, "u1");
+  assert.equal(calls.length, 2);
+  assert.equal(budget.used(), 2);
+
+  await assert.rejects(
+    () => fetchMediaInsights({ accessToken: SECRET, mediaId: "m1", fetchImpl, baseUrl: BASE, graph: { budget } }),
+    (err) => err instanceof GraphThrottledError && err.reason === "daily_cap",
+  );
+  assert.equal(calls.length, 2, "no fetch once the budget is exhausted");
+});
+
+test("insights honour usage back-off, 429 and Meta throttle codes", async () => {
+  const seen = [];
+  const high = countingFetch(() =>
+    jsonResponse(INSIGHTS_BODY, {
+      headers: { "x-app-usage": JSON.stringify({ call_count: 90, total_time: 0, total_cputime: 0 }) },
+    }),
+  );
+  await assert.rejects(
+    () =>
+      fetchMediaInsights({
+        accessToken: SECRET, mediaId: "m1", fetchImpl: high.fetchImpl, baseUrl: BASE,
+        graph: { onUsage: (u) => seen.push(u.maxPct) },
+      }),
+    (err) => err instanceof GraphThrottledError && err.reason === "usage_high",
+  );
+  assert.deepEqual(seen, [90]);
+
+  const rate = countingFetch(() => new Response("slow down", { status: 429 }));
+  await assert.rejects(
+    () => fetchMediaInsights({ accessToken: SECRET, mediaId: "m1", fetchImpl: rate.fetchImpl, baseUrl: BASE }),
+    (err) => err instanceof GraphThrottledError && err.reason === "http_429",
+  );
+
+  const coded = countingFetch(() =>
+    jsonResponse({ error: { message: `limit ${SECRET}`, code: 32 } }, { status: 403 }),
+  );
+  await assert.rejects(
+    () => fetchAccountInsights({ accessToken: SECRET, userId: "u1", fetchImpl: coded.fetchImpl, baseUrl: BASE }),
+    (err) => err instanceof GraphThrottledError && err.reason === "usage_high",
+  );
+});
+
+test(`insights never leak the token (${SECRET}) in errors or probe messages`, async () => {
+  const cases = [
+    async () =>
+      jsonResponse(
+        { error: { message: `Invalid OAuth access token ${SECRET} (access_token=${SECRET})`, code: 190 } },
+        { status: 400 },
+      ),
+    async () => new Response(`<html>${SECRET}</html>`, { status: 500 }),
+    async (input) => {
+      throw new TypeError(`fetch failed for ${String(input)}`);
+    },
+    async () => jsonResponse({ error: { message: `limit ${SECRET}`, code: 4 } }, { status: 400 }),
+  ];
+  for (const fetchImpl of cases) {
+    await assert.rejects(
+      () => fetchMediaInsights({ accessToken: SECRET, mediaId: "m1", fetchImpl, baseUrl: BASE }),
+      (err) => {
+        assertNoSecret(err, SECRET);
+        return true;
+      },
+    );
+    await assert.rejects(
+      () => fetchAccountInsights({ accessToken: SECRET, fetchImpl, baseUrl: BASE }),
+      (err) => {
+        assertNoSecret(err, SECRET);
+        return true;
+      },
+    );
+    for (const mediaId of ["m1", undefined]) {
+      const probe = await probeInsightsAvailable({ accessToken: SECRET, mediaId, userId: "u1", fetchImpl, baseUrl: BASE });
+      assert.equal(probe.available, false);
+      assert.ok(!probe.message.includes(SECRET), "probe message leaked the token");
+    }
+  }
 });
 
 // --- debugTokenExpiry ------------------------------------------------------

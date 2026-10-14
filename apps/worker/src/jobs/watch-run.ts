@@ -55,6 +55,8 @@ export type WatchRunDeps = {
   debugTokenBaseUrl?: string;
   throttleAtPct?: number;
   log?: WatchLogger;
+  /** Called once after an `ok` run that inserted ≥ 1 new snapshot (cockpit refresh). */
+  onNewSnapshots?: (count: number) => Promise<void>;
 };
 
 export type WatchRunResult = {
@@ -66,6 +68,8 @@ export type WatchRunResult = {
   tokenExpiresAt: string | null;
   errorCode: string | null;
   diff: WatchDiff | null;
+  /** Snapshots inserted by this run (deduped collects do not count). */
+  newSnapshots: number;
 };
 
 const defaultLog: WatchLogger = {
@@ -154,6 +158,7 @@ export async function runWatch(deps: WatchRunDeps): Promise<WatchRunResult> {
       tokenExpiresAt: null,
       errorCode: null,
       diff: null,
+      newSnapshots: 0,
     };
   };
 
@@ -175,6 +180,7 @@ export async function runWatch(deps: WatchRunDeps): Promise<WatchRunResult> {
   let diff: WatchDiff | null = null;
   let status: WatchRunResult["status"] = "ok";
   let errorCode: string | null = null;
+  let newSnapshots = 0;
 
   try {
     runId = await store.insertRun({ trigger, startedAt, status: "running" });

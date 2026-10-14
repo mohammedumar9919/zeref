@@ -3,6 +3,7 @@ export {
   fetchInstagramMediaById,
   fetchInstagramUser,
   graphGet,
+  GRAPH_THROTTLE_ERROR_CODES,
   mapGraphMediaItem,
   shortcodeFromPermalink,
   type GraphClientOptions,
