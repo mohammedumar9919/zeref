@@ -1,5 +1,14 @@
-import { forgetVaultItem, listVaultItems, saveVaultItem } from "@zeref/zeref-memory";
-import type { VaultPort } from "../core/ports/memory-port.js";
+import {
+  archiveEntries,
+  forgetVaultItem,
+  getEntryHistory,
+  listVaultItems,
+  proposeStaleArchive,
+  saveVaultItem,
+  searchMemory,
+  supersedeEntry,
+} from "@zeref/zeref-memory";
+import type { MemoryLifecyclePort, VaultPort } from "../core/ports/memory-port.js";
 import type { ToolExecutionResult, ToolExecutorPort } from "../core/ports/tool-executor-port.js";
 import {
   readCockpitSummary,
@@ -28,6 +37,12 @@ import {
   writeVaultForget,
   writeVaultPin,
 } from "./adapters/write-adapters.js";
+import {
+  readMemoryHistory,
+  readMemoryProposeArchive,
+  writeMemoryArchive,
+  writeMemorySupersede,
+} from "./adapters/memory-lifecycle-adapters.js";
 import type { ZerefContext } from "./context.js";
 
 /** Default vault port: the shared `@zeref/zeref-memory` adapter (mock or Postgres). */
@@ -35,6 +50,17 @@ const defaultVaultPort: VaultPort = {
   saveVaultItem: (input) => saveVaultItem(input),
   listVaultItems: (opts) => listVaultItems(opts),
   forgetVaultItem: (id) => forgetVaultItem(id),
+};
+
+/** Default lifecycle port: the same shared adapter (C19a API). */
+export const defaultMemoryLifecyclePort: MemoryLifecyclePort = {
+  searchEntries: async (query, opts) =>
+    (await searchMemory(query, { limit: opts?.limit })).results.map((r) => r.entry),
+  listVaultItems: (opts) => listVaultItems(opts),
+  getEntryHistory: (id) => getEntryHistory(id),
+  proposeStaleArchive: (opts) => proposeStaleArchive(opts),
+  supersedeEntry: (oldId, input) => supersedeEntry(oldId, input),
+  archiveEntries: (ids) => archiveEntries(ids),
 };
 
 function ok(data: unknown, auditMeta?: Record<string, unknown>): ToolExecutionResult {
@@ -48,10 +74,15 @@ function fail(error: string): ToolExecutionResult {
 /** ToolExecutorPort implementation delegating to injected ZerefContext (C144, C153–C154). */
 export function createZerefToolExecutor(
   ctx: ZerefContext,
-  opts?: { idempotencyCache?: IdempotencyCache; vault?: VaultPort },
+  opts?: {
+    idempotencyCache?: IdempotencyCache;
+    vault?: VaultPort;
+    lifecycle?: MemoryLifecyclePort;
+  },
 ): ToolExecutorPort {
   const cache = opts?.idempotencyCache ?? new Map<string, unknown>();
   const vault = opts?.vault ?? defaultVaultPort;
+  const lifecycle = opts?.lifecycle ?? defaultMemoryLifecyclePort;
 
   return {
     async execute(name, args): Promise<ToolExecutionResult> {
@@ -94,6 +125,14 @@ export function createZerefToolExecutor(
             return ok(await writeVaultPin(vault, args));
           case "vault_forget":
             return ok(await writeVaultForget(vault, args));
+          case "memory_history":
+            return ok(await readMemoryHistory(lifecycle, args));
+          case "memory_propose_archive":
+            return ok(await readMemoryProposeArchive(lifecycle, args));
+          case "memory_supersede":
+            return ok(await writeMemorySupersede(lifecycle, args));
+          case "memory_archive":
+            return ok(await writeMemoryArchive(lifecycle, args));
           case "enqueue_job": {
             const data = await writeEnqueueJob(ctx.write, args, cache);
             const mocked =

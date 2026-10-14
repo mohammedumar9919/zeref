@@ -165,6 +165,34 @@ export const ZEREF_TOOL_DESCRIPTORS: ToolDescriptor[] = [
     riskTier: "write-high",
     ...writeHighBase,
   },
+  {
+    name: "memory_history",
+    description:
+      "Show how one memory changed over time (every version, oldest first, marked superseded/archived). Args: { id?: uuid, content?: string } — no args uses the most recent pin. Read-only.",
+    riskTier: "read",
+    ...readBase,
+  },
+  {
+    name: "memory_propose_archive",
+    description:
+      "List stale memories that could be archived (older than N days, not pinned, not already replaced). Args: { olderThanDays?: number, limit?: number }. Read-only; archives nothing.",
+    riskTier: "read",
+    ...readBase,
+  },
+  {
+    name: "memory_supersede",
+    description:
+      "Replace one memory with corrected content when the operator explicitly asks (\"replace X with Y\"). Keeps the old version in history; never deletes. Args: { target?: string, id?: uuid, content: string }. Needs confirm.",
+    riskTier: "write-high",
+    ...writeHighBase,
+  },
+  {
+    name: "memory_archive",
+    description:
+      "Archive exactly the given memory ids (hidden from recall, kept in history; never deletes). Args: { ids: uuid[] } — take ids from memory_propose_archive. Needs confirm.",
+    riskTier: "write-high",
+    ...writeHighBase,
+  },
 ];
 
 export function getZerefToolDescriptor(name: string): ToolDescriptor | undefined {

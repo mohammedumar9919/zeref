@@ -16,11 +16,15 @@ import {
   buildAckText,
   confirmPrompt,
   createSentenceBuffer,
+  describeMemoryArchive,
+  describeMemorySupersede,
   resolveVaultForgetTarget,
   splitIntoSentences,
   type AgentRunResult,
   type AgentStep as CoreAgentStep,
+  type ConfirmDescription,
   type ConfirmGrant,
+  type MemoryLifecyclePort,
   type PendingConfirm,
 } from "@zeref/jarvis-kernel";
 import { forgetVaultItem, listVaultItems, saveVaultItem } from "@zeref/zeref-memory";
@@ -41,6 +45,7 @@ import {
 } from "./conversation-session";
 import { createJarvisLlmPort } from "./llm-port";
 import { mapCoreStepToContract } from "./map-agent-step";
+import { createWebMemoryPort } from "./memory-port";
 import { createZerefContext } from "./zeref-context";
 
 export type JarvisAgentRunInput = {
@@ -142,6 +147,23 @@ async function describeVaultForget(
   return { text: `Shall I forget "${target.content}"?`, keepConfirm: true };
 }
 
+/** Write-high tools whose confirm text must name exactly what will change. */
+async function describePendingConfirm(
+  pending: PendingConfirm,
+  lifecycle: MemoryLifecyclePort,
+): Promise<ConfirmDescription | undefined> {
+  switch (pending.toolName) {
+    case "vault_forget":
+      return describeVaultForget(pending);
+    case "memory_supersede":
+      return describeMemorySupersede(lifecycle, pending.args);
+    case "memory_archive":
+      return describeMemoryArchive(lifecycle, pending.args);
+    default:
+      return undefined;
+  }
+}
+
 function emitAgentSteps(
   runId: string,
   coreStep: CoreAgentStep,
@@ -211,7 +233,8 @@ export async function runJarvisAgent(
   recordUserTurn(originalTranscript);
 
   const zerefContext = createZerefContext(input.turnId);
-  const toolExecutor = createZerefToolExecutor(zerefContext);
+  const lifecycle = createWebMemoryPort();
+  const toolExecutor = createZerefToolExecutor(zerefContext, { lifecycle });
   const llm = createJarvisLlmPort();
   const contractSteps: ContractAgentStep[] = [];
   let lastToolCallArgs: Record<string, unknown> | undefined;
@@ -262,11 +285,11 @@ export async function runJarvisAgent(
   const ackText = buildAckText(originalTranscript);
   let resultText: string;
   let pendingConfirm = result.pendingConfirm;
-  if (
-    result.terminalReason === "awaiting_confirm" &&
-    pendingConfirm?.toolName === "vault_forget"
-  ) {
-    const described = await describeVaultForget(pendingConfirm);
+  const described =
+    result.terminalReason === "awaiting_confirm" && pendingConfirm
+      ? await describePendingConfirm(pendingConfirm, lifecycle)
+      : undefined;
+  if (described) {
     resultText = described.text;
     if (!described.keepConfirm) pendingConfirm = undefined;
   } else if (result.terminalReason === "awaiting_confirm" && pendingConfirm) {
