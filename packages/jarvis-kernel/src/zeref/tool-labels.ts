@@ -27,6 +27,18 @@ export function toolLabel(name: string, args: Record<string, unknown> = {}): str
     }
     case "memory_save":
       return "save that to memory";
+    case "memory_supersede": {
+      const target = str("target");
+      const content = str("content");
+      if (target && content) return `replace "${target}" with "${content}"`;
+      return content ? `replace that memory with "${content}"` : "replace that memory";
+    }
+    case "memory_archive": {
+      const ids = Array.isArray(args.ids) ? args.ids.filter((id) => typeof id === "string") : [];
+      const count = new Set(ids).size;
+      if (count === 0) return "archive those memories";
+      return `archive ${count} old ${count === 1 ? "memory" : "memories"}`;
+    }
     default:
       return name.replaceAll("_", " ");
   }

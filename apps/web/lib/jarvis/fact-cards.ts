@@ -59,6 +59,12 @@ function describeUsual(vsCohort: unknown): string | undefined {
   }
 }
 
+const VERSION_LABELS: Record<string, string> = {
+  current: "Current",
+  superseded: "Superseded",
+  archived: "Archived",
+};
+
 /** Per-tool field whitelist. Tools not listed here never produce a card. */
 const CARD_BUILDERS: Record<string, (data: Record<string, unknown>, args: Record<string, unknown>) => CardDraft | undefined> = {
   get_latest_report_headline(data) {
@@ -105,6 +111,48 @@ const CARD_BUILDERS: Record<string, (data: Record<string, unknown>, args: Record
     return {
       title: data.alreadyPinned === true ? "Already pinned" : "Pinned",
       fields: [{ label: "Item", value: content }],
+    };
+  },
+
+  memory_history(data) {
+    if (data.found !== true || !Array.isArray(data.versions)) return undefined;
+    const fields: FactCardField[] = [];
+    for (const version of data.versions.slice(-FACT_CARD_MAX_FIELDS)) {
+      const entry = record(version);
+      const content = text(entry?.content);
+      const label = VERSION_LABELS[String(entry?.status)];
+      if (content && label) fields.push({ label, value: content });
+    }
+    return fields.length > 0 ? { title: "Memory history", fields } : undefined;
+  },
+
+  memory_propose_archive(data) {
+    const items = contents(data.items, FACT_CARD_MAX_FIELDS);
+    if (items.length === 0) return undefined;
+    return { title: "Stale memories", fields: items.map((value) => ({ label: "Stale", value })) };
+  },
+
+  memory_supersede(data) {
+    if (data.superseded !== true) return undefined;
+    const was = text(record(data.previous)?.content);
+    const now = text(record(data.entry)?.content);
+    if (!was || !now) return undefined;
+    return {
+      title: "Replaced",
+      fields: [
+        { label: "Was", value: was },
+        { label: "Now", value: now },
+      ],
+    };
+  },
+
+  memory_archive(data) {
+    const archivedCount = count(data.archivedCount);
+    if (!archivedCount) return undefined;
+    const items = contents(data.items, FACT_CARD_MAX_FIELDS);
+    return {
+      title: `Archived ${archivedCount}`,
+      fields: items.map((value) => ({ label: "Archived", value })),
     };
   },
 

@@ -84,6 +84,30 @@ const POST_VS_USUAL =
 const MEMORY_RECALL =
   /\bwhat (did|have) i (ask(ed)?|tell|told) you to remember\b|\bwhat do you remember\b|\bwhat have you (saved|remembered)\b/;
 
+const MEMORY_REPLACE = /\breplace\s+(.+?)\s+with\s+(.+)$/i;
+const MEMORY_HISTORY = /\bhistory of\b\s*(.*)$/i;
+const MEMORY_STALE = /\b(stale|outdated)\b|\bold memor(y|ies)\b|\barchive\b.*\bmemor(y|ies)\b/;
+
+/** Strip filler and quotes around a spoken memory phrase ("my memory 'post at 7pm'."). */
+function cleanMemoryPhrase(raw: string): string {
+  return raw
+    .trim()
+    .replace(/[?.!]+$/, "")
+    .replace(/^(the\s+)?(memory|pin|note)\s+(about\s+)?/i, "")
+    .replace(/^(my|the)\s+/i, "")
+    .replace(/^["'“‘]+|["'”’]+$/g, "")
+    .trim();
+}
+
+/** "Archive old memories" asks to act; "what's stale?" / "what would you archive?" only asks. */
+function isArchiveCommand(lower: string): boolean {
+  return (
+    /\barchive\b/.test(lower) &&
+    !/\b(what|which|would|should|could|any)\b/.test(lower) &&
+    !/\?\s*$/.test(lower.trim())
+  );
+}
+
 /** "Delete all my data" / "forget everything" — never mapped to a tool. */
 function isBulkDeleteRequest(lower: string): boolean {
   return (
@@ -114,6 +138,32 @@ function pickMockToolCall(
   }
   if (MEMORY_RECALL.test(lower) && has("memory_search")) {
     return { name: "memory_search", args: { query: "" }, id: "mock-tc-memory-recall" };
+  }
+  const replace = transcript.match(MEMORY_REPLACE);
+  if (replace && has("memory_supersede")) {
+    const target = cleanMemoryPhrase(replace[1]);
+    const content = cleanMemoryPhrase(replace[2]);
+    if (target && content) {
+      return { name: "memory_supersede", args: { target, content }, id: "mock-tc-memory-supersede" };
+    }
+  }
+  const history = transcript.match(MEMORY_HISTORY);
+  if (history && has("memory_history")) {
+    const target = cleanMemoryPhrase(history[1]);
+    const vague = !target || /^(that|this|it)$/i.test(target);
+    return {
+      name: "memory_history",
+      args: vague ? {} : { content: target },
+      id: "mock-tc-memory-history",
+    };
+  }
+  if (MEMORY_STALE.test(lower) && has("memory_propose_archive")) {
+    const days = lower.match(/\bolder than (\d{1,4}) days?\b/);
+    return {
+      name: "memory_propose_archive",
+      args: days ? { olderThanDays: Number(days[1]) } : {},
+      id: "mock-tc-memory-propose-archive",
+    };
   }
   if (/\bforget\b/.test(lower) && has("vault_forget")) {
     const target = transcript
@@ -245,6 +295,90 @@ function pickMockToolCall(
   return undefined;
 }
 
+/** After a stale proposal for an archive command: archive exactly the proposed ids (confirm-gated). */
+function pickMockArchiveFollowUp(
+  toolName: string | undefined,
+  transcript: string,
+  toolMessageContent: string | undefined,
+  tools: ToolDescriptor[],
+): LlmPredictResult["toolCall"] | undefined {
+  if (toolName !== "memory_propose_archive" || !tools.some((t) => t.name === "memory_archive")) {
+    return undefined;
+  }
+  if (!isArchiveCommand(transcript.toLowerCase())) return undefined;
+  const ids = (readToolData(toolMessageContent)?.ids ?? []).filter(
+    (id): id is string => typeof id === "string" && id.length > 0,
+  );
+  if (ids.length === 0) return undefined;
+  return { name: "memory_archive", args: { ids }, id: "mock-tc-memory-archive" };
+}
+
+type MemoryLifecycleResultData = {
+  found?: boolean;
+  versions?: Array<{ content?: string; status?: string }>;
+  count?: number;
+  olderThanDays?: number;
+  ids?: unknown[];
+  superseded?: boolean;
+  previous?: { content?: string };
+  entry?: { content?: string };
+  archivedCount?: number;
+  alreadyArchived?: unknown[];
+  message?: string;
+};
+
+function quoteList(list: string[], max: number): string {
+  const shown = list.slice(0, max).map((c) => `"${c}"`).join(", ");
+  return list.length > max ? `${shown} and ${list.length - max} more` : shown;
+}
+
+function buildMemoryLifecycleFinishText(
+  toolName: string,
+  data: (MemoryLifecycleResultData & { items?: Array<{ content?: string }> }) | undefined,
+): string | undefined {
+  if (!data) return undefined;
+  switch (toolName) {
+    case "memory_history": {
+      if (!data.found) return "I couldn't find a memory that matches, so there's no history to show.";
+      const versions = (data.versions ?? []).filter((v) => v.content);
+      if (versions.length === 0) return "I couldn't find a memory that matches, so there's no history to show.";
+      const latest = versions[versions.length - 1];
+      if (versions.length === 1) {
+        return `That memory has never been replaced: "${latest.content}".`;
+      }
+      const earlier = versions.slice(0, -1).map((v) => v.content as string);
+      const state = latest.status === "archived" ? "now archived" : "currently";
+      return `It's ${state} "${latest.content}"; earlier versions: ${quoteList(earlier, 3)}.`;
+    }
+    case "memory_propose_archive": {
+      const contents = (data.items ?? []).map((i) => i.content).filter((c): c is string => Boolean(c));
+      const window = typeof data.olderThanDays === "number" ? ` older than ${data.olderThanDays} days` : "";
+      if (contents.length === 0) return `Nothing stale${window} — nothing to archive.`;
+      return `${contents.length === 1 ? "One memory looks" : `${contents.length} memories look`} stale${window}: ${quoteList(contents, 5)}. Say "archive old memories" if you'd like me to archive them.`;
+    }
+    case "memory_supersede": {
+      if (data.superseded && data.previous?.content && data.entry?.content) {
+        return `Replaced "${data.previous.content}" with "${data.entry.content}". The old version stays in history.`;
+      }
+      if (data.message === "memory already says that" && data.previous?.content) {
+        return `Your memory already says "${data.previous.content}" — nothing changed.`;
+      }
+      return "No current memory matched, so nothing was replaced.";
+    }
+    case "memory_archive": {
+      const archived = (data.items ?? []).map((i) => i.content).filter((c): c is string => Boolean(c));
+      if (typeof data.archivedCount !== "number" || data.archivedCount === 0) {
+        return "Nothing was archived — those memories were already archived or gone.";
+      }
+      const noun = data.archivedCount === 1 ? "memory" : "memories";
+      const list = archived.length > 0 ? `: ${quoteList(archived, 5)}` : "";
+      return `Archived ${data.archivedCount} ${noun}${list}. Nothing was deleted.`;
+    }
+    default:
+      return undefined;
+  }
+}
+
 type VaultResultData = {
   item?: { content?: string };
   alreadyPinned?: boolean;
@@ -263,7 +397,7 @@ type ReadResultData = {
   };
 };
 
-type ToolResultData = VaultResultData & ReadResultData;
+type ToolResultData = VaultResultData & ReadResultData & MemoryLifecycleResultData;
 
 const LOW_CONFIDENCE_SAMPLE = 5;
 
@@ -375,7 +509,10 @@ function buildMockFinishText(
     return isBulkDeleteRequest(transcript.toLowerCase()) ? BULK_DELETE_REFUSAL : CAPABILITY_HELP;
   }
   const data = readToolData(toolMessageContent);
-  const toolText = buildVaultFinishText(toolName, data) ?? buildReadFinishText(toolName, data);
+  const toolText =
+    buildVaultFinishText(toolName, data) ??
+    buildMemoryLifecycleFinishText(toolName, data) ??
+    buildReadFinishText(toolName, data);
   if (toolText) return toolText;
   switch (toolName) {
     case "get_cockpit_summary":
@@ -571,6 +708,13 @@ export function createJarvisLlmPort(scriptState?: MockScriptState): LlmPort {
             toolName = state.lastTool;
           }
           state.pass += 1;
+          const archiveCall = pickMockArchiveFollowUp(
+            toolName,
+            transcript,
+            lastToolMessage.content,
+            input.tools,
+          );
+          if (archiveCall) return { toolCall: archiveCall, tokensUsed: 32 };
           return {
             text: buildMockFinishText(toolName, transcript, lastToolMessage.content, toolArgs),
             tokensUsed: 24,

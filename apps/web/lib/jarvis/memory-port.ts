@@ -6,9 +6,10 @@ import {
   isMemoryMockMode,
   type MemoryAdapter,
 } from "@zeref/zeref-memory";
-import type { MemoryPort } from "@zeref/jarvis-kernel";
+import type { MemoryLifecyclePort, MemoryPort } from "@zeref/jarvis-kernel";
 
 export type WebMemoryPort = MemoryPort &
+  MemoryLifecyclePort &
   Pick<MemoryAdapter, "saveVaultItem" | "listVaultItems" | "forgetVaultItem">;
 
 /**
@@ -42,7 +43,7 @@ async function resolveAdapter(): Promise<MemoryAdapter> {
   return adapter;
 }
 
-/** MemoryPort + vault adapter for web BFF (C144, CLOUD-C3, CLOUD-C4). */
+/** MemoryPort + vault + lifecycle adapter for web BFF (C144, CLOUD-C3, CLOUD-C4, CLOUD-C19b). */
 export function createWebMemoryPort(): WebMemoryPort {
   // The kernel's default vault port shares the cached adapter, so attach early.
   void resolveAdapter().catch(() => undefined);
@@ -83,6 +84,22 @@ export function createWebMemoryPort(): WebMemoryPort {
     },
     async forgetVaultItem(id) {
       return (await resolveAdapter()).forgetVaultItem(id);
+    },
+    async searchEntries(query, opts) {
+      const result = await (await resolveAdapter()).searchMemory(query, { limit: opts?.limit ?? 20 });
+      return result.results.map((item) => item.entry);
+    },
+    async getEntryHistory(id) {
+      return (await resolveAdapter()).getEntryHistory(id);
+    },
+    async proposeStaleArchive(opts) {
+      return (await resolveAdapter()).proposeStaleArchive(opts);
+    },
+    async supersedeEntry(oldId, input) {
+      return (await resolveAdapter()).supersedeEntry(oldId, input);
+    },
+    async archiveEntries(ids) {
+      return (await resolveAdapter()).archiveEntries(ids);
     },
   };
 }

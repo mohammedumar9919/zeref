@@ -121,6 +121,8 @@ export type SaveVaultItemInput = {
 export type ListVaultItemsOptions = {
   kind?: VaultKind;
   limit?: number;
+  /** Include superseded and archived items (history lookups only). */
+  includeHistory?: boolean;
 };
 
 export interface MemoryAdapter {

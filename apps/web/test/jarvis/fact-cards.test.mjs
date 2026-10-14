@@ -58,6 +58,37 @@ const SAMPLE_RESULTS = {
   },
   get_pipeline_status: { available: true, status: "idle", message: "pipeline idle — no active jobs" },
   enqueue_job: { queued: true, mocked: true, jobId: "mock-job-1", workerConsuming: false },
+  memory_history: {
+    available: true,
+    found: true,
+    count: 3,
+    versions: [
+      { content: "post reels at 6pm", status: "superseded" },
+      { content: "post reels at 7pm", status: "superseded" },
+      { content: "post reels at 9pm", status: "current" },
+    ],
+  },
+  memory_propose_archive: {
+    available: true,
+    olderThanDays: 90,
+    count: 2,
+    ids: ["a", "b"],
+    items: [{ content: "film the canal ride" }, { content: "try a 30 second hook" }],
+  },
+  memory_supersede: {
+    available: true,
+    superseded: true,
+    previous: { id: "a", content: "post reels at 7pm" },
+    entry: { id: "b", content: "post reels at 9pm" },
+  },
+  memory_archive: {
+    available: true,
+    archivedCount: 2,
+    archived: ["a", "b"],
+    alreadyArchived: [],
+    notFound: [],
+    items: [{ content: "film the canal ride" }, { content: "try a 30 second hook" }],
+  },
 };
 
 const SAMPLE_ARGS = { enqueue_job: { jobType: "report" } };
@@ -116,6 +147,57 @@ describe("fact cards builder (CLOUD-C17a)", () => {
       card.fields.map((f) => f.value),
       ["50.7", "In line with your usual", "1 post — low confidence"],
     );
+  });
+
+  it("memory history card: up to 6 versions, newest last, marks superseded/current/archived (C19b)", () => {
+    const [card] = buildFactCards(RUN_ID, [call("memory_history")]);
+    assert.equal(card.title, "Memory history");
+    assert.deepEqual(
+      card.fields.map((f) => [f.label, f.value]),
+      [
+        ["Superseded", "post reels at 6pm"],
+        ["Superseded", "post reels at 7pm"],
+        ["Current", "post reels at 9pm"],
+      ],
+    );
+    const versions = Array.from({ length: 8 }, (_, i) => ({
+      content: `version ${i + 1}`,
+      status: i === 7 ? "archived" : "superseded",
+    }));
+    const [long] = buildFactCards(RUN_ID, [
+      call("memory_history", { available: true, found: true, count: 8, versions }),
+    ]);
+    assert.equal(long.fields.length, 6);
+    assert.equal(long.fields[0].value, "version 3");
+    assert.deepEqual(long.fields[5], { label: "Archived", value: "version 8" });
+  });
+
+  it("lifecycle cards: Stale memories, Replaced, Archived N (C19b)", () => {
+    const [stale] = buildFactCards(RUN_ID, [call("memory_propose_archive")]);
+    assert.equal(stale.title, "Stale memories");
+    assert.deepEqual(stale.fields.map((f) => f.value), ["film the canal ride", "try a 30 second hook"]);
+    const [replaced] = buildFactCards(RUN_ID, [call("memory_supersede")]);
+    assert.equal(replaced.title, "Replaced");
+    assert.deepEqual(
+      replaced.fields.map((f) => [f.label, f.value]),
+      [
+        ["Was", "post reels at 7pm"],
+        ["Now", "post reels at 9pm"],
+      ],
+    );
+    const [archived] = buildFactCards(RUN_ID, [call("memory_archive")]);
+    assert.equal(archived.title, "Archived 2");
+    assert.equal(archived.fields.length, 2);
+  });
+
+  it("lifecycle no-ops produce no card (C19b)", () => {
+    const none = [
+      call("memory_history", { available: true, found: false, count: 0, versions: [] }),
+      call("memory_propose_archive", { available: true, olderThanDays: 90, count: 0, ids: [], items: [] }),
+      call("memory_supersede", { available: true, superseded: false, message: "no current memory matched" }),
+      call("memory_archive", { available: true, archivedCount: 0, archived: [], alreadyArchived: ["a"], notFound: [], items: [] }),
+    ];
+    assert.deepEqual(buildFactCards(RUN_ID, none), []);
   });
 
   it("unknown, failed and unavailable results produce no card", () => {

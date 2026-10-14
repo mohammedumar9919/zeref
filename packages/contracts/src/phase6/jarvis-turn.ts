@@ -27,6 +27,10 @@ export const JarvisToolNameSchema = z.enum([
   "vault_list",
   "vault_pin",
   "vault_forget",
+  "memory_history",
+  "memory_propose_archive",
+  "memory_supersede",
+  "memory_archive",
 ]);
 
 export const JarvisToolCallSchema = z

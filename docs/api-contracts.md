@@ -26,6 +26,19 @@ Council Stage 2 required for changes to this file or underlying Zod schemas.
 
 Memory saves also run the CLOUD-C5 semantic check: suspected near-miss contradictions are stored on the new entry as `metadata.suspectedContradictionOf: [{ id, reason }]` and never mark anything `contradicted`.
 
+### Jarvis memory lifecycle tools (CLOUD-C19b, `@zeref/zeref-memory` C19a API)
+
+None of these delete anything. Exact same-key corrections stay automatic (C19a); only explicit replace requests and stale-archive proposals go through these tools.
+
+| Tool | Risk tier | Args | Notes |
+|------|-----------|------|-------|
+| `memory_history` | read | `{ id?, content? }` | `getEntryHistory`; target = `id`, else case-insensitive content match (search, then vault items, superseded versions included), else most recent pin. Result `{ found, count, versions: [{ id, content, status: current\|superseded\|archived, createdAt, supersededBy, archivedAt }] }`, oldest → newest |
+| `memory_propose_archive` | read | `{ olderThanDays? (default 90), limit? (default 20) }` | `proposeStaleArchive`; writes nothing. Result `{ olderThanDays, count, ids, items: [{ id, content, createdAt }] }` |
+| `memory_supersede` | write-high (confirm) | `{ target? \| id?, content }` | `supersedeEntry`; target must be a current (not superseded, not archived) entry; no match or same content → no confirm. Confirm text: `Shall I replace "<old content>" with "<new content>"? Say yes to confirm.` |
+| `memory_archive` | write-high (confirm) | `{ ids: string[] }` (required, max 50) | `archiveEntries` on exactly these ids; no ids → tool error (no bulk archive). Confirm text: `Shall I archive N old memories: "a", "b", …? Nothing is deleted. Say yes to confirm.`; nothing archivable → no confirm |
+
+Fact cards: `memory_history` → "Memory history" (last 6 versions, newest last, labelled Superseded / Archived / Current); `memory_propose_archive` → "Stale memories"; `memory_supersede` → "Replaced" (Was / Now); `memory_archive` → "Archived N".
+
 ### Jarvis run + write-high confirm (K1)
 
 `POST /api/v1/jarvis/run` — body `{ turnId: uuid, transcript, confirmed?: boolean, runId?: uuid }` (strict; unchanged shape).
