@@ -16,6 +16,7 @@ import { aggregatePanelDataAgeState, type DataAgeState } from "../data-age";
 import { loadInstagramAccountSnapshot, loadInstagramInsights } from "./instagram-snapshot";
 import { runExternalSocialResearch } from "./external-research";
 import { loadCompetitorDiscovery, loadReelIdeas } from "./competitor-discovery";
+import { loadMorningBrief } from "./morning-brief";
 import { analysisOutputs } from "@zeref/db";
 import { desc, eq } from "drizzle-orm";
 
@@ -199,6 +200,9 @@ export function createZerefContext(turnId?: string): ZerefContext {
           return { available: false, message: "no weekly brief computed" };
         }
         return { available: true, brief: result.body.weeklyBrief, hooks: result.body.hooks };
+      },
+      async getMorningBrief(args) {
+        return loadMorningBrief(args);
       },
       async getInstagramAccountSnapshot() {
         return loadInstagramAccountSnapshot();

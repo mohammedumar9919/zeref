@@ -46,6 +46,10 @@ function contents(list: unknown, limit: number): string[] {
   return [...seen];
 }
 
+function signedCount(value: number): string {
+  return value > 0 ? `+${value}` : String(value);
+}
+
 function describeUsual(vsCohort: unknown): string | undefined {
   switch (vsCohort) {
     case "above":
@@ -177,6 +181,43 @@ const CARD_BUILDERS: Record<string, (data: Record<string, unknown>, args: Record
     const status = data.status === "active" ? "Active" : data.status === "idle" ? "Idle" : undefined;
     if (!status) return undefined;
     return { title: "Pipeline", fields: [{ label: "Status", value: status }] };
+  },
+
+  get_morning_brief(data) {
+    const fields: FactCardField[] = [];
+    const since = text(data.sinceLabel);
+    const problems = count(data.problemRunCount);
+    const token = record(data.token);
+    const daysLeft = count(token?.daysLeft);
+    const tokenValue = token?.expired === true ? "Expired" : daysLeft !== undefined ? String(daysLeft) : undefined;
+    const watch = typeof data.watchEnabled === "boolean" ? (data.watchEnabled ? "On" : "Off") : undefined;
+
+    if (data.hasRun === true) {
+      const newPosts = count(data.newPosts);
+      if (newPosts !== undefined) fields.push({ label: "New posts", value: String(newPosts) });
+      const likes = count(data.likesChange);
+      if (likes !== undefined) fields.push({ label: "Likes change", value: signedCount(likes) });
+      const collected = text(data.collectedAtLabel);
+      fields.push({ label: "Data collected", value: collected ?? "Not recorded" });
+    } else if (data.hasRun === false && since) {
+      fields.push({ label: "Watch run", value: `None since ${since}` });
+      const lastRun = record(data.lastRun);
+      const lastStatus = text(lastRun?.status);
+      const lastAt = text(lastRun?.startedAtLabel);
+      if (lastStatus && lastAt) {
+        fields.push({ label: "Last run", value: `${lastStatus.replaceAll("_", " ")} at ${lastAt}` });
+      }
+    } else {
+      return undefined;
+    }
+    if (tokenValue) fields.push({ label: "Token days left", value: tokenValue });
+    if (watch) fields.push({ label: "Watch", value: watch });
+    if (problems) fields.push({ label: "Throttled or failed runs", value: String(problems) });
+    else if (data.hasRun === true) {
+      const reach = count(data.reachChange);
+      if (reach !== undefined) fields.push({ label: "Reach change", value: signedCount(reach) });
+    }
+    return { title: "Morning brief", fields };
   },
 
   enqueue_job(data, args) {
