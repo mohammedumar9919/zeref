@@ -72,7 +72,7 @@ export function FactCards(): React.ReactElement | null {
           data-testid="fact-card"
           data-tool-name={card.toolName}
           data-badge={card.badge}
-          className="pointer-events-auto rounded-panel border border-hud-cyan/50 bg-panel/90 p-4 shadow-hud-glow backdrop-blur-md"
+          className="pointer-events-auto animate-scale-in rounded-panel border border-hud-cyan/50 bg-panel/90 p-4 shadow-hud-glow backdrop-blur-md"
         >
           <header className="flex items-start justify-between gap-3">
             <h2 className="text-[17px] font-medium leading-snug text-hud-primary">{card.title}</h2>
