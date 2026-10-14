@@ -17,6 +17,7 @@ import {
   readInstagramInsights,
   readLatestReportHeadline,
   readMemorySearch,
+  readMorningBrief,
   readPipelineStatus,
   readReportArtifact,
   readResearchOutliers,
@@ -152,6 +153,8 @@ export function createZerefToolExecutor(
             return ok(await readResearchOutliers(ctx.read));
           case "get_weekly_brief":
             return ok(await readWeeklyBrief(ctx.read));
+          case "get_morning_brief":
+            return ok(await readMorningBrief(ctx.read, args));
           case "get_instagram_account_snapshot":
             return ok(await readInstagramAccountSnapshot(ctx.read));
           case "get_instagram_insights":

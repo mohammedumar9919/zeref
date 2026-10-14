@@ -77,6 +77,18 @@ export async function readWeeklyBrief(ctx: ZerefReadContext): Promise<unknown> {
   return ctx.getWeeklyBrief();
 }
 
+/** Morning brief built from stored watch runs only — no Graph calls (CLOUD-C12). */
+export async function readMorningBrief(
+  ctx: ZerefReadContext,
+  args: Record<string, unknown> = {},
+): Promise<unknown> {
+  if (!ctx.canRead()) {
+    return degraded(ctx, "get_morning_brief");
+  }
+  const since = typeof args.since === "string" && args.since.trim() ? args.since.trim() : undefined;
+  return ctx.getMorningBrief(since ? { since } : {});
+}
+
 /** Live Instagram Graph account snapshot (media counts + Insights when permitted). */
 export async function readInstagramAccountSnapshot(ctx: ZerefReadContext): Promise<unknown> {
   if (!ctx.canRead()) {

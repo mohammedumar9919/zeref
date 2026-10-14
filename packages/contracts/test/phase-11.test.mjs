@@ -46,6 +46,7 @@ const EXPECTED_TOOLS = [
   "memory_propose_archive",
   "memory_supersede",
   "memory_archive",
+  "get_morning_brief",
 ];
 
 function loadFixture(name) {

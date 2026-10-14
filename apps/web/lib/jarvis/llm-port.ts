@@ -87,6 +87,9 @@ const MEMORY_RECALL =
 const MEMORY_REPLACE = /\breplace\s+(.+?)\s+with\s+(.+)$/i;
 const MEMORY_HISTORY = /\bhistory of\b\s*(.*)$/i;
 const MEMORY_STALE = /\b(stale|outdated)\b|\bold memor(y|ies)\b|\barchive\b.*\bmemor(y|ies)\b/;
+const MORNING_BRIEF =
+  /\bmorning brief(ing)?\b|\bwhat(?:'s| has)? changed\b.*\b(overnight|since yesterday|since last night)\b/;
+const GOOD_MORNING = /\bgood morning\b/;
 
 /** Strip filler and quotes around a spoken memory phrase ("my memory 'post at 7pm'."). */
 function cleanMemoryPhrase(raw: string): string {
@@ -133,6 +136,9 @@ function pickMockToolCall(
   const has = (name: string) => tools.some((t) => t.name === name);
 
   if (isBulkDeleteRequest(lower)) return undefined;
+  if (MORNING_BRIEF.test(lower) && has("get_morning_brief")) {
+    return { name: "get_morning_brief", args: {}, id: "mock-tc-morning-brief" };
+  }
   if (POST_VS_USUAL.test(lower) && has("get_report_artifact")) {
     return { name: "get_report_artifact", args: {}, id: "mock-tc-post-vs-usual" };
   }
@@ -290,6 +296,9 @@ function pickMockToolCall(
   }
   if (/(recall|remember|previously)/i.test(lower) && has("memory_search")) {
     return { name: "memory_search", args: { query: transcript }, id: "mock-tc-memory-search" };
+  }
+  if (GOOD_MORNING.test(lower) && has("get_morning_brief")) {
+    return { name: "get_morning_brief", args: {}, id: "mock-tc-morning-brief" };
   }
 
   return undefined;
@@ -480,6 +489,91 @@ function buildVaultFinishText(toolName: string, data: VaultResultData | undefine
   }
 }
 
+type MorningBriefResultData = {
+  available?: boolean;
+  message?: string;
+  source?: string;
+  sinceLabel?: string;
+  hasRun?: boolean;
+  watchEnabled?: boolean;
+  run?: { finishedAtLabel?: string };
+  diffMissing?: boolean;
+  collectedAtLabel?: string;
+  newPosts?: number;
+  removedPosts?: number;
+  changedPosts?: number;
+  likesChange?: number;
+  commentsChange?: number;
+  reachChange?: number;
+  problemRunCount?: number;
+  problemRuns?: Array<{ status?: string }>;
+  lastRun?: { status?: string; startedAtLabel?: string } | null;
+  token?: { daysLeft?: number; expired?: boolean } | null;
+};
+
+function signed(value: number): string {
+  return value > 0 ? `+${value}` : String(value);
+}
+
+function plural(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
+/** Spoken morning brief: only values present in the tool result, ending with when data was collected. */
+function buildMorningBriefFinishText(data: MorningBriefResultData | undefined): string | undefined {
+  if (!data) return undefined;
+  if (data.available === false) {
+    return `I can't put the morning brief together right now — ${data.message ?? "watch runs are unavailable"}.`;
+  }
+  const since = data.sinceLabel ?? "the last check";
+  const parts: string[] = [];
+  if (data.source === "fixture") parts.push("Fixture data, not your real account.");
+
+  if (!data.hasRun) {
+    parts.push(`No watch run since ${since}, so there's nothing new to report.`);
+    if (data.lastRun?.status && data.lastRun.startedAtLabel) {
+      parts.push(`The last run was ${data.lastRun.status.replaceAll("_", " ")} at ${data.lastRun.startedAtLabel}.`);
+    }
+  } else if (data.diffMissing) {
+    parts.push("Your last watch run finished but stored no change summary.");
+  } else {
+    const newPosts = data.newPosts ?? 0;
+    const removed = data.removedPosts ?? 0;
+    parts.push(`${plural(newPosts, "new post", "new posts")}, ${removed} removed.`);
+    const changes = [
+      ["likes", data.likesChange],
+      ["comments", data.commentsChange],
+      ["reach", data.reachChange],
+    ]
+      .filter((entry): entry is [string, number] => typeof entry[1] === "number")
+      .map(([label, value]) => `${label} ${signed(value)}`);
+    if (changes.length > 0 && typeof data.changedPosts === "number" && data.changedPosts > 0) {
+      parts.push(`Across ${plural(data.changedPosts, "changed post", "changed posts")}: ${changes.join(", ")}.`);
+    } else {
+      parts.push("No likes, comments or reach changes were recorded.");
+    }
+  }
+
+  const problemCount = data.problemRunCount ?? 0;
+  if (problemCount > 0) {
+    const statuses = [...new Set((data.problemRuns ?? []).map((r) => r.status).filter(Boolean))];
+    parts.push(
+      `${plural(problemCount, "run", "runs")} since ${since} ${problemCount === 1 ? "was" : "were"} ${statuses.join(" or ") || "not ok"}.`,
+    );
+  }
+  parts.push(data.watchEnabled ? "The watch is on." : "The watch is off.");
+  if (data.token?.expired) parts.push("Your Instagram token has expired.");
+  else if (typeof data.token?.daysLeft === "number") {
+    parts.push(`Token: ${plural(data.token.daysLeft, "day", "days")} left.`);
+  } else parts.push("Token expiry unknown.");
+
+  if (!data.hasRun) parts.push(`No data collected since ${since}.`);
+  else if (data.collectedAtLabel) parts.push(`Data collected ${data.collectedAtLabel}.`);
+  else if (data.run?.finishedAtLabel) parts.push(`Run finished ${data.run.finishedAtLabel}; no collected-at time was stored.`);
+  else parts.push("No collected-at time was stored.");
+  return parts.join(" ");
+}
+
 const COLLECT_SIMULATED_TEXT = "Collect queued — simulated in demo mode.";
 
 function isSimulatedCollect(
@@ -509,6 +603,12 @@ function buildMockFinishText(
     return isBulkDeleteRequest(transcript.toLowerCase()) ? BULK_DELETE_REFUSAL : CAPABILITY_HELP;
   }
   const data = readToolData(toolMessageContent);
+  if (toolName === "get_morning_brief") {
+    return (
+      buildMorningBriefFinishText(data as MorningBriefResultData | undefined) ??
+      "I couldn't read the watch runs, so there's no morning brief."
+    );
+  }
   const toolText =
     buildVaultFinishText(toolName, data) ??
     buildMemoryLifecycleFinishText(toolName, data) ??
