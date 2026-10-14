@@ -508,8 +508,8 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
       .where(
         and(
           eq(memoryEntries.source, VAULT_SOURCE),
-          isNull(memoryEntries.supersededBy),
-          isNull(memoryEntries.archivedAt),
+          options.includeHistory ? undefined : isNull(memoryEntries.supersededBy),
+          options.includeHistory ? undefined : isNull(memoryEntries.archivedAt),
         ),
       )
       .orderBy(desc(memoryEntries.createdAt));

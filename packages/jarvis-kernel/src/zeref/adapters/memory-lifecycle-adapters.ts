@@ -67,7 +67,7 @@ export async function resolveMemoryTarget(
   if (opts.needle) {
     const needle = opts.needle.toLowerCase();
     const searched = await port.searchEntries(opts.needle, { limit: 20 });
-    const vault = await port.listVaultItems({ limit: 200 });
+    const vault = await port.listVaultItems({ limit: 200, includeHistory: !opts.current });
     const candidates = [
       ...searched.map((entry) => entry.id),
       ...vault.map((item) => item.id),

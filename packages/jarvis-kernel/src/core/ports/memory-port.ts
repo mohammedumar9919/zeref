@@ -35,7 +35,12 @@ export type MemoryHistoryEntry = MemoryEntry & {
 export type MemoryLifecyclePort = {
   /** Lexical/hybrid search; hides contradicted (superseded) and archived entries. */
   searchEntries(query: string, opts?: { limit?: number }): Promise<MemoryEntry[]>;
-  listVaultItems(opts?: { kind?: VaultKind; limit?: number }): Promise<VaultItem[]>;
+  /** Current items only unless `includeHistory` (superseded + archived too). */
+  listVaultItems(opts?: {
+    kind?: VaultKind;
+    limit?: number;
+    includeHistory?: boolean;
+  }): Promise<VaultItem[]>;
   /** Whole supersede chain containing `id`, oldest → newest; `[]` for unknown ids. */
   getEntryHistory(id: string): Promise<MemoryHistoryEntry[]>;
   proposeStaleArchive(opts?: { olderThanDays?: number; limit?: number }): Promise<MemoryEntry[]>;

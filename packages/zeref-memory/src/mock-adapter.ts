@@ -277,10 +277,12 @@ export class MockMemoryAdapter implements MemoryAdapter {
   }
 
   async listVaultItems(options: ListVaultItemsOptions = {}): Promise<VaultItem[]> {
-    const current = this.store.entries.filter((e) => {
-      const links = this.lifecycle.get(e.id);
-      return !links?.supersededBy && !links?.archivedAt;
-    });
+    const current = options.includeHistory
+      ? this.store.entries
+      : this.store.entries.filter((e) => {
+          const links = this.lifecycle.get(e.id);
+          return !links?.supersededBy && !links?.archivedAt;
+        });
     return selectVaultItems(current, options);
   }
 
