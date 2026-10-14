@@ -1,4 +1,4 @@
-import type { GraphClientOptions, GraphFetch } from "./client.js";
+import { graphGetWithErrors, type GraphClientOptions } from "./client.js";
 
 const DEFAULT_GRAPH_BASE = "https://graph.instagram.com";
 
@@ -38,23 +38,22 @@ type InsightsApiResponse = {
     values?: Array<{ value?: number; end_time?: string }>;
     total_value?: { value?: number };
   }>;
-  error?: { message?: string; code?: number };
 };
 
-async function graphGetJson(
+/** Budgeted, throttled, token-redacted GET; non-OK keeps the Meta error message. */
+function insightsGet<T>(
   path: string,
-  accessToken: string,
-  fetchImpl: GraphFetch,
-  baseUrl: string,
-): Promise<{ ok: true; body: InsightsApiResponse } | { ok: false; status: number; body: InsightsApiResponse }> {
-  const url = new URL(path, baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`);
-  url.searchParams.set("access_token", accessToken);
-  const res = await fetchImpl(url);
-  const body = (await res.json()) as InsightsApiResponse;
-  if (!res.ok) {
-    return { ok: false, status: res.status, body };
-  }
-  return { ok: true, body };
+  options: GraphClientOptions,
+  fallbackMessage: (status: number) => string,
+): Promise<T> {
+  return graphGetWithErrors<T>(
+    path,
+    options.accessToken,
+    options.fetchImpl ?? globalThis.fetch,
+    options.baseUrl ?? DEFAULT_GRAPH_BASE,
+    options.graph,
+    (status, error) => error?.message ?? fallbackMessage(status),
+  );
 }
 
 function mapMetrics(data: InsightsApiResponse["data"]): InstagramInsightMetric[] {
@@ -109,23 +108,16 @@ export async function fetchMediaInsights(
     period?: string;
   },
 ): Promise<MediaInsightsResult> {
-  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
-  const baseUrl = options.baseUrl ?? DEFAULT_GRAPH_BASE;
   const metrics = (options.metrics ?? DEFAULT_MEDIA_INSIGHT_METRICS).join(",");
   const period = options.period ?? "lifetime";
-  const result = await graphGetJson(
+  const body = await insightsGet<InsightsApiResponse>(
     `${options.mediaId}/insights?metric=${encodeURIComponent(metrics)}&period=${encodeURIComponent(period)}`,
-    options.accessToken,
-    fetchImpl,
-    baseUrl,
+    options,
+    (status) => `Graph insights ${status}`,
   );
-  if (!result.ok) {
-    const message = result.body.error?.message ?? `Graph insights ${result.status}`;
-    throw new Error(message);
-  }
   return {
     mediaId: options.mediaId,
-    metrics: mapMetrics(result.body.data),
+    metrics: mapMetrics(body.data),
   };
 }
 
@@ -140,17 +132,13 @@ export async function fetchAccountInsights(
     metricType?: "total_value" | "time_series";
   },
 ): Promise<AccountInsightsResult> {
-  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
-  const baseUrl = options.baseUrl ?? DEFAULT_GRAPH_BASE;
   let userId = options.userId;
   if (!userId) {
-    const meUrl = new URL("me?fields=id", baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`);
-    meUrl.searchParams.set("access_token", options.accessToken);
-    const meRes = await fetchImpl(meUrl);
-    if (!meRes.ok) {
-      throw new Error(`Graph me failed: ${meRes.status}`);
-    }
-    const me = (await meRes.json()) as { id?: string };
+    const me = await insightsGet<{ id?: string }>(
+      "me?fields=id",
+      options,
+      (status) => `Graph me failed: ${status}`,
+    );
     if (!me.id) throw new Error("Graph me returned no id");
     userId = me.id;
   }
@@ -163,15 +151,15 @@ export async function fetchAccountInsights(
       ? `${userId}/insights?metric=${encodeURIComponent(metrics)}&period=${encodeURIComponent(period)}&metric_type=total_value`
       : `${userId}/insights?metric=${encodeURIComponent(metrics)}&period=${encodeURIComponent(period)}`;
 
-  const result = await graphGetJson(path, options.accessToken, fetchImpl, baseUrl);
-  if (!result.ok) {
-    const message = result.body.error?.message ?? `Graph account insights ${result.status}`;
-    throw new Error(message);
-  }
+  const body = await insightsGet<InsightsApiResponse>(
+    path,
+    options,
+    (status) => `Graph account insights ${status}`,
+  );
   return {
     userId,
     period,
-    metrics: mapMetrics(result.body.data),
+    metrics: mapMetrics(body.data),
   };
 }
 

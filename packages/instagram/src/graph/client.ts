@@ -52,12 +52,48 @@ type GraphUserResponse = {
   username?: string;
 };
 
+/** Meta rate-limit error codes (app, user, BUC/platform, API-level) → `usage_high`. */
+export const GRAPH_THROTTLE_ERROR_CODES: ReadonlySet<number> = new Set([4, 17, 32, 613]);
+
+export type GraphErrorBody = { message?: string; code?: number };
+
+/** Builds the (pre-redaction) message for a non-OK, non-throttle Graph response. */
+export type GraphErrorFormatter = (status: number, error: GraphErrorBody | null) => string;
+
+function parseGraphErrorBody(text: string): GraphErrorBody | null {
+  try {
+    const parsed = JSON.parse(text) as { error?: unknown };
+    const error = parsed?.error;
+    if (!error || typeof error !== "object") return null;
+    const { message, code } = error as { message?: unknown; code?: unknown };
+    const codeNum = typeof code === "string" ? Number(code) : code;
+    return {
+      ...(typeof message === "string" ? { message } : {}),
+      ...(typeof codeNum === "number" && Number.isFinite(codeNum) ? { code: codeNum } : {}),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function graphGet<T>(
   path: string,
   accessToken: string,
   fetchImpl: GraphFetch,
   baseUrl: string,
   options?: GraphGetOptions,
+): Promise<T> {
+  return graphGetWithErrors<T>(path, accessToken, fetchImpl, baseUrl, options);
+}
+
+/** `graphGet` with a caller-specific error message; the message is still token-redacted. */
+export async function graphGetWithErrors<T>(
+  path: string,
+  accessToken: string,
+  fetchImpl: GraphFetch,
+  baseUrl: string,
+  options?: GraphGetOptions,
+  formatError?: GraphErrorFormatter,
 ): Promise<T> {
   if (options?.budget && !options.budget.tryConsume()) {
     throw new GraphThrottledError("daily_cap");
@@ -88,6 +124,19 @@ export async function graphGet<T>(
   }
   if (!res.ok) {
     const text = await res.text();
+    const error = parseGraphErrorBody(text);
+    if (error?.code !== undefined && GRAPH_THROTTLE_ERROR_CODES.has(error.code)) {
+      throw new GraphThrottledError("usage_high", {
+        retryAfterMin:
+          retryAfterMinutes(res.headers) ?? usage?.estimatedTimeToRegainAccessMin,
+        ...(usage ? { usage } : {}),
+      });
+    }
+    if (formatError) {
+      throw new Error(
+        redactGraphSecrets(formatError(res.status, error), [accessToken]).slice(0, 300),
+      );
+    }
     throw new Error(
       `Graph API ${res.status}: ${redactGraphSecrets(text, [accessToken]).slice(0, 300)}`,
     );
