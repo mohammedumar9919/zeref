@@ -41,6 +41,13 @@ Week plan (waves, cut order, demo DoD): [2026-09-28-week-plan.md](../superpowers
 | 26 | C10 | First-audio metric + pipelined sentence TTS (provider byte-streaming → C10b) | DONE (#36) | C | — | `cloud/c10-` | [phases/C10-first-audio.md](./phases/C10-first-audio.md) |
 | 27 | C18a | Graph call budget + usage-header back-off | DONE (#37) | C | C2 | `cloud/c18a-` | [phases/C18a-graph-budget.md](./phases/C18a-graph-budget.md) |
 | 28 | C18b | Own-account watch: opt-in 4 h schedule, advisory lock, `watch_runs` audit (migration 0006), "what changed" diff, Task Scheduler scripts | DONE (#38) | C | C18a | `cloud/c18b-` | [phases/C18b-own-account-watch.md](./phases/C18b-own-account-watch.md) |
+| 29 | C19a | Memory lifecycle data layer: supersede link, archive (never delete), stale-archive proposal, history chain (migration 0008) | IN PROGRESS | H2b-1 | C4, C5 | `cloud/c19a-` | [phases/C19a-memory-lifecycle-data.md](./phases/C19a-memory-lifecycle-data.md) |
+| 30 | C17b | Motion system: tokens, reduced motion, route + panel transitions (CSS only) | IN PROGRESS | H2b-1 | C17a | `cloud/c17b-` | [phases/C17b-motion-system.md](./phases/C17b-motion-system.md) |
+| 31 | F1 | H2a follow-ups: cockpit refresh after watch runs, insights under Graph budget, Meta throttle codes | IN PROGRESS | H2b-1 | C18b | `cloud/f1-` | [phases/F1-h2a-followups.md](./phases/F1-h2a-followups.md) |
+| 32 | C19b | Memory lifecycle tools + HUD history view (confirm-gated supersede, archive-stale proposal) | NEXT | H2b-2 | C19a | `cloud/c19b-` | card after C19a |
+| 33 | C12 | Morning brief fed by C18 "what changed" | NEXT | H2b-2 | C18b | `cloud/c12-` | card in wave 2 |
+| 34 | C21a | `sensitive` tier + typed PIN + elevation/lockout/audit | NEXT | H2b-2 | K1, C17a | `cloud/c21a-` | card in wave 2 |
+| 35 | C21b / C22a / C22b / W1 / C11 | Voice challenge; Team Jarvis; critic veto; worker cloud host (needs operator host decision); competitor refresh | LATER | H2b-3 | see vision intake | — | — |
 | 18 | CLOUD-C5 | Semantic contradiction v1 | DONE | C | C3 | `cloud/c5-` | [phases/C5-semantic-contradiction.md](./phases/C5-semantic-contradiction.md) |
 
 ### Track C — week 2 (cards ready)
