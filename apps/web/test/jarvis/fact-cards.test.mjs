@@ -89,6 +89,25 @@ const SAMPLE_RESULTS = {
     notFound: [],
     items: [{ content: "film the canal ride" }, { content: "try a 30 second hook" }],
   },
+  get_morning_brief: {
+    available: true,
+    source: "live",
+    since: "2026-10-12T07:30:00.000Z",
+    sinceLabel: "2026-10-12 07:30 UTC",
+    watchEnabled: true,
+    hasRun: true,
+    collectedAt: "2026-10-13T06:00:41.000Z",
+    collectedAtLabel: "2026-10-13 06:00 UTC",
+    newPosts: 2,
+    removedPosts: 0,
+    changedPosts: 3,
+    likesChange: 57,
+    reachChange: 910,
+    problemRunCount: 0,
+    problemRuns: [],
+    lastRun: { status: "ok", startedAt: "2026-10-13T06:00:00.000Z", startedAtLabel: "2026-10-13 06:00 UTC" },
+    token: { expiresAt: "2026-11-24T06:00:00.000Z", expiresAtLabel: "2026-11-24 06:00 UTC", daysLeft: 41, expired: false, checkedAt: null },
+  },
 };
 
 const SAMPLE_ARGS = { enqueue_job: { jobType: "report" } };
@@ -188,6 +207,33 @@ describe("fact cards builder (CLOUD-C17a)", () => {
     const [archived] = buildFactCards(RUN_ID, [call("memory_archive")]);
     assert.equal(archived.title, "Archived 2");
     assert.equal(archived.fields.length, 2);
+  });
+
+  it("morning brief card: up to 6 fields copied from the result (C12)", () => {
+    const [card] = buildFactCards(RUN_ID, [call("get_morning_brief")]);
+    assert.equal(card.title, "Morning brief");
+    assert.deepEqual(
+      card.fields.map((f) => [f.label, f.value]),
+      [
+        ["New posts", "2"],
+        ["Likes change", "+57"],
+        ["Data collected", "2026-10-13 06:00 UTC"],
+        ["Token days left", "41"],
+        ["Watch", "On"],
+        ["Reach change", "+910"],
+      ],
+    );
+    const expired = { ...SAMPLE_RESULTS.get_morning_brief, token: { daysLeft: 0, expired: true }, problemRunCount: 2 };
+    const [expiredCard] = buildFactCards(RUN_ID, [call("get_morning_brief", expired)]);
+    assert.deepEqual(expiredCard.fields.find((f) => f.label === "Token days left"), {
+      label: "Token days left",
+      value: "Expired",
+    });
+    assert.deepEqual(expiredCard.fields.at(-1), { label: "Throttled or failed runs", value: "2" });
+    assert.deepEqual(
+      buildFactCards(RUN_ID, [call("get_morning_brief", { available: false, message: "no db" })]),
+      [],
+    );
   });
 
   it("lifecycle no-ops produce no card (C19b)", () => {
