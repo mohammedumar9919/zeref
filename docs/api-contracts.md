@@ -39,6 +39,14 @@ None of these delete anything. Exact same-key corrections stay automatic (C19a);
 
 Fact cards: `memory_history` → "Memory history" (last 6 versions, newest last, labelled Superseded / Archived / Current); `memory_propose_archive` → "Stale memories"; `memory_supersede` → "Replaced" (Was / Now); `memory_archive` → "Archived N".
 
+### Jarvis morning brief (CLOUD-C12, reads C18b `watch_runs`)
+
+| Tool | Risk tier | Args | Notes |
+|------|-----------|------|-------|
+| `get_morning_brief` | read | `{ since?: ISO datetime }` (default last 24 h; future/invalid → 24 h; clamped to 7 days) | Reads stored `watch_runs` only — no writes, no Graph calls. Latest `ok` run in the window → `diff_json` summary: `newPosts`, `newPostRefs`, `removedPosts`, `postsChecked`, `changedPosts`, `likesChange` / `commentsChange` / `reachChange` (sum of stored per-post deltas; absent when no post stored that metric), `collectedAt` (diff `mediaListCollectedAt`) + `collectedAtLabel`. Also `problemRunCount` / `problemRuns` (`throttled` / `error` in the window), `lastRun` (any status), `token: { expiresAt, daysLeft, expired, checkedAt } \| null` (latest row with `token_expires_at`), `watchEnabled` (`ZEREF_WATCH_ENABLED=1` on the web process). No `ok` run → `hasRun: false` and no diff fields. `ok` run without `diff_json` → `diffMissing: true`. No database → `{ available: false, message }`. Fixture mode reads `fixtures/jarvis/morning-brief.json` (`source: "fixture"`, labelled) |
+
+Fact card: `get_morning_brief` → "Morning brief" (max 6: New posts, Likes change, Data collected, Token days left, Watch, then Throttled or failed runs or Reach change; with no run: Watch run "None since …", Last run, Token days left, Watch). Spoken mock text uses only result values and ends with "Data collected <time>." (or "No data collected since <time>.").
+
 ### Jarvis run + write-high confirm (K1)
 
 `POST /api/v1/jarvis/run` — body `{ turnId: uuid, transcript, confirmed?: boolean, runId?: uuid }` (strict; unchanged shape).
