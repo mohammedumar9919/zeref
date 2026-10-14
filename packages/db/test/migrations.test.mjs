@@ -534,16 +534,85 @@ describe("@zeref/db migrations", { skip: migrationSuiteSkip() }, () => {
 
     await client.end();
   });
+
+  it("adds superseded_by (FK ON DELETE SET NULL) and archived_at to memory_entries (C19a)", async () => {
+    const url = new URL(databaseUrl);
+    url.pathname = `/${testDbName}`;
+    const client = new pg.Client({ connectionString: url.toString() });
+    await client.connect();
+
+    const cols = await client.query(
+      `SELECT column_name, data_type, is_nullable FROM information_schema.columns
+       WHERE table_name = 'memory_entries' AND column_name IN ('superseded_by', 'archived_at')
+       ORDER BY column_name`,
+    );
+    assert.deepEqual(
+      cols.rows.map((r) => [r.column_name, r.data_type, r.is_nullable]),
+      [
+        ["archived_at", "timestamp with time zone", "YES"],
+        ["superseded_by", "uuid", "YES"],
+      ],
+    );
+
+    const indexes = await client.query(
+      `SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'memory_entries'
+       AND indexname IN ('memory_entries_superseded_by_idx', 'memory_entries_active_idx')
+       ORDER BY indexname`,
+    );
+    assert.equal(indexes.rowCount, 2);
+    assert.match(indexes.rows[0].indexdef, /WHERE \(archived_at IS NULL\)/);
+
+    const insert = (content) =>
+      client.query(
+        `INSERT INTO memory_entries (tier, content, source, temporal_score)
+         VALUES ('semantic', $1, 'vault', 1) RETURNING id`,
+        [content],
+      );
+    const oldest = (await insert("c19a chain oldest")).rows[0].id;
+    const middle = (await insert("c19a chain middle")).rows[0].id;
+    const newest = (await insert("c19a chain newest")).rows[0].id;
+    await client.query(
+      `UPDATE memory_entries SET superseded_by = $2, observation = 'contradicted' WHERE id = $1`,
+      [oldest, middle],
+    );
+    await client.query(
+      `UPDATE memory_entries SET superseded_by = $2, observation = 'contradicted' WHERE id = $1`,
+      [middle, newest],
+    );
+
+    await assert.rejects(
+      () =>
+        client.query(`UPDATE memory_entries SET superseded_by = $1 WHERE id = $2`, [
+          "00000000-0000-0000-0000-000000000099",
+          newest,
+        ]),
+      /foreign key|violates/i,
+    );
+
+    await client.query(`DELETE FROM memory_entries WHERE id = $1`, [middle]);
+    const left = await client.query(
+      `SELECT id, superseded_by, observation FROM memory_entries WHERE id = ANY($1::uuid[])`,
+      [[oldest, newest]],
+    );
+    assert.equal(left.rowCount, 2, "forgetting a chain member never deletes its neighbours");
+    const byId = new Map(left.rows.map((r) => [r.id, r]));
+    assert.equal(byId.get(oldest).superseded_by, null);
+    assert.equal(byId.get(oldest).observation, "contradicted");
+    assert.equal(byId.get(newest).superseded_by, null);
+
+    await client.end();
+  });
 });
 
-describe("@zeref/db migration journal (C18b, CLOUD-C4)", () => {
-  it("lists 0006_c18_watch_runs then 0007_memory_entry_embeddings with matching SQL files", () => {
+describe("@zeref/db migration journal (C18b, CLOUD-C4, C19a)", () => {
+  it("lists 0006_c18_watch_runs, 0007_memory_entry_embeddings, 0008_c19_memory_lifecycle with matching SQL files", () => {
     const journal = JSON.parse(
       readFileSync(join(migrationsFolder, "meta/_journal.json"), "utf8"),
     );
     const tags = journal.entries.map((e) => e.tag);
-    assert.equal(tags.at(-2), "0006_c18_watch_runs");
-    assert.equal(tags.at(-1), "0007_memory_entry_embeddings");
+    assert.equal(tags.at(-3), "0006_c18_watch_runs");
+    assert.equal(tags.at(-2), "0007_memory_entry_embeddings");
+    assert.equal(tags.at(-1), "0008_c19_memory_lifecycle");
     journal.entries.forEach((e, i) => assert.equal(e.idx, i));
     for (let i = 1; i < journal.entries.length; i += 1) {
       assert.ok(journal.entries[i].when > journal.entries[i - 1].when, "journal `when` increases");
@@ -559,5 +628,16 @@ describe("@zeref/db migration journal (C18b, CLOUD-C4)", () => {
     assert.match(c4, /CREATE TABLE "memory_entry_embeddings"/);
     assert.match(c4, /REFERENCES "public"\."memory_entries"\("id"\) ON DELETE cascade/);
     assert.doesNotMatch(c4, /embedding_vectors/);
+
+    const c19 = readFileSync(join(migrationsFolder, "0008_c19_memory_lifecycle.sql"), "utf8");
+    assert.match(c19, /ADD COLUMN "superseded_by" uuid;/);
+    assert.match(c19, /ADD COLUMN "archived_at" timestamp with time zone;/);
+    assert.match(
+      c19,
+      /FOREIGN KEY \("superseded_by"\) REFERENCES "public"\."memory_entries"\("id"\) ON DELETE set null/,
+    );
+    assert.match(c19, /CREATE INDEX "memory_entries_superseded_by_idx"/);
+    assert.match(c19, /WHERE "memory_entries"\."archived_at" IS NULL/);
+    assert.doesNotMatch(c19, /\bDROP\b|DELETE FROM|ON DELETE cascade/i);
   });
 });
