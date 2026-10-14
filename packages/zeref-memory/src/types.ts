@@ -37,7 +37,40 @@ export type PostgresMemoryAdapterOptions = {
 export type SearchMemoryOptions = {
   limit?: number;
   includeContradicted?: boolean;
+  /** Archived entries are hidden unless this is true (lexical and hybrid). */
+  includeArchived?: boolean;
   tier?: MemoryTier;
+};
+
+export type SupersedeEntryInput = {
+  content: string;
+  /** Defaults to null. */
+  value?: string | null;
+  /** Defaults to the old entry's `valueKey`. */
+  valueKey?: string | null;
+};
+
+export type SupersedeEntryResult = {
+  entry: MemoryEntry;
+  supersededId: string;
+};
+
+export type ArchiveEntriesResult = {
+  archived: string[];
+  alreadyArchived: string[];
+  notFound: string[];
+};
+
+export type ProposeStaleArchiveOptions = {
+  olderThanDays?: number;
+  limit?: number;
+  now?: Date;
+};
+
+/** A memory entry plus its lifecycle links (not part of the `MemoryEntry` contract). */
+export type MemoryLifecycleEntry = MemoryEntry & {
+  supersededBy: string | null;
+  archivedAt: string | null;
 };
 
 export type VerifyMemoryInput = {
@@ -98,6 +131,17 @@ export interface MemoryAdapter {
   /** Hard delete; `{ deleted: false }` for unknown ids and non-vault entries. */
   forgetVaultItem(id: string): Promise<VaultForgetResult>;
   searchMemory(query: string, options?: SearchMemoryOptions): Promise<MemorySearchResult>;
+  /**
+   * Save a replacement for `oldId`, link `old.supersededBy` and mark old `contradicted`.
+   * Throws if old is missing, already superseded, or archived. Never deletes.
+   */
+  supersedeEntry(oldId: string, input: SupersedeEntryInput): Promise<SupersedeEntryResult>;
+  /** Set `archivedAt` on each entry; idempotent; never deletes. */
+  archiveEntries(ids: string[]): Promise<ArchiveEntriesResult>;
+  /** Read-only: unarchived, unsuperseded, non-pinned entries older than N days, oldest first. */
+  proposeStaleArchive(options?: ProposeStaleArchiveOptions): Promise<MemoryEntry[]>;
+  /** Whole supersede chain containing `id`, oldest → newest; `[]` for unknown ids. */
+  getEntryHistory(id: string): Promise<MemoryLifecycleEntry[]>;
   verifyMemory(input: VerifyMemoryInput): Promise<MemoryEntry>;
   createEntity(input: CreateEntityInput): Promise<MemoryEntity>;
   updateEntity(input: UpdateEntityInput): Promise<MemoryEntity>;

@@ -9,6 +9,10 @@ export {
   saveVaultItem,
   listVaultItems,
   forgetVaultItem,
+  supersedeEntry,
+  archiveEntries,
+  proposeStaleArchive,
+  getEntryHistory,
   getMemoryAdapter,
   resetMemoryAdapterCache,
   isMemoryMockMode,
@@ -34,6 +38,11 @@ export {
   toVaultItem,
   type VaultSaveOptions,
 } from "./vault.js";
+export {
+  DEFAULT_STALE_DAYS,
+  DEFAULT_STALE_LIMIT,
+  isPinnedVaultEntry,
+} from "./lifecycle.js";
 export { createMockMemoryAdapter, MockMemoryAdapter } from "./mock-adapter.js";
 export { createPostgresMemoryAdapter, PostgresMemoryAdapter } from "./postgres-adapter.js";
 export {
@@ -51,6 +60,11 @@ export type {
   SaveMemoryInput,
   SaveMemoryResult,
   SearchMemoryOptions,
+  SupersedeEntryInput,
+  SupersedeEntryResult,
+  ArchiveEntriesResult,
+  ProposeStaleArchiveOptions,
+  MemoryLifecycleEntry,
   PostgresMemoryAdapterOptions,
   VerifyMemoryInput,
   CreateEntityInput,
