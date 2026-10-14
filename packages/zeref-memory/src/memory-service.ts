@@ -75,6 +75,34 @@ export async function forgetVaultItem(
   return adapter.forgetVaultItem(...args);
 }
 
+export async function supersedeEntry(
+  ...args: Parameters<MemoryAdapter["supersedeEntry"]>
+) {
+  const adapter = await getMemoryAdapter();
+  return adapter.supersedeEntry(...args);
+}
+
+export async function archiveEntries(
+  ...args: Parameters<MemoryAdapter["archiveEntries"]>
+) {
+  const adapter = await getMemoryAdapter();
+  return adapter.archiveEntries(...args);
+}
+
+export async function proposeStaleArchive(
+  ...args: Parameters<MemoryAdapter["proposeStaleArchive"]>
+) {
+  const adapter = await getMemoryAdapter();
+  return adapter.proposeStaleArchive(...args);
+}
+
+export async function getEntryHistory(
+  ...args: Parameters<MemoryAdapter["getEntryHistory"]>
+) {
+  const adapter = await getMemoryAdapter();
+  return adapter.getEntryHistory(...args);
+}
+
 export async function verifyMemory(
   ...args: Parameters<MemoryAdapter["verifyMemory"]>
 ) {

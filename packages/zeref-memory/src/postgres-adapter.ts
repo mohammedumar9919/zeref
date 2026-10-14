@@ -1,5 +1,18 @@
 import { createHash, randomUUID } from "node:crypto";
-import { eq, and, cosineDistance, desc, ilike, or } from "drizzle-orm";
+import {
+  eq,
+  and,
+  asc,
+  cosineDistance,
+  desc,
+  ilike,
+  inArray,
+  isNull,
+  lt,
+  ne,
+  or,
+  sql,
+} from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   MemoryEntrySchema,
@@ -22,6 +35,12 @@ import {
 } from "@zeref/db/schema";
 import { checkContradictions, suspectedMetadata } from "./contradiction.js";
 import { hybridFuse, tryEmbed, type EmbedFn } from "./fuse.js";
+import {
+  oldestFirst,
+  staleArchiveWindow,
+  supersedeDraft,
+  supersedeRefusal,
+} from "./lifecycle.js";
 import { autoTierClassifier } from "./tier-classifier.js";
 import { temporalScore } from "./temporal-score.js";
 import {
@@ -32,9 +51,12 @@ import {
   toVaultSaveInput,
 } from "./vault.js";
 import type {
+  ArchiveEntriesResult,
   CreateEntityInput,
   ListVaultItemsOptions,
   MemoryAdapter,
+  MemoryLifecycleEntry,
+  ProposeStaleArchiveOptions,
   QueryEntitiesOptions,
   RelateEntitiesInput,
   SaveMemoryInput,
@@ -42,6 +64,8 @@ import type {
   SaveVaultItemInput,
   PostgresMemoryAdapterOptions,
   SearchMemoryOptions,
+  SupersedeEntryInput,
+  SupersedeEntryResult,
   UpdateEntityInput,
   VerifyMemoryInput,
 } from "./types.js";
@@ -72,6 +96,31 @@ function rowToEntry(row: typeof memoryEntries.$inferSelect): MemoryEntry {
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   });
+}
+
+function rowToLifecycleEntry(row: EntryRow): MemoryLifecycleEntry {
+  return {
+    ...rowToEntry(row),
+    supersededBy: row.supersededBy ?? null,
+    archivedAt: row.archivedAt ? row.archivedAt.toISOString() : null,
+  };
+}
+
+function entryRowValues(entry: MemoryEntry, now: Date) {
+  return {
+    id: entry.id,
+    tier: entry.tier,
+    content: entry.content,
+    source: entry.source,
+    entityId: entry.entityId,
+    valueKey: entry.valueKey,
+    value: entry.value,
+    temporalScore: String(entry.temporalScore),
+    observation: entry.observation,
+    metadataJson: entry.metadata,
+    createdAt: now,
+    updatedAt: now,
+  };
 }
 
 function rowToEntity(row: typeof memoryEntities.$inferSelect): MemoryEntity {
@@ -150,6 +199,7 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
           !options.includeContradicted
             ? eq(memoryEntries.observation, "verified")
             : undefined,
+          !options.includeArchived ? isNull(memoryEntries.archivedAt) : undefined,
         ),
       )
       .orderBy(cosineDistance(memoryEntryEmbeddings.embedding, embedding))
@@ -198,39 +248,170 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
     }));
     draft.metadata = suspectedMetadata(draft.metadata, suspected);
 
-    await this.db.insert(memoryEntries).values({
-      id: entryId,
-      tier: draft.tier,
-      content: draft.content,
-      source: draft.source,
-      entityId: draft.entityId,
-      valueKey: draft.valueKey,
-      value: draft.value,
-      temporalScore: String(score),
-      observation: draft.observation,
-      metadataJson: draft.metadata,
-      createdAt: now,
-      updatedAt: now,
+    await this.db.transaction(async (tx) => {
+      await tx.insert(memoryEntries).values(entryRowValues(draft, now));
+
+      for (const match of contradictions) {
+        await tx
+          .update(memoryEntries)
+          .set({ observation: "contradicted", supersededBy: entryId, updatedAt: now })
+          .where(eq(memoryEntries.id, match.supersededId));
+
+        await tx.insert(memoryObservations).values({
+          entryId: match.entryId,
+          supersededEntryId: match.supersededId,
+          observationType: "contradiction",
+          metadataJson: {},
+          createdAt: now,
+        });
+      }
     });
 
     await this.storeEmbedding(entryId, draft.content);
 
-    for (const match of contradictions) {
-      await this.db
-        .update(memoryEntries)
-        .set({ observation: "contradicted", updatedAt: now })
-        .where(eq(memoryEntries.id, match.supersededId));
+    return { entry: draft, contradictions };
+  }
 
-      await this.db.insert(memoryObservations).values({
-        entryId: match.entryId,
-        supersededEntryId: match.supersededId,
+  async supersedeEntry(oldId: string, input: SupersedeEntryInput): Promise<SupersedeEntryResult> {
+    if (!isUuid(oldId)) {
+      throw new Error(`Memory entry not found: ${oldId}`);
+    }
+    const now = new Date();
+    const entry = await this.db.transaction(async (tx) => {
+      const rows = await tx.select().from(memoryEntries).where(eq(memoryEntries.id, oldId));
+      const old = rows[0] ? rowToLifecycleEntry(rows[0]) : undefined;
+      const refusal = supersedeRefusal(oldId, old);
+      if (refusal || !old) {
+        throw new Error(refusal ?? `Memory entry not found: ${oldId}`);
+      }
+
+      const next = MemoryEntrySchema.parse({
+        ...supersedeDraft(old, input),
+        id: randomUUID(),
+        temporalScore: temporalScore(now),
+        observation: "verified",
+        createdAt: toIso(now),
+        updatedAt: toIso(now),
+      });
+      await tx.insert(memoryEntries).values(entryRowValues(next, now));
+
+      // Conditional update: a concurrent supersede/archive of `old` rolls this one back.
+      const linked = await tx
+        .update(memoryEntries)
+        .set({ observation: "contradicted", supersededBy: next.id, updatedAt: now })
+        .where(
+          and(
+            eq(memoryEntries.id, oldId),
+            isNull(memoryEntries.supersededBy),
+            isNull(memoryEntries.archivedAt),
+          ),
+        )
+        .returning({ id: memoryEntries.id });
+      if (linked.length === 0) {
+        throw new Error(`Memory entry already superseded: ${oldId}`);
+      }
+
+      await tx.insert(memoryObservations).values({
+        entryId: next.id,
+        supersededEntryId: oldId,
         observationType: "contradiction",
-        metadataJson: {},
+        metadataJson: { via: "supersede" },
         createdAt: now,
       });
+      return next;
+    });
+
+    await this.storeEmbedding(entry.id, entry.content);
+    return { entry, supersededId: oldId };
+  }
+
+  async archiveEntries(ids: string[]): Promise<ArchiveEntriesResult> {
+    const unique = [...new Set(ids)];
+    const result: ArchiveEntriesResult = {
+      archived: [],
+      alreadyArchived: [],
+      notFound: unique.filter((id) => !isUuid(id)),
+    };
+    const candidates = unique.filter(isUuid);
+    if (candidates.length === 0) {
+      return result;
     }
 
-    return { entry: draft, contradictions };
+    const now = new Date();
+    const archived = await this.db
+      .update(memoryEntries)
+      .set({ archivedAt: now, updatedAt: now })
+      .where(and(inArray(memoryEntries.id, candidates), isNull(memoryEntries.archivedAt)))
+      .returning({ id: memoryEntries.id });
+    const archivedIds = new Set(archived.map((r) => r.id));
+
+    const existing = await this.db
+      .select({ id: memoryEntries.id })
+      .from(memoryEntries)
+      .where(inArray(memoryEntries.id, candidates));
+    const existingIds = new Set(existing.map((r) => r.id));
+
+    for (const id of candidates) {
+      if (archivedIds.has(id)) result.archived.push(id);
+      else if (existingIds.has(id)) result.alreadyArchived.push(id);
+      else result.notFound.push(id);
+    }
+    return result;
+  }
+
+  async proposeStaleArchive(options: ProposeStaleArchiveOptions = {}): Promise<MemoryEntry[]> {
+    const { cutoff, limit } = staleArchiveWindow(options);
+    if (limit === 0) {
+      return [];
+    }
+    const rows = await this.db
+      .select()
+      .from(memoryEntries)
+      .where(
+        and(
+          lt(memoryEntries.createdAt, cutoff),
+          isNull(memoryEntries.archivedAt),
+          isNull(memoryEntries.supersededBy),
+          ne(memoryEntries.observation, "contradicted"),
+          sql`not (${memoryEntries.source} = ${VAULT_SOURCE} and coalesce(${memoryEntries.metadataJson}->>'kind', '') = 'pin')`,
+        ),
+      )
+      .orderBy(asc(memoryEntries.createdAt), asc(memoryEntries.id))
+      .limit(limit);
+    return rows.map(rowToEntry);
+  }
+
+  async getEntryHistory(id: string): Promise<MemoryLifecycleEntry[]> {
+    if (!isUuid(id)) {
+      return [];
+    }
+    const found = new Map<string, EntryRow>();
+    const expanded = new Set<string>();
+    let frontier = [id];
+    while (frontier.length > 0) {
+      frontier.forEach((f) => expanded.add(f));
+      const rows = await this.db
+        .select()
+        .from(memoryEntries)
+        .where(
+          or(
+            inArray(memoryEntries.id, frontier),
+            inArray(memoryEntries.supersededBy, frontier),
+          ),
+        );
+      const next = new Set<string>();
+      for (const row of rows) {
+        found.set(row.id, row);
+        for (const linked of [row.id, row.supersededBy]) {
+          if (linked && !expanded.has(linked)) next.add(linked);
+        }
+      }
+      frontier = [...next];
+    }
+    if (!found.has(id)) {
+      return [];
+    }
+    return [...found.values()].map(rowToLifecycleEntry).sort(oldestFirst);
   }
 
   async searchMemory(query: string, options: SearchMemoryOptions = {}) {
@@ -242,6 +423,9 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
 
     if (!options.includeContradicted) {
       rows = rows.filter((r) => r.observation !== "contradicted");
+    }
+    if (!options.includeArchived) {
+      rows = rows.filter((r) => r.archivedAt === null);
     }
     if (options.tier) {
       rows = rows.filter((r) => r.tier === options.tier);
@@ -261,6 +445,7 @@ export class PostgresMemoryAdapter implements MemoryAdapter {
             !options.includeContradicted
               ? eq(memoryEntries.observation, "verified")
               : undefined,
+            !options.includeArchived ? isNull(memoryEntries.archivedAt) : undefined,
           ),
         );
     }

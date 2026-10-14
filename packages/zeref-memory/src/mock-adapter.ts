@@ -13,22 +13,38 @@ import {
   type VaultItem,
 } from "@zeref/contracts";
 import { checkContradictions, suspectedMetadata } from "./contradiction.js";
+import {
+  collectChainIds,
+  isStaleArchiveCandidate,
+  oldestFirst,
+  staleArchiveWindow,
+  supersedeDraft,
+  supersedeRefusal,
+  type EntryLifecycle,
+} from "./lifecycle.js";
 import { isVaultEntry, selectVaultItems, toVaultItem, toVaultSaveInput } from "./vault.js";
 import { autoTierClassifier } from "./tier-classifier.js";
 import { temporalScore } from "./temporal-score.js";
 import type {
+  ArchiveEntriesResult,
   CreateEntityInput,
   ListVaultItemsOptions,
   MemoryAdapter,
+  MemoryLifecycleEntry,
+  ProposeStaleArchiveOptions,
   QueryEntitiesOptions,
   RelateEntitiesInput,
   SaveMemoryInput,
   SaveMemoryResult,
   SaveVaultItemInput,
   SearchMemoryOptions,
+  SupersedeEntryInput,
+  SupersedeEntryResult,
   UpdateEntityInput,
   VerifyMemoryInput,
 } from "./types.js";
+
+const NO_LIFECYCLE: EntryLifecycle = { supersededBy: null, archivedAt: null };
 
 const pkgRoot = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(pkgRoot, "../../..");
@@ -69,11 +85,36 @@ function entryMatchesQuery(entry: MemoryEntry, query: string): boolean {
 
 export class MockMemoryAdapter implements MemoryAdapter {
   private store: MockStore;
+  /** `superseded_by` / `archived_at` live beside the strict `MemoryEntry` contract. */
+  private lifecycle = new Map<string, EntryLifecycle>();
 
   constructor(seedFromFixture = true) {
     this.store = seedFromFixture
       ? loadFixtureStore()
       : { entries: [], entities: [], relations: [] };
+  }
+
+  private lifecycleOf(id: string): EntryLifecycle {
+    return this.lifecycle.get(id) ?? NO_LIFECYCLE;
+  }
+
+  private setLifecycle(id: string, patch: Partial<EntryLifecycle>): void {
+    this.lifecycle.set(id, { ...this.lifecycleOf(id), ...patch });
+  }
+
+  private withLifecycle(entry: MemoryEntry): MemoryLifecycleEntry {
+    return { ...entry, ...this.lifecycleOf(entry.id) };
+  }
+
+  private markSuperseded(oldId: string, newId: string, now: Date): void {
+    const idx = this.store.entries.findIndex((e) => e.id === oldId);
+    if (idx < 0) return;
+    this.store.entries[idx] = {
+      ...this.store.entries[idx],
+      observation: "contradicted",
+      updatedAt: toIso(now),
+    };
+    this.setLifecycle(oldId, { supersededBy: newId });
   }
 
   async saveMemory(input: SaveMemoryInput): Promise<SaveMemoryResult> {
@@ -113,20 +154,76 @@ export class MockMemoryAdapter implements MemoryAdapter {
     }));
     draft.metadata = suspectedMetadata(draft.metadata, suspected);
 
+    this.store.entries.push(draft);
     for (const match of contradictions) {
-      const idx = this.store.entries.findIndex((e) => e.id === match.supersededId);
-      if (idx >= 0) {
-        this.store.entries[idx] = {
-          ...this.store.entries[idx],
-          observation: "contradicted",
-          updatedAt: toIso(now),
-        };
-      }
+      this.markSuperseded(match.supersededId, entryId, now);
     }
 
-    this.store.entries.push(draft);
-
     return { entry: draft, contradictions };
+  }
+
+  async supersedeEntry(oldId: string, input: SupersedeEntryInput): Promise<SupersedeEntryResult> {
+    const oldEntry = this.store.entries.find((e) => e.id === oldId);
+    const old = oldEntry ? this.withLifecycle(oldEntry) : undefined;
+    const refusal = supersedeRefusal(oldId, old);
+    if (refusal || !oldEntry) {
+      throw new Error(refusal ?? `Memory entry not found: ${oldId}`);
+    }
+
+    const now = new Date();
+    const entry = MemoryEntrySchema.parse({
+      ...supersedeDraft(oldEntry, input),
+      id: randomUUID(),
+      temporalScore: temporalScore(now),
+      observation: "verified",
+      createdAt: toIso(now),
+      updatedAt: toIso(now),
+    });
+    this.store.entries.push(entry);
+    this.markSuperseded(oldId, entry.id, now);
+    return { entry, supersededId: oldId };
+  }
+
+  async archiveEntries(ids: string[]): Promise<ArchiveEntriesResult> {
+    const result: ArchiveEntriesResult = { archived: [], alreadyArchived: [], notFound: [] };
+    const archivedAt = toIso(new Date());
+    for (const id of new Set(ids)) {
+      if (!this.store.entries.some((e) => e.id === id)) {
+        result.notFound.push(id);
+      } else if (this.lifecycleOf(id).archivedAt) {
+        result.alreadyArchived.push(id);
+      } else {
+        this.setLifecycle(id, { archivedAt });
+        result.archived.push(id);
+      }
+    }
+    return result;
+  }
+
+  async proposeStaleArchive(options: ProposeStaleArchiveOptions = {}): Promise<MemoryEntry[]> {
+    const { cutoff, limit } = staleArchiveWindow(options);
+    return this.store.entries
+      .filter((e) => isStaleArchiveCandidate(e, this.lifecycleOf(e.id), cutoff))
+      .sort(oldestFirst)
+      .slice(0, limit);
+  }
+
+  async getEntryHistory(id: string): Promise<MemoryLifecycleEntry[]> {
+    if (!this.store.entries.some((e) => e.id === id)) {
+      return [];
+    }
+    const chain = collectChainIds(
+      id,
+      (current) => this.lifecycleOf(current).supersededBy,
+      (current) =>
+        this.store.entries
+          .filter((e) => this.lifecycleOf(e.id).supersededBy === current)
+          .map((e) => e.id),
+    );
+    return this.store.entries
+      .filter((e) => chain.has(e.id))
+      .map((e) => this.withLifecycle(e))
+      .sort(oldestFirst);
   }
 
   async searchMemory(
@@ -135,10 +232,14 @@ export class MockMemoryAdapter implements MemoryAdapter {
   ): Promise<import("@zeref/contracts").MemorySearchResult> {
     const limit = options.limit ?? 10;
     const includeContradicted = options.includeContradicted ?? false;
+    const includeArchived = options.includeArchived ?? false;
     const now = new Date();
 
     const filtered = this.store.entries.filter((entry) => {
       if (!includeContradicted && entry.observation === "contradicted") {
+        return false;
+      }
+      if (!includeArchived && this.lifecycleOf(entry.id).archivedAt) {
         return false;
       }
       if (options.tier && entry.tier !== options.tier) {
@@ -185,6 +286,12 @@ export class MockMemoryAdapter implements MemoryAdapter {
       return { deleted: false };
     }
     this.store.entries.splice(idx, 1);
+    this.lifecycle.delete(id);
+    for (const [otherId, links] of this.lifecycle) {
+      if (links.supersededBy === id) {
+        this.lifecycle.set(otherId, { ...links, supersededBy: null });
+      }
+    }
     return { deleted: true };
   }
 
