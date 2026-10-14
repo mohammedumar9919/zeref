@@ -47,7 +47,7 @@ export function TopNav(): React.ReactElement {
                   href={href}
                   data-testid={`nav-${label.toLowerCase()}`}
                   className={cn(
-                    "cursor-pointer rounded-md px-4 py-2 font-mono text-xs uppercase tracking-widest transition-colors duration-200",
+                    "cursor-pointer rounded-md px-4 py-2 font-mono text-xs uppercase tracking-widest transition-colors duration-base ease-motion-standard",
                     active
                       ? "bg-hud-cyan/10 text-hud-cyan"
                       : "text-hud-muted hover:text-hud-primary",

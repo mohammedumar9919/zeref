@@ -13,6 +13,15 @@
   --border-hud: rgba(34, 211, 238, 0.18);
   --radius-panel: 0.75rem;
   --hud-chrome-pad: 0.875rem;
+
+  /* C17b motion tokens — animate opacity/transform only. */
+  --motion-duration-fast: 120ms;
+  --motion-duration-base: 200ms;
+  --motion-duration-slow: 320ms;
+  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-slide-distance: 6px;
 }
 
 @layer base {
@@ -321,6 +330,28 @@
   .text-\[11px\],
   .text-xs {
     font-size: 13px;
+  }
+}
+
+/* C17b — reduced motion: tokens collapse to ~0 and every keyframe/transition
+   finishes instantly (final state, single iteration). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-fast: 0.01ms;
+    --motion-duration-base: 0.01ms;
+    --motion-duration-slow: 0.01ms;
+    --motion-slide-distance: 0px;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
   }
 }
 

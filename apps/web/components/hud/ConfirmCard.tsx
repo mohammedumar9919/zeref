@@ -51,7 +51,7 @@ export function ConfirmCard({
       data-tool-name={pending.toolName}
       role="alertdialog"
       aria-label={`Confirm ${title}`}
-      className="rounded-panel border border-hud-cyan/50 bg-panel/90 p-3 shadow-hud-glow"
+      className="animate-scale-in rounded-panel border border-hud-cyan/50 bg-panel/90 p-3 shadow-hud-glow"
     >
       <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-hud-cyan/80">
         Approval required

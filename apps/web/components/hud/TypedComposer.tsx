@@ -114,7 +114,7 @@ export function TypedComposer(): React.ReactElement {
       aria-label="Type to Jarvis"
       className="mx-auto max-w-[1600px] px-4 pb-2 md:px-6"
     >
-      <div className="space-y-2 rounded-panel border border-hud-border/60 bg-void/80 p-3 backdrop-blur-md">
+      <div className="animate-fade-in space-y-2 rounded-panel border border-hud-border/60 bg-void/80 p-3 backdrop-blur-md">
         {pending ? (
           <ConfirmCard
             pending={pending}
@@ -154,7 +154,7 @@ export function TypedComposer(): React.ReactElement {
             data-testid="typed-composer-error"
             role="alert"
             title={rawError}
-            className="font-mono text-[13px] text-hud-cyan/80"
+            className="animate-fade-in font-mono text-[13px] text-hud-cyan/80"
           >
             {TYPED_TURN_ERROR_COPY}
           </p>

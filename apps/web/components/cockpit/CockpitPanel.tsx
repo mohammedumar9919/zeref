@@ -24,7 +24,7 @@ export function CockpitPanel({
       data-testid={testId}
       aria-label={title}
       className={cn(
-        "hud-panel flex min-h-[140px] flex-col gap-2.5 p-3.5",
+        "hud-panel flex min-h-[140px] flex-col gap-2.5 p-3.5 animate-scale-in",
         focused && "ring-1 ring-hud-cyan/45",
         className,
       )}
