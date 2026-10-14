@@ -394,10 +394,34 @@ describe("seed pack mirrors tool descriptors (C7)", () => {
     assert.equal(tiers.vault_forget, "write-high");
   });
 
-  it("packs/v1.json tools equal descriptor tiers exactly", () => {
+  it("candidates/v2.json tools equal descriptor tiers exactly (C19b)", () => {
+    const candidate = JSON.parse(readFileSync(join(configDir, "candidates/v2.json"), "utf8"));
+    assert.deepEqual(validatePackShape(candidate), []);
+    assert.equal(candidate.name, "v2");
+    assert.deepEqual(candidate.tools, loadDescriptorTiers(repoRoot));
+  });
+
+  it("packs/v1.json is a subset of the live descriptors with equal tiers", () => {
     const seed = JSON.parse(readFileSync(join(configDir, "packs/v1.json"), "utf8"));
     assert.deepEqual(validatePackShape(seed), []);
-    assert.deepEqual(seed.tools, loadDescriptorTiers(repoRoot));
+    const tiers = loadDescriptorTiers(repoRoot);
+    for (const [tool, tier] of Object.entries(seed.tools)) {
+      assert.equal(tiers[tool], tier, `${tool} tier differs from descriptors`);
+    }
+  });
+
+  it("C19b lifecycle tools: history/propose read, supersede/archive write-high", () => {
+    const tiers = loadDescriptorTiers(repoRoot);
+    assert.equal(tiers.memory_history, "read");
+    assert.equal(tiers.memory_propose_archive, "read");
+    assert.equal(tiers.memory_supersede, "write-high");
+    assert.equal(tiers.memory_archive, "write-high");
+  });
+
+  it("candidate v2 passes the tier check against active v1", () => {
+    const v1 = JSON.parse(readFileSync(join(configDir, "packs/v1.json"), "utf8"));
+    const v2 = JSON.parse(readFileSync(join(configDir, "candidates/v2.json"), "utf8"));
+    assert.deepEqual(compareToActive(v2, v1, loadDescriptorTiers(repoRoot)), { ok: true, errors: [] });
   });
 
   it("active.json points at v1 with no previous", () => {
