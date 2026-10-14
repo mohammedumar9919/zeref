@@ -15,6 +15,8 @@ export type ZerefReadContext = {
   ): Promise<unknown>;
   getResearchOutliers(): Promise<unknown>;
   getWeeklyBrief(): Promise<unknown>;
+  /** Morning brief from stored watch runs only (CLOUD-C12). `since` is an optional ISO cutoff. */
+  getMorningBrief(args: { since?: string }): Promise<unknown>;
   getInstagramAccountSnapshot(): Promise<unknown>;
   getInstagramInsights(args: Record<string, unknown>): Promise<unknown>;
   discoverCompetitor(args: Record<string, unknown>): Promise<unknown>;

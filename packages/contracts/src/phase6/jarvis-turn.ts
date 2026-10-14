@@ -31,6 +31,7 @@ export const JarvisToolNameSchema = z.enum([
   "memory_propose_archive",
   "memory_supersede",
   "memory_archive",
+  "get_morning_brief",
 ]);
 
 export const JarvisToolCallSchema = z

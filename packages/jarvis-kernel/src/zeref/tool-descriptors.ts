@@ -193,6 +193,13 @@ export const ZEREF_TOOL_DESCRIPTORS: ToolDescriptor[] = [
     riskTier: "write-high",
     ...writeHighBase,
   },
+  {
+    name: "get_morning_brief",
+    description:
+      "Morning brief / \"what changed overnight\": summary of the latest stored own-account watch run (new/removed posts, likes/comments/reach changes as recorded), when that data was collected, failed or throttled runs, token days left and whether the watch is on. Args: { since?: ISO datetime } (default last 24 h). Reads stored watch_runs only — no Graph calls; says plainly when no run happened.",
+    riskTier: "read",
+    ...readBase,
+  },
 ];
 
 export function getZerefToolDescriptor(name: string): ToolDescriptor | undefined {

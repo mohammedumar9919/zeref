@@ -44,8 +44,9 @@
     "memory_history": "read",
     "memory_propose_archive": "read",
     "memory_supersede": "write-high",
-    "memory_archive": "write-high"
+    "memory_archive": "write-high",
+    "get_morning_brief": "read"
   },
   "vaultSnapshotId": null,
-  "notes": "CLOUD-C19b candidate: v1 plus the memory lifecycle tools (memory_history and memory_propose_archive read; memory_supersede and memory_archive write-high, confirm-gated, never delete). Mirrors packages/jarvis-kernel/src/zeref/tool-descriptors.ts risk tiers. Operator promotes by hand with --candidate v2 --approve."
+  "notes": "CLOUD-C19b candidate: v1 plus the memory lifecycle tools (memory_history and memory_propose_archive read; memory_supersede and memory_archive write-high, confirm-gated, never delete) and CLOUD-C12 get_morning_brief (read; stored watch_runs only). Mirrors packages/jarvis-kernel/src/zeref/tool-descriptors.ts risk tiers. Operator promotes by hand with --candidate v2 --approve."
 }
