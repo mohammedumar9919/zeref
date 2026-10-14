@@ -11,6 +11,7 @@ import {
 } from "@zeref/instagram";
 import type { Pool } from "pg";
 import { collectAndPersistAll } from "./collect.js";
+import { insertCockpitPipelineOutbox } from "../lib/cockpit-outbox.js";
 import { buildScheduleCollectInput, parseCollectShortcodes } from "./schedule-collect.js";
 import {
   isWatchEnabled,
@@ -261,6 +262,7 @@ export async function runWatch(deps: WatchRunDeps): Promise<WatchRunResult> {
         if (!latest) continue;
         const newThisRun =
           latest.id === c.snapshotId && latest.collectedAt.getTime() >= startedAt.getTime();
+        if (newThisRun) newSnapshots += 1;
         posts.push(diffSnapshotPair(latest, previous, { newThisRun }));
       }
 
@@ -304,6 +306,16 @@ export async function runWatch(deps: WatchRunDeps): Promise<WatchRunResult> {
     }
   }
 
+  if (status !== "ok") newSnapshots = 0;
+  if (newSnapshots > 0 && deps.onNewSnapshots) {
+    try {
+      await deps.onNewSnapshots(newSnapshots);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      log.warn(`cockpit refresh failed: ${redactGraphSecrets(msg, secrets).slice(0, 300)}`);
+    }
+  }
+
   log.info(`${trigger} run ${status} (graph calls ${runCalls})`);
   return {
     runId,
@@ -314,22 +326,27 @@ export async function runWatch(deps: WatchRunDeps): Promise<WatchRunResult> {
     tokenExpiresAt: (tokenExpiresAt as Date | null)?.toISOString() ?? null,
     errorCode,
     diff,
+    newSnapshots,
   };
 }
 
 export type WatchHandlerDeps = {
   pool: Pool;
   repoRoot?: string;
+  /** Test seam; the cockpit outbox hook always uses `pool`. */
+  runOverrides?: Partial<Omit<WatchRunDeps, "trigger" | "onNewSnapshots">>;
 };
 
-/** pg-boss handler for `schedule-collect`: never throws, so pg-boss never retries a run. */
+/**
+ * pg-boss handler for `schedule-collect`: never throws, so pg-boss never retries a run.
+ * Runs that insert new snapshots emit the same cockpit outbox event as a `collect` job.
+ */
 export function createWatchJobHandler(deps: WatchHandlerDeps) {
   const store = createPgWatchStore(deps.pool);
   return async (job: { data: unknown }): Promise<WatchRunResult | { status: "error"; errorCode: string }> => {
     try {
       return await runWatch({
         store,
-        trigger: parseWatchTrigger(job.data),
         collect: async (input, graph) => {
           const { outputs } = await collectAndPersistAll(input, {
             pool: deps.pool,
@@ -338,6 +355,9 @@ export function createWatchJobHandler(deps: WatchHandlerDeps) {
           });
           return outputs.map((o) => ({ sourceRef: o.sourceRef, snapshotId: o.snapshotId }));
         },
+        ...deps.runOverrides,
+        trigger: parseWatchTrigger(job.data),
+        onNewSnapshots: () => insertCockpitPipelineOutbox(deps.pool, "collect"),
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

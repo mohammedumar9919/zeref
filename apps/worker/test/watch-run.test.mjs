@@ -20,6 +20,10 @@ const instagram = await import(
 );
 const { GraphThrottledError } = instagram;
 
+const { buildPipelineOutboxPayload } = await import(
+  pathToFileURL(join(workerRoot, "dist/lib/cockpit-outbox.js")).href
+);
+
 const SECRET = "SECRET_TOKEN_123";
 const APP_SECRET = "APP_SECRET_456";
 const T0 = new Date("2026-10-09T12:00:00.000Z");
@@ -502,7 +506,164 @@ describe("runWatch secret hygiene", () => {
   });
 });
 
+describe("runWatch cockpit refresh", () => {
+  function spy(opts = {}) {
+    const counts = [];
+    return {
+      counts,
+      onNewSnapshots: async (n) => {
+        counts.push(n);
+        if (opts.fail) throw new Error(`outbox down ${SECRET}`);
+      },
+    };
+  }
+
+  it("notifies once after an ok run that inserted a new snapshot, after the lock is released", async () => {
+    const store = fakeStore({ snapshots: previousSnapshots() });
+    const now = clock();
+    const { fetchImpl } = fakeFetch();
+    let releasesAtNotify = null;
+    const counts = [];
+    const res = await runWatch({
+      store, trigger: "schedule", env: ENABLED, graphFetch: fetchImpl,
+      collect: fakeCollect(store, now).collect, now, log: captureLog().log,
+      onNewSnapshots: async (n) => {
+        counts.push(n);
+        releasesAtNotify = store.releases;
+      },
+    });
+    assert.equal(res.status, "ok");
+    assert.equal(res.newSnapshots, 1);
+    assert.deepEqual(counts, [1]);
+    assert.equal(releasesAtNotify, 1);
+    assert.equal(store.runs[0].status, "ok", "run row finished before notify");
+  });
+
+  it("does not notify for a deduped (no-change) run", async () => {
+    const store = fakeStore({ snapshots: previousSnapshots() });
+    const now = clock();
+    const { fetchImpl } = fakeFetch();
+    const s = spy();
+    const res = await runWatch({
+      store, trigger: "schedule", env: ENABLED, graphFetch: fetchImpl,
+      collect: fakeCollect(store, now, { dedupe: true }).collect, now, log: captureLog().log,
+      onNewSnapshots: s.onNewSnapshots,
+    });
+    assert.equal(res.status, "ok");
+    assert.equal(res.newSnapshots, 0);
+    assert.deepEqual(s.counts, []);
+  });
+
+  it("does not notify for skipped, throttled or error runs", async () => {
+    const cases = [
+      { store: fakeStore(), env: { INSTAGRAM_ACCESS_TOKEN: SECRET }, status: "skipped_disabled" },
+      { store: fakeStore(), env: { ZEREF_WATCH_ENABLED: "1" }, status: "skipped_no_token" },
+      { store: fakeStore({ locked: true }), env: ENABLED, status: "skipped_locked" },
+      { store: fakeStore({ usedToday: 200 }), env: ENABLED, status: "throttled" },
+      { store: fakeStore(), env: ENABLED, status: "throttled", fetch: { mediaStatus: 429 } },
+      { store: fakeStore(), env: ENABLED, status: "error", fetch: { media: [] } },
+    ];
+    for (const c of cases) {
+      const s = spy();
+      const now = clock();
+      const res = await runWatch({
+        store: c.store, trigger: "schedule", env: c.env, graphFetch: fakeFetch(c.fetch).fetchImpl,
+        collect: fakeCollect(c.store, now).collect, now, log: captureLog().log,
+        onNewSnapshots: s.onNewSnapshots,
+      });
+      assert.equal(res.status, c.status);
+      assert.equal(res.newSnapshots, 0);
+      assert.deepEqual(s.counts, [], `no notify for ${c.status}`);
+    }
+  });
+
+  it("does not notify when collect inserted a snapshot but the run then failed", async () => {
+    const store = fakeStore({ snapshots: previousSnapshots() });
+    const now = clock();
+    const { fetchImpl } = fakeFetch();
+    const s = spy();
+    const failing = { ...store, latestSnapshots: async () => { throw new Error("db read failed"); } };
+    const res = await runWatch({
+      store: failing, trigger: "schedule", env: ENABLED, graphFetch: fetchImpl,
+      collect: fakeCollect(store, now).collect, now, log: captureLog().log,
+      onNewSnapshots: s.onNewSnapshots,
+    });
+    assert.equal(res.status, "error");
+    assert.equal(res.newSnapshots, 0);
+    assert.deepEqual(s.counts, []);
+  });
+
+  it("a failing notify is logged (redacted) and does not change the run outcome", async () => {
+    const store = fakeStore({ snapshots: previousSnapshots() });
+    const now = clock();
+    const { fetchImpl } = fakeFetch();
+    const s = spy({ fail: true });
+    const { lines, log } = captureLog();
+    const res = await runWatch({
+      store, trigger: "schedule", env: ENABLED, graphFetch: fetchImpl,
+      collect: fakeCollect(store, now).collect, now, log, onNewSnapshots: s.onNewSnapshots,
+    });
+    assert.equal(res.status, "ok");
+    assert.deepEqual(s.counts, [1]);
+    assert.ok(lines.some((l) => l.startsWith("cockpit refresh failed")));
+    assert.ok(!lines.join("\n").includes(SECRET));
+  });
+});
+
 describe("createWatchJobHandler", () => {
+  function recordingPool() {
+    const queries = [];
+    return {
+      queries,
+      query: async (sql, params) => {
+        queries.push({ sql: String(sql), params });
+        return { rows: [], rowCount: 1 };
+      },
+      connect: async () => {
+        throw new Error("not used");
+      },
+    };
+  }
+
+  async function runHandler(collectOpts) {
+    const pool = recordingPool();
+    const store = fakeStore({ snapshots: previousSnapshots() });
+    const now = clock();
+    const res = await createWatchJobHandler({
+      pool,
+      runOverrides: {
+        store,
+        env: ENABLED,
+        graphFetch: fakeFetch().fetchImpl,
+        collect: fakeCollect(store, now, collectOpts).collect,
+        now,
+        log: captureLog().log,
+      },
+    })({ data: { trigger: "schedule" } });
+    return { res, outbox: pool.queries.filter((q) => q.sql.includes("cockpit_sse_outbox")) };
+  }
+
+  it("inserts the same cockpit outbox event as a collect job completion after new snapshots", async () => {
+    const { res, outbox } = await runHandler();
+    assert.equal(res.status, "ok");
+    assert.equal(outbox.length, 1);
+    assert.match(outbox[0].sql, /INSERT INTO cockpit_sse_outbox \(event_type, payload_json\)/);
+    const [eventType, payloadJson] = outbox[0].params;
+    assert.equal(eventType, "pipeline");
+    const payload = JSON.parse(payloadJson);
+    const { ts, ...rest } = payload;
+    const { ts: _ts, ...expected } = buildPipelineOutboxPayload("collect");
+    assert.deepEqual(rest, expected);
+    assert.deepEqual(Object.keys(payload).sort(), Object.keys(buildPipelineOutboxPayload("collect")).sort());
+    assert.ok(!Number.isNaN(Date.parse(ts)));
+  });
+
+  it("inserts no outbox event for a no-change run", async () => {
+    const { res, outbox } = await runHandler({ dedupe: true });
+    assert.equal(res.status, "ok");
+    assert.equal(outbox.length, 0);
+  });
+
   it("never throws (no pg-boss retry storm) and redacts the token", async () => {
     const prev = { ...process.env };
     process.env.INSTAGRAM_ACCESS_TOKEN = SECRET;
